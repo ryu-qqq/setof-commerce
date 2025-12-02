@@ -128,30 +128,30 @@
 
 ---
 
-### 5️⃣ Password 비밀번호 정책 검증 (Cycle 5)
+### 5️⃣ Password 비밀번호 정책 검증 (Cycle 5) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `PasswordTest.java`에 정책 검증 테스트 추가
-- [ ] `shouldValidatePasswordPolicy()` 작성 - 8자 이상, 영문+숫자+특수문자
-- [ ] `shouldThrowExceptionWhenPasswordPolicyViolated()` 작성
-- [ ] 테스트 실행 → 실패 확인
-- [ ] 커밋: `test: Password 정책 검증 테스트 추가 (Red)`
+- [x] `PasswordTest.java`에 정책 검증 테스트 추가
+- [x] `shouldValidatePasswordPolicy()` 작성 - 8자 이상, 영문+숫자+특수문자
+- [x] `shouldThrowExceptionWhenPasswordPolicyViolated()` 작성
+- [x] 테스트 실행 → 실패 확인
+- [x] 커밋: `test: Password 정책 검증 테스트 추가 (Red)`
 
 #### 🟢 Green: 최소 구현
-- [ ] `Password.java`에 `validatePolicy(String rawPassword)` 메서드 추가
-- [ ] 비밀번호 정책 검증 로직 (8자 이상, 영문+숫자+특수문자)
-- [ ] `PasswordPolicyViolationException` 생성
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: Password 정책 검증 구현 (Green)`
+- [x] `Password.java`에 `validatePolicy(String rawPassword)` 메서드 추가
+- [x] 비밀번호 정책 검증 로직 (8자 이상, 영문 대문자+소문자+숫자+특수문자)
+- [x] `PasswordPolicyViolationException` 생성
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: `feat: Password 정책 검증 구현 (Green)`
 
 #### ♻️ Refactor: 리팩토링
-- [ ] 정책 검증 Regex 상수로 추출
-- [ ] 커밋: `struct: Password 정책 검증 개선 (Refactor)`
+- [x] 정책 검증 Regex 상수로 추출 - ✅ 이미 상수로 구현됨
+- [x] 리팩토링 필요 없음 (코드가 이미 깔끔함)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] `PasswordFixture.java`에 정책 위반 메서드 추가
-- [ ] `PasswordFixture.anInvalidPassword()` 메서드 작성
-- [ ] 커밋: `test: PasswordFixture 정책 검증 정리 (Tidy)`
+- [x] `PasswordFixture.java`에 정책 위반 메서드 추가
+- [x] `validRawPassword()`, `invalidRawPasswordXxx()` 메서드 작성
+- [x] 커밋: `chore: PasswordFixture 정책 검증 메서드 추가 (Tidy)`
 
 ---
 
