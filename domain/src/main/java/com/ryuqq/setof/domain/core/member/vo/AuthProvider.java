@@ -1,4 +1,4 @@
-package com.ryuqq.setof.domain.core.member.type;
+package com.ryuqq.setof.domain.core.member.vo;
 
 /**
  * 인증 제공자 Enum

@@ -1,5 +1,7 @@
 package com.ryuqq.setof.domain.core.member.exception;
 
+import com.ryuqq.setof.domain.core.exception.DomainException;
+
 /**
  * 잘못된 핸드폰 번호에 대한 도메인 예외
  *
@@ -9,7 +11,7 @@ package com.ryuqq.setof.domain.core.member.exception;
  *     <li>010[0-9]{8} 형식 불일치</li>
  * </ul>
  */
-public final class InvalidPhoneNumberException extends RuntimeException {
+public final class InvalidPhoneNumberException extends DomainException {
 
     private static final String DEFAULT_MESSAGE = "핸드폰 번호는 010으로 시작하는 11자리 숫자여야 합니다.";
 

@@ -1,7 +1,7 @@
 package com.ryuqq.setof.domain.core.member.vo;
 
 import com.ryuqq.setof.domain.core.member.exception.InvalidWithdrawalInfoException;
-import com.ryuqq.setof.domain.core.member.type.WithdrawalReason;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

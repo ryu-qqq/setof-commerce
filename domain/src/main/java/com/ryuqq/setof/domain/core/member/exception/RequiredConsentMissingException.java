@@ -1,9 +1,11 @@
 package com.ryuqq.setof.domain.core.member.exception;
 
+import com.ryuqq.setof.domain.core.exception.DomainException;
+
 /**
  * 필수 동의 누락 예외
  */
-public final class RequiredConsentMissingException extends RuntimeException {
+public final class RequiredConsentMissingException extends DomainException {
 
     private static final String DEFAULT_MESSAGE = "필수 동의 항목이 누락되었습니다.";
 

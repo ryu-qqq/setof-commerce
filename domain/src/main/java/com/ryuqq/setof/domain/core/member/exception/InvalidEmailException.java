@@ -1,5 +1,7 @@
 package com.ryuqq.setof.domain.core.member.exception;
 
+import com.ryuqq.setof.domain.core.exception.DomainException;
+
 /**
  * 잘못된 이메일 형식에 대한 도메인 예외
  *
@@ -11,7 +13,7 @@ package com.ryuqq.setof.domain.core.member.exception;
  *
  * <p>참고: null 값은 허용됨 (nullable 필드)</p>
  */
-public final class InvalidEmailException extends RuntimeException {
+public final class InvalidEmailException extends DomainException {
 
     private static final String DEFAULT_MESSAGE = "이메일 형식이 올바르지 않습니다.";
 

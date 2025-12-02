@@ -1,12 +1,13 @@
 package com.ryuqq.setof.domain.core.member;
 
+import com.ryuqq.setof.domain.core.member.aggregate.Member;
 import com.ryuqq.setof.domain.core.member.exception.AlreadyKakaoMemberException;
 import com.ryuqq.setof.domain.core.member.exception.AlreadyWithdrawnMemberException;
 import com.ryuqq.setof.domain.core.member.exception.KakaoMemberCannotChangePasswordException;
-import com.ryuqq.setof.domain.core.member.type.AuthProvider;
-import com.ryuqq.setof.domain.core.member.type.Gender;
-import com.ryuqq.setof.domain.core.member.type.MemberStatus;
-import com.ryuqq.setof.domain.core.member.type.WithdrawalReason;
+import com.ryuqq.setof.domain.core.member.vo.AuthProvider;
+import com.ryuqq.setof.domain.core.member.vo.Gender;
+import com.ryuqq.setof.domain.core.member.vo.MemberStatus;
+import com.ryuqq.setof.domain.core.member.vo.WithdrawalReason;
 import com.ryuqq.setof.domain.core.member.vo.Consent;
 import com.ryuqq.setof.domain.core.member.vo.Email;
 import com.ryuqq.setof.domain.core.member.vo.MemberId;

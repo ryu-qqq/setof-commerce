@@ -1,7 +1,6 @@
 package com.ryuqq.setof.domain.core.member.vo;
 
 import com.ryuqq.setof.domain.core.member.exception.InvalidWithdrawalInfoException;
-import com.ryuqq.setof.domain.core.member.type.WithdrawalReason;
 
 import java.time.LocalDateTime;
 

@@ -1,5 +1,7 @@
 package com.ryuqq.setof.domain.core.member.type;
 
+import com.ryuqq.setof.domain.core.member.vo.MemberStatus;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

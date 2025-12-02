@@ -1,5 +1,7 @@
 package com.ryuqq.setof.domain.core.member.exception;
 
+import com.ryuqq.setof.domain.core.exception.DomainException;
+
 /**
  * 잘못된 회원 ID에 대한 도메인 예외
  *
@@ -9,7 +11,7 @@ package com.ryuqq.setof.domain.core.member.exception;
  *     <li>0 이하의 값</li>
  * </ul>
  */
-public final class InvalidMemberIdException extends RuntimeException {
+public final class InvalidMemberIdException extends DomainException {
 
     private static final String DEFAULT_MESSAGE = "회원 ID는 null이 아닌 양수여야 합니다.";
 

@@ -1,4 +1,4 @@
-package com.ryuqq.setof.domain.core.member.type;
+package com.ryuqq.setof.domain.core.member.vo;
 
 /**
  * 회원 상태 Enum
