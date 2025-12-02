@@ -1,6 +1,7 @@
 package com.ryuqq.setof.domain.core.member.vo;
 
 import com.ryuqq.setof.domain.core.member.exception.InvalidPasswordException;
+import com.ryuqq.setof.domain.core.member.exception.PasswordPolicyViolationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -127,6 +128,75 @@ class PasswordTest {
 
             // Then
             assertNotEquals(password1, password2);
+        }
+    }
+
+    @Nested
+    @DisplayName("비밀번호 정책 검증 테스트")
+    class PolicyValidation {
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "Password1!",      // 최소 요구사항 충족
+            "Abcd1234@",       // 영문 대소문자 + 숫자 + 특수문자
+            "StrongPass99#",   // 긴 비밀번호
+            "MyP@ssw0rd!"      // 복잡한 비밀번호
+        })
+        @DisplayName("유효한 비밀번호 정책 통과")
+        void shouldValidatePasswordPolicy(String rawPassword) {
+            // When & Then - 예외 없이 통과
+            assertDoesNotThrow(() -> Password.validatePolicy(rawPassword));
+        }
+
+        @Test
+        @DisplayName("8자 미만 비밀번호는 정책 위반")
+        void shouldThrowExceptionWhenPasswordTooShort() {
+            // Given
+            String shortPassword = "Pass1!";  // 6자
+
+            // When & Then
+            PasswordPolicyViolationException exception = assertThrows(
+                PasswordPolicyViolationException.class,
+                () -> Password.validatePolicy(shortPassword)
+            );
+
+            assertNotNull(exception.getMessage());
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "password1!",   // 대문자 없음
+            "PASSWORD1!",   // 소문자 없음
+            "Password!!",   // 숫자 없음
+            "Password12"    // 특수문자 없음
+        })
+        @DisplayName("영문 대소문자/숫자/특수문자 누락 시 정책 위반")
+        void shouldThrowExceptionWhenPasswordPolicyViolated(String invalidPassword) {
+            // When & Then
+            assertThrows(
+                PasswordPolicyViolationException.class,
+                () -> Password.validatePolicy(invalidPassword)
+            );
+        }
+
+        @Test
+        @DisplayName("null 비밀번호는 정책 위반")
+        void shouldThrowExceptionWhenRawPasswordIsNull() {
+            // When & Then
+            assertThrows(
+                PasswordPolicyViolationException.class,
+                () -> Password.validatePolicy(null)
+            );
+        }
+
+        @Test
+        @DisplayName("빈 문자열 비밀번호는 정책 위반")
+        void shouldThrowExceptionWhenRawPasswordIsEmpty() {
+            // When & Then
+            assertThrows(
+                PasswordPolicyViolationException.class,
+                () -> Password.validatePolicy("")
+            );
         }
     }
 }
