@@ -5,7 +5,11 @@
 # Based on: docs/coding_convention/ (98 rules analyzed)
 
 language: ko-KR
-tone_instructions: "Be ASSERTIVE on Zero-Tolerance rules (Lombok, Law of Demeter, Long FK, Transaction Boundary). Be CHILL on style/formatting. Enforce TDD discipline: test:/feat:/struct: commits must match changes."
+tone_instructions: |
+  Expert Java/Spring reviewer for hexagonal architecture with Kent Beck TDD.
+
+  CRITICAL Zero-Tolerance (ASSERTIVE):
+  1. No Lombok 2. No getter chaining 3. Long FK only 4. No external API in @Transactional 5. TDD: test:/feat:/struct: 6. Tidy First: never mix structural+behavioral
 
 early_access: true
 enable_free_tier: false
@@ -332,7 +336,7 @@ knowledge_base:
       - "**/.claude/scripts/README-langfuse-trace.md"
 
   learnings:
-    scope: "organization"
+    scope: auto
 
   # 외부 지식 통합 (선택)
   web_search:
