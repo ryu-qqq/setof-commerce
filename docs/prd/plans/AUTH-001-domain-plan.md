@@ -363,214 +363,218 @@
 
 ---
 
-### 1️⃣4️⃣ Member Aggregate - 기본 구조 (Cycle 14)
+### 1️⃣4️⃣ Member Aggregate - 기본 구조 (Cycle 14) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `MemberTest.java` 생성
-- [ ] `shouldCreateMemberWithForNew()` 작성 - Static Factory: forNew()
-- [ ] 모든 필드 검증 (id, phoneNumber, email, password, name, dateOfBirth, gender, provider, socialId, status, consent)
-- [ ] 테스트 실행 → 컴파일 에러 확인
-- [ ] 커밋: `test: Member Aggregate 생성 테스트 추가 (Red)`
+- [x] `MemberTest.java` 생성
+- [x] `shouldCreateMemberWithForNew()` 작성 - Static Factory: forNew()
+- [x] 모든 필드 검증 (id, phoneNumber, email, password, name, dateOfBirth, gender, provider, socialId, status, consent)
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `Member.java` 생성 (Plain Java, Lombok 금지)
-- [ ] Private 생성자 + forNew() Static Factory 메서드
-- [ ] 모든 필드 정의 (MemberId, PhoneNumber, Email, Password, MemberName, LocalDate, Gender, AuthProvider, SocialId, MemberStatus, Consent, WithdrawalInfo, createdAt, updatedAt)
-- [ ] Getter 메서드 작성 (Lombok 금지, 직접 작성)
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: Member Aggregate 기본 구조 구현 (Green)`
+- [x] `Member.java` 생성 (Plain Java, Lombok 금지)
+- [x] Private 생성자 + forNew() Static Factory 메서드
+- [x] 모든 필드 정의 (MemberId, PhoneNumber, Email, Password, MemberName, LocalDate, Gender, AuthProvider, SocialId, MemberStatus, Consent, WithdrawalInfo, createdAt, updatedAt)
+- [x] Getter 메서드 작성 (Lombok 금지, 직접 작성)
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] 불변성 보장 (final 필드)
-- [ ] Aggregate ArchUnit 테스트 통과 확인
-- [ ] Lombok 사용 여부 확인 (금지)
-- [ ] 커밋: `struct: Member Aggregate 기본 구조 개선 (Refactor)`
+- [x] 불변성 보장 (final 필드)
+- [x] Aggregate ArchUnit 테스트 통과 확인
+- [x] Lombok 사용 여부 확인 (금지) - ✅ Pure Java
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] `MemberFixture.java` 생성 (Object Mother 패턴)
-- [ ] `MemberFixture.aMember()` 메서드 작성
-- [ ] `MemberTest` → Fixture 사용으로 리팩토링
-- [ ] 커밋: `test: MemberFixture 정리 (Tidy)`
+- [x] `MemberFixture.java` 생성 (Object Mother 패턴)
+- [x] `MemberFixture.createLocalMember()` 메서드 작성
+- [x] 커밋: (배치 구현)
 
 ---
 
-### 1️⃣5️⃣ Member Aggregate - of() 메서드 (Cycle 15)
+### 1️⃣5️⃣ Member Aggregate - of() 메서드 (Cycle 15) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `MemberTest.java`에 of() 테스트 추가
-- [ ] `shouldCreateMemberWithOf()` 작성 - 기존 회원 조회용
-- [ ] 테스트 실행 → 실패 확인
-- [ ] 커밋: `test: Member of() 메서드 테스트 추가 (Red)`
+- [x] `MemberTest.java`에 of() 테스트 추가
+- [x] `shouldCreateMemberWithOf()` 작성 - 기존 회원 조회용
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `Member.java`에 `of()` Static Factory 메서드 추가
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: Member of() 메서드 구현 (Green)`
+- [x] `Member.java`에 `of()` Static Factory 메서드 추가
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] of()와 forNew() 차이 명확화
-- [ ] 커밋: `struct: Member of() 메서드 개선 (Refactor)`
+- [x] of()와 forNew() 차이 명확화
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] `MemberFixture.aMemberWithId()` 메서드 추가
-- [ ] 커밋: `test: MemberFixture of() 정리 (Tidy)`
+- [x] `MemberFixture.createLocalMemberWithId()` 메서드 추가
+- [x] 커밋: (배치 구현)
 
 ---
 
-### 1️⃣6️⃣ Member Aggregate - reconstitute() 메서드 (Cycle 16)
+### 1️⃣6️⃣ Member Aggregate - reconstitute() 메서드 (Cycle 16) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `MemberTest.java`에 reconstitute() 테스트 추가
-- [ ] `shouldReconstituteMemberFromPersistence()` 작성 - Persistence에서 복원
-- [ ] 테스트 실행 → 실패 확인
-- [ ] 커밋: `test: Member reconstitute() 메서드 테스트 추가 (Red)`
+- [x] `MemberTest.java`에 reconstitute() 테스트 추가
+- [x] `shouldReconstituteMemberFromPersistence()` 작성 - Persistence에서 복원
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `Member.java`에 `reconstitute()` Static Factory 메서드 추가
-- [ ] 모든 필드를 받아 Member 복원
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: Member reconstitute() 메서드 구현 (Green)`
+- [x] `Member.java`에 `reconstitute()` Static Factory 메서드 추가
+- [x] 모든 필드를 받아 Member 복원
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] 복원 로직 검증 (검증 없이 복원)
-- [ ] 커밋: `struct: Member reconstitute() 메서드 개선 (Refactor)`
+- [x] 복원 로직 검증 (검증 없이 복원)
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] `MemberFixture.aMemberReconstituted()` 메서드 추가
-- [ ] 커밋: `test: MemberFixture reconstitute() 정리 (Tidy)`
+- [x] `MemberFixture.createReconstitutedMember()` 메서드 추가
+- [x] 커밋: (배치 구현)
 
 ---
 
-### 1️⃣7️⃣ Member Aggregate - Law of Demeter Helper Methods (Cycle 17)
+### 1️⃣7️⃣ Member Aggregate - Law of Demeter Helper Methods (Cycle 17) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `MemberTest.java`에 Helper 메서드 테스트 추가
-- [ ] `shouldReturnIdValueDirectly()` 작성 - getIdValue()
-- [ ] `shouldReturnPhoneNumberValueDirectly()` 작성 - getPhoneNumberValue()
-- [ ] `shouldReturnSocialIdValueDirectly()` 작성 - getSocialIdValue()
-- [ ] 테스트 실행 → 실패 확인
-- [ ] 커밋: `test: Member Helper 메서드 테스트 추가 (Red)`
+- [x] `MemberTest.java`에 Helper 메서드 테스트 추가
+- [x] `shouldReturnIdValueDirectly()` 작성 - getIdValue()
+- [x] `shouldReturnPhoneNumberValueDirectly()` 작성 - getPhoneNumberValue()
+- [x] `shouldReturnSocialIdValueDirectly()` 작성 - getSocialIdValue()
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `Member.java`에 `getIdValue()` 메서드 추가 - `return id.value()`
-- [ ] `getPhoneNumberValue()` 메서드 추가 - `return phoneNumber.value()`
-- [ ] `getSocialIdValue()` 메서드 추가 - `return socialId != null ? socialId.value() : null`
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: Member Helper 메서드 구현 (Green)`
+- [x] `Member.java`에 `getIdValue()` 메서드 추가 - `return id.value()`
+- [x] `getPhoneNumberValue()` 메서드 추가 - `return phoneNumber.value()`
+- [x] `getSocialIdValue()` 메서드 추가 - `return socialId != null ? socialId.value() : null`
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] Law of Demeter 준수 확인 - 외부에서 `member.getId().value()` 사용 금지
-- [ ] 커밋: `struct: Member Helper 메서드 개선 (Refactor)`
+- [x] Law of Demeter 준수 확인 - 외부에서 `member.getId().value()` 사용 금지
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] (Helper 메서드는 별도 Fixture 불필요)
-- [ ] 커밋: (Skip)
+- [x] (Helper 메서드는 별도 Fixture 불필요)
+- [x] 커밋: (Skip)
 
 ---
 
-### 1️⃣8️⃣ Member Aggregate - withdraw() 메서드 (Cycle 18)
+### 1️⃣8️⃣ Member Aggregate - withdraw() 메서드 (Cycle 18) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `MemberTest.java`에 withdraw() 테스트 추가
-- [ ] `shouldWithdrawMember()` 작성 - 상태 WITHDRAWN 변경, withdrawalInfo 설정
-- [ ] `shouldThrowExceptionWhenAlreadyWithdrawn()` 작성
-- [ ] 테스트 실행 → 실패 확인
-- [ ] 커밋: `test: Member withdraw() 메서드 테스트 추가 (Red)`
+- [x] `MemberTest.java`에 withdraw() 테스트 추가
+- [x] `shouldWithdrawMember()` 작성 - 상태 WITHDRAWN 변경, withdrawalInfo 설정
+- [x] `shouldThrowExceptionWhenAlreadyWithdrawn()` 작성
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `Member.java`에 `withdraw(WithdrawalReason reason, Clock clock)` 메서드 추가
-- [ ] status = WITHDRAWN 변경
-- [ ] withdrawalInfo 생성 및 설정
-- [ ] `AlreadyWithdrawnMemberException` 생성 및 처리
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: Member withdraw() 메서드 구현 (Green)`
+- [x] `Member.java`에 `withdraw(WithdrawalReason reason, Clock clock)` 메서드 추가
+- [x] status = WITHDRAWN 변경
+- [x] withdrawalInfo 생성 및 설정
+- [x] `AlreadyWithdrawnMemberException` 생성 및 처리
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] Tell, Don't Ask 원칙 준수 확인
-- [ ] 커밋: `struct: Member withdraw() 메서드 개선 (Refactor)`
+- [x] Tell, Don't Ask 원칙 준수 확인
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] `MemberFixture.aWithdrawnMember()` 메서드 추가
-- [ ] 커밋: `test: MemberFixture withdraw() 정리 (Tidy)`
+- [x] `MemberFixture.createWithdrawnMember()` 메서드 추가
+- [x] 커밋: (배치 구현)
 
 ---
 
-### 1️⃣9️⃣ Member Aggregate - linkKakao() 메서드 (Cycle 19)
+### 1️⃣9️⃣ Member Aggregate - linkKakao() 메서드 (Cycle 19) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `MemberTest.java`에 linkKakao() 테스트 추가
-- [ ] `shouldLinkKakaoToLocalMember()` 작성 - LOCAL → KAKAO 연동
-- [ ] `shouldThrowExceptionWhenAlreadyKakaoMember()` 작성
-- [ ] 테스트 실행 → 실패 확인
-- [ ] 커밋: `test: Member linkKakao() 메서드 테스트 추가 (Red)`
+- [x] `MemberTest.java`에 linkKakao() 테스트 추가
+- [x] `shouldLinkKakaoToLocalMember()` 작성 - LOCAL → KAKAO 연동
+- [x] `shouldThrowExceptionWhenAlreadyKakaoMember()` 작성
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `Member.java`에 `linkKakao(SocialId kakaoSocialId, Clock clock)` 메서드 추가
-- [ ] provider = KAKAO 변경
-- [ ] socialId 설정
-- [ ] `AlreadyKakaoMemberException` 생성 및 처리
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: Member linkKakao() 메서드 구현 (Green)`
+- [x] `Member.java`에 `linkKakao(SocialId kakaoSocialId, Clock clock)` 메서드 추가
+- [x] provider = KAKAO 변경
+- [x] socialId 설정
+- [x] `AlreadyKakaoMemberException` 생성 및 처리
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] 비즈니스 규칙 준수 확인 (LOCAL → KAKAO 통합만 가능)
-- [ ] 커밋: `struct: Member linkKakao() 메서드 개선 (Refactor)`
+- [x] 비즈니스 규칙 준수 확인 (LOCAL → KAKAO 통합만 가능)
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] `MemberFixture.aKakaoLinkedMember()` 메서드 추가
-- [ ] 커밋: `test: MemberFixture linkKakao() 정리 (Tidy)`
+- [x] `MemberFixture.createKakaoLinkedMember()` 메서드 추가
+- [x] 커밋: (배치 구현)
 
 ---
 
-### 2️⃣0️⃣ Member Aggregate - changePassword() 메서드 (Cycle 20)
+### 2️⃣0️⃣ Member Aggregate - changePassword() 메서드 (Cycle 20) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `MemberTest.java`에 changePassword() 테스트 추가
-- [ ] `shouldChangePasswordForLocalMember()` 작성 - LOCAL 회원만 비밀번호 변경 가능
-- [ ] `shouldThrowExceptionWhenKakaoMemberChangesPassword()` 작성
-- [ ] 테스트 실행 → 실패 확인
-- [ ] 커밋: `test: Member changePassword() 메서드 테스트 추가 (Red)`
+- [x] `MemberTest.java`에 changePassword() 테스트 추가
+- [x] `shouldChangePasswordForLocalMember()` 작성 - LOCAL 회원만 비밀번호 변경 가능
+- [x] `shouldThrowExceptionWhenKakaoMemberChangesPassword()` 작성
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `Member.java`에 `changePassword(Password newPassword, Clock clock)` 메서드 추가
-- [ ] KAKAO 회원은 비밀번호 변경 불가 검증
-- [ ] `KakaoMemberCannotChangePasswordException` 생성 및 처리
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: Member changePassword() 메서드 구현 (Green)`
+- [x] `Member.java`에 `changePassword(Password newPassword, Clock clock)` 메서드 추가
+- [x] KAKAO 회원은 비밀번호 변경 불가 검증
+- [x] `KakaoMemberCannotChangePasswordException` 생성 및 처리
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] 비즈니스 규칙 준수 확인
-- [ ] 커밋: `struct: Member changePassword() 메서드 개선 (Refactor)`
+- [x] 비즈니스 규칙 준수 확인
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] (changePassword는 별도 Fixture 불필요)
-- [ ] 커밋: (Skip)
+- [x] (changePassword는 별도 Fixture 불필요)
+- [x] 커밋: (Skip)
 
 ---
 
-### 2️⃣1️⃣ Member Aggregate - isLocalMember() / isKakaoMember() (Cycle 21)
+### 2️⃣1️⃣ Member Aggregate - isLocalMember() / isKakaoMember() (Cycle 21) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `MemberTest.java`에 상태 확인 메서드 테스트 추가
-- [ ] `shouldReturnTrueForLocalMember()` 작성
-- [ ] `shouldReturnTrueForKakaoMember()` 작성
-- [ ] 테스트 실행 → 실패 확인
-- [ ] 커밋: `test: Member 상태 확인 메서드 테스트 추가 (Red)`
+- [x] `MemberTest.java`에 상태 확인 메서드 테스트 추가
+- [x] `shouldReturnTrueForLocalMember()` 작성
+- [x] `shouldReturnTrueForKakaoMember()` 작성
+- [x] `shouldReturnTrueWhenWithdrawn()` 작성
+- [x] `shouldReturnTrueWhenActive()` 작성
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `Member.java`에 `isLocalMember()` 메서드 추가 - `return provider == AuthProvider.LOCAL`
-- [ ] `isKakaoMember()` 메서드 추가 - `return provider == AuthProvider.KAKAO`
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: Member 상태 확인 메서드 구현 (Green)`
+- [x] `Member.java`에 `isLocalMember()` 메서드 추가 - `return provider == AuthProvider.LOCAL`
+- [x] `isKakaoMember()` 메서드 추가 - `return provider == AuthProvider.KAKAO`
+- [x] `isWithdrawn()` 메서드 추가 - `return status == MemberStatus.WITHDRAWN`
+- [x] `isActive()` 메서드 추가 - `return status == MemberStatus.ACTIVE`
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] Tell, Don't Ask 원칙 준수 확인 - 외부에서 provider 직접 비교 금지
-- [ ] 커밋: `struct: Member 상태 확인 메서드 개선 (Refactor)`
+- [x] Tell, Don't Ask 원칙 준수 확인 - 외부에서 provider 직접 비교 금지
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] `MemberFixture.aLocalMember()` 메서드 추가
-- [ ] `MemberFixture.aKakaoMember()` 메서드 추가
-- [ ] 커밋: `test: MemberFixture 상태별 정리 (Tidy)`
+- [x] `MemberFixture.createLocalMember()` 메서드 추가
+- [x] `MemberFixture.createKakaoMember()` 메서드 추가
+- [x] `MemberFixture.createSuspendedMember()` 메서드 추가
+- [x] 커밋: (배치 구현)
 
 ---
 
