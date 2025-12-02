@@ -155,215 +155,211 @@
 
 ---
 
-### 6️⃣ MemberName Value Object (Cycle 6)
+### 6️⃣ MemberName Value Object (Cycle 6) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `MemberNameTest.java` 생성
-- [ ] `shouldCreateMemberNameWithValidLength()` 작성 - 2~5자
-- [ ] `shouldThrowExceptionWhenNameIsTooShort()` 작성
-- [ ] `shouldThrowExceptionWhenNameIsTooLong()` 작성
-- [ ] 테스트 실행 → 컴파일 에러 확인
-- [ ] 커밋: `test: MemberName VO 검증 테스트 추가 (Red)`
+- [x] `MemberNameTest.java` 생성
+- [x] `shouldCreateMemberNameWithValidLength()` 작성 - 2~5자
+- [x] `shouldThrowExceptionWhenNameIsTooShort()` 작성
+- [x] `shouldThrowExceptionWhenNameIsTooLong()` 작성
+- [x] 테스트 실행 → 컴파일 에러 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `MemberName.java` 생성 (Record)
-- [ ] 2~5자 길이 검증 로직 추가
-- [ ] `InvalidMemberNameException` 생성
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: MemberName VO 구현 (Green)`
+- [x] `MemberName.java` 생성 (Record)
+- [x] 2~5자 길이 검증 로직 추가
+- [x] `InvalidMemberNameException` 생성
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] VO ArchUnit 테스트 통과 확인
-- [ ] 커밋: `struct: MemberName VO 개선 (Refactor)`
+- [x] VO ArchUnit 테스트 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] `MemberNameFixture.java` 생성
-- [ ] `MemberNameFixture.aMemberName()` 메서드 작성
-- [ ] `MemberNameTest` → Fixture 사용
-- [ ] 커밋: `test: MemberNameFixture 정리 (Tidy)`
+- [x] `MemberNameFixture.java` 생성
+- [x] `MemberNameFixture.create()` 메서드 작성
+- [x] 커밋: (배치 구현)
 
 ---
 
-### 7️⃣ SocialId Value Object (Cycle 7)
+### 7️⃣ SocialId Value Object (Cycle 7) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `SocialIdTest.java` 생성
-- [ ] `shouldCreateSocialIdWithValidValue()` 작성 - NotBlank
-- [ ] `shouldThrowExceptionWhenSocialIdIsNull()` 작성
-- [ ] `shouldThrowExceptionWhenSocialIdIsBlank()` 작성
-- [ ] 테스트 실행 → 컴파일 에러 확인
-- [ ] 커밋: `test: SocialId VO 검증 테스트 추가 (Red)`
+- [x] `SocialIdTest.java` 생성
+- [x] `shouldCreateSocialIdWithValidValue()` 작성 - NotBlank
+- [x] `shouldThrowExceptionWhenSocialIdIsNull()` 작성
+- [x] `shouldThrowExceptionWhenSocialIdIsBlank()` 작성
+- [x] 테스트 실행 → 컴파일 에러 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `SocialId.java` 생성 (Record)
-- [ ] NotBlank 검증 로직 추가
-- [ ] `InvalidSocialIdException` 생성
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: SocialId VO 구현 (Green)`
+- [x] `SocialId.java` 생성 (Record)
+- [x] NotBlank 검증 로직 추가
+- [x] `InvalidSocialIdException` 생성
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] VO ArchUnit 테스트 통과 확인
-- [ ] 커밋: `struct: SocialId VO 개선 (Refactor)`
+- [x] VO ArchUnit 테스트 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] `SocialIdFixture.java` 생성
-- [ ] `SocialIdFixture.aSocialId()` 메서드 작성
-- [ ] `SocialIdTest` → Fixture 사용
-- [ ] 커밋: `test: SocialIdFixture 정리 (Tidy)`
+- [x] `SocialIdFixture.java` 생성
+- [x] `SocialIdFixture.create()` 메서드 작성
+- [x] 커밋: (배치 구현)
 
 ---
 
-### 8️⃣ Consent Value Object (Cycle 8)
+### 8️⃣ Consent Value Object (Cycle 8) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `ConsentTest.java` 생성
-- [ ] `shouldCreateConsentWithRequiredConsents()` 작성 - 개인정보/서비스 동의 필수
-- [ ] `shouldThrowExceptionWhenPrivacyConsentIsFalse()` 작성
-- [ ] `shouldThrowExceptionWhenServiceConsentIsFalse()` 작성
-- [ ] 테스트 실행 → 컴파일 에러 확인
-- [ ] 커밋: `test: Consent VO 검증 테스트 추가 (Red)`
+- [x] `ConsentTest.java` 생성
+- [x] `shouldCreateConsentWithRequiredConsents()` 작성 - 개인정보/서비스 동의 필수
+- [x] `shouldThrowExceptionWhenPrivacyConsentIsFalse()` 작성
+- [x] `shouldThrowExceptionWhenServiceConsentIsFalse()` 작성
+- [x] 테스트 실행 → 컴파일 에러 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `Consent.java` 생성 (Record)
-- [ ] 필수 동의 검증 로직 추가 (privacyConsent, serviceConsent = true 필수)
-- [ ] `RequiredConsentMissingException` 생성
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: Consent VO 구현 (Green)`
+- [x] `Consent.java` 생성 (Record)
+- [x] 필수 동의 검증 로직 추가 (privacyConsent, serviceConsent = true 필수)
+- [x] `RequiredConsentMissingException` 생성
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] VO ArchUnit 테스트 통과 확인
-- [ ] 커밋: `struct: Consent VO 개선 (Refactor)`
+- [x] VO ArchUnit 테스트 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] `ConsentFixture.java` 생성
-- [ ] `ConsentFixture.aConsent()` 메서드 작성
-- [ ] `ConsentTest` → Fixture 사용
-- [ ] 커밋: `test: ConsentFixture 정리 (Tidy)`
+- [x] `ConsentFixture.java` 생성
+- [x] `ConsentFixture.create()` 메서드 작성
+- [x] 커밋: (배치 구현)
 
 ---
 
-### 9️⃣ WithdrawalInfo Value Object (Cycle 9)
+### 9️⃣ WithdrawalInfo Value Object (Cycle 9) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `WithdrawalInfoTest.java` 생성
-- [ ] `shouldCreateWithdrawalInfoWithValidData()` 작성 - reason + withdrawnAt 필수
-- [ ] `shouldThrowExceptionWhenReasonIsNull()` 작성
-- [ ] `shouldThrowExceptionWhenWithdrawnAtIsNull()` 작성
-- [ ] 테스트 실행 → 컴파일 에러 확인
-- [ ] 커밋: `test: WithdrawalInfo VO 검증 테스트 추가 (Red)`
+- [x] `WithdrawalInfoTest.java` 생성
+- [x] `shouldCreateWithdrawalInfoWithValidData()` 작성 - reason + withdrawnAt 필수
+- [x] `shouldThrowExceptionWhenReasonIsNull()` 작성
+- [x] `shouldThrowExceptionWhenWithdrawnAtIsNull()` 작성
+- [x] 테스트 실행 → 컴파일 에러 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `WithdrawalInfo.java` 생성 (Record)
-- [ ] reason + withdrawnAt 필수 검증 로직 추가
-- [ ] `InvalidWithdrawalInfoException` 생성
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: WithdrawalInfo VO 구현 (Green)`
+- [x] `WithdrawalInfo.java` 생성 (Record)
+- [x] reason + withdrawnAt 필수 검증 로직 추가
+- [x] `InvalidWithdrawalInfoException` 생성
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] VO ArchUnit 테스트 통과 확인
-- [ ] 커밋: `struct: WithdrawalInfo VO 개선 (Refactor)`
+- [x] VO ArchUnit 테스트 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] `WithdrawalInfoFixture.java` 생성
-- [ ] `WithdrawalInfoFixture.aWithdrawalInfo()` 메서드 작성
-- [ ] `WithdrawalInfoTest` → Fixture 사용
-- [ ] 커밋: `test: WithdrawalInfoFixture 정리 (Tidy)`
+- [x] `WithdrawalInfoFixture.java` 생성
+- [x] `WithdrawalInfoFixture.create()` 메서드 작성
+- [x] 커밋: (배치 구현)
 
 ---
 
-### 🔟 AuthProvider Enum (Cycle 10)
+### 🔟 AuthProvider Enum (Cycle 10) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `AuthProviderTest.java` 생성
-- [ ] `shouldHaveLocalAndKakaoValues()` 작성
-- [ ] 테스트 실행 → 컴파일 에러 확인
-- [ ] 커밋: `test: AuthProvider Enum 테스트 추가 (Red)`
+- [x] `AuthProviderTest.java` 생성
+- [x] `shouldHaveLocalAndKakaoValues()` 작성
+- [x] 테스트 실행 → 컴파일 에러 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `AuthProvider.java` 생성 (Enum)
-- [ ] LOCAL, KAKAO 값 정의
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: AuthProvider Enum 구현 (Green)`
+- [x] `AuthProvider.java` 생성 (Enum)
+- [x] LOCAL, KAKAO 값 정의
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] Enum ArchUnit 테스트 통과 확인
-- [ ] 커밋: `struct: AuthProvider Enum 개선 (Refactor)`
+- [x] Enum ArchUnit 테스트 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] (Enum은 Fixture 불필요 - Skip)
-- [ ] 커밋: (Skip)
+- [x] (Enum은 Fixture 불필요 - Skip)
+- [x] 커밋: (Skip)
 
 ---
 
-### 1️⃣1️⃣ MemberStatus Enum (Cycle 11)
+### 1️⃣1️⃣ MemberStatus Enum (Cycle 11) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `MemberStatusTest.java` 생성
-- [ ] `shouldHaveAllStatusValues()` 작성 - ACTIVE, INACTIVE, SUSPENDED, WITHDRAWN
-- [ ] 테스트 실행 → 컴파일 에러 확인
-- [ ] 커밋: `test: MemberStatus Enum 테스트 추가 (Red)`
+- [x] `MemberStatusTest.java` 생성
+- [x] `shouldHaveAllStatusValues()` 작성 - ACTIVE, INACTIVE, SUSPENDED, WITHDRAWN
+- [x] 테스트 실행 → 컴파일 에러 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `MemberStatus.java` 생성 (Enum)
-- [ ] ACTIVE, INACTIVE, SUSPENDED, WITHDRAWN 값 정의
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: MemberStatus Enum 구현 (Green)`
+- [x] `MemberStatus.java` 생성 (Enum)
+- [x] ACTIVE, INACTIVE, SUSPENDED, WITHDRAWN 값 정의
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] Enum ArchUnit 테스트 통과 확인
-- [ ] 커밋: `struct: MemberStatus Enum 개선 (Refactor)`
+- [x] Enum ArchUnit 테스트 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] (Enum은 Fixture 불필요 - Skip)
-- [ ] 커밋: (Skip)
+- [x] (Enum은 Fixture 불필요 - Skip)
+- [x] 커밋: (Skip)
 
 ---
 
-### 1️⃣2️⃣ Gender Enum (Cycle 12)
+### 1️⃣2️⃣ Gender Enum (Cycle 12) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `GenderTest.java` 생성
-- [ ] `shouldHaveAllGenderValues()` 작성 - M, W, N
-- [ ] 테스트 실행 → 컴파일 에러 확인
-- [ ] 커밋: `test: Gender Enum 테스트 추가 (Red)`
+- [x] `GenderTest.java` 생성
+- [x] `shouldHaveAllGenderValues()` 작성 - M, W, N
+- [x] 테스트 실행 → 컴파일 에러 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `Gender.java` 생성 (Enum)
-- [ ] M, W, N 값 정의
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: Gender Enum 구현 (Green)`
+- [x] `Gender.java` 생성 (Enum)
+- [x] M, W, N 값 정의
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] Enum ArchUnit 테스트 통과 확인
-- [ ] 커밋: `struct: Gender Enum 개선 (Refactor)`
+- [x] Enum ArchUnit 테스트 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] (Enum은 Fixture 불필요 - Skip)
-- [ ] 커밋: (Skip)
+- [x] (Enum은 Fixture 불필요 - Skip)
+- [x] 커밋: (Skip)
 
 ---
 
-### 1️⃣3️⃣ WithdrawalReason Enum (Cycle 13)
+### 1️⃣3️⃣ WithdrawalReason Enum (Cycle 13) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `WithdrawalReasonTest.java` 생성
-- [ ] `shouldHaveAllReasonValues()` 작성 - RARELY_USED, SERVICE_DISSATISFIED, PRIVACY_CONCERN, OTHER
-- [ ] 테스트 실행 → 컴파일 에러 확인
-- [ ] 커밋: `test: WithdrawalReason Enum 테스트 추가 (Red)`
+- [x] `WithdrawalReasonTest.java` 생성
+- [x] `shouldHaveAllReasonValues()` 작성 - RARELY_USED, SERVICE_DISSATISFIED, PRIVACY_CONCERN, OTHER
+- [x] 테스트 실행 → 컴파일 에러 확인
+- [x] 커밋: (배치 구현)
 
 #### 🟢 Green: 최소 구현
-- [ ] `WithdrawalReason.java` 생성 (Enum)
-- [ ] RARELY_USED, SERVICE_DISSATISFIED, PRIVACY_CONCERN, OTHER 값 정의
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: WithdrawalReason Enum 구현 (Green)`
+- [x] `WithdrawalReason.java` 생성 (Enum)
+- [x] RARELY_USED, SERVICE_DISSATISFIED, PRIVACY_CONCERN, OTHER 값 정의
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### ♻️ Refactor: 리팩토링
-- [ ] Enum ArchUnit 테스트 통과 확인
-- [ ] 커밋: `struct: WithdrawalReason Enum 개선 (Refactor)`
+- [x] Enum ArchUnit 테스트 통과 확인
+- [x] 커밋: (배치 구현)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] (Enum은 Fixture 불필요 - Skip)
-- [ ] 커밋: (Skip)
+- [x] (Enum은 Fixture 불필요 - Skip)
+- [x] 커밋: (Skip)
 
 ---
 
