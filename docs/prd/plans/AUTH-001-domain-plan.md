@@ -99,32 +99,32 @@
 
 ---
 
-### 4️⃣ Password Value Object (Cycle 4)
+### 4️⃣ Password Value Object (Cycle 4) ✅ COMPLETED
 
 #### 🔴 Red: 테스트 작성
-- [ ] `PasswordTest.java` 생성
-- [ ] `shouldCreatePasswordWithValidHash()` 작성 - BCrypt 해시값 저장
-- [ ] `shouldThrowExceptionWhenPasswordIsNull()` 작성
-- [ ] `shouldThrowExceptionWhenPasswordIsBlank()` 작성
-- [ ] 테스트 실행 → 컴파일 에러 확인
-- [ ] 커밋: `test: Password VO 검증 테스트 추가 (Red)`
+- [x] `PasswordTest.java` 생성
+- [x] `shouldCreatePasswordWithValidHash()` 작성 - BCrypt 해시값 저장
+- [x] `shouldThrowExceptionWhenPasswordIsNull()` 작성
+- [x] `shouldThrowExceptionWhenPasswordIsBlank()` 작성
+- [x] 테스트 실행 → 컴파일 에러 확인
+- [x] 커밋: `test: Password VO 검증 테스트 추가 (Red)`
 
 #### 🟢 Green: 최소 구현
-- [ ] `Password.java` 생성 (Record)
-- [ ] NotBlank 검증 로직 추가
-- [ ] `InvalidPasswordException` 생성
-- [ ] 테스트 실행 → 통과 확인
-- [ ] 커밋: `feat: Password VO 구현 (Green)`
+- [x] `Password.java` 생성 (Record)
+- [x] NotBlank 검증 로직 추가
+- [x] `InvalidPasswordException` 생성
+- [x] 테스트 실행 → 통과 확인
+- [x] 커밋: `feat: Password VO 및 InvalidPasswordException 구현 (Green)`
 
 #### ♻️ Refactor: 리팩토링
-- [ ] VO ArchUnit 테스트 통과 확인
-- [ ] 커밋: `struct: Password VO 개선 (Refactor)`
+- [x] VO ArchUnit 테스트 통과 확인
+- [x] 리팩토링 필요 없음 (코드가 이미 깔끔함)
 
 #### 🧹 Tidy: TestFixture 정리
-- [ ] `PasswordFixture.java` 생성
-- [ ] `PasswordFixture.aPassword()` 메서드 작성
-- [ ] `PasswordTest` → Fixture 사용
-- [ ] 커밋: `test: PasswordFixture 정리 (Tidy)`
+- [x] `PasswordFixture.java` 생성
+- [x] `PasswordFixture.create()` 메서드 작성
+- [x] `PasswordFixture.createWithHash()` 메서드 작성
+- [x] 커밋: `chore: PasswordFixture 추가 (Object Mother Pattern)`
 
 ---
 
