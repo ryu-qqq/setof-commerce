@@ -43,4 +43,60 @@ public final class PasswordFixture {
     public static Password createWithHash(String hash) {
         return Password.of(hash);
     }
+
+    /**
+     * 정책을 준수하는 유효한 원본 비밀번호 반환
+     *
+     * <p>정책: 8자 이상, 영문 대문자/소문자/숫자/특수문자 포함</p>
+     *
+     * @return 유효한 원본 비밀번호 문자열
+     */
+    public static String validRawPassword() {
+        return "Password1!";
+    }
+
+    /**
+     * 정책을 위반하는 원본 비밀번호 반환 (대문자 누락)
+     *
+     * @return 정책 위반 비밀번호 문자열
+     */
+    public static String invalidRawPasswordNoUppercase() {
+        return "password1!";
+    }
+
+    /**
+     * 정책을 위반하는 원본 비밀번호 반환 (소문자 누락)
+     *
+     * @return 정책 위반 비밀번호 문자열
+     */
+    public static String invalidRawPasswordNoLowercase() {
+        return "PASSWORD1!";
+    }
+
+    /**
+     * 정책을 위반하는 원본 비밀번호 반환 (숫자 누락)
+     *
+     * @return 정책 위반 비밀번호 문자열
+     */
+    public static String invalidRawPasswordNoDigit() {
+        return "Password!!";
+    }
+
+    /**
+     * 정책을 위반하는 원본 비밀번호 반환 (특수문자 누락)
+     *
+     * @return 정책 위반 비밀번호 문자열
+     */
+    public static String invalidRawPasswordNoSpecialChar() {
+        return "Password12";
+    }
+
+    /**
+     * 정책을 위반하는 원본 비밀번호 반환 (8자 미만)
+     *
+     * @return 정책 위반 비밀번호 문자열 (6자)
+     */
+    public static String invalidRawPasswordTooShort() {
+        return "Pass1!";
+    }
 }
