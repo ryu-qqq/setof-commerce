@@ -5,9 +5,10 @@ import java.time.LocalDateTime;
 /**
  * WithdrawalInfo TestFixture - Object Mother Pattern
  *
- * <p>테스트에서 WithdrawalInfo 인스턴스 생성을 위한 팩토리 클래스</p>
+ * <p>테스트에서 WithdrawalInfo 인스턴스 생성을 위한 팩토리 클래스
  *
- * <p>사용 예시:</p>
+ * <p>사용 예시:
+ *
  * <pre>{@code
  * WithdrawalInfo info = WithdrawalInfoFixture.create();
  * WithdrawalInfo rarelyUsed = WithdrawalInfoFixture.createRarelyUsed();

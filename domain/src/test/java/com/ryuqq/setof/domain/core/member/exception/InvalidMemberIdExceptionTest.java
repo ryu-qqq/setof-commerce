@@ -1,13 +1,11 @@
 package com.ryuqq.setof.domain.core.member.exception;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-/**
- * InvalidMemberIdException 테스트
- */
+/** InvalidMemberIdException 테스트 */
 @DisplayName("InvalidMemberIdException")
 class InvalidMemberIdExceptionTest {
 
@@ -23,37 +21,38 @@ class InvalidMemberIdExceptionTest {
     }
 
     @Test
-    @DisplayName("커스텀 메시지로 생성")
-    void shouldHaveCustomMessage() {
+    @DisplayName("잘못된 UUID로 생성 시 포맷팅된 메시지 반환")
+    void shouldHaveFormattedMessageWithInvalidUuid() {
         // Given
-        String customMessage = "테스트 에러 메시지";
+        String invalidUuid = "테스트-에러-메시지";
 
         // When
-        InvalidMemberIdException exception = new InvalidMemberIdException(customMessage);
+        InvalidMemberIdException exception = new InvalidMemberIdException(invalidUuid);
 
         // Then
-        assertEquals(customMessage, exception.getMessage());
+        assertTrue(exception.getMessage().contains(invalidUuid));
+        assertTrue(exception.getMessage().contains("잘못된 회원 ID"));
     }
 
     @Test
     @DisplayName("잘못된 값으로 생성 시 값 포함 메시지")
     void shouldHaveMessageWithInvalidValue() {
         // Given
-        Long invalidValue = -5L;
+        String invalidValue = "not-a-valid-uuid";
 
         // When
         InvalidMemberIdException exception = new InvalidMemberIdException(invalidValue);
 
         // Then
         assertNotNull(exception.getMessage());
-        assertTrue(exception.getMessage().contains("-5"));
+        assertTrue(exception.getMessage().contains("not-a-valid-uuid"));
     }
 
     @Test
     @DisplayName("null 값으로 생성 시 null 포함 메시지")
     void shouldHaveMessageWithNullValue() {
         // Given
-        Long nullValue = null;
+        String nullValue = null;
 
         // When
         InvalidMemberIdException exception = new InvalidMemberIdException(nullValue);

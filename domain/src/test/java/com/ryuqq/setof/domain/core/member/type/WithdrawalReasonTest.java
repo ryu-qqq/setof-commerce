@@ -1,11 +1,10 @@
 package com.ryuqq.setof.domain.core.member.type;
 
-import com.ryuqq.setof.domain.core.member.vo.WithdrawalReason;
+import static org.junit.jupiter.api.Assertions.*;
 
+import com.ryuqq.setof.domain.core.member.vo.WithdrawalReason;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("WithdrawalReason Enum")
 class WithdrawalReasonTest {
@@ -24,7 +23,9 @@ class WithdrawalReasonTest {
     @DisplayName("valueOf로 Enum 조회")
     void shouldGetEnumByValueOf() {
         assertEquals(WithdrawalReason.RARELY_USED, WithdrawalReason.valueOf("RARELY_USED"));
-        assertEquals(WithdrawalReason.SERVICE_DISSATISFIED, WithdrawalReason.valueOf("SERVICE_DISSATISFIED"));
+        assertEquals(
+                WithdrawalReason.SERVICE_DISSATISFIED,
+                WithdrawalReason.valueOf("SERVICE_DISSATISFIED"));
         assertEquals(WithdrawalReason.PRIVACY_CONCERN, WithdrawalReason.valueOf("PRIVACY_CONCERN"));
         assertEquals(WithdrawalReason.OTHER, WithdrawalReason.valueOf("OTHER"));
     }

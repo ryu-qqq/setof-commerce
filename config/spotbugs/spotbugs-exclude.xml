@@ -33,4 +33,20 @@
         <Class name="~.*Configuration"/>
         <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/>
     </Match>
+
+    <!-- ========================================
+         Spring DI Injected Components
+         EI2: Constructor stores reference to externally mutable object
+         Spring DI injects immutable references, so this is a false positive
+         ======================================== -->
+    <Match>
+        <Or>
+            <Class name="~.*Manager"/>
+            <Class name="~.*Service"/>
+            <Class name="~.*Validator"/>
+            <Class name="~.*Assembler"/>
+            <Class name="~.*Facade"/>
+        </Or>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
 </FindBugsFilter>

@@ -1,47 +1,44 @@
 package com.ryuqq.setof.domain.core.member;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.ryuqq.setof.domain.core.member.aggregate.Member;
 import com.ryuqq.setof.domain.core.member.exception.AlreadyKakaoMemberException;
 import com.ryuqq.setof.domain.core.member.exception.AlreadyWithdrawnMemberException;
 import com.ryuqq.setof.domain.core.member.exception.KakaoMemberCannotChangePasswordException;
 import com.ryuqq.setof.domain.core.member.vo.AuthProvider;
-import com.ryuqq.setof.domain.core.member.vo.Gender;
-import com.ryuqq.setof.domain.core.member.vo.MemberStatus;
-import com.ryuqq.setof.domain.core.member.vo.WithdrawalReason;
 import com.ryuqq.setof.domain.core.member.vo.Consent;
 import com.ryuqq.setof.domain.core.member.vo.Email;
+import com.ryuqq.setof.domain.core.member.vo.Gender;
 import com.ryuqq.setof.domain.core.member.vo.MemberId;
 import com.ryuqq.setof.domain.core.member.vo.MemberName;
+import com.ryuqq.setof.domain.core.member.vo.MemberStatus;
 import com.ryuqq.setof.domain.core.member.vo.Password;
 import com.ryuqq.setof.domain.core.member.vo.PhoneNumber;
 import com.ryuqq.setof.domain.core.member.vo.SocialId;
 import com.ryuqq.setof.domain.core.member.vo.WithdrawalInfo;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-
+import com.ryuqq.setof.domain.core.member.vo.WithdrawalReason;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 @DisplayName("Member Aggregate")
 class MemberTest {
 
-    private static final Clock FIXED_CLOCK = Clock.fixed(
-            Instant.parse("2025-01-01T00:00:00Z"),
-            ZoneId.of("Asia/Seoul")
-    );
+    private static final Clock FIXED_CLOCK =
+            Clock.fixed(Instant.parse("2025-01-01T00:00:00Z"), ZoneId.of("Asia/Seoul"));
 
     @Nested
     @DisplayName("forNew() - 신규 회원 생성")
     class ForNew {
 
         @Test
-        @DisplayName("LOCAL 회원을 생성할 수 있다")
+        @DisplayName("LOCAL 회원을 생성할 수 있다 - UUID v7 ID가 자동 생성됨")
         void shouldCreateLocalMemberWithForNew() {
             // given
             PhoneNumber phoneNumber = PhoneNumber.of("01012345678");
@@ -54,13 +51,22 @@ class MemberTest {
             Consent consent = Consent.of(true, true, false);
 
             // when
-            Member member = Member.forNew(
-                    phoneNumber, email, password, name, dateOfBirth,
-                    gender, provider, null, consent, FIXED_CLOCK
-            );
+            Member member =
+                    Member.forNew(
+                            phoneNumber,
+                            email,
+                            password,
+                            name,
+                            dateOfBirth,
+                            gender,
+                            provider,
+                            null,
+                            consent,
+                            FIXED_CLOCK);
 
             // then
-            assertNull(member.getId());
+            assertNotNull(member.getId()); // UUID v7이 자동 생성됨
+            assertNotNull(member.getIdValue());
             assertEquals("01012345678", member.getPhoneNumberValue());
             assertEquals("test@example.com", member.getEmailValue());
             assertEquals("$2a$10$hashedPassword", member.getPasswordValue());
@@ -89,13 +95,21 @@ class MemberTest {
             Consent consent = Consent.of(true, true, true);
 
             // when
-            Member member = Member.forNew(
-                    phoneNumber, null, null, name, dateOfBirth,
-                    gender, provider, socialId, consent, FIXED_CLOCK
-            );
+            Member member =
+                    Member.forNew(
+                            phoneNumber,
+                            null,
+                            null,
+                            name,
+                            dateOfBirth,
+                            gender,
+                            provider,
+                            socialId,
+                            consent,
+                            FIXED_CLOCK);
 
             // then
-            assertNull(member.getId());
+            assertNotNull(member.getId()); // UUID v7이 자동 생성됨
             assertEquals("01087654321", member.getPhoneNumberValue());
             assertNull(member.getEmailValue());
             assertNull(member.getPassword());
@@ -114,7 +128,8 @@ class MemberTest {
         @DisplayName("ID가 포함된 회원을 생성할 수 있다")
         void shouldCreateMemberWithOf() {
             // given
-            MemberId id = MemberId.of(1L);
+            String uuidString = "01234567-89ab-7cde-8000-000000000001";
+            MemberId id = MemberId.of(uuidString);
             PhoneNumber phoneNumber = PhoneNumber.of("01012345678");
             Email email = Email.of("test@example.com");
             Password password = Password.of("$2a$10$hashedPassword");
@@ -125,14 +140,23 @@ class MemberTest {
             Consent consent = Consent.of(true, true, false);
 
             // when
-            Member member = Member.of(
-                    id, phoneNumber, email, password, name, dateOfBirth,
-                    gender, provider, null, consent, FIXED_CLOCK
-            );
+            Member member =
+                    Member.of(
+                            id,
+                            phoneNumber,
+                            email,
+                            password,
+                            name,
+                            dateOfBirth,
+                            gender,
+                            provider,
+                            null,
+                            consent,
+                            FIXED_CLOCK);
 
             // then
             assertNotNull(member.getId());
-            assertEquals(1L, member.getIdValue());
+            assertEquals(uuidString, member.getIdValue());
             assertEquals("01012345678", member.getPhoneNumberValue());
             assertEquals(MemberStatus.ACTIVE, member.getStatus());
         }
@@ -146,7 +170,8 @@ class MemberTest {
         @DisplayName("Persistence에서 모든 필드를 복원할 수 있다")
         void shouldReconstituteMemberFromPersistence() {
             // given
-            MemberId id = MemberId.of(100L);
+            String uuidString = "01234567-89ab-7cde-8000-000000000100";
+            MemberId id = MemberId.of(uuidString);
             PhoneNumber phoneNumber = PhoneNumber.of("01099998888");
             Email email = Email.of("restored@example.com");
             Password password = Password.of("$2a$10$restoredHash");
@@ -162,14 +187,25 @@ class MemberTest {
             LocalDateTime updatedAt = LocalDateTime.of(2024, 6, 15, 14, 30, 0);
 
             // when
-            Member member = Member.reconstitute(
-                    id, phoneNumber, email, password, name, dateOfBirth,
-                    gender, provider, socialId, status, consent,
-                    withdrawalInfo, createdAt, updatedAt
-            );
+            Member member =
+                    Member.reconstitute(
+                            id,
+                            phoneNumber,
+                            email,
+                            password,
+                            name,
+                            dateOfBirth,
+                            gender,
+                            provider,
+                            socialId,
+                            status,
+                            consent,
+                            withdrawalInfo,
+                            createdAt,
+                            updatedAt);
 
             // then
-            assertEquals(100L, member.getIdValue());
+            assertEquals(uuidString, member.getIdValue());
             assertEquals("01099998888", member.getPhoneNumberValue());
             assertEquals("restored@example.com", member.getEmailValue());
             assertEquals("복원됨", member.getNameValue());
@@ -184,24 +220,35 @@ class MemberTest {
         @DisplayName("탈퇴 회원을 복원할 수 있다")
         void shouldReconstituteWithdrawnMember() {
             // given
-            MemberId id = MemberId.of(200L);
+            String uuidString = "01234567-89ab-7cde-8000-000000000200";
+            MemberId id = MemberId.of(uuidString);
             PhoneNumber phoneNumber = PhoneNumber.of("01011112222");
             MemberName name = MemberName.of("탈퇴함");
             LocalDate dateOfBirth = LocalDate.of(1990, 1, 1);
             Consent consent = Consent.of(true, true, false);
-            WithdrawalInfo withdrawalInfo = WithdrawalInfo.of(
-                    WithdrawalReason.RARELY_USED,
-                    LocalDateTime.of(2024, 12, 1, 12, 0, 0)
-            );
+            WithdrawalInfo withdrawalInfo =
+                    WithdrawalInfo.of(
+                            WithdrawalReason.RARELY_USED, LocalDateTime.of(2024, 12, 1, 12, 0, 0));
             LocalDateTime createdAt = LocalDateTime.of(2020, 1, 1, 0, 0, 0);
             LocalDateTime updatedAt = LocalDateTime.of(2024, 12, 1, 12, 0, 0);
 
             // when
-            Member member = Member.reconstitute(
-                    id, phoneNumber, null, null, name, dateOfBirth,
-                    Gender.M, AuthProvider.LOCAL, null, MemberStatus.WITHDRAWN,
-                    consent, withdrawalInfo, createdAt, updatedAt
-            );
+            Member member =
+                    Member.reconstitute(
+                            id,
+                            phoneNumber,
+                            null,
+                            null,
+                            name,
+                            dateOfBirth,
+                            Gender.M,
+                            AuthProvider.LOCAL,
+                            null,
+                            MemberStatus.WITHDRAWN,
+                            consent,
+                            withdrawalInfo,
+                            createdAt,
+                            updatedAt);
 
             // then
             assertEquals(MemberStatus.WITHDRAWN, member.getStatus());
@@ -221,7 +268,7 @@ class MemberTest {
             Member member = createLocalMember();
 
             // then
-            assertNull(member.getIdValue()); // forNew()로 생성 시 ID는 null
+            assertNotNull(member.getIdValue()); // forNew()로 생성 시 UUID v7 자동 생성
         }
 
         @Test
@@ -284,9 +331,9 @@ class MemberTest {
             member.withdraw(WithdrawalReason.OTHER, FIXED_CLOCK);
 
             // when & then
-            assertThrows(AlreadyWithdrawnMemberException.class, () ->
-                    member.withdraw(WithdrawalReason.PRIVACY_CONCERN, FIXED_CLOCK)
-            );
+            assertThrows(
+                    AlreadyWithdrawnMemberException.class,
+                    () -> member.withdraw(WithdrawalReason.PRIVACY_CONCERN, FIXED_CLOCK));
         }
     }
 
@@ -319,9 +366,9 @@ class MemberTest {
             SocialId newSocialId = SocialId.of("kakao_another");
 
             // when & then
-            assertThrows(AlreadyKakaoMemberException.class, () ->
-                    member.linkKakao(newSocialId, FIXED_CLOCK)
-            );
+            assertThrows(
+                    AlreadyKakaoMemberException.class,
+                    () -> member.linkKakao(newSocialId, FIXED_CLOCK));
         }
     }
 
@@ -351,9 +398,9 @@ class MemberTest {
             Password newPassword = Password.of("$2a$10$newHash");
 
             // when & then
-            assertThrows(KakaoMemberCannotChangePasswordException.class, () ->
-                    member.changePassword(newPassword, FIXED_CLOCK)
-            );
+            assertThrows(
+                    KakaoMemberCannotChangePasswordException.class,
+                    () -> member.changePassword(newPassword, FIXED_CLOCK));
         }
     }
 
@@ -420,8 +467,7 @@ class MemberTest {
                 AuthProvider.LOCAL,
                 null,
                 Consent.of(true, true, false),
-                FIXED_CLOCK
-        );
+                FIXED_CLOCK);
     }
 
     private Member createKakaoMember() {
@@ -435,7 +481,6 @@ class MemberTest {
                 AuthProvider.KAKAO,
                 SocialId.of("kakao_12345678"),
                 Consent.of(true, true, true),
-                FIXED_CLOCK
-        );
+                FIXED_CLOCK);
     }
 }

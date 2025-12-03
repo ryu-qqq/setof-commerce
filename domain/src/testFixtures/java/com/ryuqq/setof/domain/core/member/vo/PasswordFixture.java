@@ -3,9 +3,10 @@ package com.ryuqq.setof.domain.core.member.vo;
 /**
  * Password Value Object TestFixture
  *
- * <p>Object Mother 패턴을 적용한 테스트 픽스처</p>
+ * <p>Object Mother 패턴을 적용한 테스트 픽스처
  *
- * <p>사용 예시:</p>
+ * <p>사용 예시:
+ *
  * <pre>{@code
  * Password password = PasswordFixture.create();
  * Password customPassword = PasswordFixture.createWithHash("$2a$10$...");
@@ -13,13 +14,9 @@ package com.ryuqq.setof.domain.core.member.vo;
  */
 public final class PasswordFixture {
 
-    /**
-     * BCrypt 해시 예시값
-     * - 원본: "password123!"
-     * - $2a$10$ 형식 (cost factor 10)
-     */
+    /** BCrypt 해시 예시값 - 원본: "password123!" - $2a$10$ 형식 (cost factor 10) */
     private static final String DEFAULT_BCRYPT_HASH =
-        "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
+            "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
 
     private PasswordFixture() {
         // Utility class - 인스턴스화 방지
@@ -47,7 +44,7 @@ public final class PasswordFixture {
     /**
      * 정책을 준수하는 유효한 원본 비밀번호 반환
      *
-     * <p>정책: 8자 이상, 영문 대문자/소문자/숫자/특수문자 포함</p>
+     * <p>정책: 8자 이상, 영문 대문자/소문자/숫자/특수문자 포함
      *
      * @return 유효한 원본 비밀번호 문자열
      */

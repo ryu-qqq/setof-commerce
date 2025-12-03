@@ -1,9 +1,9 @@
 package com.ryuqq.setof.domain.core.member.exception;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("InvalidMemberNameException")
 class InvalidMemberNameExceptionTest {
@@ -18,7 +18,8 @@ class InvalidMemberNameExceptionTest {
     @Test
     @DisplayName("값과 사유로 예외 생성")
     void shouldCreateExceptionWithValueAndReason() {
-        InvalidMemberNameException exception = new InvalidMemberNameException("홍", "이름은 2~5자여야 합니다.");
+        InvalidMemberNameException exception =
+                new InvalidMemberNameException("홍", "이름은 2~5자여야 합니다.");
         assertTrue(exception.getMessage().contains("홍"));
         assertTrue(exception.getMessage().contains("이름은 2~5자여야 합니다."));
     }

@@ -5,11 +5,12 @@ import com.ryuqq.setof.domain.core.member.exception.InvalidSocialIdException;
 /**
  * 소셜 로그인 ID Value Object
  *
- * <p>카카오 등 소셜 로그인 제공자로부터 받은 고유 식별자</p>
+ * <p>카카오 등 소셜 로그인 제공자로부터 받은 고유 식별자
  *
- * <p>검증 규칙:</p>
+ * <p>검증 규칙:
+ *
  * <ul>
- *     <li>NotBlank</li>
+ *   <li>NotBlank
  * </ul>
  *
  * @param value 소셜 ID 값

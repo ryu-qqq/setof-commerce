@@ -1,14 +1,12 @@
 package com.ryuqq.setof.domain.core.member.vo;
 
-import com.ryuqq.setof.domain.core.member.exception.InvalidWithdrawalInfoException;
+import static org.junit.jupiter.api.Assertions.*;
 
+import com.ryuqq.setof.domain.core.member.exception.InvalidWithdrawalInfoException;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("WithdrawalInfo Value Object")
 class WithdrawalInfoTest {
@@ -39,10 +37,10 @@ class WithdrawalInfoTest {
         void shouldThrowExceptionWhenReasonIsNull() {
             LocalDateTime withdrawnAt = LocalDateTime.now();
 
-            InvalidWithdrawalInfoException exception = assertThrows(
-                InvalidWithdrawalInfoException.class,
-                () -> WithdrawalInfo.of(null, withdrawnAt)
-            );
+            InvalidWithdrawalInfoException exception =
+                    assertThrows(
+                            InvalidWithdrawalInfoException.class,
+                            () -> WithdrawalInfo.of(null, withdrawnAt));
 
             assertTrue(exception.getMessage().contains("탈퇴 사유"));
         }
@@ -50,10 +48,10 @@ class WithdrawalInfoTest {
         @Test
         @DisplayName("탈퇴 일시가 null이면 예외 발생")
         void shouldThrowExceptionWhenWithdrawnAtIsNull() {
-            InvalidWithdrawalInfoException exception = assertThrows(
-                InvalidWithdrawalInfoException.class,
-                () -> WithdrawalInfo.of(WithdrawalReason.OTHER, null)
-            );
+            InvalidWithdrawalInfoException exception =
+                    assertThrows(
+                            InvalidWithdrawalInfoException.class,
+                            () -> WithdrawalInfo.of(WithdrawalReason.OTHER, null));
 
             assertTrue(exception.getMessage().contains("탈퇴 일시"));
         }

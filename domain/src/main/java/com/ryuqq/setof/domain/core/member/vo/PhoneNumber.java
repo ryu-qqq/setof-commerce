@@ -1,18 +1,18 @@
 package com.ryuqq.setof.domain.core.member.vo;
 
 import com.ryuqq.setof.domain.core.member.exception.InvalidPhoneNumberException;
-
 import java.util.regex.Pattern;
 
 /**
  * 핸드폰 번호 Value Object
  *
- * <p>Domain Layer Zero-Tolerance 규칙:</p>
+ * <p>Domain Layer Zero-Tolerance 규칙:
+ *
  * <ul>
- *     <li>Lombok 금지 - Pure Java Record 사용</li>
- *     <li>불변성 보장 - Java Record 특성</li>
- *     <li>010[0-9]{8} 정규식 검증</li>
- *     <li>Private 생성자 + Static Factory - 외부 직접 생성 금지</li>
+ *   <li>Lombok 금지 - Pure Java Record 사용
+ *   <li>불변성 보장 - Java Record 특성
+ *   <li>010[0-9]{8} 정규식 검증
+ *   <li>Private 생성자 + Static Factory - 외부 직접 생성 금지
  * </ul>
  *
  * @param value 핸드폰 번호 값 (01012345678 형식)
@@ -21,9 +21,7 @@ public record PhoneNumber(String value) {
 
     private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile("^010[0-9]{8}$");
 
-    /**
-     * Compact Constructor - 검증 로직
-     */
+    /** Compact Constructor - 검증 로직 */
     public PhoneNumber {
         validate(value);
     }

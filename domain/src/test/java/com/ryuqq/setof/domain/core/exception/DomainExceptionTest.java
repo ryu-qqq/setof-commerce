@@ -1,5 +1,7 @@
 package com.ryuqq.setof.domain.core.exception;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.ryuqq.setof.domain.core.member.exception.AlreadyKakaoMemberException;
 import com.ryuqq.setof.domain.core.member.exception.AlreadyWithdrawnMemberException;
 import com.ryuqq.setof.domain.core.member.exception.InvalidEmailException;
@@ -15,8 +17,6 @@ import com.ryuqq.setof.domain.core.member.exception.RequiredConsentMissingExcept
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("DomainException 계층 구조 테스트")
 class DomainExceptionTest {
@@ -105,7 +105,8 @@ class DomainExceptionTest {
         @Test
         @DisplayName("KakaoMemberCannotChangePasswordException은 DomainException의 하위 클래스")
         void kakaoMemberCannotChangePasswordExceptionExtendsDomainException() {
-            KakaoMemberCannotChangePasswordException exception = new KakaoMemberCannotChangePasswordException();
+            KakaoMemberCannotChangePasswordException exception =
+                    new KakaoMemberCannotChangePasswordException();
             assertInstanceOf(DomainException.class, exception);
         }
     }

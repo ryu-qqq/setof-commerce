@@ -3,9 +3,10 @@ package com.ryuqq.setof.domain.core.member.vo;
 /**
  * Email TestFixture - Object Mother Pattern
  *
- * <p>테스트에서 Email 인스턴스 생성을 위한 팩토리 클래스</p>
+ * <p>테스트에서 Email 인스턴스 생성을 위한 팩토리 클래스
  *
- * <p>사용 예시:</p>
+ * <p>사용 예시:
+ *
  * <pre>{@code
  * Email email = EmailFixture.create();
  * Email customEmail = EmailFixture.create("custom@example.com");

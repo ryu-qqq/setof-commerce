@@ -5,10 +5,11 @@ import com.ryuqq.setof.domain.core.member.exception.InvalidMemberNameException;
 /**
  * 회원 이름 Value Object
  *
- * <p>검증 규칙:</p>
+ * <p>검증 규칙:
+ *
  * <ul>
- *     <li>2~5자 길이</li>
- *     <li>NotBlank</li>
+ *   <li>2~5자 길이
+ *   <li>NotBlank
  * </ul>
  *
  * @param value 회원 이름
@@ -31,8 +32,8 @@ public record MemberName(String value) {
             throw new InvalidMemberNameException();
         }
         if (value.length() < MIN_LENGTH || value.length() > MAX_LENGTH) {
-            throw new InvalidMemberNameException(value,
-                String.format("이름은 %d~%d자여야 합니다.", MIN_LENGTH, MAX_LENGTH));
+            throw new InvalidMemberNameException(
+                    value, String.format("이름은 %d~%d자여야 합니다.", MIN_LENGTH, MAX_LENGTH));
         }
     }
 }
