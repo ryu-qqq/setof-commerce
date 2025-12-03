@@ -1,5 +1,6 @@
 package com.ryuqq.setof.application.member.assembler;
 
+import com.ryuqq.setof.application.member.dto.command.ConsentItem;
 import com.ryuqq.setof.application.member.dto.command.KakaoOAuthCommand;
 import com.ryuqq.setof.application.member.dto.command.RegisterMemberCommand;
 import com.ryuqq.setof.application.member.dto.response.KakaoOAuthResponse;
@@ -17,6 +18,7 @@ import com.ryuqq.setof.domain.core.member.vo.PhoneNumber;
 import com.ryuqq.setof.domain.core.member.vo.SocialId;
 
 import java.time.Clock;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.stereotype.Component;
@@ -50,7 +52,7 @@ public class MemberAssembler {
                 toGender(command.gender()),
                 AuthProvider.LOCAL,
                 null,
-                toConsent(command),
+                toConsent(command.consents(), false),
                 clock);
     }
 
@@ -124,7 +126,7 @@ public class MemberAssembler {
                 toGender(command.gender()),
                 AuthProvider.KAKAO,
                 SocialId.of(command.kakaoId()),
-                toKakaoConsent(command),
+                toConsent(command.consents(), true),
                 clock);
     }
 
@@ -143,35 +145,16 @@ public class MemberAssembler {
         return Gender.valueOf(gender.toUpperCase(Locale.ROOT));
     }
 
-    private Consent toConsent(RegisterMemberCommand command) {
-        boolean privacyConsent = false;
-        boolean serviceConsent = false;
-        boolean marketingConsent = false;
-
-        for (RegisterMemberCommand.ConsentItem item : command.consents()) {
-            switch (item.type().toUpperCase(Locale.ROOT)) {
-                case "PRIVACY" -> privacyConsent = item.agreed();
-                case "SERVICE" -> serviceConsent = item.agreed();
-                case "MARKETING" -> marketingConsent = item.agreed();
-                default -> {
-                    /* 알 수 없는 동의 유형은 무시 */
-                }
-            }
-        }
-
-        return Consent.of(privacyConsent, serviceConsent, marketingConsent);
-    }
-
-    private Consent toKakaoConsent(KakaoOAuthCommand command) {
-        if (command.consents() == null || command.consents().isEmpty()) {
-            return Consent.of(true, true, false);
+    private Consent toConsent(List<ConsentItem> consents, boolean isKakao) {
+        if (consents == null || consents.isEmpty()) {
+            return isKakao ? Consent.of(true, true, false) : Consent.of(false, false, false);
         }
 
         boolean privacyConsent = false;
         boolean serviceConsent = false;
         boolean marketingConsent = false;
 
-        for (KakaoOAuthCommand.ConsentItem item : command.consents()) {
+        for (ConsentItem item : consents) {
             switch (item.type().toUpperCase(Locale.ROOT)) {
                 case "PRIVACY" -> privacyConsent = item.agreed();
                 case "SERVICE" -> serviceConsent = item.agreed();

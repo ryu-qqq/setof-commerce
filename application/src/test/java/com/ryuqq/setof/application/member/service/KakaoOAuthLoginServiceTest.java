@@ -8,11 +8,14 @@ import com.ryuqq.setof.application.member.assembler.MemberAssembler;
 import com.ryuqq.setof.application.member.component.KakaoOAuthPolicyValidator;
 import com.ryuqq.setof.application.member.component.MemberCreator;
 import com.ryuqq.setof.application.member.component.MemberReader;
+import com.ryuqq.setof.application.member.component.MemberUpdater;
+import com.ryuqq.setof.application.member.dto.command.IntegrateKakaoCommand;
 import com.ryuqq.setof.application.member.dto.command.KakaoOAuthCommand;
 import com.ryuqq.setof.application.member.dto.response.KakaoOAuthResponse;
 import com.ryuqq.setof.application.member.dto.response.RegisterMemberResponse;
 import com.ryuqq.setof.application.member.dto.response.TokenPairResponse;
 import com.ryuqq.setof.application.member.facade.RegisterMemberFacade;
+import com.ryuqq.setof.application.member.manager.MemberPersistenceManager;
 import com.ryuqq.setof.application.member.manager.TokenManager;
 import com.ryuqq.setof.domain.core.member.MemberFixture;
 import com.ryuqq.setof.domain.core.member.aggregate.Member;
@@ -39,6 +42,9 @@ class KakaoOAuthLoginServiceTest {
     private MemberCreator memberCreator;
 
     @Mock
+    private MemberUpdater memberUpdater;
+
+    @Mock
     private MemberAssembler memberAssembler;
 
     @Mock
@@ -48,6 +54,9 @@ class KakaoOAuthLoginServiceTest {
     private RegisterMemberFacade registerMemberFacade;
 
     @Mock
+    private MemberPersistenceManager memberPersistenceManager;
+
+    @Mock
     private TokenManager tokenManager;
 
     private KakaoOAuthLoginService service;
@@ -55,8 +64,9 @@ class KakaoOAuthLoginServiceTest {
     @BeforeEach
     void setUp() {
         service = new KakaoOAuthLoginService(
-                memberReader, memberCreator, memberAssembler,
-                kakaoOAuthPolicyValidator, registerMemberFacade, tokenManager);
+                memberReader, memberCreator, memberUpdater, memberAssembler,
+                kakaoOAuthPolicyValidator, registerMemberFacade,
+                memberPersistenceManager, tokenManager);
     }
 
     @Nested
@@ -117,6 +127,41 @@ class KakaoOAuthLoginServiceTest {
         }
 
         @Test
+        @DisplayName("동일 핸드폰 LOCAL 회원 존재 시 카카오 연동 (계정 통합)")
+        void shouldIntegrateLocalMemberWhenPhoneNumberMatches() {
+            // Given
+            String kakaoId = "kakao_12345";
+            String phoneNumber = "01012345678";
+            String memberId = "01936ddc-8d37-7c6e-8ad6-18c76adc9dfa";
+            KakaoOAuthCommand command = createKakaoCommand(kakaoId, phoneNumber);
+            Member localMember = MemberFixture.createLocalMemberWithId(memberId);
+            TokenPairResponse tokens = createTokenPair();
+            KakaoOAuthResponse expectedResponse = KakaoOAuthResponse.existingKakaoMember(memberId, tokens);
+
+            when(memberReader.findBySocialId(kakaoId)).thenReturn(Optional.empty());
+            when(memberReader.findByPhoneNumber(phoneNumber)).thenReturn(Optional.of(localMember));
+            when(tokenManager.issueTokens(localMember.getIdValue())).thenReturn(tokens);
+            when(memberAssembler.toExistingKakaoMemberResponse(localMember.getIdValue(), tokens))
+                    .thenReturn(expectedResponse);
+
+            // When
+            KakaoOAuthResponse result = service.execute(command);
+
+            // Then
+            assertNotNull(result);
+            assertFalse(result.isNewMember());
+            assertFalse(result.needsIntegration());
+            assertNotNull(result.tokens());
+
+            verify(memberReader).findBySocialId(kakaoId);
+            verify(memberReader).findByPhoneNumber(phoneNumber);
+            verify(memberUpdater).linkKakaoWithProfile(eq(localMember), any(IntegrateKakaoCommand.class));
+            verify(memberPersistenceManager).persist(localMember);
+            verify(tokenManager).issueTokens(localMember.getIdValue());
+            verify(memberCreator, never()).createKakaoMember(any());
+        }
+
+        @Test
         @DisplayName("신규 카카오 회원 자동 가입 및 토큰 발급")
         void shouldRegisterNewKakaoMemberAndReturnTokens() {
             // Given
@@ -130,6 +175,7 @@ class KakaoOAuthLoginServiceTest {
             KakaoOAuthResponse expectedResponse = KakaoOAuthResponse.newMember(memberId, tokens);
 
             when(memberReader.findBySocialId(kakaoId)).thenReturn(Optional.empty());
+            when(memberReader.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
             when(memberCreator.createKakaoMember(command)).thenReturn(newKakaoMember);
             when(registerMemberFacade.register(newKakaoMember)).thenReturn(registerResponse);
             when(memberAssembler.toNewKakaoMemberResponse(memberId, tokens))
@@ -145,6 +191,7 @@ class KakaoOAuthLoginServiceTest {
             assertNotNull(result.tokens());
 
             verify(memberReader).findBySocialId(kakaoId);
+            verify(memberReader).findByPhoneNumber(phoneNumber);
             verify(memberCreator).createKakaoMember(command);
             verify(registerMemberFacade).register(newKakaoMember);
             verify(memberAssembler).toNewKakaoMemberResponse(memberId, tokens);

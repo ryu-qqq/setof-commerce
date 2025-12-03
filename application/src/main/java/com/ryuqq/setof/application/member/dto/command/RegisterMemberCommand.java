@@ -23,7 +23,4 @@ public record RegisterMemberCommand(
     public RegisterMemberCommand {
         consents = (consents != null) ? List.copyOf(consents) : List.of();
     }
-
-    /** 동의 항목 */
-    public record ConsentItem(String type, boolean agreed) {}
 }

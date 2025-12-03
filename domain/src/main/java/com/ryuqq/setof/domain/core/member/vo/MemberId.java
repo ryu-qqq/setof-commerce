@@ -100,15 +100,9 @@ public record MemberId(UUID value) {
     private static String normalizeUuidString(String value) {
         String trimmed = value.trim();
         if (trimmed.length() == 32) {
-            return trimmed.substring(0, 8)
-                    + "-"
-                    + trimmed.substring(8, 12)
-                    + "-"
-                    + trimmed.substring(12, 16)
-                    + "-"
-                    + trimmed.substring(16, 20)
-                    + "-"
-                    + trimmed.substring(20);
+            return trimmed.replaceFirst(
+                    "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{12})",
+                    "$1-$2-$3-$4-$5");
         }
         return trimmed;
     }

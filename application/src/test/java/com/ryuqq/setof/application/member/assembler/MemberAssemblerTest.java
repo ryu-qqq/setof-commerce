@@ -2,6 +2,7 @@ package com.ryuqq.setof.application.member.assembler;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.ryuqq.setof.application.member.dto.command.ConsentItem;
 import com.ryuqq.setof.application.member.dto.command.KakaoOAuthCommand;
 import com.ryuqq.setof.application.member.dto.command.RegisterMemberCommand;
 import com.ryuqq.setof.application.member.dto.response.KakaoOAuthResponse;
@@ -43,10 +44,10 @@ class MemberAssemblerTest {
         @DisplayName("RegisterMemberCommand를 Member로 변환 성공")
         void shouldConvertRegisterMemberCommandToMember() {
             // Given
-            List<RegisterMemberCommand.ConsentItem> consents = List.of(
-                    new RegisterMemberCommand.ConsentItem("PRIVACY", true),
-                    new RegisterMemberCommand.ConsentItem("SERVICE", true),
-                    new RegisterMemberCommand.ConsentItem("MARKETING", false));
+            List<ConsentItem> consents = List.of(
+                    new ConsentItem("PRIVACY", true),
+                    new ConsentItem("SERVICE", true),
+                    new ConsentItem("MARKETING", false));
 
             RegisterMemberCommand command = new RegisterMemberCommand(
                     "01012345678",
@@ -77,9 +78,9 @@ class MemberAssemblerTest {
         @DisplayName("이메일 없이 변환 성공")
         void shouldConvertWithoutEmail() {
             // Given
-            List<RegisterMemberCommand.ConsentItem> consents = List.of(
-                    new RegisterMemberCommand.ConsentItem("PRIVACY", true),
-                    new RegisterMemberCommand.ConsentItem("SERVICE", true));
+            List<ConsentItem> consents = List.of(
+                    new ConsentItem("PRIVACY", true),
+                    new ConsentItem("SERVICE", true));
 
             RegisterMemberCommand command = new RegisterMemberCommand(
                     "01012345678",
@@ -104,9 +105,9 @@ class MemberAssemblerTest {
         @DisplayName("성별 null일 때 N으로 변환")
         void shouldConvertNullGenderToN() {
             // Given
-            List<RegisterMemberCommand.ConsentItem> consents = List.of(
-                    new RegisterMemberCommand.ConsentItem("PRIVACY", true),
-                    new RegisterMemberCommand.ConsentItem("SERVICE", true));
+            List<ConsentItem> consents = List.of(
+                    new ConsentItem("PRIVACY", true),
+                    new ConsentItem("SERVICE", true));
 
             RegisterMemberCommand command = new RegisterMemberCommand(
                     "01012345678",
@@ -130,9 +131,9 @@ class MemberAssemblerTest {
         @DisplayName("소문자 성별 대문자로 변환")
         void shouldConvertLowercaseGenderToUppercase() {
             // Given
-            List<RegisterMemberCommand.ConsentItem> consents = List.of(
-                    new RegisterMemberCommand.ConsentItem("PRIVACY", true),
-                    new RegisterMemberCommand.ConsentItem("SERVICE", true));
+            List<ConsentItem> consents = List.of(
+                    new ConsentItem("PRIVACY", true),
+                    new ConsentItem("SERVICE", true));
 
             RegisterMemberCommand command = new RegisterMemberCommand(
                     "01012345678",
@@ -161,9 +162,9 @@ class MemberAssemblerTest {
         @DisplayName("KakaoOAuthCommand를 Member로 변환 성공")
         void shouldConvertKakaoOAuthCommandToMember() {
             // Given
-            List<KakaoOAuthCommand.ConsentItem> consents = List.of(
-                    new KakaoOAuthCommand.ConsentItem("PRIVACY", true),
-                    new KakaoOAuthCommand.ConsentItem("SERVICE", true));
+            List<ConsentItem> consents = List.of(
+                    new ConsentItem("PRIVACY", true),
+                    new ConsentItem("SERVICE", true));
 
             KakaoOAuthCommand command = new KakaoOAuthCommand(
                     "kakao_12345",

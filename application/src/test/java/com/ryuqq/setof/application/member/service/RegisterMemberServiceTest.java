@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import com.ryuqq.setof.application.member.component.MemberCreator;
 import com.ryuqq.setof.application.member.component.MemberPolicyValidator;
 import com.ryuqq.setof.application.member.component.MemberReader;
+import com.ryuqq.setof.application.member.dto.command.ConsentItem;
 import com.ryuqq.setof.application.member.dto.command.RegisterMemberCommand;
 import com.ryuqq.setof.application.member.dto.response.RegisterMemberResponse;
 import com.ryuqq.setof.application.member.dto.response.TokenPairResponse;
@@ -104,10 +105,10 @@ class RegisterMemberServiceTest {
         @DisplayName("동의 항목과 함께 회원가입 성공")
         void shouldRegisterMemberWithConsents() {
             // Given
-            List<RegisterMemberCommand.ConsentItem> consents = List.of(
-                    new RegisterMemberCommand.ConsentItem("TERMS", true),
-                    new RegisterMemberCommand.ConsentItem("PRIVACY", true),
-                    new RegisterMemberCommand.ConsentItem("MARKETING", false));
+            List<ConsentItem> consents = List.of(
+                    new ConsentItem("TERMS", true),
+                    new ConsentItem("PRIVACY", true),
+                    new ConsentItem("MARKETING", false));
             RegisterMemberCommand command = new RegisterMemberCommand(
                     "01012345678",
                     "test@example.com",

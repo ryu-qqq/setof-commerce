@@ -19,6 +19,4 @@ public record KakaoOAuthCommand(
         LocalDate dateOfBirth,
         String gender,
         List<ConsentItem> consents) {
-
-    public record ConsentItem(String type, boolean agreed) {}
 }
