@@ -5,13 +5,14 @@ import com.ryuqq.setof.domain.core.exception.DomainException;
 /**
  * 잘못된 이메일 형식에 대한 도메인 예외
  *
- * <p>Email 생성 시 다음 조건을 위반할 때 발생:</p>
+ * <p>Email 생성 시 다음 조건을 위반할 때 발생:
+ *
  * <ul>
- *     <li>빈 문자열 또는 공백 문자열</li>
- *     <li>RFC 5322 형식 불일치</li>
+ *   <li>빈 문자열 또는 공백 문자열
+ *   <li>RFC 5322 형식 불일치
  * </ul>
  *
- * <p>참고: null 값은 허용됨 (nullable 필드)</p>
+ * <p>참고: null 값은 허용됨 (nullable 필드)
  */
 public final class InvalidEmailException extends DomainException {
 

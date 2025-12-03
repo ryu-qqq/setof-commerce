@@ -3,9 +3,10 @@ package com.ryuqq.setof.domain.core.member.vo;
 /**
  * Consent TestFixture - Object Mother Pattern
  *
- * <p>테스트에서 Consent 인스턴스 생성을 위한 팩토리 클래스</p>
+ * <p>테스트에서 Consent 인스턴스 생성을 위한 팩토리 클래스
  *
- * <p>사용 예시:</p>
+ * <p>사용 예시:
+ *
  * <pre>{@code
  * Consent consent = ConsentFixture.create();
  * Consent allConsents = ConsentFixture.createWithAllConsents();
@@ -63,7 +64,8 @@ public final class ConsentFixture {
      * @param marketingConsent 마케팅 정보 수신 동의
      * @return Consent 인스턴스
      */
-    public static Consent create(boolean privacyConsent, boolean serviceConsent, boolean marketingConsent) {
+    public static Consent create(
+            boolean privacyConsent, boolean serviceConsent, boolean marketingConsent) {
         return Consent.of(privacyConsent, serviceConsent, marketingConsent);
     }
 }

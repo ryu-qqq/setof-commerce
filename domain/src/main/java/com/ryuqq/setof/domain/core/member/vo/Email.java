@@ -1,32 +1,30 @@
 package com.ryuqq.setof.domain.core.member.vo;
 
 import com.ryuqq.setof.domain.core.member.exception.InvalidEmailException;
-
 import java.util.regex.Pattern;
 
 /**
  * 이메일 Value Object
  *
- * <p>Domain Layer Zero-Tolerance 규칙:</p>
+ * <p>Domain Layer Zero-Tolerance 규칙:
+ *
  * <ul>
- *     <li>Lombok 금지 - Pure Java Record 사용</li>
- *     <li>불변성 보장 - Java Record 특성</li>
- *     <li>RFC 5322 형식 검증</li>
- *     <li>nullable 허용 - 선택적 필드</li>
- *     <li>Private 생성자 + Static Factory - 외부 직접 생성 금지</li>
+ *   <li>Lombok 금지 - Pure Java Record 사용
+ *   <li>불변성 보장 - Java Record 특성
+ *   <li>RFC 5322 형식 검증
+ *   <li>nullable 허용 - 선택적 필드
+ *   <li>Private 생성자 + Static Factory - 외부 직접 생성 금지
  * </ul>
  *
  * @param value 이메일 값 (null 허용)
  */
 public record Email(String value) {
 
-    private static final Pattern EMAIL_PATTERN = Pattern.compile(
-        "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)+$"
-    );
+    private static final Pattern EMAIL_PATTERN =
+            Pattern.compile(
+                    "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)+$");
 
-    /**
-     * Compact Constructor - 검증 로직
-     */
+    /** Compact Constructor - 검증 로직 */
     public Email {
         validate(value);
     }

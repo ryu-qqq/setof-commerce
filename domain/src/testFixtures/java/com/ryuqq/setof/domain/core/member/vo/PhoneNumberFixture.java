@@ -3,9 +3,10 @@ package com.ryuqq.setof.domain.core.member.vo;
 /**
  * PhoneNumber TestFixture - Object Mother Pattern
  *
- * <p>테스트에서 PhoneNumber 인스턴스 생성을 위한 팩토리 클래스</p>
+ * <p>테스트에서 PhoneNumber 인스턴스 생성을 위한 팩토리 클래스
  *
- * <p>사용 예시:</p>
+ * <p>사용 예시:
+ *
  * <pre>{@code
  * PhoneNumber phoneNumber = PhoneNumberFixture.create();
  * PhoneNumber customPhone = PhoneNumberFixture.create("01087654321");

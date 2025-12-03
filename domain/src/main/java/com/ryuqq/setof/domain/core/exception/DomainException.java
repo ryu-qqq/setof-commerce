@@ -3,9 +3,10 @@ package com.ryuqq.setof.domain.core.exception;
 /**
  * Domain Layer 기본 예외
  *
- * <p>모든 도메인 예외는 이 클래스를 상속해야 합니다.</p>
+ * <p>모든 도메인 예외는 이 클래스를 상속해야 합니다.
  *
- * <p>Domain Layer 예외 계층:</p>
+ * <p>Domain Layer 예외 계층:
+ *
  * <pre>
  * DomainException (Base)
  * ├─ InvalidMemberIdException
@@ -19,7 +20,10 @@ package com.ryuqq.setof.domain.core.exception;
  * ├─ InvalidWithdrawalInfoException
  * ├─ AlreadyWithdrawnMemberException
  * ├─ AlreadyKakaoMemberException
- * └─ KakaoMemberCannotChangePasswordException
+ * ├─ KakaoMemberCannotChangePasswordException
+ * ├─ MemberNotFoundException
+ * ├─ InactiveMemberException
+ * └─ DuplicatePhoneNumberException
  * </pre>
  */
 public abstract class DomainException extends RuntimeException {

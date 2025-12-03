@@ -5,10 +5,11 @@ import com.ryuqq.setof.domain.core.exception.DomainException;
 /**
  * 잘못된 비밀번호에 대한 도메인 예외
  *
- * <p>Password 생성 시 다음 조건을 위반할 때 발생:</p>
+ * <p>Password 생성 시 다음 조건을 위반할 때 발생:
+ *
  * <ul>
- *     <li>null 값</li>
- *     <li>빈 문자열 또는 공백 문자열</li>
+ *   <li>null 값
+ *   <li>빈 문자열 또는 공백 문자열
  * </ul>
  */
 public final class InvalidPasswordException extends DomainException {

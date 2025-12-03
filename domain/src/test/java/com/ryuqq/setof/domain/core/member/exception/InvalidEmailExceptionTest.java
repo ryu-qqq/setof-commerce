@@ -1,13 +1,11 @@
 package com.ryuqq.setof.domain.core.member.exception;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-/**
- * InvalidEmailException 테스트
- */
+/** InvalidEmailException 테스트 */
 @DisplayName("InvalidEmailException")
 class InvalidEmailExceptionTest {
 

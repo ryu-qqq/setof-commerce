@@ -1,5 +1,7 @@
 package com.ryuqq.setof.domain.core.member.vo;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.ryuqq.setof.domain.core.member.exception.InvalidEmailException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -7,16 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * Email Value Object 테스트
  *
- * Zero-Tolerance Rules:
- * - Lombok 금지 (Pure Java Record)
- * - 불변성 보장
- * - RFC 5322 형식 검증
- * - nullable 허용 (선택적 필드)
+ * <p>Zero-Tolerance Rules: - Lombok 금지 (Pure Java Record) - 불변성 보장 - RFC 5322 형식 검증 - nullable 허용
+ * (선택적 필드)
  */
 @DisplayName("Email Value Object")
 class EmailTest {
@@ -41,14 +38,15 @@ class EmailTest {
 
         @ParameterizedTest
         @DisplayName("다양한 유효한 이메일 형식으로 생성")
-        @ValueSource(strings = {
-            "user@domain.com",
-            "user.name@domain.com",
-            "user+tag@domain.com",
-            "user@subdomain.domain.com",
-            "user123@domain123.com",
-            "user_name@domain.co.kr"
-        })
+        @ValueSource(
+                strings = {
+                    "user@domain.com",
+                    "user.name@domain.com",
+                    "user+tag@domain.com",
+                    "user@subdomain.domain.com",
+                    "user123@domain123.com",
+                    "user_name@domain.co.kr"
+                })
         void shouldCreateEmailWithVariousValidFormats(String validEmail) {
             // When
             Email email = Email.of(validEmail);
@@ -84,10 +82,7 @@ class EmailTest {
             String emptyEmail = "";
 
             // When & Then
-            assertThrows(
-                InvalidEmailException.class,
-                () -> Email.of(emptyEmail)
-            );
+            assertThrows(InvalidEmailException.class, () -> Email.of(emptyEmail));
         }
 
         @Test
@@ -97,30 +92,25 @@ class EmailTest {
             String blankEmail = "   ";
 
             // When & Then
-            assertThrows(
-                InvalidEmailException.class,
-                () -> Email.of(blankEmail)
-            );
+            assertThrows(InvalidEmailException.class, () -> Email.of(blankEmail));
         }
 
         @ParameterizedTest
         @DisplayName("잘못된 형식으로 생성 시 예외 발생")
-        @ValueSource(strings = {
-            "invalid",                   // @ 없음
-            "@domain.com",               // 로컬 파트 없음
-            "user@",                     // 도메인 없음
-            "user@.com",                 // 도메인 시작이 .
-            "user@domain",               // TLD 없음
-            "user@domain.",              // 도메인 끝이 .
-            "user name@domain.com",      // 공백 포함
-            "user@domain..com"           // 연속 점
-        })
+        @ValueSource(
+                strings = {
+                    "invalid", // @ 없음
+                    "@domain.com", // 로컬 파트 없음
+                    "user@", // 도메인 없음
+                    "user@.com", // 도메인 시작이 .
+                    "user@domain", // TLD 없음
+                    "user@domain.", // 도메인 끝이 .
+                    "user name@domain.com", // 공백 포함
+                    "user@domain..com" // 연속 점
+                })
         void shouldThrowExceptionWhenEmailIsInvalidFormat(String invalidEmail) {
             // When & Then
-            assertThrows(
-                InvalidEmailException.class,
-                () -> Email.of(invalidEmail)
-            );
+            assertThrows(InvalidEmailException.class, () -> Email.of(invalidEmail));
         }
     }
 

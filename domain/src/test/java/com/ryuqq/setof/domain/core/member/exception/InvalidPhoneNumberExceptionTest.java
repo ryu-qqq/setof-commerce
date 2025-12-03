@@ -1,13 +1,11 @@
 package com.ryuqq.setof.domain.core.member.exception;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-/**
- * InvalidPhoneNumberException 테스트
- */
+/** InvalidPhoneNumberException 테스트 */
 @DisplayName("InvalidPhoneNumberException")
 class InvalidPhoneNumberExceptionTest {
 
@@ -43,7 +41,8 @@ class InvalidPhoneNumberExceptionTest {
         String reason = "010으로 시작해야 합니다.";
 
         // When
-        InvalidPhoneNumberException exception = new InvalidPhoneNumberException(invalidValue, reason);
+        InvalidPhoneNumberException exception =
+                new InvalidPhoneNumberException(invalidValue, reason);
 
         // Then
         assertNotNull(exception.getMessage());

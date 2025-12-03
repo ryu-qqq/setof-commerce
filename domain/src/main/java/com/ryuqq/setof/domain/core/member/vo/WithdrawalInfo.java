@@ -1,25 +1,22 @@
 package com.ryuqq.setof.domain.core.member.vo;
 
 import com.ryuqq.setof.domain.core.member.exception.InvalidWithdrawalInfoException;
-
 import java.time.LocalDateTime;
 
 /**
  * 회원 탈퇴 정보 Value Object
  *
- * <p>회원 탈퇴 시 기록되는 정보:</p>
+ * <p>회원 탈퇴 시 기록되는 정보:
+ *
  * <ul>
- *     <li>reason: 탈퇴 사유 (필수)</li>
- *     <li>withdrawnAt: 탈퇴 일시 (필수)</li>
+ *   <li>reason: 탈퇴 사유 (필수)
+ *   <li>withdrawnAt: 탈퇴 일시 (필수)
  * </ul>
  *
  * @param reason 탈퇴 사유
  * @param withdrawnAt 탈퇴 일시
  */
-public record WithdrawalInfo(
-    WithdrawalReason reason,
-    LocalDateTime withdrawnAt
-) {
+public record WithdrawalInfo(WithdrawalReason reason, LocalDateTime withdrawnAt) {
 
     public WithdrawalInfo {
         validate(reason, withdrawnAt);

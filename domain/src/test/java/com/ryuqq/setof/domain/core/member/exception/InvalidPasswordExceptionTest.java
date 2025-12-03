@@ -1,14 +1,14 @@
 package com.ryuqq.setof.domain.core.member.exception;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * InvalidPasswordException 테스트
  *
- * <p>JaCoCo 커버리지 충족을 위한 예외 클래스 테스트</p>
+ * <p>JaCoCo 커버리지 충족을 위한 예외 클래스 테스트
  */
 @DisplayName("InvalidPasswordException")
 class InvalidPasswordExceptionTest {

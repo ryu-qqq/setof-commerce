@@ -1,9 +1,9 @@
 package com.ryuqq.setof.domain.core.member.exception;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("RequiredConsentMissingException")
 class RequiredConsentMissingExceptionTest {
@@ -18,7 +18,8 @@ class RequiredConsentMissingExceptionTest {
     @Test
     @DisplayName("동의 타입으로 예외 생성")
     void shouldCreateExceptionWithConsentType() {
-        RequiredConsentMissingException exception = new RequiredConsentMissingException("개인정보 수집/이용");
+        RequiredConsentMissingException exception =
+                new RequiredConsentMissingException("개인정보 수집/이용");
         assertTrue(exception.getMessage().contains("개인정보 수집/이용"));
     }
 }

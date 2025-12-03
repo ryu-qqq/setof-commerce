@@ -1,11 +1,11 @@
 package com.ryuqq.setof.domain.core.member.vo;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.ryuqq.setof.domain.core.member.exception.RequiredConsentMissingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Consent Value Object")
 class ConsentTest {
@@ -53,10 +53,10 @@ class ConsentTest {
         @Test
         @DisplayName("개인정보 동의 누락 시 예외 발생")
         void shouldThrowExceptionWhenPrivacyConsentIsFalse() {
-            RequiredConsentMissingException exception = assertThrows(
-                RequiredConsentMissingException.class,
-                () -> Consent.of(false, true, false)
-            );
+            RequiredConsentMissingException exception =
+                    assertThrows(
+                            RequiredConsentMissingException.class,
+                            () -> Consent.of(false, true, false));
 
             assertTrue(exception.getMessage().contains("개인정보"));
         }
@@ -64,10 +64,10 @@ class ConsentTest {
         @Test
         @DisplayName("서비스 동의 누락 시 예외 발생")
         void shouldThrowExceptionWhenServiceConsentIsFalse() {
-            RequiredConsentMissingException exception = assertThrows(
-                RequiredConsentMissingException.class,
-                () -> Consent.of(true, false, false)
-            );
+            RequiredConsentMissingException exception =
+                    assertThrows(
+                            RequiredConsentMissingException.class,
+                            () -> Consent.of(true, false, false));
 
             assertTrue(exception.getMessage().contains("서비스"));
         }

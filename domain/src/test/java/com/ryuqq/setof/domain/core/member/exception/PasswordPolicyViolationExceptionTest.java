@@ -1,14 +1,14 @@
 package com.ryuqq.setof.domain.core.member.exception;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * PasswordPolicyViolationException 테스트
  *
- * <p>JaCoCo 커버리지 충족을 위한 예외 클래스 테스트</p>
+ * <p>JaCoCo 커버리지 충족을 위한 예외 클래스 테스트
  */
 @DisplayName("PasswordPolicyViolationException")
 class PasswordPolicyViolationExceptionTest {
@@ -21,10 +21,7 @@ class PasswordPolicyViolationExceptionTest {
 
         // Then
         assertNotNull(exception.getMessage());
-        assertEquals(
-            "비밀번호는 8자 이상이며, 영문 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.",
-            exception.getMessage()
-        );
+        assertEquals("비밀번호는 8자 이상이며, 영문 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.", exception.getMessage());
     }
 
     @Test
@@ -34,7 +31,8 @@ class PasswordPolicyViolationExceptionTest {
         String customMessage = "비밀번호가 너무 짧습니다.";
 
         // When
-        PasswordPolicyViolationException exception = new PasswordPolicyViolationException(customMessage);
+        PasswordPolicyViolationException exception =
+                new PasswordPolicyViolationException(customMessage);
 
         // Then
         assertEquals(customMessage, exception.getMessage());

@@ -1,5 +1,7 @@
 package com.ryuqq.setof.domain.core.member.vo;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.ryuqq.setof.domain.core.member.exception.InvalidPhoneNumberException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -7,15 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * PhoneNumber Value Object 테스트
  *
- * Zero-Tolerance Rules:
- * - Lombok 금지 (Pure Java Record)
- * - 불변성 보장
- * - 010[0-9]{8} 정규식 검증
+ * <p>Zero-Tolerance Rules: - Lombok 금지 (Pure Java Record) - 불변성 보장 - 010[0-9]{8} 정규식 검증
  */
 @DisplayName("PhoneNumber Value Object")
 class PhoneNumberTest {
@@ -62,10 +59,10 @@ class PhoneNumberTest {
             String nullPhoneNumber = null;
 
             // When & Then
-            InvalidPhoneNumberException exception = assertThrows(
-                InvalidPhoneNumberException.class,
-                () -> PhoneNumber.of(nullPhoneNumber)
-            );
+            InvalidPhoneNumberException exception =
+                    assertThrows(
+                            InvalidPhoneNumberException.class,
+                            () -> PhoneNumber.of(nullPhoneNumber));
 
             assertNotNull(exception.getMessage());
         }
@@ -77,10 +74,7 @@ class PhoneNumberTest {
             String emptyPhoneNumber = "";
 
             // When & Then
-            assertThrows(
-                InvalidPhoneNumberException.class,
-                () -> PhoneNumber.of(emptyPhoneNumber)
-            );
+            assertThrows(InvalidPhoneNumberException.class, () -> PhoneNumber.of(emptyPhoneNumber));
         }
 
         @Test
@@ -90,30 +84,26 @@ class PhoneNumberTest {
             String blankPhoneNumber = "   ";
 
             // When & Then
-            assertThrows(
-                InvalidPhoneNumberException.class,
-                () -> PhoneNumber.of(blankPhoneNumber)
-            );
+            assertThrows(InvalidPhoneNumberException.class, () -> PhoneNumber.of(blankPhoneNumber));
         }
 
         @ParameterizedTest
         @DisplayName("잘못된 형식으로 생성 시 예외 발생")
-        @ValueSource(strings = {
-            "0101234567",      // 10자리 (11자리 필요)
-            "010123456789",    // 12자리 (11자리 필요)
-            "01112345678",     // 011로 시작 (010 필요)
-            "02012345678",     // 020로 시작 (010 필요)
-            "010-1234-5678",   // 하이픈 포함
-            "010 1234 5678",   // 공백 포함
-            "0101234567a",     // 문자 포함
-            "phone12345678"    // 문자로 시작
-        })
+        @ValueSource(
+                strings = {
+                    "0101234567", // 10자리 (11자리 필요)
+                    "010123456789", // 12자리 (11자리 필요)
+                    "01112345678", // 011로 시작 (010 필요)
+                    "02012345678", // 020로 시작 (010 필요)
+                    "010-1234-5678", // 하이픈 포함
+                    "010 1234 5678", // 공백 포함
+                    "0101234567a", // 문자 포함
+                    "phone12345678" // 문자로 시작
+                })
         void shouldThrowExceptionWhenPhoneNumberIsInvalidFormat(String invalidPhoneNumber) {
             // When & Then
             assertThrows(
-                InvalidPhoneNumberException.class,
-                () -> PhoneNumber.of(invalidPhoneNumber)
-            );
+                    InvalidPhoneNumberException.class, () -> PhoneNumber.of(invalidPhoneNumber));
         }
     }
 

@@ -1,13 +1,13 @@
 package com.ryuqq.setof.domain.core.member.vo;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.ryuqq.setof.domain.core.member.exception.InvalidMemberNameException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("MemberName Value Object")
 class MemberNameTest {

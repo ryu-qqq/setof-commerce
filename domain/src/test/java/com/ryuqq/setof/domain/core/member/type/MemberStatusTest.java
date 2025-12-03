@@ -1,11 +1,10 @@
 package com.ryuqq.setof.domain.core.member.type;
 
-import com.ryuqq.setof.domain.core.member.vo.MemberStatus;
+import static org.junit.jupiter.api.Assertions.*;
 
+import com.ryuqq.setof.domain.core.member.vo.MemberStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("MemberStatus Enum")
 class MemberStatusTest {
