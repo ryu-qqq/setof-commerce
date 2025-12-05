@@ -23,8 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class MemberPolicyValidatorTest {
 
-    @Mock
-    private PasswordEncoderPort passwordEncoderPort;
+    @Mock private PasswordEncoderPort passwordEncoderPort;
 
     private MemberPolicyValidator memberPolicyValidator;
 

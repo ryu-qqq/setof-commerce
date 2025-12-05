@@ -233,7 +233,7 @@ public class Member {
      * @return 회원 ID UUID 문자열 또는 null
      */
     public String getIdValue() {
-        return id != null ? id.asString() : null;
+        return id != null ? id.getValue() : null;
     }
 
     /**
@@ -316,12 +316,10 @@ public class Member {
         this.updatedAt = LocalDateTime.now(clock);
     }
 
-
     /**
      * 카카오 계정 연동 및 프로필 업데이트
      *
-     * <p>카카오에서 받은 프로필 정보로 회원 정보를 업데이트합니다.
-     * null이 아닌 값만 업데이트됩니다.
+     * <p>카카오에서 받은 프로필 정보로 회원 정보를 업데이트합니다. null이 아닌 값만 업데이트됩니다.
      *
      * @param kakaoSocialId 카카오 소셜 ID
      * @param email 카카오에서 받은 이메일 (null 허용)
@@ -443,7 +441,7 @@ public class Member {
     private void registerMemberRegisteredEvent(MemberId memberId, LocalDateTime registeredAt) {
         MemberRegisteredEvent event =
                 MemberRegisteredEvent.of(
-                        memberId.asString(),
+                        memberId.getValue(),
                         phoneNumber.value(),
                         email != null ? email.value() : null,
                         name.value(),

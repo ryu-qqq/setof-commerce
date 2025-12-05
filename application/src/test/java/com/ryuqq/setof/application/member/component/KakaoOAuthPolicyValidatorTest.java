@@ -6,7 +6,6 @@ import com.ryuqq.setof.domain.core.member.MemberFixture;
 import com.ryuqq.setof.domain.core.member.aggregate.Member;
 import com.ryuqq.setof.domain.core.member.exception.AlreadyKakaoMemberException;
 import com.ryuqq.setof.domain.core.member.exception.InactiveMemberException;
-import com.ryuqq.setof.domain.core.member.vo.WithdrawalReason;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -43,7 +42,8 @@ class KakaoOAuthPolicyValidatorTest {
             Member kakaoMember = MemberFixture.createKakaoMember();
 
             // When & Then
-            assertThrows(AlreadyKakaoMemberException.class,
+            assertThrows(
+                    AlreadyKakaoMemberException.class,
                     () -> validator.validateCanIntegrateKakao(kakaoMember));
         }
 
@@ -51,10 +51,12 @@ class KakaoOAuthPolicyValidatorTest {
         @DisplayName("휴면 회원인 경우 InactiveMemberException 발생")
         void shouldThrowExceptionWhenDormantMember() {
             // Given
-            Member dormantMember = MemberFixture.createInactiveMember("01936ddc-8d37-7c6e-8ad6-18c76adc9dfa");
+            Member dormantMember =
+                    MemberFixture.createInactiveMember("01936ddc-8d37-7c6e-8ad6-18c76adc9dfa");
 
             // When & Then
-            assertThrows(InactiveMemberException.class,
+            assertThrows(
+                    InactiveMemberException.class,
                     () -> validator.validateCanIntegrateKakao(dormantMember));
         }
 
@@ -65,7 +67,8 @@ class KakaoOAuthPolicyValidatorTest {
             Member withdrawnMember = MemberFixture.createWithdrawnMember();
 
             // When & Then
-            assertThrows(InactiveMemberException.class,
+            assertThrows(
+                    InactiveMemberException.class,
                     () -> validator.validateCanIntegrateKakao(withdrawnMember));
         }
     }
@@ -88,10 +91,12 @@ class KakaoOAuthPolicyValidatorTest {
         @DisplayName("휴면 회원인 경우 InactiveMemberException 발생")
         void shouldThrowExceptionWhenDormantMember() {
             // Given
-            Member dormantMember = MemberFixture.createInactiveMember("01936ddc-8d37-7c6e-8ad6-18c76adc9dfa");
+            Member dormantMember =
+                    MemberFixture.createInactiveMember("01936ddc-8d37-7c6e-8ad6-18c76adc9dfa");
 
             // When & Then
-            assertThrows(InactiveMemberException.class,
+            assertThrows(
+                    InactiveMemberException.class,
                     () -> validator.validateCanKakaoLogin(dormantMember));
         }
 
@@ -102,7 +107,8 @@ class KakaoOAuthPolicyValidatorTest {
             Member withdrawnMember = MemberFixture.createWithdrawnMember();
 
             // When & Then
-            assertThrows(InactiveMemberException.class,
+            assertThrows(
+                    InactiveMemberException.class,
                     () -> validator.validateCanKakaoLogin(withdrawnMember));
         }
     }

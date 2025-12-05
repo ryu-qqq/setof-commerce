@@ -26,24 +26,24 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class ResetPasswordServiceTest {
 
-    @Mock
-    private MemberReader memberReader;
+    @Mock private MemberReader memberReader;
 
-    @Mock
-    private MemberPolicyValidator memberPolicyValidator;
+    @Mock private MemberPolicyValidator memberPolicyValidator;
 
-    @Mock
-    private MemberUpdater memberUpdater;
+    @Mock private MemberUpdater memberUpdater;
 
-    @Mock
-    private MemberPersistenceManager memberPersistenceManager;
+    @Mock private MemberPersistenceManager memberPersistenceManager;
 
     private ResetPasswordService service;
 
     @BeforeEach
     void setUp() {
-        service = new ResetPasswordService(
-                memberReader, memberPolicyValidator, memberUpdater, memberPersistenceManager);
+        service =
+                new ResetPasswordService(
+                        memberReader,
+                        memberPolicyValidator,
+                        memberUpdater,
+                        memberPersistenceManager);
     }
 
     @Nested
@@ -65,7 +65,12 @@ class ResetPasswordServiceTest {
             service.execute(command);
 
             // Then
-            InOrder inOrder = inOrder(memberReader, memberPolicyValidator, memberUpdater, memberPersistenceManager);
+            InOrder inOrder =
+                    inOrder(
+                            memberReader,
+                            memberPolicyValidator,
+                            memberUpdater,
+                            memberPersistenceManager);
 
             inOrder.verify(memberReader).getByPhoneNumber(phoneNumber);
             inOrder.verify(memberPolicyValidator).validateCanResetPassword(localMember);
@@ -81,7 +86,8 @@ class ResetPasswordServiceTest {
             String newRawPassword = "newPassword123!";
             ResetPasswordCommand command = new ResetPasswordCommand(phoneNumber, newRawPassword);
 
-            when(memberReader.getByPhoneNumber(phoneNumber)).thenThrow(new MemberNotFoundException());
+            when(memberReader.getByPhoneNumber(phoneNumber))
+                    .thenThrow(new MemberNotFoundException());
 
             // When & Then
             assertThrows(MemberNotFoundException.class, () -> service.execute(command));
@@ -103,7 +109,8 @@ class ResetPasswordServiceTest {
 
             when(memberReader.getByPhoneNumber(phoneNumber)).thenReturn(kakaoMember);
             doThrow(new AlreadyKakaoMemberException())
-                    .when(memberPolicyValidator).validateCanResetPassword(kakaoMember);
+                    .when(memberPolicyValidator)
+                    .validateCanResetPassword(kakaoMember);
 
             // When & Then
             assertThrows(AlreadyKakaoMemberException.class, () -> service.execute(command));
@@ -121,7 +128,8 @@ class ResetPasswordServiceTest {
             String phoneNumber = "01012345678";
             String newRawPassword = "newPassword123!";
             ResetPasswordCommand command = new ResetPasswordCommand(phoneNumber, newRawPassword);
-            Member localMemberWithId = MemberFixture.createLocalMemberWithId("01936ddc-8d37-7c6e-8ad6-18c76adc9dfa");
+            Member localMemberWithId =
+                    MemberFixture.createLocalMemberWithId("01936ddc-8d37-7c6e-8ad6-18c76adc9dfa");
 
             when(memberReader.getByPhoneNumber(phoneNumber)).thenReturn(localMemberWithId);
 

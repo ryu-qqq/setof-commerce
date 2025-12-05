@@ -17,8 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class MemberPersistenceManagerTest {
 
-    @Mock
-    private MemberPersistencePort memberPersistencePort;
+    @Mock private MemberPersistencePort memberPersistencePort;
 
     private MemberPersistenceManager manager;
 
@@ -61,7 +60,8 @@ class MemberPersistenceManagerTest {
         @DisplayName("ID가 있는 회원 저장 성공")
         void shouldPersistMemberWithId() {
             // Given
-            Member memberWithId = MemberFixture.createLocalMemberWithId("01936ddc-8d37-7c6e-8ad6-18c76adc9dfa");
+            Member memberWithId =
+                    MemberFixture.createLocalMemberWithId("01936ddc-8d37-7c6e-8ad6-18c76adc9dfa");
 
             // When
             manager.persist(memberWithId);

@@ -26,6 +26,10 @@ public record PhoneNumber(String value) {
         validate(value);
     }
 
+    public String getValue() {
+        return value;
+    }
+
     /**
      * Static Factory Method - 신규 생성용
      *

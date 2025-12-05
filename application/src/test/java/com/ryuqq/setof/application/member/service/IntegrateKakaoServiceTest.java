@@ -27,25 +27,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class IntegrateKakaoServiceTest {
 
-    @Mock
-    private MemberReader memberReader;
+    @Mock private MemberReader memberReader;
 
-    @Mock
-    private KakaoOAuthPolicyValidator kakaoOAuthPolicyValidator;
+    @Mock private KakaoOAuthPolicyValidator kakaoOAuthPolicyValidator;
 
-    @Mock
-    private MemberUpdater memberUpdater;
+    @Mock private MemberUpdater memberUpdater;
 
-    @Mock
-    private MemberPersistenceManager memberPersistenceManager;
+    @Mock private MemberPersistenceManager memberPersistenceManager;
 
     private IntegrateKakaoService service;
 
     @BeforeEach
     void setUp() {
-        service = new IntegrateKakaoService(
-                memberReader, kakaoOAuthPolicyValidator,
-                memberUpdater, memberPersistenceManager);
+        service =
+                new IntegrateKakaoService(
+                        memberReader, kakaoOAuthPolicyValidator,
+                        memberUpdater, memberPersistenceManager);
     }
 
     @Nested
@@ -58,10 +55,14 @@ class IntegrateKakaoServiceTest {
             // Given
             String memberId = "01936ddc-8d37-7c6e-8ad6-18c76adc9dfa";
             String kakaoId = "kakao_12345";
-            IntegrateKakaoCommand command = new IntegrateKakaoCommand(
-                    memberId, kakaoId,
-                    "kakao@example.com", "카카오이름",
-                    LocalDate.of(1995, 5, 15), "F");
+            IntegrateKakaoCommand command =
+                    new IntegrateKakaoCommand(
+                            memberId,
+                            kakaoId,
+                            "kakao@example.com",
+                            "카카오이름",
+                            LocalDate.of(1995, 5, 15),
+                            "F");
             Member localMember = MemberFixture.createLocalMember();
 
             when(memberReader.getById(memberId)).thenReturn(localMember);
@@ -127,7 +128,8 @@ class IntegrateKakaoServiceTest {
 
             when(memberReader.getById(memberId)).thenReturn(kakaoMember);
             doThrow(new AlreadyKakaoMemberException())
-                    .when(kakaoOAuthPolicyValidator).validateCanIntegrateKakao(kakaoMember);
+                    .when(kakaoOAuthPolicyValidator)
+                    .validateCanIntegrateKakao(kakaoMember);
 
             // When & Then
             assertThrows(AlreadyKakaoMemberException.class, () -> service.execute(command));
@@ -149,7 +151,8 @@ class IntegrateKakaoServiceTest {
 
             when(memberReader.getById(memberId)).thenReturn(localMember);
             doThrow(new InactiveMemberException())
-                    .when(kakaoOAuthPolicyValidator).validateCanIntegrateKakao(localMember);
+                    .when(kakaoOAuthPolicyValidator)
+                    .validateCanIntegrateKakao(localMember);
 
             // When & Then
             assertThrows(InactiveMemberException.class, () -> service.execute(command));

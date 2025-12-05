@@ -1,6 +1,6 @@
 package com.ryuqq.setof.domain.core.exception;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import com.ryuqq.setof.domain.core.member.exception.AlreadyKakaoMemberException;
 import com.ryuqq.setof.domain.core.member.exception.AlreadyWithdrawnMemberException;

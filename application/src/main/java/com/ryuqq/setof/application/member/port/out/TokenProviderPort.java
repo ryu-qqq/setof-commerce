@@ -45,4 +45,22 @@ public interface TokenProviderPort {
      * @return 유효 여부
      */
     boolean validateRefreshToken(String refreshToken);
+
+    /**
+     * Refresh Token에서 회원 ID 추출
+     *
+     * @param refreshToken Refresh Token
+     * @return 회원 ID (UUID 문자열)
+     */
+    String extractMemberIdFromRefreshToken(String refreshToken);
+
+    /**
+     * Access Token 만료 여부 확인 (서명은 유효하지만 만료된 경우)
+     *
+     * <p>Silent Refresh 판단용: 토큰이 만료되었지만 서명이 유효한 경우 true
+     *
+     * @param accessToken Access Token
+     * @return 만료 여부 (서명 유효 + 만료 = true)
+     */
+    boolean isAccessTokenExpired(String accessToken);
 }

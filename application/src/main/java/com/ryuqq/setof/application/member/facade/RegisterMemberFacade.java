@@ -52,10 +52,10 @@ public class RegisterMemberFacade {
 
         memberPersistenceManager.persist(member);
 
-        TokenPairResponse tokens = tokenManager.issueTokens(memberId.asString());
+        TokenPairResponse tokens = tokenManager.issueTokens(memberId.getValue());
 
         memberEventDispatcher.publishAndClear(member);
 
-        return new RegisterMemberResponse(memberId.asString(), tokens);
+        return new RegisterMemberResponse(memberId.getValue(), tokens);
     }
 }

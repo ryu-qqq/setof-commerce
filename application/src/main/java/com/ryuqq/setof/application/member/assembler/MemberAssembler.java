@@ -16,11 +16,9 @@ import com.ryuqq.setof.domain.core.member.vo.MemberName;
 import com.ryuqq.setof.domain.core.member.vo.Password;
 import com.ryuqq.setof.domain.core.member.vo.PhoneNumber;
 import com.ryuqq.setof.domain.core.member.vo.SocialId;
-
 import java.time.Clock;
 import java.util.List;
 import java.util.Locale;
-
 import org.springframework.stereotype.Component;
 
 /**
@@ -104,10 +102,10 @@ public class MemberAssembler {
      * @param tokens 발급된 토큰 쌍
      * @return 카카오 OAuth 응답
      */
-    public KakaoOAuthResponse toExistingKakaoMemberResponse(String memberId, TokenPairResponse tokens) {
+    public KakaoOAuthResponse toExistingKakaoMemberResponse(
+            String memberId, TokenPairResponse tokens) {
         return KakaoOAuthResponse.existingKakaoMember(memberId, tokens);
     }
-
 
     /**
      * KakaoOAuthCommand → Domain (카카오 회원 생성)

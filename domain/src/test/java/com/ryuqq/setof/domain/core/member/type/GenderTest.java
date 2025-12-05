@@ -1,6 +1,7 @@
 package com.ryuqq.setof.domain.core.member.type;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.ryuqq.setof.domain.core.member.vo.Gender;
 import org.junit.jupiter.api.DisplayName;

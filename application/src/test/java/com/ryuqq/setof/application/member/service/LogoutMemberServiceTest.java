@@ -16,8 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class LogoutMemberServiceTest {
 
-    @Mock
-    private TokenManager tokenManager;
+    @Mock private TokenManager tokenManager;
 
     private LogoutMemberService service;
 

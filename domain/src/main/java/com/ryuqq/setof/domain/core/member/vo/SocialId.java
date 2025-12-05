@@ -21,6 +21,10 @@ public record SocialId(String value) {
         validate(value);
     }
 
+    public String getValue() {
+        return value;
+    }
+
     public static SocialId of(String value) {
         return new SocialId(value);
     }

@@ -6,7 +6,6 @@ import com.ryuqq.setof.application.member.dto.query.GetCurrentMemberQuery;
 import com.ryuqq.setof.application.member.dto.response.MemberDetailResponse;
 import com.ryuqq.setof.application.member.port.in.query.GetCurrentMemberUseCase;
 import com.ryuqq.setof.domain.core.member.aggregate.Member;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

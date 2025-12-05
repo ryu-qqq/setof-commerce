@@ -17,8 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class RefreshTokenCacheManagerTest {
 
-    @Mock
-    private RefreshTokenCachePort refreshTokenCachePort;
+    @Mock private RefreshTokenCachePort refreshTokenCachePort;
 
     private RefreshTokenCacheManager manager;
 
@@ -58,7 +57,8 @@ class RefreshTokenCacheManagerTest {
             String memberId = "01936ddc-8d37-7c6e-8ad6-18c76adc9dfa";
             String expectedToken = "refresh_token_123";
 
-            when(refreshTokenCachePort.findByMemberId(memberId)).thenReturn(Optional.of(expectedToken));
+            when(refreshTokenCachePort.findByMemberId(memberId))
+                    .thenReturn(Optional.of(expectedToken));
 
             // When
             Optional<String> result = manager.findByMemberId(memberId);
@@ -115,7 +115,8 @@ class RefreshTokenCacheManagerTest {
             // Given
             String invalidToken = "invalid_token";
 
-            when(refreshTokenCachePort.findMemberIdByToken(invalidToken)).thenReturn(Optional.empty());
+            when(refreshTokenCachePort.findMemberIdByToken(invalidToken))
+                    .thenReturn(Optional.empty());
 
             // When
             Optional<String> result = manager.findMemberIdByToken(invalidToken);

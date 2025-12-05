@@ -15,8 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class RefreshTokenPersistenceManagerTest {
 
-    @Mock
-    private RefreshTokenPersistencePort refreshTokenPersistencePort;
+    @Mock private RefreshTokenPersistencePort refreshTokenPersistencePort;
 
     private RefreshTokenPersistenceManager manager;
 

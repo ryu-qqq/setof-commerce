@@ -9,28 +9,20 @@ package com.ryuqq.setof.application.member.dto.response;
  * @since 1.0.0
  */
 public record KakaoOAuthResponse(
-        String memberId,
-        TokenPairResponse tokens,
-        boolean isNewMember,
-        boolean needsIntegration) {
+        String memberId, TokenPairResponse tokens, boolean isNewMember, boolean needsIntegration) {
 
-    /**
-     * 신규 카카오 회원 응답 생성
-     */
+    /** 신규 카카오 회원 응답 생성 */
     public static KakaoOAuthResponse newMember(String memberId, TokenPairResponse tokens) {
         return new KakaoOAuthResponse(memberId, tokens, true, false);
     }
 
-    /**
-     * 기존 카카오 회원 응답 생성
-     */
-    public static KakaoOAuthResponse existingKakaoMember(String memberId, TokenPairResponse tokens) {
+    /** 기존 카카오 회원 응답 생성 */
+    public static KakaoOAuthResponse existingKakaoMember(
+            String memberId, TokenPairResponse tokens) {
         return new KakaoOAuthResponse(memberId, tokens, false, false);
     }
 
-    /**
-     * LOCAL 회원 통합 필요 응답 생성
-     */
+    /** LOCAL 회원 통합 필요 응답 생성 */
     public static KakaoOAuthResponse needsIntegration(String memberId) {
         return new KakaoOAuthResponse(memberId, null, false, true);
     }

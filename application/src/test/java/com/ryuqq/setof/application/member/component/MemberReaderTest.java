@@ -24,8 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class MemberReaderTest {
 
-    @Mock
-    private MemberQueryPort memberQueryPort;
+    @Mock private MemberQueryPort memberQueryPort;
 
     private MemberReader memberReader;
 

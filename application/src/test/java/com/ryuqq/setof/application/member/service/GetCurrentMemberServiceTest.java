@@ -23,11 +23,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class GetCurrentMemberServiceTest {
 
-    @Mock
-    private MemberReader memberReader;
+    @Mock private MemberReader memberReader;
 
-    @Mock
-    private MemberAssembler memberAssembler;
+    @Mock private MemberAssembler memberAssembler;
 
     private GetCurrentMemberService service;
 
@@ -47,16 +45,17 @@ class GetCurrentMemberServiceTest {
             String memberId = "01936ddc-8d37-7c6e-8ad6-18c76adc9dfa";
             GetCurrentMemberQuery query = new GetCurrentMemberQuery(memberId);
             Member member = MemberFixture.createLocalMember();
-            MemberDetailResponse expectedResponse = new MemberDetailResponse(
-                    member.getIdValue(),
-                    member.getPhoneNumberValue(),
-                    member.getEmailValue(),
-                    member.getNameValue(),
-                    member.getDateOfBirth(),
-                    member.getGender().name(),
-                    member.getProvider().name(),
-                    member.getStatus().name(),
-                    member.getCreatedAt());
+            MemberDetailResponse expectedResponse =
+                    new MemberDetailResponse(
+                            member.getIdValue(),
+                            member.getPhoneNumberValue(),
+                            member.getEmailValue(),
+                            member.getNameValue(),
+                            member.getDateOfBirth(),
+                            member.getGender().name(),
+                            member.getProvider().name(),
+                            member.getStatus().name(),
+                            member.getCreatedAt());
 
             when(memberReader.getById(memberId)).thenReturn(member);
             when(memberAssembler.toMemberDetailResponse(member)).thenReturn(expectedResponse);

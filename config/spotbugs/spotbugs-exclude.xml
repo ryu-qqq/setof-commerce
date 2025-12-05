@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
     SpotBugs Exclusion Configuration
-    Setof Commerce Project
+    Enterprise Spring Boot Standards
 
-    @author ryuqq
-    @since 1.0.0
+    @author Architecture Team (arch-team@company.com)
+    @since 2024-01-01
 -->
 <FindBugsFilter>
     <!-- ========================================
@@ -32,21 +32,5 @@
     <Match>
         <Class name="~.*Configuration"/>
         <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/>
-    </Match>
-
-    <!-- ========================================
-         Spring DI Injected Components
-         EI2: Constructor stores reference to externally mutable object
-         Spring DI injects immutable references, so this is a false positive
-         ======================================== -->
-    <Match>
-        <Or>
-            <Class name="~.*Manager"/>
-            <Class name="~.*Service"/>
-            <Class name="~.*Validator"/>
-            <Class name="~.*Assembler"/>
-            <Class name="~.*Facade"/>
-        </Or>
-        <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
 </FindBugsFilter>

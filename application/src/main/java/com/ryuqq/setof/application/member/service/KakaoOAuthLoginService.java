@@ -15,9 +15,8 @@ import com.ryuqq.setof.application.member.manager.MemberPersistenceManager;
 import com.ryuqq.setof.application.member.manager.TokenManager;
 import com.ryuqq.setof.application.member.port.in.command.KakaoOAuthLoginUseCase;
 import com.ryuqq.setof.domain.core.member.aggregate.Member;
-import org.springframework.stereotype.Service;
-
 import java.util.Optional;
+import org.springframework.stereotype.Service;
 
 /**
  * 카카오 OAuth 로그인 서비스
@@ -85,15 +84,16 @@ public class KakaoOAuthLoginService implements KakaoOAuthLoginUseCase {
         return memberAssembler.toExistingKakaoMemberResponse(member.getIdValue(), tokens);
     }
 
-    private KakaoOAuthResponse handleIntegrateLocalMember(Member localMember, KakaoOAuthCommand command) {
-        IntegrateKakaoCommand integrateCommand = new IntegrateKakaoCommand(
-                localMember.getIdValue(),
-                command.kakaoId(),
-                command.email(),
-                command.name(),
-                command.dateOfBirth(),
-                command.gender()
-        );
+    private KakaoOAuthResponse handleIntegrateLocalMember(
+            Member localMember, KakaoOAuthCommand command) {
+        IntegrateKakaoCommand integrateCommand =
+                new IntegrateKakaoCommand(
+                        localMember.getIdValue(),
+                        command.kakaoId(),
+                        command.email(),
+                        command.name(),
+                        command.dateOfBirth(),
+                        command.gender());
 
         memberUpdater.linkKakaoWithProfile(localMember, integrateCommand);
         memberPersistenceManager.persist(localMember);

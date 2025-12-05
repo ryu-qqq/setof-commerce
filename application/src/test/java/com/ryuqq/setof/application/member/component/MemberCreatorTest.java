@@ -25,14 +25,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class MemberCreatorTest {
 
-    @Mock
-    private PasswordEncoderPort passwordEncoderPort;
+    @Mock private PasswordEncoderPort passwordEncoderPort;
 
-    @Mock
-    private MemberAssembler memberAssembler;
+    @Mock private MemberAssembler memberAssembler;
 
-    @Mock
-    private Clock clock;
+    @Mock private Clock clock;
 
     private MemberCreator memberCreator;
 
@@ -49,20 +46,22 @@ class MemberCreatorTest {
         @DisplayName("로컬 회원 생성 성공")
         void shouldCreateLocalMember() {
             // Given
-            RegisterMemberCommand command = new RegisterMemberCommand(
-                    "01012345678",
-                    "test@example.com",
-                    "rawPassword123!",
-                    "홍길동",
-                    LocalDate.of(1990, 1, 1),
-                    "M",
-                    Collections.emptyList());
+            RegisterMemberCommand command =
+                    new RegisterMemberCommand(
+                            "01012345678",
+                            "test@example.com",
+                            "rawPassword123!",
+                            "홍길동",
+                            LocalDate.of(1990, 1, 1),
+                            "M",
+                            Collections.emptyList());
 
             String hashedPassword = "$2a$10$hashedPassword";
             Member expectedMember = MemberFixture.createLocalMember();
 
             when(passwordEncoderPort.encode(command.rawPassword())).thenReturn(hashedPassword);
-            when(memberAssembler.toDomain(command, hashedPassword, clock)).thenReturn(expectedMember);
+            when(memberAssembler.toDomain(command, hashedPassword, clock))
+                    .thenReturn(expectedMember);
 
             // When
             Member result = memberCreator.createLocalMember(command);
@@ -79,14 +78,15 @@ class MemberCreatorTest {
             // Given
             String rawPassword = "plainText123!";
             String hashedPassword = "$2a$10$encryptedHash";
-            RegisterMemberCommand command = new RegisterMemberCommand(
-                    "01012345678",
-                    "test@example.com",
-                    rawPassword,
-                    "홍길동",
-                    LocalDate.of(1990, 1, 1),
-                    "M",
-                    Collections.emptyList());
+            RegisterMemberCommand command =
+                    new RegisterMemberCommand(
+                            "01012345678",
+                            "test@example.com",
+                            rawPassword,
+                            "홍길동",
+                            LocalDate.of(1990, 1, 1),
+                            "M",
+                            Collections.emptyList());
 
             Member expectedMember = MemberFixture.createLocalMember();
 
@@ -111,14 +111,15 @@ class MemberCreatorTest {
         @DisplayName("카카오 회원 생성 성공")
         void shouldCreateKakaoMember() {
             // Given
-            KakaoOAuthCommand command = new KakaoOAuthCommand(
-                    "kakao_12345",
-                    "01087654321",
-                    "kakao@example.com",
-                    "카카오사용자",
-                    LocalDate.of(1995, 5, 15),
-                    "W",
-                    Collections.emptyList());
+            KakaoOAuthCommand command =
+                    new KakaoOAuthCommand(
+                            "kakao_12345",
+                            "01087654321",
+                            "kakao@example.com",
+                            "카카오사용자",
+                            LocalDate.of(1995, 5, 15),
+                            "W",
+                            Collections.emptyList());
 
             Member expectedMember = MemberFixture.createKakaoMemberWithSocialId("kakao_12345");
 
@@ -137,14 +138,15 @@ class MemberCreatorTest {
         @DisplayName("카카오 회원 생성 시 비밀번호 해싱 없음")
         void shouldNotHashPasswordForKakaoMember() {
             // Given
-            KakaoOAuthCommand command = new KakaoOAuthCommand(
-                    "kakao_67890",
-                    "01011112222",
-                    null,
-                    "테스트",
-                    null,
-                    null,
-                    Collections.emptyList());
+            KakaoOAuthCommand command =
+                    new KakaoOAuthCommand(
+                            "kakao_67890",
+                            "01011112222",
+                            null,
+                            "테스트",
+                            null,
+                            null,
+                            Collections.emptyList());
 
             Member expectedMember = MemberFixture.createKakaoMember();
 

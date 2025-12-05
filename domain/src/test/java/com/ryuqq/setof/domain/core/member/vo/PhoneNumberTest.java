@@ -1,6 +1,9 @@
 package com.ryuqq.setof.domain.core.member.vo;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.ryuqq.setof.domain.core.member.exception.InvalidPhoneNumberException;
 import org.junit.jupiter.api.DisplayName;

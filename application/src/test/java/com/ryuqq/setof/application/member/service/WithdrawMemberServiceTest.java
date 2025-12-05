@@ -27,31 +27,27 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class WithdrawMemberServiceTest {
 
-    @Mock
-    private MemberReader memberReader;
+    @Mock private MemberReader memberReader;
 
-    @Mock
-    private MemberPolicyValidator memberPolicyValidator;
+    @Mock private MemberPolicyValidator memberPolicyValidator;
 
-    @Mock
-    private MemberUpdater memberUpdater;
+    @Mock private MemberUpdater memberUpdater;
 
-    @Mock
-    private MemberPersistenceManager memberPersistenceManager;
+    @Mock private MemberPersistenceManager memberPersistenceManager;
 
-    @Mock
-    private TokenManager tokenManager;
+    @Mock private TokenManager tokenManager;
 
     private WithdrawMemberService service;
 
     @BeforeEach
     void setUp() {
-        service = new WithdrawMemberService(
-                memberReader,
-                memberPolicyValidator,
-                memberUpdater,
-                memberPersistenceManager,
-                tokenManager);
+        service =
+                new WithdrawMemberService(
+                        memberReader,
+                        memberPolicyValidator,
+                        memberUpdater,
+                        memberPersistenceManager,
+                        tokenManager);
     }
 
     @Nested
@@ -73,9 +69,13 @@ class WithdrawMemberServiceTest {
             service.execute(command);
 
             // Then
-            InOrder inOrder = inOrder(
-                    memberReader, memberPolicyValidator, memberUpdater,
-                    memberPersistenceManager, tokenManager);
+            InOrder inOrder =
+                    inOrder(
+                            memberReader,
+                            memberPolicyValidator,
+                            memberUpdater,
+                            memberPersistenceManager,
+                            tokenManager);
 
             inOrder.verify(memberReader).getById(memberId);
             inOrder.verify(memberPolicyValidator).validateCanWithdraw(localMember);
@@ -115,7 +115,8 @@ class WithdrawMemberServiceTest {
 
             when(memberReader.getById(memberId)).thenReturn(withdrawnMember);
             doThrow(new AlreadyWithdrawnMemberException())
-                    .when(memberPolicyValidator).validateCanWithdraw(withdrawnMember);
+                    .when(memberPolicyValidator)
+                    .validateCanWithdraw(withdrawnMember);
 
             // When & Then
             assertThrows(AlreadyWithdrawnMemberException.class, () -> service.execute(command));

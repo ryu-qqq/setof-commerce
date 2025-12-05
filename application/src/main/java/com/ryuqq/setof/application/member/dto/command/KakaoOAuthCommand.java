@@ -18,5 +18,4 @@ public record KakaoOAuthCommand(
         String name,
         LocalDate dateOfBirth,
         String gender,
-        List<ConsentItem> consents) {
-}
+        List<ConsentItem> consents) {}

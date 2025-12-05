@@ -4,7 +4,6 @@ import static org.mockito.Mockito.*;
 
 import com.ryuqq.setof.application.member.dto.command.IntegrateKakaoCommand;
 import com.ryuqq.setof.application.member.port.out.PasswordEncoderPort;
-import com.ryuqq.setof.domain.core.member.MemberFixture;
 import com.ryuqq.setof.domain.core.member.aggregate.Member;
 import com.ryuqq.setof.domain.core.member.vo.Email;
 import com.ryuqq.setof.domain.core.member.vo.Gender;
@@ -28,11 +27,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class MemberUpdaterTest {
 
-    @Mock
-    private PasswordEncoderPort passwordEncoderPort;
+    @Mock private PasswordEncoderPort passwordEncoderPort;
 
-    @Mock
-    private Member mockMember;
+    @Mock private Member mockMember;
 
     private Clock fixedClock;
     private MemberUpdater memberUpdater;
@@ -78,8 +75,10 @@ class MemberUpdaterTest {
 
             // Then
             verify(passwordEncoderPort).encode(rawPassword);
-            verify(mockMember).changePassword(argThat(password ->
-                    password.value().equals(hashedPassword)), eq(fixedClock));
+            verify(mockMember)
+                    .changePassword(
+                            argThat(password -> password.value().equals(hashedPassword)),
+                            eq(fixedClock));
         }
     }
 
@@ -135,94 +134,102 @@ class MemberUpdaterTest {
         @DisplayName("카카오 연동 및 프로필 업데이트 성공 - 전체 정보")
         void shouldLinkKakaoWithFullProfile() {
             // Given
-            IntegrateKakaoCommand command = new IntegrateKakaoCommand(
-                    "member-id",
-                    "kakao_12345",
-                    "kakao@example.com",
-                    "카카오이름",
-                    LocalDate.of(1990, 1, 1),
-                    "M");
+            IntegrateKakaoCommand command =
+                    new IntegrateKakaoCommand(
+                            "member-id",
+                            "kakao_12345",
+                            "kakao@example.com",
+                            "카카오이름",
+                            LocalDate.of(1990, 1, 1),
+                            "M");
 
             // When
             memberUpdater.linkKakaoWithProfile(mockMember, command);
 
             // Then
-            verify(mockMember).linkKakaoWithProfile(
-                    any(SocialId.class),
-                    any(Email.class),
-                    any(MemberName.class),
-                    eq(LocalDate.of(1990, 1, 1)),
-                    eq(Gender.M),
-                    eq(fixedClock));
+            verify(mockMember)
+                    .linkKakaoWithProfile(
+                            any(SocialId.class),
+                            any(Email.class),
+                            any(MemberName.class),
+                            eq(LocalDate.of(1990, 1, 1)),
+                            eq(Gender.M),
+                            eq(fixedClock));
         }
 
         @Test
         @DisplayName("카카오 연동 - 프로필 없이")
         void shouldLinkKakaoWithoutProfile() {
             // Given
-            IntegrateKakaoCommand command = IntegrateKakaoCommand.withoutProfile("member-id", "kakao_12345");
+            IntegrateKakaoCommand command =
+                    IntegrateKakaoCommand.withoutProfile("member-id", "kakao_12345");
 
             // When
             memberUpdater.linkKakaoWithProfile(mockMember, command);
 
             // Then
-            verify(mockMember).linkKakaoWithProfile(
-                    any(SocialId.class),
-                    isNull(),
-                    isNull(),
-                    isNull(),
-                    isNull(),
-                    eq(fixedClock));
+            verify(mockMember)
+                    .linkKakaoWithProfile(
+                            any(SocialId.class),
+                            isNull(),
+                            isNull(),
+                            isNull(),
+                            isNull(),
+                            eq(fixedClock));
         }
 
         @Test
         @DisplayName("카카오 연동 - 여성 성별")
         void shouldLinkKakaoWithFemaleGender() {
             // Given
-            IntegrateKakaoCommand command = new IntegrateKakaoCommand(
-                    "member-id",
-                    "kakao_12345",
-                    "kakao@example.com",
-                    "카카오이름",
-                    LocalDate.of(1995, 5, 15),
-                    "W");
+            IntegrateKakaoCommand command =
+                    new IntegrateKakaoCommand(
+                            "member-id",
+                            "kakao_12345",
+                            "kakao@example.com",
+                            "카카오이름",
+                            LocalDate.of(1995, 5, 15),
+                            "W");
 
             // When
             memberUpdater.linkKakaoWithProfile(mockMember, command);
 
             // Then
-            verify(mockMember).linkKakaoWithProfile(
-                    any(SocialId.class),
-                    any(Email.class),
-                    any(MemberName.class),
-                    eq(LocalDate.of(1995, 5, 15)),
-                    eq(Gender.W),
-                    eq(fixedClock));
+            verify(mockMember)
+                    .linkKakaoWithProfile(
+                            any(SocialId.class),
+                            any(Email.class),
+                            any(MemberName.class),
+                            eq(LocalDate.of(1995, 5, 15)),
+                            eq(Gender.W),
+                            eq(fixedClock));
         }
 
         @Test
         @DisplayName("카카오 연동 - 소문자 성별 변환")
         void shouldConvertLowercaseGender() {
             // Given
-            IntegrateKakaoCommand command = new IntegrateKakaoCommand(
-                    "member-id",
-                    "kakao_12345",
-                    "test@example.com",
-                    "테스트",
-                    LocalDate.of(1990, 1, 1),
-                    "m");
+            IntegrateKakaoCommand command =
+                    new IntegrateKakaoCommand(
+                            "member-id",
+                            "kakao_12345",
+                            "test@example.com",
+                            "테스트",
+                            LocalDate.of(1990, 1, 1),
+                            "m");
 
             // When
             memberUpdater.linkKakaoWithProfile(mockMember, command);
 
             // Then
-            verify(mockMember).linkKakaoWithProfile(
-                    any(SocialId.class),
-                    any(Email.class),
-                    any(MemberName.class),
-                    eq(LocalDate.of(1990, 1, 1)),
-                    eq(Gender.M),
-                    eq(fixedClock));
+            verify(mockMember)
+                    .linkKakaoWithProfile(
+                            any(SocialId.class),
+                            any(Email.class),
+                            any(MemberName.class),
+                            eq(LocalDate.of(1990, 1, 1)),
+                            eq(Gender.M),
+                            eq(fixedClock));
         }
     }
 }

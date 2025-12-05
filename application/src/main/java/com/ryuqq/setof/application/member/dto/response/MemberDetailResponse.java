@@ -20,5 +20,4 @@ public record MemberDetailResponse(
         String gender,
         String provider,
         String status,
-        LocalDateTime createdAt
-) {}
+        LocalDateTime createdAt) {}

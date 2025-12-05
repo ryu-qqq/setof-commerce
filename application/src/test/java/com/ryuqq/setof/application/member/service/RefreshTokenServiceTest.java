@@ -19,8 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class RefreshTokenServiceTest {
 
-    @Mock
-    private TokenManager tokenManager;
+    @Mock private TokenManager tokenManager;
 
     private RefreshTokenService service;
 
@@ -39,11 +38,8 @@ class RefreshTokenServiceTest {
             // Given
             String refreshToken = "valid_refresh_token";
             RefreshTokenCommand command = new RefreshTokenCommand(refreshToken);
-            TokenPairResponse expectedTokenPair = new TokenPairResponse(
-                    "new_access_token",
-                    "new_refresh_token",
-                    3600L,
-                    604800L);
+            TokenPairResponse expectedTokenPair =
+                    new TokenPairResponse("new_access_token", "new_refresh_token", 3600L, 604800L);
 
             when(tokenManager.refreshTokens(refreshToken)).thenReturn(expectedTokenPair);
 

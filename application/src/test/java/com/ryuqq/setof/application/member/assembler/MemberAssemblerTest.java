@@ -17,7 +17,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,19 +43,21 @@ class MemberAssemblerTest {
         @DisplayName("RegisterMemberCommand를 Member로 변환 성공")
         void shouldConvertRegisterMemberCommandToMember() {
             // Given
-            List<ConsentItem> consents = List.of(
-                    new ConsentItem("PRIVACY", true),
-                    new ConsentItem("SERVICE", true),
-                    new ConsentItem("MARKETING", false));
+            List<ConsentItem> consents =
+                    List.of(
+                            new ConsentItem("PRIVACY", true),
+                            new ConsentItem("SERVICE", true),
+                            new ConsentItem("MARKETING", false));
 
-            RegisterMemberCommand command = new RegisterMemberCommand(
-                    "01012345678",
-                    "test@example.com",
-                    "rawPassword123!",
-                    "홍길동",
-                    LocalDate.of(1990, 1, 1),
-                    "M",
-                    consents);
+            RegisterMemberCommand command =
+                    new RegisterMemberCommand(
+                            "01012345678",
+                            "test@example.com",
+                            "rawPassword123!",
+                            "홍길동",
+                            LocalDate.of(1990, 1, 1),
+                            "M",
+                            consents);
 
             String hashedPassword = "$2a$10$hashedPassword";
 
@@ -78,18 +79,18 @@ class MemberAssemblerTest {
         @DisplayName("이메일 없이 변환 성공")
         void shouldConvertWithoutEmail() {
             // Given
-            List<ConsentItem> consents = List.of(
-                    new ConsentItem("PRIVACY", true),
-                    new ConsentItem("SERVICE", true));
+            List<ConsentItem> consents =
+                    List.of(new ConsentItem("PRIVACY", true), new ConsentItem("SERVICE", true));
 
-            RegisterMemberCommand command = new RegisterMemberCommand(
-                    "01012345678",
-                    null,
-                    "rawPassword123!",
-                    "홍길동",
-                    LocalDate.of(1990, 1, 1),
-                    "M",
-                    consents);
+            RegisterMemberCommand command =
+                    new RegisterMemberCommand(
+                            "01012345678",
+                            null,
+                            "rawPassword123!",
+                            "홍길동",
+                            LocalDate.of(1990, 1, 1),
+                            "M",
+                            consents);
 
             String hashedPassword = "$2a$10$hashedPassword";
 
@@ -105,18 +106,18 @@ class MemberAssemblerTest {
         @DisplayName("성별 null일 때 N으로 변환")
         void shouldConvertNullGenderToN() {
             // Given
-            List<ConsentItem> consents = List.of(
-                    new ConsentItem("PRIVACY", true),
-                    new ConsentItem("SERVICE", true));
+            List<ConsentItem> consents =
+                    List.of(new ConsentItem("PRIVACY", true), new ConsentItem("SERVICE", true));
 
-            RegisterMemberCommand command = new RegisterMemberCommand(
-                    "01012345678",
-                    "test@example.com",
-                    "rawPassword123!",
-                    "홍길동",
-                    LocalDate.of(1990, 1, 1),
-                    null,
-                    consents);
+            RegisterMemberCommand command =
+                    new RegisterMemberCommand(
+                            "01012345678",
+                            "test@example.com",
+                            "rawPassword123!",
+                            "홍길동",
+                            LocalDate.of(1990, 1, 1),
+                            null,
+                            consents);
 
             String hashedPassword = "$2a$10$hashedPassword";
 
@@ -131,18 +132,18 @@ class MemberAssemblerTest {
         @DisplayName("소문자 성별 대문자로 변환")
         void shouldConvertLowercaseGenderToUppercase() {
             // Given
-            List<ConsentItem> consents = List.of(
-                    new ConsentItem("PRIVACY", true),
-                    new ConsentItem("SERVICE", true));
+            List<ConsentItem> consents =
+                    List.of(new ConsentItem("PRIVACY", true), new ConsentItem("SERVICE", true));
 
-            RegisterMemberCommand command = new RegisterMemberCommand(
-                    "01012345678",
-                    "test@example.com",
-                    "rawPassword123!",
-                    "홍길동",
-                    LocalDate.of(1990, 1, 1),
-                    "w",
-                    consents);
+            RegisterMemberCommand command =
+                    new RegisterMemberCommand(
+                            "01012345678",
+                            "test@example.com",
+                            "rawPassword123!",
+                            "홍길동",
+                            LocalDate.of(1990, 1, 1),
+                            "w",
+                            consents);
 
             String hashedPassword = "$2a$10$hashedPassword";
 
@@ -162,18 +163,18 @@ class MemberAssemblerTest {
         @DisplayName("KakaoOAuthCommand를 Member로 변환 성공")
         void shouldConvertKakaoOAuthCommandToMember() {
             // Given
-            List<ConsentItem> consents = List.of(
-                    new ConsentItem("PRIVACY", true),
-                    new ConsentItem("SERVICE", true));
+            List<ConsentItem> consents =
+                    List.of(new ConsentItem("PRIVACY", true), new ConsentItem("SERVICE", true));
 
-            KakaoOAuthCommand command = new KakaoOAuthCommand(
-                    "kakao_12345",
-                    "01087654321",
-                    "kakao@example.com",
-                    "카카오",
-                    LocalDate.of(1995, 5, 15),
-                    "W",
-                    consents);
+            KakaoOAuthCommand command =
+                    new KakaoOAuthCommand(
+                            "kakao_12345",
+                            "01087654321",
+                            "kakao@example.com",
+                            "카카오",
+                            LocalDate.of(1995, 5, 15),
+                            "W",
+                            consents);
 
             // When
             Member result = memberAssembler.toKakaoDomain(command, fixedClock);
@@ -192,14 +193,9 @@ class MemberAssemblerTest {
         @DisplayName("동의 항목 없을 때 기본값 적용")
         void shouldApplyDefaultConsentsWhenEmpty() {
             // Given
-            KakaoOAuthCommand command = new KakaoOAuthCommand(
-                    "kakao_12345",
-                    "01087654321",
-                    null,
-                    "카카오",
-                    null,
-                    null,
-                    null);
+            KakaoOAuthCommand command =
+                    new KakaoOAuthCommand(
+                            "kakao_12345", "01087654321", null, "카카오", null, null, null);
 
             // When
             Member result = memberAssembler.toKakaoDomain(command, fixedClock);
@@ -219,11 +215,8 @@ class MemberAssemblerTest {
         void shouldCreateLocalLoginResponse() {
             // Given
             String memberId = "01936ddc-8d37-7c6e-8ad6-18c76adc9dfa";
-            TokenPairResponse tokens = new TokenPairResponse(
-                    "access_token",
-                    "refresh_token",
-                    3600L,
-                    604800L);
+            TokenPairResponse tokens =
+                    new TokenPairResponse("access_token", "refresh_token", 3600L, 604800L);
 
             // When
             LocalLoginResponse result = memberAssembler.toLocalLoginResponse(memberId, tokens);
@@ -243,7 +236,8 @@ class MemberAssemblerTest {
         @DisplayName("Member를 MemberDetailResponse로 변환 성공")
         void shouldConvertMemberToDetailResponse() {
             // Given
-            Member member = MemberFixture.createLocalMemberWithId("01936ddc-8d37-7c6e-8ad6-18c76adc9dfa");
+            Member member =
+                    MemberFixture.createLocalMemberWithId("01936ddc-8d37-7c6e-8ad6-18c76adc9dfa");
 
             // When
             MemberDetailResponse result = memberAssembler.toMemberDetailResponse(member);
@@ -270,11 +264,8 @@ class MemberAssemblerTest {
         void shouldCreateNewKakaoMemberResponse() {
             // Given
             String memberId = "01936ddc-8d37-7c6e-8ad6-18c76adc9dfa";
-            TokenPairResponse tokens = new TokenPairResponse(
-                    "access_token",
-                    "refresh_token",
-                    3600L,
-                    604800L);
+            TokenPairResponse tokens =
+                    new TokenPairResponse("access_token", "refresh_token", 3600L, 604800L);
 
             // When
             KakaoOAuthResponse result = memberAssembler.toNewKakaoMemberResponse(memberId, tokens);
@@ -295,14 +286,12 @@ class MemberAssemblerTest {
         void shouldCreateExistingKakaoMemberResponse() {
             // Given
             String memberId = "01936ddc-8d37-7c6e-8ad6-18c76adc9dfa";
-            TokenPairResponse tokens = new TokenPairResponse(
-                    "access_token",
-                    "refresh_token",
-                    3600L,
-                    604800L);
+            TokenPairResponse tokens =
+                    new TokenPairResponse("access_token", "refresh_token", 3600L, 604800L);
 
             // When
-            KakaoOAuthResponse result = memberAssembler.toExistingKakaoMemberResponse(memberId, tokens);
+            KakaoOAuthResponse result =
+                    memberAssembler.toExistingKakaoMemberResponse(memberId, tokens);
 
             // Then
             assertNotNull(result);

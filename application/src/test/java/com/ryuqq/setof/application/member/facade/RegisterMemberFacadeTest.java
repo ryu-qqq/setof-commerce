@@ -23,23 +23,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class RegisterMemberFacadeTest {
 
-    @Mock
-    private MemberPersistenceManager memberPersistenceManager;
+    @Mock private MemberPersistenceManager memberPersistenceManager;
 
-    @Mock
-    private TokenManager tokenManager;
+    @Mock private TokenManager tokenManager;
 
-    @Mock
-    private MemberEventDispatcher memberEventDispatcher;
+    @Mock private MemberEventDispatcher memberEventDispatcher;
 
     private RegisterMemberFacade registerMemberFacade;
 
     @BeforeEach
     void setUp() {
-        registerMemberFacade = new RegisterMemberFacade(
-                memberPersistenceManager,
-                tokenManager,
-                memberEventDispatcher);
+        registerMemberFacade =
+                new RegisterMemberFacade(
+                        memberPersistenceManager, tokenManager, memberEventDispatcher);
     }
 
     @Nested
@@ -52,11 +48,8 @@ class RegisterMemberFacadeTest {
             // Given
             String memberId = "01936ddc-8d37-7c6e-8ad6-18c76adc9dfa";
             Member member = MemberFixture.createLocalMemberWithId(memberId);
-            TokenPairResponse expectedTokens = new TokenPairResponse(
-                    "access_token",
-                    "refresh_token",
-                    3600L,
-                    604800L);
+            TokenPairResponse expectedTokens =
+                    new TokenPairResponse("access_token", "refresh_token", 3600L, 604800L);
 
             when(tokenManager.issueTokens(memberId)).thenReturn(expectedTokens);
 
@@ -79,15 +72,13 @@ class RegisterMemberFacadeTest {
             // Given
             String memberId = "01936ddc-8d37-7c6e-8ad6-18c76adc9dfa";
             Member member = MemberFixture.createLocalMemberWithId(memberId);
-            TokenPairResponse expectedTokens = new TokenPairResponse(
-                    "access_token",
-                    "refresh_token",
-                    3600L,
-                    604800L);
+            TokenPairResponse expectedTokens =
+                    new TokenPairResponse("access_token", "refresh_token", 3600L, 604800L);
 
             when(tokenManager.issueTokens(memberId)).thenReturn(expectedTokens);
 
-            InOrder inOrder = inOrder(memberPersistenceManager, tokenManager, memberEventDispatcher);
+            InOrder inOrder =
+                    inOrder(memberPersistenceManager, tokenManager, memberEventDispatcher);
 
             // When
             registerMemberFacade.register(member);
@@ -104,11 +95,9 @@ class RegisterMemberFacadeTest {
             // Given
             String memberId = "01936ddc-8d37-7c6e-8ad6-18c76adc9dfa";
             Member kakaoMember = MemberFixture.createKakaoMemberWithId(memberId);
-            TokenPairResponse expectedTokens = new TokenPairResponse(
-                    "kakao_access_token",
-                    "kakao_refresh_token",
-                    3600L,
-                    604800L);
+            TokenPairResponse expectedTokens =
+                    new TokenPairResponse(
+                            "kakao_access_token", "kakao_refresh_token", 3600L, 604800L);
 
             when(tokenManager.issueTokens(memberId)).thenReturn(expectedTokens);
 

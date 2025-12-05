@@ -35,38 +35,36 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class KakaoOAuthLoginServiceTest {
 
-    @Mock
-    private MemberReader memberReader;
+    @Mock private MemberReader memberReader;
 
-    @Mock
-    private MemberCreator memberCreator;
+    @Mock private MemberCreator memberCreator;
 
-    @Mock
-    private MemberUpdater memberUpdater;
+    @Mock private MemberUpdater memberUpdater;
 
-    @Mock
-    private MemberAssembler memberAssembler;
+    @Mock private MemberAssembler memberAssembler;
 
-    @Mock
-    private KakaoOAuthPolicyValidator kakaoOAuthPolicyValidator;
+    @Mock private KakaoOAuthPolicyValidator kakaoOAuthPolicyValidator;
 
-    @Mock
-    private RegisterMemberFacade registerMemberFacade;
+    @Mock private RegisterMemberFacade registerMemberFacade;
 
-    @Mock
-    private MemberPersistenceManager memberPersistenceManager;
+    @Mock private MemberPersistenceManager memberPersistenceManager;
 
-    @Mock
-    private TokenManager tokenManager;
+    @Mock private TokenManager tokenManager;
 
     private KakaoOAuthLoginService service;
 
     @BeforeEach
     void setUp() {
-        service = new KakaoOAuthLoginService(
-                memberReader, memberCreator, memberUpdater, memberAssembler,
-                kakaoOAuthPolicyValidator, registerMemberFacade,
-                memberPersistenceManager, tokenManager);
+        service =
+                new KakaoOAuthLoginService(
+                        memberReader,
+                        memberCreator,
+                        memberUpdater,
+                        memberAssembler,
+                        kakaoOAuthPolicyValidator,
+                        registerMemberFacade,
+                        memberPersistenceManager,
+                        tokenManager);
     }
 
     @Nested
@@ -82,7 +80,8 @@ class KakaoOAuthLoginServiceTest {
             KakaoOAuthCommand command = createKakaoCommand(kakaoId, "01012345678");
             Member kakaoMember = MemberFixture.createKakaoMemberWithSocialId(kakaoId);
             TokenPairResponse tokens = createTokenPair();
-            KakaoOAuthResponse expectedResponse = KakaoOAuthResponse.existingKakaoMember(memberId, tokens);
+            KakaoOAuthResponse expectedResponse =
+                    KakaoOAuthResponse.existingKakaoMember(memberId, tokens);
 
             when(memberReader.findBySocialId(kakaoId)).thenReturn(Optional.of(kakaoMember));
             when(tokenManager.issueTokens(kakaoMember.getIdValue())).thenReturn(tokens);
@@ -116,7 +115,8 @@ class KakaoOAuthLoginServiceTest {
 
             when(memberReader.findBySocialId(kakaoId)).thenReturn(Optional.of(kakaoMember));
             doThrow(new InactiveMemberException())
-                    .when(kakaoOAuthPolicyValidator).validateCanKakaoLogin(kakaoMember);
+                    .when(kakaoOAuthPolicyValidator)
+                    .validateCanKakaoLogin(kakaoMember);
 
             // When & Then
             assertThrows(InactiveMemberException.class, () -> service.execute(command));
@@ -136,7 +136,8 @@ class KakaoOAuthLoginServiceTest {
             KakaoOAuthCommand command = createKakaoCommand(kakaoId, phoneNumber);
             Member localMember = MemberFixture.createLocalMemberWithId(memberId);
             TokenPairResponse tokens = createTokenPair();
-            KakaoOAuthResponse expectedResponse = KakaoOAuthResponse.existingKakaoMember(memberId, tokens);
+            KakaoOAuthResponse expectedResponse =
+                    KakaoOAuthResponse.existingKakaoMember(memberId, tokens);
 
             when(memberReader.findBySocialId(kakaoId)).thenReturn(Optional.empty());
             when(memberReader.findByPhoneNumber(phoneNumber)).thenReturn(Optional.of(localMember));
@@ -155,7 +156,8 @@ class KakaoOAuthLoginServiceTest {
 
             verify(memberReader).findBySocialId(kakaoId);
             verify(memberReader).findByPhoneNumber(phoneNumber);
-            verify(memberUpdater).linkKakaoWithProfile(eq(localMember), any(IntegrateKakaoCommand.class));
+            verify(memberUpdater)
+                    .linkKakaoWithProfile(eq(localMember), any(IntegrateKakaoCommand.class));
             verify(memberPersistenceManager).persist(localMember);
             verify(tokenManager).issueTokens(localMember.getIdValue());
             verify(memberCreator, never()).createKakaoMember(any());
@@ -210,10 +212,6 @@ class KakaoOAuthLoginServiceTest {
     }
 
     private TokenPairResponse createTokenPair() {
-        return new TokenPairResponse(
-                "access_token_123",
-                "refresh_token_456",
-                3600L,
-                604800L);
+        return new TokenPairResponse("access_token_123", "refresh_token_456", 3600L, 604800L);
     }
 }

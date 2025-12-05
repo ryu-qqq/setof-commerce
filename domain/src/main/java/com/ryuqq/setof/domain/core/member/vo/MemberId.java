@@ -78,7 +78,7 @@ public record MemberId(UUID value) {
      *
      * @return UUID 문자열 (하이픈 포함)
      */
-    public String asString() {
+    public String getValue() {
         return value.toString();
     }
 

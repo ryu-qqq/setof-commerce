@@ -48,7 +48,10 @@ public class TokenManager {
     public TokenPairResponse issueTokens(String memberId) {
         TokenPairResponse tokenPairResponse = tokenProviderPort.generateTokenPair(memberId);
 
-        saveRefreshToken(memberId, tokenPairResponse.refreshToken(), tokenPairResponse.refreshTokenExpiresIn());
+        saveRefreshToken(
+                memberId,
+                tokenPairResponse.refreshToken(),
+                tokenPairResponse.refreshTokenExpiresIn());
 
         return tokenPairResponse;
     }

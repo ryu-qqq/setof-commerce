@@ -71,12 +71,7 @@ public class MemberUpdater {
         Gender gender = command.hasGender() ? toGender(command.gender()) : null;
 
         member.linkKakaoWithProfile(
-                kakaoSocialId,
-                email,
-                name,
-                command.dateOfBirth(),
-                gender,
-                clock);
+                kakaoSocialId, email, name, command.dateOfBirth(), gender, clock);
     }
 
     private Gender toGender(String gender) {

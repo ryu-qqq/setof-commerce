@@ -30,24 +30,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class RegisterMemberServiceTest {
 
-    @Mock
-    private MemberReader memberReader;
+    @Mock private MemberReader memberReader;
 
-    @Mock
-    private MemberPolicyValidator memberPolicyValidator;
+    @Mock private MemberPolicyValidator memberPolicyValidator;
 
-    @Mock
-    private MemberCreator memberCreator;
+    @Mock private MemberCreator memberCreator;
 
-    @Mock
-    private RegisterMemberFacade registerMemberFacade;
+    @Mock private RegisterMemberFacade registerMemberFacade;
 
     private RegisterMemberService service;
 
     @BeforeEach
     void setUp() {
-        service = new RegisterMemberService(
-                memberReader, memberPolicyValidator, memberCreator, registerMemberFacade);
+        service =
+                new RegisterMemberService(
+                        memberReader, memberPolicyValidator, memberCreator, registerMemberFacade);
     }
 
     @Nested
@@ -90,7 +87,8 @@ class RegisterMemberServiceTest {
 
             when(memberReader.existsByPhoneNumber(command.phoneNumber())).thenReturn(true);
             doThrow(new DuplicatePhoneNumberException())
-                    .when(memberPolicyValidator).validatePhoneNumberNotDuplicate(true);
+                    .when(memberPolicyValidator)
+                    .validatePhoneNumberNotDuplicate(true);
 
             // When & Then
             assertThrows(DuplicatePhoneNumberException.class, () -> service.execute(command));
@@ -105,18 +103,20 @@ class RegisterMemberServiceTest {
         @DisplayName("동의 항목과 함께 회원가입 성공")
         void shouldRegisterMemberWithConsents() {
             // Given
-            List<ConsentItem> consents = List.of(
-                    new ConsentItem("TERMS", true),
-                    new ConsentItem("PRIVACY", true),
-                    new ConsentItem("MARKETING", false));
-            RegisterMemberCommand command = new RegisterMemberCommand(
-                    "01012345678",
-                    "test@example.com",
-                    "password123!",
-                    "홍길동",
-                    LocalDate.of(1990, 1, 1),
-                    "M",
-                    consents);
+            List<ConsentItem> consents =
+                    List.of(
+                            new ConsentItem("TERMS", true),
+                            new ConsentItem("PRIVACY", true),
+                            new ConsentItem("MARKETING", false));
+            RegisterMemberCommand command =
+                    new RegisterMemberCommand(
+                            "01012345678",
+                            "test@example.com",
+                            "password123!",
+                            "홍길동",
+                            LocalDate.of(1990, 1, 1),
+                            "M",
+                            consents);
 
             Member newMember = MemberFixture.createLocalMember();
             String memberId = newMember.getIdValue();
@@ -148,10 +148,6 @@ class RegisterMemberServiceTest {
     }
 
     private TokenPairResponse createTokenPair() {
-        return new TokenPairResponse(
-                "access_token_123",
-                "refresh_token_456",
-                3600L,
-                604800L);
+        return new TokenPairResponse("access_token_123", "refresh_token_456", 3600L, 604800L);
     }
 }

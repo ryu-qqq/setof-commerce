@@ -20,21 +20,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class TokenManagerTest {
 
-    @Mock
-    private TokenProviderPort tokenProviderPort;
+    @Mock private TokenProviderPort tokenProviderPort;
 
-    @Mock
-    private RefreshTokenPersistenceManager refreshTokenPersistenceManager;
+    @Mock private RefreshTokenPersistenceManager refreshTokenPersistenceManager;
 
-    @Mock
-    private RefreshTokenCacheManager refreshTokenCacheManager;
+    @Mock private RefreshTokenCacheManager refreshTokenCacheManager;
 
     private TokenManager tokenManager;
 
     @BeforeEach
     void setUp() {
-        tokenManager = new TokenManager(
-                tokenProviderPort, refreshTokenPersistenceManager, refreshTokenCacheManager);
+        tokenManager =
+                new TokenManager(
+                        tokenProviderPort,
+                        refreshTokenPersistenceManager,
+                        refreshTokenCacheManager);
     }
 
     @Nested
@@ -59,14 +59,16 @@ class TokenManagerTest {
             assertEquals(expectedTokenPair.refreshToken(), result.refreshToken());
 
             verify(tokenProviderPort).generateTokenPair(memberId);
-            verify(refreshTokenPersistenceManager).save(
-                    memberId,
-                    expectedTokenPair.refreshToken(),
-                    expectedTokenPair.refreshTokenExpiresIn());
-            verify(refreshTokenCacheManager).save(
-                    memberId,
-                    expectedTokenPair.refreshToken(),
-                    expectedTokenPair.refreshTokenExpiresIn());
+            verify(refreshTokenPersistenceManager)
+                    .save(
+                            memberId,
+                            expectedTokenPair.refreshToken(),
+                            expectedTokenPair.refreshTokenExpiresIn());
+            verify(refreshTokenCacheManager)
+                    .save(
+                            memberId,
+                            expectedTokenPair.refreshToken(),
+                            expectedTokenPair.refreshTokenExpiresIn());
         }
 
         @Test
@@ -83,10 +85,10 @@ class TokenManagerTest {
 
             // Then
             InOrder inOrder = inOrder(refreshTokenPersistenceManager, refreshTokenCacheManager);
-            inOrder.verify(refreshTokenPersistenceManager).save(
-                    memberId, tokenPair.refreshToken(), tokenPair.refreshTokenExpiresIn());
-            inOrder.verify(refreshTokenCacheManager).save(
-                    memberId, tokenPair.refreshToken(), tokenPair.refreshTokenExpiresIn());
+            inOrder.verify(refreshTokenPersistenceManager)
+                    .save(memberId, tokenPair.refreshToken(), tokenPair.refreshTokenExpiresIn());
+            inOrder.verify(refreshTokenCacheManager)
+                    .save(memberId, tokenPair.refreshToken(), tokenPair.refreshTokenExpiresIn());
         }
     }
 
@@ -183,7 +185,8 @@ class TokenManagerTest {
                     .thenReturn(Optional.empty());
 
             // When & Then
-            assertThrows(InvalidRefreshTokenException.class,
+            assertThrows(
+                    InvalidRefreshTokenException.class,
                     () -> tokenManager.refreshTokens(invalidRefreshToken));
 
             verify(refreshTokenCacheManager).findMemberIdByToken(invalidRefreshToken);
@@ -208,7 +211,11 @@ class TokenManagerTest {
             tokenManager.refreshTokens(oldRefreshToken);
 
             // Then - 순서 검증: 조회 → 삭제 → 새 토큰 발급
-            InOrder inOrder = inOrder(refreshTokenCacheManager, refreshTokenPersistenceManager, tokenProviderPort);
+            InOrder inOrder =
+                    inOrder(
+                            refreshTokenCacheManager,
+                            refreshTokenPersistenceManager,
+                            tokenProviderPort);
             inOrder.verify(refreshTokenCacheManager).findMemberIdByToken(oldRefreshToken);
             inOrder.verify(refreshTokenCacheManager).deleteByToken(oldRefreshToken);
             inOrder.verify(refreshTokenPersistenceManager).deleteByToken(oldRefreshToken);
@@ -217,10 +224,6 @@ class TokenManagerTest {
     }
 
     private TokenPairResponse createTokenPair() {
-        return new TokenPairResponse(
-                "access_token_123",
-                "refresh_token_456",
-                3600L,
-                604800L);
+        return new TokenPairResponse("access_token_123", "refresh_token_456", 3600L, 604800L);
     }
 }
