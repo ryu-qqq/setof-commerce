@@ -136,3 +136,17 @@ tasks.bootRun {
         '-XX:+UseG1GC'
     ]
 }
+
+// ========================================
+// REST Docs Configuration
+// ========================================
+// rest-api 모듈에서 생성된 문서를 static 리소스로 복사
+tasks.register('copyRestDocs', Copy) {
+    dependsOn ':adapter-in:rest-api:asciidoctor'
+    from "${project(':adapter-in:rest-api').buildDir}/docs/asciidoc"
+    into "${sourceSets.main.output.resourcesDir}/static/docs"
+}
+
+tasks.processResources {
+    dependsOn copyRestDocs
+}

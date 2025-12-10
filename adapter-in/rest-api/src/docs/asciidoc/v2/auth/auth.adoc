@@ -1,0 +1,50 @@
+[[auth]]
+=== Auth (인증)
+
+인증 관련 API입니다. 로그인, 로그아웃, 토큰 갱신 등의 기능을 제공합니다.
+
+[[auth-login]]
+==== 로그인
+
+이메일과 비밀번호를 사용하여 로그인합니다.
+
+===== HTTP Request
+
+include::{snippets}/auth-login/http-request.adoc[]
+
+===== Request Fields
+
+include::{snippets}/auth-login/request-fields.adoc[]
+
+===== HTTP Response
+
+include::{snippets}/auth-login/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/auth-login/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/auth-login/curl-request.adoc[]
+
+[[auth-logout]]
+==== 로그아웃
+
+현재 세션을 로그아웃합니다. 쿠키의 토큰이 삭제됩니다.
+
+===== HTTP Request
+
+include::{snippets}/auth-logout/http-request.adoc[]
+
+===== HTTP Response
+
+include::{snippets}/auth-logout/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/auth-logout/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/auth-logout/curl-request.adoc[]

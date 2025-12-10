@@ -81,4 +81,48 @@ public final class ApiV2Paths {
 
         private Health() {}
     }
+
+    /** Bank 도메인 경로 */
+    public static final class Banks {
+        public static final String BASE = API_V2 + "/banks";
+
+        // ===== 전체 경로 (SecurityPaths용) =====
+        public static final String LIST = BASE;
+
+        private Banks() {}
+    }
+
+    /** ShippingAddress 도메인 경로 (회원의 배송지) */
+    public static final class ShippingAddresses {
+        public static final String BASE = Members.ME + "/shipping-addresses";
+
+        // ===== 상대 경로 (Controller용) =====
+        public static final String ID_PATH = "/{shippingAddressId}";
+        public static final String DEFAULT_PATH = "/default";
+        public static final String DELETE_PATH = "/delete";
+
+        // ===== 전체 경로 (SecurityPaths용) =====
+        public static final String LIST = BASE;
+        public static final String DETAIL = BASE + ID_PATH;
+        public static final String SET_DEFAULT = DETAIL + DEFAULT_PATH;
+        public static final String DELETE = DETAIL + DELETE_PATH;
+
+        private ShippingAddresses() {}
+    }
+
+    /** RefundAccount 도메인 경로 (회원의 환불계좌) */
+    public static final class RefundAccount {
+        public static final String BASE = Members.ME + "/refund-account";
+
+        // ===== 상대 경로 (Controller용) =====
+        public static final String DELETE_PATH = "/delete";
+
+        // ===== 전체 경로 (SecurityPaths용) =====
+        public static final String GET = BASE;
+        public static final String REGISTER = BASE;
+        public static final String UPDATE = BASE;
+        public static final String DELETE = BASE + DELETE_PATH;
+
+        private RefundAccount() {}
+    }
 }

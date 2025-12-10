@@ -31,6 +31,41 @@ api:
 # ===============================================
 # @see com.ryuqq.adapter.in.rest.auth.config.SecurityProperties
 security:
+  # 공개 엔드포인트 (인증 없이 접근 가능)
+  public-endpoints:
+    # Health Check (ALB, K8s 등 인프라 헬스체크용)
+    - pattern: /actuator/health
+    - pattern: /actuator/health/**
+    # Prometheus Metrics (ADOT/AMP 메트릭 수집용)
+    - pattern: /actuator/prometheus
+    # API 문서
+    - pattern: /docs
+    - pattern: /docs/**
+    - pattern: /v3/api-docs/**
+    - pattern: /swagger-ui/**
+    - pattern: /swagger-ui.html
+    # 인증 API
+    - method: POST
+      pattern: /api/v2/auth/login
+    # 회원가입
+    - method: POST
+      pattern: /api/v2/members
+    # 비밀번호 재설정
+    - method: POST
+      pattern: /api/v2/members/passwordHash/reset
+    # Health Check (API V2)
+    - pattern: /api/v2/health
+    # OAuth2
+    - pattern: /oauth2/**
+    - pattern: /login/oauth2/**
+    # 공개 API (v1 - 비회원도 접근 가능)
+    - pattern: /api/v1/brands/**
+    - pattern: /api/v1/categories/**
+    - pattern: /api/v1/products/**
+    - pattern: /api/v1/displays/**
+    - pattern: /api/v1/sellers/**
+    - pattern: /api/v1/reviews/**
+
   # JWT 설정 (프로덕션에서 반드시 환경변수로 변경)
   jwt:
     secret: ${JWT_SECRET:your-256-bit-secret-key-for-jwt-signing-must-be-changed-in-production}
