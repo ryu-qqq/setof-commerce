@@ -1,10 +1,8 @@
 package com.ryuqq.setof.adapter.in.rest.architecture.openapi;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import static com.ryuqq.setof.adapter.in.rest.architecture.ArchUnitPackageConstants.*;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
@@ -19,10 +17,11 @@ import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
-
-import static com.ryuqq.setof.adapter.in.rest.architecture.ArchUnitPackageConstants.*;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * OpenAPI ArchUnit 검증 테스트 (Zero-Tolerance)
@@ -96,7 +95,9 @@ class OpenApiArchTest {
                             .should()
                             .beAnnotatedWith("io.swagger.v3.oas.annotations.tags.Tag")
                             .allowEmptyShould(true)
-                            .because("Controller는 @Tag로 API 그룹을 정의해야 합니다 (ApiDocsController, Legacy V1 제외)");
+                            .because(
+                                    "Controller는 @Tag로 API 그룹을 정의해야 합니다 (ApiDocsController, Legacy"
+                                            + " V1 제외)");
 
             rule.allowEmptyShould(true).check(allClasses);
         }
@@ -133,7 +134,9 @@ class OpenApiArchTest {
                             .should()
                             .beAnnotatedWith("io.swagger.v3.oas.annotations.Operation")
                             .allowEmptyShould(true)
-                            .because("모든 API 메서드는 @Operation으로 설명이 필요합니다 (ApiDocsController, Legacy V1 제외)");
+                            .because(
+                                    "모든 API 메서드는 @Operation으로 설명이 필요합니다 (ApiDocsController, Legacy"
+                                            + " V1 제외)");
 
             rule.allowEmptyShould(true).check(allClasses);
         }
@@ -170,7 +173,9 @@ class OpenApiArchTest {
                             .should()
                             .beAnnotatedWith("io.swagger.v3.oas.annotations.responses.ApiResponses")
                             .allowEmptyShould(true)
-                            .because("모든 API 메서드는 @ApiResponses로 응답 코드를 정의해야 합니다 (ApiDocsController, Legacy V1 제외)");
+                            .because(
+                                    "모든 API 메서드는 @ApiResponses로 응답 코드를 정의해야 합니다 (ApiDocsController,"
+                                            + " Legacy V1 제외)");
 
             rule.allowEmptyShould(true).check(allClasses);
         }
@@ -202,7 +207,9 @@ class OpenApiArchTest {
                             .arePublic()
                             .should(haveParameterAnnotationOnPathVariable())
                             .allowEmptyShould(true)
-                            .because("PathVariable은 @Parameter로 설명이 필요합니다 (ApiDocsController, Legacy V1 제외)");
+                            .because(
+                                    "PathVariable은 @Parameter로 설명이 필요합니다 (ApiDocsController, Legacy"
+                                            + " V1 제외)");
 
             rule.allowEmptyShould(true).check(allClasses);
         }
@@ -234,7 +241,9 @@ class OpenApiArchTest {
                             .arePublic()
                             .should(haveParameterAnnotationOnRequestParam())
                             .allowEmptyShould(true)
-                            .because("RequestParam은 @Parameter로 설명이 필요합니다 (ApiDocsController, Legacy V1 제외)");
+                            .because(
+                                    "RequestParam은 @Parameter로 설명이 필요합니다 (ApiDocsController, Legacy"
+                                            + " V1 제외)");
 
             rule.allowEmptyShould(true).check(allClasses);
         }

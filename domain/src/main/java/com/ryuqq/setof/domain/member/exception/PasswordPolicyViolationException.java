@@ -1,7 +1,6 @@
 package com.ryuqq.setof.domain.member.exception;
 
 import com.ryuqq.setof.domain.common.exception.DomainException;
-
 import java.util.Map;
 
 /**
@@ -30,9 +29,8 @@ public final class PasswordPolicyViolationException extends DomainException {
 
     public PasswordPolicyViolationException(String violatedRule) {
         super(
-            MemberErrorCode.PASSWORD_POLICY_VIOLATION,
-            String.format("비밀번호 정책 위반: %s", violatedRule),
-            Map.of("violatedRule", violatedRule)
-        );
+                MemberErrorCode.PASSWORD_POLICY_VIOLATION,
+                String.format("비밀번호 정책 위반: %s", violatedRule),
+                Map.of("violatedRule", violatedRule));
     }
 }

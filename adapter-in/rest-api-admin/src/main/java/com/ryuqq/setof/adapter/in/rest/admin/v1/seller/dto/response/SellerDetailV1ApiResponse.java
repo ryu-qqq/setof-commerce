@@ -10,7 +10,8 @@ import java.util.List;
  * @since 1.0.0
  */
 @Schema(description = "셀러 상세 응답")
-public record SellerDetailV1ApiResponse(@Schema(description = "셀러 ID", example = "1") Long sellerId,
+public record SellerDetailV1ApiResponse(
+        @Schema(description = "셀러 ID", example = "1") Long sellerId,
         @Schema(description = "셀러명", example = "셀러명") String sellerName,
         @Schema(description = "로고 URL", example = "https://example.com/logo.jpg") String logoUrl,
         @Schema(description = "수수료율", example = "5.0") Double commissionRate,
@@ -34,7 +35,7 @@ public record SellerDetailV1ApiResponse(@Schema(description = "셀러 ID", examp
         @Schema(description = "사이트 목록") List<SiteV1ApiResponse> sites) {
 
     @Schema(description = "사이트 응답")
-    public record SiteV1ApiResponse(@Schema(description = "사이트 ID", example = "1") Long siteId,
-            @Schema(description = "사이트명", example = "SETOF") String siteName) {
-    }
+    public record SiteV1ApiResponse(
+            @Schema(description = "사이트 ID", example = "1") Long siteId,
+            @Schema(description = "사이트명", example = "SETOF") String siteName) {}
 }

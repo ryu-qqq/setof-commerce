@@ -164,7 +164,7 @@ class MemberControllerDocsTest extends RestDocsTestSupport {
                         document(
                                 "member-register",
                                 requestFields(
-                                        fieldWithPath("csPhoneNumber")
+                                        fieldWithPath("phoneNumber")
                                                 .type(JsonFieldType.STRING)
                                                 .description("핸드폰 번호 (010으로 시작하는 11자리)"),
                                         fieldWithPath("email")
@@ -280,7 +280,7 @@ class MemberControllerDocsTest extends RestDocsTestSupport {
                                         fieldWithPath("data.memberId")
                                                 .type(JsonFieldType.STRING)
                                                 .description("회원 ID"),
-                                        fieldWithPath("data.csPhoneNumber")
+                                        fieldWithPath("data.phoneNumber")
                                                 .type(JsonFieldType.STRING)
                                                 .description("핸드폰 번호"),
                                         fieldWithPath("data.email")
@@ -382,7 +382,7 @@ class MemberControllerDocsTest extends RestDocsTestSupport {
                         document(
                                 "member-passwordHash-reset",
                                 requestFields(
-                                        fieldWithPath("csPhoneNumber")
+                                        fieldWithPath("phoneNumber")
                                                 .type(JsonFieldType.STRING)
                                                 .description("핸드폰 번호 (010으로 시작하는 11자리)"),
                                         fieldWithPath("newPassword")

@@ -1,5 +1,8 @@
 package com.ryuqq.setof.adapter.in.rest.architecture.config;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -7,14 +10,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 /**
  * REST API Config ArchUnit 검증 테스트 (Zero-Tolerance)
@@ -56,15 +55,14 @@ class RestApiConfigArchTest {
 
             Path commonYaml = RESOURCES_PATH.resolve("rest-api.yml");
 
-            assertThat(Files.exists(commonYaml))
-                    .as("rest-api.yml 공통 설정 파일이 존재해야 합니다")
-                    .isTrue();
+            assertThat(Files.exists(commonYaml)).as("rest-api.yml 공통 설정 파일이 존재해야 합니다").isTrue();
         }
 
         /**
          * 규칙 1-2: rest-api-local.yml (로컬 환경) 파일 권장
          *
          * <p>설정 파일이 없으면 경고만 출력하고 테스트 통과
+         *
          * <p>프로젝트 초기 단계에서는 설정 파일이 없을 수 있음
          */
         @Test
@@ -78,8 +76,9 @@ class RestApiConfigArchTest {
             Path localYaml = RESOURCES_PATH.resolve("rest-api-local.yml");
 
             if (!Files.exists(localYaml)) {
-                System.out.println("⚠️ 권장사항: rest-api-local.yml 로컬 환경 설정 파일 생성을 권장합니다. "
-                        + "로컬 개발 환경 설정을 분리하여 관리하세요.");
+                System.out.println(
+                        "⚠️ 권장사항: rest-api-local.yml 로컬 환경 설정 파일 생성을 권장합니다. "
+                                + "로컬 개발 환경 설정을 분리하여 관리하세요.");
             }
         }
 
@@ -87,6 +86,7 @@ class RestApiConfigArchTest {
          * 규칙 1-3: rest-api-prod.yml (운영 환경) 파일 권장
          *
          * <p>설정 파일이 없으면 경고만 출력하고 테스트 통과
+         *
          * <p>프로젝트 초기 단계에서는 설정 파일이 없을 수 있음
          */
         @Test
@@ -100,8 +100,9 @@ class RestApiConfigArchTest {
             Path prodYaml = RESOURCES_PATH.resolve("rest-api-prod.yml");
 
             if (!Files.exists(prodYaml)) {
-                System.out.println("⚠️ 권장사항: rest-api-prod.yml 운영 환경 설정 파일 생성을 권장합니다. "
-                        + "운영 환경 보안 설정을 분리하여 관리하세요.");
+                System.out.println(
+                        "⚠️ 권장사항: rest-api-prod.yml 운영 환경 설정 파일 생성을 권장합니다. "
+                                + "운영 환경 보안 설정을 분리하여 관리하세요.");
             }
         }
     }
@@ -133,8 +134,9 @@ class RestApiConfigArchTest {
 
             if (gatewayEnabled != null) {
                 assertThat(gatewayEnabled)
-                        .as("운영 환경에서 security.gateway.enabled=true 필수입니다. "
-                                + "Gateway를 통한 인증이 활성화되어야 합니다.")
+                        .as(
+                                "운영 환경에서 security.gateway.enabled=true 필수입니다. "
+                                        + "Gateway를 통한 인증이 활성화되어야 합니다.")
                         .isEqualTo("true");
             } else {
                 System.out.println("ℹ️ security.gateway.enabled 설정이 없습니다");
@@ -160,8 +162,9 @@ class RestApiConfigArchTest {
 
             if (cookieSecure != null) {
                 assertThat(cookieSecure)
-                        .as("운영 환경에서 security.cookie.secure=true 필수입니다. "
-                                + "HTTPS 환경에서 Cookie 보안이 활성화되어야 합니다.")
+                        .as(
+                                "운영 환경에서 security.cookie.secure=true 필수입니다. "
+                                        + "HTTPS 환경에서 Cookie 보안이 활성화되어야 합니다.")
                         .isEqualTo("true");
             } else {
                 System.out.println("ℹ️ security.cookie.secure 설정이 없습니다");
@@ -262,8 +265,7 @@ class RestApiConfigArchTest {
             // 로컬에서는 활성화 권장 (명시적 false가 아니면 OK)
             if ("false".equalsIgnoreCase(swaggerEnabled)) {
                 System.out.println(
-                        "ℹ️ 참고: 로컬 환경에서 Swagger UI가 비활성화되어 있습니다. "
-                                + "개발 편의를 위해 활성화를 권장합니다.");
+                        "ℹ️ 참고: 로컬 환경에서 Swagger UI가 비활성화되어 있습니다. " + "개발 편의를 위해 활성화를 권장합니다.");
             }
         }
     }
@@ -444,9 +446,7 @@ class RestApiConfigArchTest {
             }
 
             if (baseUrl != null && "about:blank".equals(baseUrl)) {
-                System.out.println(
-                        "ℹ️ 권장사항: 운영 환경에서 api.error.base-url을 "
-                                + "실제 에러 문서 URL로 설정하세요");
+                System.out.println("ℹ️ 권장사항: 운영 환경에서 api.error.base-url을 " + "실제 에러 문서 URL로 설정하세요");
             }
         }
     }

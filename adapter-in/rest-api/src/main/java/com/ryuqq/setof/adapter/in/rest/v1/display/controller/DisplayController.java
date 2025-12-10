@@ -1,14 +1,5 @@
 package com.ryuqq.setof.adapter.in.rest.v1.display.controller;
 
-import java.util.List;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import com.ryuqq.setof.adapter.in.rest.auth.paths.ApiPaths;
 import com.ryuqq.setof.adapter.in.rest.common.dto.ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.common.dto.SliceApiResponse;
@@ -21,8 +12,18 @@ import com.ryuqq.setof.adapter.in.rest.v1.display.dto.response.DisplayV1ApiRespo
 import com.ryuqq.setof.adapter.in.rest.v1.display.dto.response.GnbV1ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Display Contents (Legacy V1)",
+@Tag(
+        name = "Display Contents (Legacy V1)",
         description = "레거시 Display Contents API - V2로 마이그레이션 권장")
 @Deprecated
 @RestController
@@ -56,9 +57,10 @@ public class DisplayController {
     @Deprecated
     @Operation(summary = "[Legacy] 컴포넌트 상품 조회", description = "컴포넌트 상품을 조회합니다.")
     @GetMapping(ApiPaths.Content.COMPONENT_PRODUCTS)
-    public ResponseEntity<ApiResponse<SliceApiResponse<ContentProductGroupThumbnailV1ApiResponse>>> getContentProductGroups(
-            @PathVariable("componentId") long componentId,
-            @ModelAttribute ContentProductGroupV1SearchApiRequest request) {
+    public ResponseEntity<ApiResponse<SliceApiResponse<ContentProductGroupThumbnailV1ApiResponse>>>
+            getContentProductGroups(
+                    @PathVariable("componentId") long componentId,
+                    @ModelAttribute ContentProductGroupV1SearchApiRequest request) {
         throw new UnsupportedOperationException("컴포넌트 상품 조회 기능은 아직 지원되지 않습니다.");
     }
 
@@ -76,6 +78,4 @@ public class DisplayController {
     public ResponseEntity<ApiResponse<List<GnbV1ApiResponse>>> getGnbs() {
         throw new UnsupportedOperationException("Gnb 조회 기능은 아직 지원되지 않습니다.");
     }
-
-
 }

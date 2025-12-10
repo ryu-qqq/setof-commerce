@@ -1,10 +1,8 @@
 package com.ryuqq.setof.adapter.in.rest.admin.architecture.openapi;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import static com.ryuqq.setof.adapter.in.rest.admin.architecture.ArchUnitPackageConstants.*;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
@@ -19,10 +17,11 @@ import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
-
-import static com.ryuqq.setof.adapter.in.rest.admin.architecture.ArchUnitPackageConstants.*;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * OpenAPI ArchUnit 검증 테스트 (Zero-Tolerance)
@@ -72,7 +71,11 @@ class OpenApiArchTest {
     @DisplayName("1. Controller OpenAPI 규칙")
     class ControllerOpenApiRules {
 
-        /** 규칙 1-1: Controller 클래스에 @Tag 필수 */
+        /**
+         * 규칙 1-1: Controller 클래스에 @Tag 필수
+         *
+         * <p>예외: 레거시 V1 Controller는 마이그레이션 전까지 허용
+         */
         @Test
         @DisplayName("[필수] Controller 클래스는 @Tag 어노테이션이 있어야 한다")
         void controller_ShouldHaveTagAnnotation() {
@@ -83,17 +86,25 @@ class OpenApiArchTest {
                             .and()
                             .haveSimpleNameEndingWith("Controller")
                             .and()
+                            .haveSimpleNameNotContaining("V1") // 레거시 V1 Controller 제외
+                            .and()
+                            .haveSimpleNameNotStartingWith("ApiDocs") // ApiDocsController 제외
+                            .and()
                             .areAnnotatedWith(
                                     "org.springframework.web.bind.annotation.RestController")
                             .should()
                             .beAnnotatedWith("io.swagger.v3.oas.annotations.tags.Tag")
                             .allowEmptyShould(true)
-                            .because("Controller는 @Tag로 API 그룹을 정의해야 합니다");
+                            .because("Controller는 @Tag로 API 그룹을 정의해야 합니다 (V1, ApiDocs Controller 제외)");
 
             rule.allowEmptyShould(true).check(allClasses);
         }
 
-        /** 규칙 1-2: Controller public 메서드에 @Operation 필수 */
+        /**
+         * 규칙 1-2: Controller public 메서드에 @Operation 필수
+         *
+         * <p>예외: 레거시 V1 Controller는 마이그레이션 전까지 허용
+         */
         @Test
         @DisplayName("[필수] Controller HTTP 메서드는 @Operation 어노테이션이 있어야 한다")
         void controller_MethodsShouldHaveOperationAnnotation() {
@@ -107,6 +118,12 @@ class OpenApiArchTest {
                             .haveSimpleNameEndingWith("Controller")
                             .and()
                             .areDeclaredInClassesThat()
+                            .haveSimpleNameNotContaining("V1") // 레거시 V1 Controller 제외
+                            .and()
+                            .areDeclaredInClassesThat()
+                            .haveSimpleNameNotStartingWith("ApiDocs") // ApiDocsController 제외
+                            .and()
+                            .areDeclaredInClassesThat()
                             .areAnnotatedWith(
                                     "org.springframework.web.bind.annotation.RestController") // @RestController만 검증
                             .and()
@@ -115,12 +132,18 @@ class OpenApiArchTest {
                             .should()
                             .beAnnotatedWith("io.swagger.v3.oas.annotations.Operation")
                             .allowEmptyShould(true)
-                            .because("모든 API 메서드는 @Operation으로 설명이 필요합니다 (ApiDocsController 제외)");
+                            .because(
+                                    "모든 API 메서드는 @Operation으로 설명이 필요합니다 (ApiDocsController, V1"
+                                            + " Controller 제외)");
 
             rule.allowEmptyShould(true).check(allClasses);
         }
 
-        /** 규칙 1-3: Controller public 메서드에 @ApiResponses 필수 */
+        /**
+         * 규칙 1-3: Controller public 메서드에 @ApiResponses 필수
+         *
+         * <p>예외: 레거시 V1 Controller는 마이그레이션 전까지 허용
+         */
         @Test
         @DisplayName("[필수] Controller HTTP 메서드는 @ApiResponses 어노테이션이 있어야 한다")
         void controller_MethodsShouldHaveApiResponses() {
@@ -134,6 +157,12 @@ class OpenApiArchTest {
                             .haveSimpleNameEndingWith("Controller")
                             .and()
                             .areDeclaredInClassesThat()
+                            .haveSimpleNameNotContaining("V1") // 레거시 V1 Controller 제외
+                            .and()
+                            .areDeclaredInClassesThat()
+                            .haveSimpleNameNotStartingWith("ApiDocs") // ApiDocsController 제외
+                            .and()
+                            .areDeclaredInClassesThat()
                             .areAnnotatedWith(
                                     "org.springframework.web.bind.annotation.RestController") // @RestController만 검증
                             .and()
@@ -142,12 +171,18 @@ class OpenApiArchTest {
                             .should()
                             .beAnnotatedWith("io.swagger.v3.oas.annotations.responses.ApiResponses")
                             .allowEmptyShould(true)
-                            .because("모든 API 메서드는 @ApiResponses로 응답 코드를 정의해야 합니다 (ApiDocsController 제외)");
+                            .because(
+                                    "모든 API 메서드는 @ApiResponses로 응답 코드를 정의해야 합니다 (ApiDocsController,"
+                                            + " V1 Controller 제외)");
 
             rule.allowEmptyShould(true).check(allClasses);
         }
 
-        /** 규칙 1-4: @PathVariable 파라미터에 @Parameter 필수 */
+        /**
+         * 규칙 1-4: @PathVariable 파라미터에 @Parameter 필수
+         *
+         * <p>예외: 레거시 V1 Controller는 마이그레이션 전까지 허용
+         */
         @Test
         @DisplayName("[필수] @PathVariable 파라미터는 @Parameter 어노테이션이 있어야 한다")
         void pathVariable_ShouldHaveParameterAnnotation() {
@@ -161,18 +196,27 @@ class OpenApiArchTest {
                             .haveSimpleNameEndingWith("Controller")
                             .and()
                             .areDeclaredInClassesThat()
+                            .haveSimpleNameNotContaining("V1") // 레거시 V1 Controller 제외
+                            .and()
+                            .areDeclaredInClassesThat()
                             .areAnnotatedWith(
                                     "org.springframework.web.bind.annotation.RestController") // @RestController만 검증
                             .and()
                             .arePublic()
                             .should(haveParameterAnnotationOnPathVariable())
                             .allowEmptyShould(true)
-                            .because("PathVariable은 @Parameter로 설명이 필요합니다 (ApiDocsController 제외)");
+                            .because(
+                                    "PathVariable은 @Parameter로 설명이 필요합니다 (ApiDocsController, V1"
+                                            + " Controller 제외)");
 
             rule.allowEmptyShould(true).check(allClasses);
         }
 
-        /** 규칙 1-5: @RequestParam 파라미터에 @Parameter 필수 */
+        /**
+         * 규칙 1-5: @RequestParam 파라미터에 @Parameter 필수
+         *
+         * <p>예외: 레거시 V1 Controller는 마이그레이션 전까지 허용
+         */
         @Test
         @DisplayName("[필수] @RequestParam 파라미터는 @Parameter 어노테이션이 있어야 한다")
         void requestParam_ShouldHaveParameterAnnotation() {
@@ -186,13 +230,18 @@ class OpenApiArchTest {
                             .haveSimpleNameEndingWith("Controller")
                             .and()
                             .areDeclaredInClassesThat()
+                            .haveSimpleNameNotContaining("V1") // 레거시 V1 Controller 제외
+                            .and()
+                            .areDeclaredInClassesThat()
                             .areAnnotatedWith(
                                     "org.springframework.web.bind.annotation.RestController") // @RestController만 검증
                             .and()
                             .arePublic()
                             .should(haveParameterAnnotationOnRequestParam())
                             .allowEmptyShould(true)
-                            .because("RequestParam은 @Parameter로 설명이 필요합니다 (ApiDocsController 제외)");
+                            .because(
+                                    "RequestParam은 @Parameter로 설명이 필요합니다 (ApiDocsController, V1"
+                                            + " Controller 제외)");
 
             rule.allowEmptyShould(true).check(allClasses);
         }

@@ -12,5 +12,4 @@ import java.util.Set;
 @Schema(description = "상품 그룹 상세 응답")
 public record ProductGroupDetailV1ApiResponse(
         @Schema(description = "상품 그룹 정보") ProductGroupInfoV1ApiResponse productGroup,
-        @Schema(description = "상품 목록") Set<ProductFetchV1ApiResponse> products) {
-}
+        @Schema(description = "상품 목록") Set<ProductFetchV1ApiResponse> products) {}

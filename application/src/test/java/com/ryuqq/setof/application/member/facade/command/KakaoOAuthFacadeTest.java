@@ -9,8 +9,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ryuqq.setof.application.member.dto.command.KakaoOAuthCommand;
 import com.ryuqq.setof.application.member.dto.bundle.KakaoOAuthResult;
+import com.ryuqq.setof.application.member.dto.command.KakaoOAuthCommand;
 import com.ryuqq.setof.application.member.event.MemberEventDispatcher;
 import com.ryuqq.setof.application.member.factory.command.MemberCommandFactory;
 import com.ryuqq.setof.application.member.factory.command.MemberUpdateFactory;

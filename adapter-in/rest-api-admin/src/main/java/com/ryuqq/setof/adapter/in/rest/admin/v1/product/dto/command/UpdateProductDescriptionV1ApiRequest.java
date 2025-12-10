@@ -10,5 +10,4 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(description = "상품 상세 설명 수정 요청")
 public record UpdateProductDescriptionV1ApiRequest(
-        @Schema(description = "상세 설명", example = "상품 상세 설명입니다.") String detailDescription) {
-}
+        @Schema(description = "상세 설명", example = "상품 상세 설명입니다.") String detailDescription) {}

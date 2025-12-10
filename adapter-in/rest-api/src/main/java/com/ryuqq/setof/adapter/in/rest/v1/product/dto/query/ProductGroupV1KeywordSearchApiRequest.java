@@ -1,13 +1,12 @@
 package com.ryuqq.setof.adapter.in.rest.v1.product.dto.query;
 
-import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 
 /**
  * 상품 키워드 검색 조회 필터 Request
  *
- * <p>
- * 상품을 키워드로 검색하여 목록을 조회할 때 사용하는 필터 조건입니다. 기존 상품 목록 조회 필터에 검색 키워드와 상품 그룹 ID 필터를 추가로 지원합니다.
+ * <p>상품을 키워드로 검색하여 목록을 조회할 때 사용하는 필터 조건입니다. 기존 상품 목록 조회 필터에 검색 키워드와 상품 그룹 ID 필터를 추가로 지원합니다.
  *
  * @param searchWord 검색 키워드
  * @param productGroupId 상품 그룹 ID
@@ -37,5 +36,4 @@ public record ProductGroupV1KeywordSearchApiRequest(
         @Schema(description = "브랜드 ID", example = "1") Long brandId,
         @Schema(description = "브랜드 ID 목록", example = "[1, 2, 3]") List<Long> brandIds,
         @Schema(description = "판매자 ID", example = "100") Long sellerId,
-        @Schema(description = "정렬 타입", example = "LATEST") String orderType) {
-}
+        @Schema(description = "정렬 타입", example = "LATEST") String orderType) {}

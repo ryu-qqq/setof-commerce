@@ -18,5 +18,4 @@ public record SellerUpdateDetailV1ApiRequest(
         @Schema(description = "반품 주소 1", example = "서울시 강남구 테헤란로 123") String returnAddressLine1,
         @Schema(description = "반품 주소 2", example = "124-1234") String returnAddressLine2,
         @Schema(description = "반품 우편번호", example = "12345") String returnAddressZipCode,
-        @Schema(description = "사이트 ID 목록", example = "[1, 2, 3]") List<Long> siteIds) {
-}
+        @Schema(description = "사이트 ID 목록", example = "[1, 2, 3]") List<Long> siteIds) {}

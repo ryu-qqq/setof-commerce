@@ -11,5 +11,4 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "상품 그룹 정보 DTO 응답")
 public record ProductGroupInfoDtoV1ApiResponse(
         @Schema(description = "상품 그룹 ID", example = "12345") Long productGroupId,
-        @Schema(description = "상품 그룹명", example = "멋진 티셔츠") String productGroupName) {
-}
+        @Schema(description = "상품 그룹명", example = "멋진 티셔츠") String productGroupName) {}

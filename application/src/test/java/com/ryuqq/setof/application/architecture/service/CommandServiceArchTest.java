@@ -1,25 +1,22 @@
 package com.ryuqq.setof.application.architecture.service;
 
+import static com.tngtech.archunit.core.domain.JavaModifier.FINAL;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.lang.ArchRule;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.stereotype.Service;
-
-import com.tngtech.archunit.core.domain.JavaClass;
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.lang.ArchRule;
-
-import static com.tngtech.archunit.core.domain.JavaModifier.FINAL;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * CommandService ArchUnit 검증 테스트 (Zero-Tolerance)
@@ -383,8 +380,8 @@ class CommandServiceArchTest {
                             .dependOnClassesThat()
                             .haveSimpleNameContaining("Assembler")
                             .because(
-                                    "CommandService는 Factory, Manager, Facade, UseCase, Validator, Assembler 등을 통해 "
-                                            + "도메인 로직을 조율해야 합니다.");
+                                    "CommandService는 Factory, Manager, Facade, UseCase, Validator,"
+                                            + " Assembler 등을 통해 도메인 로직을 조율해야 합니다.");
 
             rule.check(classes);
         }

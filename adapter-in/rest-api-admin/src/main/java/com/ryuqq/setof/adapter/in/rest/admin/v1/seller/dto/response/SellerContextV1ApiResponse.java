@@ -14,5 +14,4 @@ public record SellerContextV1ApiResponse(
         @Schema(description = "이메일", example = "seller@example.com") String email,
         @Schema(description = "비밀번호 해시", example = "hash...") String passwordHash,
         @Schema(description = "역할 타입", example = "SELLER") String roleType,
-        @Schema(description = "승인 상태", example = "APPROVED") String approvalStatus) {
-}
+        @Schema(description = "승인 상태", example = "APPROVED") String approvalStatus) {}

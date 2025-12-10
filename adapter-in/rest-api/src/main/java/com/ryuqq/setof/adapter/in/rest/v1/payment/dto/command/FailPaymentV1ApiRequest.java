@@ -1,7 +1,7 @@
 package com.ryuqq.setof.adapter.in.rest.v1.payment.dto.command;
 
-import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 
 /**
  * V1 결제 실패 처리 Request
@@ -12,5 +12,4 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "결제 실패 처리 요청")
 public record FailPaymentV1ApiRequest(
         @Schema(description = "결제 고유 ID", example = "payment_unique_123") String paymentUniqueId,
-        @Schema(description = "장바구니 ID 목록", example = "[1, 2, 3]") List<Long> cartIds) {
-}
+        @Schema(description = "장바구니 ID 목록", example = "[1, 2, 3]") List<Long> cartIds) {}

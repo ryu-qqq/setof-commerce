@@ -2,8 +2,6 @@ package com.ryuqq.setof.adapter.in.rest.v1.image.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.time.LocalDateTime;
-
 /**
  * Pre-signed URL Response
  *
@@ -18,5 +16,5 @@ import java.time.LocalDateTime;
 public record CreatePreSignedUrlV1ApiResponse(
         @Schema(description = "Pre-signed URL", example = "https://bucket.s3.amazonaws.com/...")
                 String preSignedUrl,
-        @Schema(description = "S3 파일 키", example = "images/review/2025/01/uuid.jpg") String objectKey
-) {}
+        @Schema(description = "S3 파일 키", example = "images/review/2025/01/uuid.jpg")
+                String objectKey) {}

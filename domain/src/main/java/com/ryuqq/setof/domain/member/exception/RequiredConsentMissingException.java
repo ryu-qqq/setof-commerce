@@ -1,7 +1,6 @@
 package com.ryuqq.setof.domain.member.exception;
 
 import com.ryuqq.setof.domain.common.exception.DomainException;
-
 import java.util.Map;
 
 /**
@@ -16,9 +15,8 @@ public final class RequiredConsentMissingException extends DomainException {
 
     public RequiredConsentMissingException(String consentType) {
         super(
-            MemberErrorCode.REQUIRED_CONSENT_MISSING,
-            String.format("필수 동의 항목이 누락되었습니다: %s 동의가 필요합니다.", consentType),
-            Map.of("consentType", consentType)
-        );
+                MemberErrorCode.REQUIRED_CONSENT_MISSING,
+                String.format("필수 동의 항목이 누락되었습니다: %s 동의가 필요합니다.", consentType),
+                Map.of("consentType", consentType));
     }
 }

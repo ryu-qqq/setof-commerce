@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.ryuqq.setof.application.member.dto.command.KakaoOAuthCommand;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +17,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import com.ryuqq.setof.application.member.dto.command.KakaoOAuthCommand;
 
 @DisplayName("KakaoOAuth2ApiMapper")
 class KakaoOAuth2ApiMapperTest {

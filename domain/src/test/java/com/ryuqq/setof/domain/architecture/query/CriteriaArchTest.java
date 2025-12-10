@@ -1,9 +1,6 @@
 package com.ryuqq.setof.domain.architecture.query;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
@@ -13,16 +10,18 @@ import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
-
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Criteria ArchUnit 아키텍처 검증 테스트
  *
  * <p><strong>개요</strong>:
  *
- * <p>Criteria는 복합 검색 조건을 표현하는 Domain Query Object입니다.
- * 단건 조회용 VO(Email, UserId 등)는 기존 vo 패키지의 VO를 재사용합니다.
+ * <p>Criteria는 복합 검색 조건을 표현하는 Domain Query Object입니다. 단건 조회용 VO(Email, UserId 등)는 기존 vo 패키지의 VO를
+ * 재사용합니다.
  *
  * <p><strong>패키지 구조</strong>:
  *
@@ -284,14 +283,13 @@ class CriteriaArchTest {
                         .should()
                         .onlyDependOnClassesThat()
                         .resideInAnyPackage(
-                                "com.ryuqq.setof.domain..",
-                                "java..",
-                                "jakarta.annotation..")
+                                "com.ryuqq.setof.domain..", "java..", "jakarta.annotation..")
                         .allowEmptyShould(true)
                         .because(
                                 "Criteria는 Domain Layer 내부에만 의존해야 합니다\n"
                                         + "허용된 의존성:\n"
-                                        + "  - domain.common.vo (DateRange, PageRequest, SortDirection)\n"
+                                        + "  - domain.common.vo (DateRange, PageRequest,"
+                                        + " SortDirection)\n"
                                         + "  - domain.{bc}.vo (SortKey 구현체)\n"
                                         + "  - java.* (표준 라이브러리)");
 
@@ -402,7 +400,7 @@ class CriteriaArchTest {
                     String message =
                             String.format(
                                     "Criteria %s는 public static %s() 메서드를 가져야 합니다.\n"
-                                            + "예시: public static %s of(...) { return new %s(...); }",
+                                        + "예시: public static %s of(...) { return new %s(...); }",
                                     javaClass.getSimpleName(),
                                     methodName,
                                     javaClass.getSimpleName(),

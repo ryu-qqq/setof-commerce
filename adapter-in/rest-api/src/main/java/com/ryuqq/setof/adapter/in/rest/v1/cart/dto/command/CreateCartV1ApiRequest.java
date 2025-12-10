@@ -19,31 +19,30 @@ import jakarta.validation.constraints.NotNull;
  */
 @Schema(description = "장바구니 추가/수정 요청")
 public record CreateCartV1ApiRequest(
-    @Schema(
-        description = "상품 그룹 ID",
-        example = "12345",
-        requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "상품 그룹 아이디는 필수 입니다.")
-    Long productGroupId,
-    @Schema(
-        description = "상품 ID",
-        example = "67890",
-        requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "상품 아이디는 필수 입니다.")
-    Long productId,
-    @Schema(
-        description = "수량",
-        example = "2",
-        minimum = "1",
-        maximum = "999",
-        requiredMode = Schema.RequiredMode.REQUIRED)
-    @Min(value = 1, message = "재고의 수량은 0 보다 커야합니다.")
-    @Max(value = 999, message = "재고의 수량은 999 보다 작아야 합니다.")
-    Integer quantity,
-    @Schema(
-        description = "판매자 ID",
-        example = "100",
-        requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "판매자 아이디는 필수 입니다.")
-    Long sellerId
-) {}
+        @Schema(
+                        description = "상품 그룹 ID",
+                        example = "12345",
+                        requiredMode = Schema.RequiredMode.REQUIRED)
+                @NotNull(message = "상품 그룹 아이디는 필수 입니다.")
+                Long productGroupId,
+        @Schema(
+                        description = "상품 ID",
+                        example = "67890",
+                        requiredMode = Schema.RequiredMode.REQUIRED)
+                @NotNull(message = "상품 아이디는 필수 입니다.")
+                Long productId,
+        @Schema(
+                        description = "수량",
+                        example = "2",
+                        minimum = "1",
+                        maximum = "999",
+                        requiredMode = Schema.RequiredMode.REQUIRED)
+                @Min(value = 1, message = "재고의 수량은 0 보다 커야합니다.")
+                @Max(value = 999, message = "재고의 수량은 999 보다 작아야 합니다.")
+                Integer quantity,
+        @Schema(
+                        description = "판매자 ID",
+                        example = "100",
+                        requiredMode = Schema.RequiredMode.REQUIRED)
+                @NotNull(message = "판매자 아이디는 필수 입니다.")
+                Long sellerId) {}

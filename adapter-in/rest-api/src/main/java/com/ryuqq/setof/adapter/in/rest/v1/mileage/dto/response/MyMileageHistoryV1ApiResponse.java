@@ -1,10 +1,8 @@
 package com.ryuqq.setof.adapter.in.rest.v1.mileage.dto.response;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 
 /**
  * 마일리지 내역 Response
@@ -33,7 +31,8 @@ public record MyMileageHistoryV1ApiResponse(
         @Schema(description = "금액", example = "1000") Long changeAmount,
         @Schema(description = "유형 (EARN: 적립, USE: 사용, EXPIRE: 소멸)", example = "EARN") String reason,
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        @Schema(description = "발생일시", example = "2025-01-01 10:00:00") LocalDateTime usedDate,
+                @Schema(description = "발생일시", example = "2025-01-01 10:00:00")
+                LocalDateTime usedDate,
         @Schema(description = "만료일시 (적립인 경우)", example = "2026-01-01 23:59:59")
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime expirationDate
-) {}
+                @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                LocalDateTime expirationDate) {}

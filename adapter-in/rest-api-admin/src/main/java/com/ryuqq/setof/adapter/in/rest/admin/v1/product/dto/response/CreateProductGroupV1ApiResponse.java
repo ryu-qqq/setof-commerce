@@ -13,5 +13,4 @@ import java.util.Set;
 public record CreateProductGroupV1ApiResponse(
         @Schema(description = "상품 그룹 ID", example = "12345") Long productGroupId,
         @Schema(description = "셀러 ID", example = "100") Long sellerId,
-        @Schema(description = "상품 목록") Set<ProductFetchV1ApiResponse> products) {
-}
+        @Schema(description = "상품 목록") Set<ProductFetchV1ApiResponse> products) {}

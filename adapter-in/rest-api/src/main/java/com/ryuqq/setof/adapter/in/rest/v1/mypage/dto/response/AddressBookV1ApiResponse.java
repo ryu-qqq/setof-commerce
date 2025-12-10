@@ -23,6 +23,5 @@ public record AddressBookV1ApiResponse(
             @Schema(description = "우편번호", example = "12345") String zipCode,
             @Schema(description = "국가 코드", example = "KR") String country,
             @Schema(description = "배송 요청 사항", example = "문 앞에 놔주세요") String deliveryRequest,
-            @Schema(description = "수취인 핸드폰 번호", example = "01011111111") String phoneNumber) {
-    }
+            @Schema(description = "수취인 핸드폰 번호", example = "01011111111") String phoneNumber) {}
 }

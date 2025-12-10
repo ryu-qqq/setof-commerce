@@ -15,8 +15,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(description = "Gnb 응답")
 public record GnbV1ApiResponse(
-    @Schema(description = "gnb Id", example = "1") long gnbId,
-    @Schema(description = "gnb 타이틀", example = "상품 전시") String title,
-    @Schema(description = "링크 url", example = "https://cdn.sample.com") String linkUrl
-) {
-}
+        @Schema(description = "gnb Id", example = "1") long gnbId,
+        @Schema(description = "gnb 타이틀", example = "상품 전시") String title,
+        @Schema(description = "링크 url", example = "https://cdn.sample.com") String linkUrl) {}

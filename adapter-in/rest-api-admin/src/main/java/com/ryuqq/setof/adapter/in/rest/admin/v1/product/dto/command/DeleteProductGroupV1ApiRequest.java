@@ -11,5 +11,4 @@ import java.util.List;
  */
 @Schema(description = "상품 그룹 삭제 요청")
 public record DeleteProductGroupV1ApiRequest(
-        @Schema(description = "상품 그룹 ID 목록", example = "[1, 2, 3]") List<Long> productGroupIds) {
-}
+        @Schema(description = "상품 그룹 ID 목록", example = "[1, 2, 3]") List<Long> productGroupIds) {}

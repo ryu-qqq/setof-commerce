@@ -166,8 +166,8 @@ public final class ArchUnitPackageConstants {
     /** Domain 전체 패키지 패턴 (와일드카드) */
     public static final String DOMAIN_ALL = DOMAIN + "..";
 
-    /** Domain Exception 패턴 (와일드카드) */
-    public static final String DOMAIN_EXCEPTION_ALL = DOMAIN + "..exception..";
+    /** Domain Exception 패턴 (와일드카드) - domain.common.exception 패키지 */
+    public static final String DOMAIN_EXCEPTION_ALL = BASE_PACKAGE + ".domain.common.exception..";
 
     /** Persistence 전체 패키지 패턴 (와일드카드) */
     public static final String PERSISTENCE_ALL = ADAPTER_OUT_PERSISTENCE + "..";

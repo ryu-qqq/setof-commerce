@@ -18,5 +18,4 @@ public record ProductNoticeV1ApiResponse(
         @Schema(description = "세탁 방법", example = "손세탁") String washingMethod,
         @Schema(description = "제조년월", example = "2024-01") String yearMonth,
         @Schema(description = "품질보증기준", example = "소비자분쟁해결기준") String assuranceStandard,
-        @Schema(description = "A/S 전화번호", example = "1588-0000") String asPhone) {
-}
+        @Schema(description = "A/S 전화번호", example = "1588-0000") String asPhone) {}

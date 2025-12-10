@@ -24,7 +24,6 @@ public record SettlementV1ApiResponse(
         @Schema(description = "셀러 마일리지 금액", example = "25000") BigDecimal sellerMileageAmount,
         @Schema(description = "우리 마일리지 금액", example = "25000") BigDecimal ourMileageAmount,
         @Schema(description = "정산 금액", example = "8950000") BigDecimal settlementAmount,
-        @Schema(description = "예상 정산 금액",
-                example = "8900000") BigDecimal expectationSettlementAmount,
-        @Schema(description = "총 수수료", example = "50000") BigDecimal totalFee) {
-}
+        @Schema(description = "예상 정산 금액", example = "8900000")
+                BigDecimal expectationSettlementAmount,
+        @Schema(description = "총 수수료", example = "50000") BigDecimal totalFee) {}

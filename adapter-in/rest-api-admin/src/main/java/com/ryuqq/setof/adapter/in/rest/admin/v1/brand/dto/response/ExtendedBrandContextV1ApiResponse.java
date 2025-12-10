@@ -14,5 +14,4 @@ public record ExtendedBrandContextV1ApiResponse(
         @Schema(description = "브랜드명", example = "Nike") String brandName,
         @Schema(description = "메인 표시명 타입", example = "KOREAN") String mainDisplayType,
         @Schema(description = "영문 표시명", example = "Nike") String displayEnglishName,
-        @Schema(description = "한글 표시명", example = "나이키") String displayKoreanName) {
-}
+        @Schema(description = "한글 표시명", example = "나이키") String displayKoreanName) {}

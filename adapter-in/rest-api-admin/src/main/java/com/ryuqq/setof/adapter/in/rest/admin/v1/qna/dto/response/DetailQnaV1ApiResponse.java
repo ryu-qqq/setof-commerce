@@ -10,6 +10,6 @@ import java.util.Set;
  * @since 1.0.0
  */
 @Schema(description = "QNA 상세 응답")
-public record DetailQnaV1ApiResponse(@Schema(description = "QNA 정보") FetchQnaV1ApiResponse qna,
-        @Schema(description = "답변 QNA 목록") Set<AnswerQnaV1ApiResponse> answerQnas) {
-}
+public record DetailQnaV1ApiResponse(
+        @Schema(description = "QNA 정보") FetchQnaV1ApiResponse qna,
+        @Schema(description = "답변 QNA 목록") Set<AnswerQnaV1ApiResponse> answerQnas) {}

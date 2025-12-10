@@ -14,7 +14,5 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(description = "Board 검색 필터")
 public record BoardV1SearchApiRequest(
-    @Schema(description = "페이지 오프셋", example = "1") String offSet,
-    @Schema(description = "페이지 사이즈 ", example = "1") String pageSize
-) {
-}
+        @Schema(description = "페이지 오프셋", example = "1") String offSet,
+        @Schema(description = "페이지 사이즈 ", example = "1") String pageSize) {}

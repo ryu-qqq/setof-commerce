@@ -3,7 +3,6 @@ package com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.query;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -27,8 +26,9 @@ public record ProductGroupFilterV1ApiRequest(
         @Schema(description = "셀러 ID", example = "1") Long sellerId,
         @Schema(description = "카테고리 ID 목록", example = "[1, 2, 3]") Set<Long> categoryIds,
         @Schema(description = "검색어", example = "상품명") String searchKeyword,
-        @Schema(description = "시작 일시", example = "2024-01-01 00:00:00") @JsonFormat(
-                pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDate,
-        @Schema(description = "종료 일시", example = "2024-12-31 23:59:59") @JsonFormat(
-                pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDate) {
-}
+        @Schema(description = "시작 일시", example = "2024-01-01 00:00:00")
+                @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                LocalDateTime startDate,
+        @Schema(description = "종료 일시", example = "2024-12-31 23:59:59")
+                @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                LocalDateTime endDate) {}

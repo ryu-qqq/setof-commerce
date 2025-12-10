@@ -188,14 +188,15 @@ public final class ArchUnitPackageConstants {
     /**
      * Legacy V1 API 패키지 패턴
      *
-     * <p>V1 API는 기존 레거시 코드로서 점진적 마이그레이션 대상입니다.
-     * 새로운 ArchUnit 규칙에서 예외 처리되며, 향후 V2 API로 마이그레이션 시 제거됩니다.
+     * <p>V1 API는 기존 레거시 코드로서 점진적 마이그레이션 대상입니다. 새로운 ArchUnit 규칙에서 예외 처리되며, 향후 V2 API로 마이그레이션 시
+     * 제거됩니다.
      *
      * <p>제외되는 검증:
+     *
      * <ul>
-     *   <li>OpenAPI 어노테이션 (@Tag, @Operation, @ApiResponses, @Schema)</li>
-     *   <li>@DeleteMapping 금지 규칙</li>
-     *   <li>UseCase Port 의존성 규칙</li>
+     *   <li>OpenAPI 어노테이션 (@Tag, @Operation, @ApiResponses, @Schema)
+     *   <li>@DeleteMapping 금지 규칙
+     *   <li>UseCase Port 의존성 규칙
      * </ul>
      */
     public static final String LEGACY_V1_PATTERN = "..v1..";

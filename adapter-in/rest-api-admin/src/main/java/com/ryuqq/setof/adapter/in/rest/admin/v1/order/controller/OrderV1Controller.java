@@ -1,9 +1,5 @@
 package com.ryuqq.setof.adapter.in.rest.admin.v1.order.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-
 import com.ryuqq.setof.adapter.in.rest.admin.common.dto.ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.common.dto.PageApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.order.dto.command.ShipmentInfoV1ApiRequest;
@@ -17,9 +13,10 @@ import com.ryuqq.setof.adapter.in.rest.admin.v1.order.dto.response.OrderV1ApiRes
 import com.ryuqq.setof.adapter.in.rest.admin.v1.order.dto.response.SettlementV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.order.dto.response.ShipmentInfoV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.order.dto.response.UpdateOrderV1ApiResponse;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,8 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * V1 Order Controller (Legacy)
  *
- * <p>
- * 레거시 API 호환을 위한 V1 Order 엔드포인트
+ * <p>레거시 API 호환을 위한 V1 Order 엔드포인트
  *
  * @author development-team
  * @since 1.0.0

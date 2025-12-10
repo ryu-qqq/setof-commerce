@@ -1,10 +1,8 @@
 package com.ryuqq.setof.adapter.in.rest.admin.common.mapper;
 
 import com.ryuqq.setof.domain.common.exception.DomainException;
-
 import java.net.URI;
 import java.util.Locale;
-
 import org.springframework.http.HttpStatus;
 
 public interface ErrorMapper {

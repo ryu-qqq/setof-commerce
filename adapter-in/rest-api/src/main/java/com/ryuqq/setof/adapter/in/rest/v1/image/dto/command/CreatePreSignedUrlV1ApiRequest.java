@@ -27,4 +27,4 @@ public record CreatePreSignedUrlV1ApiRequest(
                         example = "PRODUCT",
                         requiredMode = Schema.RequiredMode.REQUIRED)
                 @NotNull(message = "이미지 저장 경로는 필수입니다.")
-        String imagePath) {}
+                String imagePath) {}

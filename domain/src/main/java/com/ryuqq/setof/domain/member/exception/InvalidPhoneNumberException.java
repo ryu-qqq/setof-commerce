@@ -1,7 +1,6 @@
 package com.ryuqq.setof.domain.member.exception;
 
 import com.ryuqq.setof.domain.common.exception.DomainException;
-
 import java.util.Map;
 
 /**
@@ -23,21 +22,21 @@ public final class InvalidPhoneNumberException extends DomainException {
 
     public InvalidPhoneNumberException(String invalidValue) {
         super(
-            MemberErrorCode.INVALID_PHONE_NUMBER,
-            String.format("잘못된 핸드폰 번호: %s. 010으로 시작하는 11자리 숫자여야 합니다.",
-                invalidValue != null ? invalidValue : "null"),
-            Map.of("invalidValue", invalidValue != null ? invalidValue : "null")
-        );
+                MemberErrorCode.INVALID_PHONE_NUMBER,
+                String.format(
+                        "잘못된 핸드폰 번호: %s. 010으로 시작하는 11자리 숫자여야 합니다.",
+                        invalidValue != null ? invalidValue : "null"),
+                Map.of("invalidValue", invalidValue != null ? invalidValue : "null"));
     }
 
     public InvalidPhoneNumberException(String invalidValue, String reason) {
         super(
-            MemberErrorCode.INVALID_PHONE_NUMBER,
-            String.format("잘못된 핸드폰 번호: %s. %s", invalidValue, reason),
-            Map.of(
-                "invalidValue", invalidValue != null ? invalidValue : "null",
-                "reason", reason
-            )
-        );
+                MemberErrorCode.INVALID_PHONE_NUMBER,
+                String.format("잘못된 핸드폰 번호: %s. %s", invalidValue, reason),
+                Map.of(
+                        "invalidValue",
+                        invalidValue != null ? invalidValue : "null",
+                        "reason",
+                        reason));
     }
 }

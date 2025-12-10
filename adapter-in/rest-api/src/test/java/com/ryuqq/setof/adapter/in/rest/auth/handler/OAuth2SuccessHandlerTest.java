@@ -7,10 +7,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import java.io.IOException;
-import java.util.Optional;
+
+import com.ryuqq.setof.adapter.in.rest.auth.component.TokenCookieWriter;
+import com.ryuqq.setof.adapter.in.rest.auth.config.SecurityProperties;
+import com.ryuqq.setof.adapter.in.rest.auth.mapper.KakaoOAuth2ApiMapper;
+import com.ryuqq.setof.adapter.in.rest.auth.repository.OAuth2CookieAuthorizationRequestRepository;
+import com.ryuqq.setof.adapter.in.rest.auth.utils.CookieUtils;
+import com.ryuqq.setof.application.auth.dto.response.TokenPairResponse;
+import com.ryuqq.setof.application.member.dto.command.KakaoOAuthCommand;
+import com.ryuqq.setof.application.member.dto.response.KakaoOAuthResponse;
+import com.ryuqq.setof.application.member.port.in.command.KakaoOAuthLoginUseCase;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,49 +32,30 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import com.ryuqq.setof.adapter.in.rest.auth.component.TokenCookieWriter;
-import com.ryuqq.setof.adapter.in.rest.auth.config.SecurityProperties;
-import com.ryuqq.setof.adapter.in.rest.auth.mapper.KakaoOAuth2ApiMapper;
-import com.ryuqq.setof.adapter.in.rest.auth.repository.OAuth2CookieAuthorizationRequestRepository;
-import com.ryuqq.setof.adapter.in.rest.auth.utils.CookieUtils;
-import com.ryuqq.setof.application.auth.dto.response.TokenPairResponse;
-import com.ryuqq.setof.application.member.dto.command.KakaoOAuthCommand;
-import com.ryuqq.setof.application.member.dto.response.KakaoOAuthResponse;
-import com.ryuqq.setof.application.member.port.in.command.KakaoOAuthLoginUseCase;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("OAuth2SuccessHandler")
 class OAuth2SuccessHandlerTest {
 
-    @Mock
-    private KakaoOAuthLoginUseCase kakaoOAuthLoginUseCase;
+    @Mock private KakaoOAuthLoginUseCase kakaoOAuthLoginUseCase;
 
-    @Mock
-    private KakaoOAuth2ApiMapper kakaoOAuth2ApiMapper;
+    @Mock private KakaoOAuth2ApiMapper kakaoOAuth2ApiMapper;
 
-    @Mock
-    private TokenCookieWriter tokenCookieWriter;
+    @Mock private TokenCookieWriter tokenCookieWriter;
 
-    @Mock
-    private OAuth2CookieAuthorizationRequestRepository authorizationRequestRepository;
+    @Mock private OAuth2CookieAuthorizationRequestRepository authorizationRequestRepository;
 
-    @Mock
-    private SecurityProperties securityProperties;
+    @Mock private SecurityProperties securityProperties;
 
-    @Mock
-    private SecurityProperties.OAuth2Properties oauth2Properties;
+    @Mock private SecurityProperties.OAuth2Properties oauth2Properties;
 
-    @Mock
-    private HttpServletRequest request;
+    @Mock private HttpServletRequest request;
 
-    @Mock
-    private HttpServletResponse response;
+    @Mock private HttpServletResponse response;
 
-    @Mock
-    private OAuth2AuthenticationToken authentication;
+    @Mock private OAuth2AuthenticationToken authentication;
 
-    @Mock
-    private OAuth2User oAuth2User;
+    @Mock private OAuth2User oAuth2User;
 
     private OAuth2SuccessHandler successHandler;
 
@@ -74,8 +65,13 @@ class OAuth2SuccessHandlerTest {
         lenient().when(securityProperties.getOauth2()).thenReturn(oauth2Properties);
         lenient().when(oauth2Properties.getFrontDomainUrl()).thenReturn("http://localhost:3000");
 
-        successHandler = new OAuth2SuccessHandler(kakaoOAuthLoginUseCase, kakaoOAuth2ApiMapper,
-                tokenCookieWriter, authorizationRequestRepository, securityProperties);
+        successHandler =
+                new OAuth2SuccessHandler(
+                        kakaoOAuthLoginUseCase,
+                        kakaoOAuth2ApiMapper,
+                        tokenCookieWriter,
+                        authorizationRequestRepository,
+                        securityProperties);
     }
 
     @Nested
@@ -97,19 +93,23 @@ class OAuth2SuccessHandlerTest {
             when(kakaoOAuthLoginUseCase.execute(command)).thenReturn(oauthResponse);
 
             try (MockedStatic<CookieUtils> cookieUtilsMock = mockStatic(CookieUtils.class)) {
-                cookieUtilsMock.when(() -> CookieUtils.isIntegrationRequest(request))
+                cookieUtilsMock
+                        .when(() -> CookieUtils.isIntegrationRequest(request))
                         .thenReturn(false);
-                cookieUtilsMock.when(() -> CookieUtils.getRedirectUri(request))
+                cookieUtilsMock
+                        .when(() -> CookieUtils.getRedirectUri(request))
                         .thenReturn(Optional.empty());
-                cookieUtilsMock.when(() -> CookieUtils.getReferer(request))
+                cookieUtilsMock
+                        .when(() -> CookieUtils.getReferer(request))
                         .thenReturn(Optional.empty());
 
                 // When
                 successHandler.onAuthenticationSuccess(request, response, authentication);
 
                 // Then
-                verify(tokenCookieWriter).addTokenCookies(eq(response), eq("access"), eq("refresh"),
-                        eq(3600L), eq(604800L));
+                verify(tokenCookieWriter)
+                        .addTokenCookies(
+                                eq(response), eq("access"), eq("refresh"), eq(3600L), eq(604800L));
                 verify(authorizationRequestRepository).removeAuthorizationRequestCookies(response);
             }
         }
@@ -129,11 +129,14 @@ class OAuth2SuccessHandlerTest {
             when(kakaoOAuthLoginUseCase.execute(command)).thenReturn(oauthResponse);
 
             try (MockedStatic<CookieUtils> cookieUtilsMock = mockStatic(CookieUtils.class)) {
-                cookieUtilsMock.when(() -> CookieUtils.isIntegrationRequest(request))
+                cookieUtilsMock
+                        .when(() -> CookieUtils.isIntegrationRequest(request))
                         .thenReturn(true);
-                cookieUtilsMock.when(() -> CookieUtils.getRedirectUri(request))
+                cookieUtilsMock
+                        .when(() -> CookieUtils.getRedirectUri(request))
                         .thenReturn(Optional.empty());
-                cookieUtilsMock.when(() -> CookieUtils.getReferer(request))
+                cookieUtilsMock
+                        .when(() -> CookieUtils.getReferer(request))
                         .thenReturn(Optional.empty());
 
                 // When
@@ -151,7 +154,8 @@ class OAuth2SuccessHandlerTest {
             Authentication invalidAuth = mock(Authentication.class);
 
             // When & Then
-            assertThrows(IllegalArgumentException.class,
+            assertThrows(
+                    IllegalArgumentException.class,
                     () -> successHandler.onAuthenticationSuccess(request, response, invalidAuth));
         }
 
@@ -169,11 +173,14 @@ class OAuth2SuccessHandlerTest {
             when(kakaoOAuthLoginUseCase.execute(command)).thenReturn(oauthResponse);
 
             try (MockedStatic<CookieUtils> cookieUtilsMock = mockStatic(CookieUtils.class)) {
-                cookieUtilsMock.when(() -> CookieUtils.isIntegrationRequest(request))
+                cookieUtilsMock
+                        .when(() -> CookieUtils.isIntegrationRequest(request))
                         .thenReturn(false);
-                cookieUtilsMock.when(() -> CookieUtils.getRedirectUri(request))
+                cookieUtilsMock
+                        .when(() -> CookieUtils.getRedirectUri(request))
                         .thenReturn(Optional.empty());
-                cookieUtilsMock.when(() -> CookieUtils.getReferer(request))
+                cookieUtilsMock
+                        .when(() -> CookieUtils.getReferer(request))
                         .thenReturn(Optional.empty());
 
                 // When
@@ -199,11 +206,14 @@ class OAuth2SuccessHandlerTest {
             when(kakaoOAuthLoginUseCase.execute(command)).thenReturn(oauthResponse);
 
             try (MockedStatic<CookieUtils> cookieUtilsMock = mockStatic(CookieUtils.class)) {
-                cookieUtilsMock.when(() -> CookieUtils.isIntegrationRequest(request))
+                cookieUtilsMock
+                        .when(() -> CookieUtils.isIntegrationRequest(request))
                         .thenReturn(false);
-                cookieUtilsMock.when(() -> CookieUtils.getRedirectUri(request))
+                cookieUtilsMock
+                        .when(() -> CookieUtils.getRedirectUri(request))
                         .thenReturn(Optional.empty());
-                cookieUtilsMock.when(() -> CookieUtils.getReferer(request))
+                cookieUtilsMock
+                        .when(() -> CookieUtils.getReferer(request))
                         .thenReturn(Optional.empty());
 
                 // When

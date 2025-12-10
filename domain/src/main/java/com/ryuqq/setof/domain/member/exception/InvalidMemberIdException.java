@@ -1,7 +1,6 @@
 package com.ryuqq.setof.domain.member.exception;
 
 import com.ryuqq.setof.domain.common.exception.DomainException;
-
 import java.util.Map;
 
 /**
@@ -23,10 +22,10 @@ public final class InvalidMemberIdException extends DomainException {
 
     public InvalidMemberIdException(String invalidValue) {
         super(
-            MemberErrorCode.INVALID_MEMBER_ID,
-            String.format("잘못된 회원 ID: %s. 회원 ID는 유효한 UUID 형식이어야 합니다.",
-                invalidValue != null ? invalidValue : "null"),
-            Map.of("invalidValue", invalidValue != null ? invalidValue : "null")
-        );
+                MemberErrorCode.INVALID_MEMBER_ID,
+                String.format(
+                        "잘못된 회원 ID: %s. 회원 ID는 유효한 UUID 형식이어야 합니다.",
+                        invalidValue != null ? invalidValue : "null"),
+                Map.of("invalidValue", invalidValue != null ? invalidValue : "null"));
     }
 }

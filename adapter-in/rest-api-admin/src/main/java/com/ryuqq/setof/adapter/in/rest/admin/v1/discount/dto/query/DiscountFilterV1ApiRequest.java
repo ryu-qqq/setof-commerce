@@ -19,8 +19,9 @@ public record DiscountFilterV1ApiRequest(
         @Schema(description = "발행 타입", example = "PRODUCT") String issueType,
         @Schema(description = "사용자 ID", example = "1") Long userId,
         @Schema(description = "검색어", example = "할인") String searchKeyword,
-        @Schema(description = "시작 일시", example = "2024-01-01 00:00:00") @JsonFormat(
-                pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDate,
-        @Schema(description = "종료 일시", example = "2024-12-31 23:59:59") @JsonFormat(
-                pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDate) {
-}
+        @Schema(description = "시작 일시", example = "2024-01-01 00:00:00")
+                @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                LocalDateTime startDate,
+        @Schema(description = "종료 일시", example = "2024-12-31 23:59:59")
+                @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                LocalDateTime endDate) {}

@@ -13,6 +13,4 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(description = "브랜드 검색 필터")
 public record BrandV1SearchApiRequest(
-    @Schema(description = "검색어 (브랜드명)", example = "나이키") String searchWord
-) {
-}
+        @Schema(description = "검색어 (브랜드명)", example = "나이키") String searchWord) {}

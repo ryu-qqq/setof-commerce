@@ -1,8 +1,8 @@
 package com.ryuqq.setof.application.member.facade.command;
 
+import com.ryuqq.setof.application.member.dto.bundle.KakaoOAuthResult;
 import com.ryuqq.setof.application.member.dto.command.IntegrateKakaoCommand;
 import com.ryuqq.setof.application.member.dto.command.KakaoOAuthCommand;
-import com.ryuqq.setof.application.member.dto.bundle.KakaoOAuthResult;
 import com.ryuqq.setof.application.member.event.MemberEventDispatcher;
 import com.ryuqq.setof.application.member.factory.command.MemberCommandFactory;
 import com.ryuqq.setof.application.member.factory.command.MemberUpdateFactory;

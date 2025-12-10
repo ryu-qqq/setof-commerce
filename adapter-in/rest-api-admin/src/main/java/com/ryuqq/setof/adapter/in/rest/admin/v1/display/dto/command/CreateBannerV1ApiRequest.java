@@ -15,5 +15,4 @@ public record CreateBannerV1ApiRequest(
         @Schema(description = "배너명", example = "메인 배너") @NotBlank String bannerName,
         @Schema(description = "배너 타입", example = "MAIN") String bannerType,
         @Schema(description = "표시 여부", example = "true") @NotNull Boolean displayYn,
-        @Schema(description = "링크 URL", example = "https://example.com") String linkUrl) {
-}
+        @Schema(description = "링크 URL", example = "https://example.com") String linkUrl) {}

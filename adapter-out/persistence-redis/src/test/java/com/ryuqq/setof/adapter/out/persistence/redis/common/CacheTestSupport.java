@@ -8,17 +8,18 @@ import java.util.concurrent.TimeUnit;
 /**
  * Cache Adapter 테스트 지원 추상 클래스
  *
- * <p>Cache Adapter 테스트에 특화된 유틸리티를 제공합니다.
- * TTL 검증, 캐시 존재 여부 확인 등의 기능을 포함합니다.
+ * <p>Cache Adapter 테스트에 특화된 유틸리티를 제공합니다. TTL 검증, 캐시 존재 여부 확인 등의 기능을 포함합니다.
  *
  * <p>제공 기능:
+ *
  * <ul>
- *   <li>TTL 검증 유틸리티</li>
- *   <li>캐시 히트/미스 검증</li>
- *   <li>직렬화 검증 헬퍼</li>
+ *   <li>TTL 검증 유틸리티
+ *   <li>캐시 히트/미스 검증
+ *   <li>직렬화 검증 헬퍼
  * </ul>
  *
  * <h2>사용 예시:</h2>
+ *
  * <pre>{@code
  * @DisplayName("ObjectCacheAdapter 통합 테스트")
  * class ObjectCacheAdapterTest extends CacheTestSupport {
@@ -51,8 +52,7 @@ public abstract class CacheTestSupport extends RedisTestSupport {
     /**
      * TTL이 설정되었는지 검증
      *
-     * <p>지정된 키에 TTL이 설정되어 있고,
-     * 예상 TTL 범위 내에 있는지 검증합니다.
+     * <p>지정된 키에 TTL이 설정되어 있고, 예상 TTL 범위 내에 있는지 검증합니다.
      *
      * @param key 캐시 키
      * @param expectedTtlSeconds 예상 TTL (초)
@@ -124,14 +124,14 @@ public abstract class CacheTestSupport extends RedisTestSupport {
     /**
      * 캐시 만료 대기 후 미존재 검증
      *
-     * <p>TTL 만료를 기다린 후 캐시가 삭제되었는지 확인합니다.
-     * 테스트 시간이 길어질 수 있으므로 짧은 TTL로 테스트하세요.
+     * <p>TTL 만료를 기다린 후 캐시가 삭제되었는지 확인합니다. 테스트 시간이 길어질 수 있으므로 짧은 TTL로 테스트하세요.
      *
      * @param key 캐시 키
      * @param waitSeconds 대기 시간 (초)
      * @throws InterruptedException 대기 중 인터럽트 발생 시
      */
-    protected void assertCacheExpiredAfter(String key, long waitSeconds) throws InterruptedException {
+    protected void assertCacheExpiredAfter(String key, long waitSeconds)
+            throws InterruptedException {
         TimeUnit.SECONDS.sleep(waitSeconds);
         assertCacheNotExists(key);
     }
@@ -144,9 +144,7 @@ public abstract class CacheTestSupport extends RedisTestSupport {
     protected void assertCacheHit(String key) {
         assertCacheExists(key);
         Object value = getDirectly(key);
-        assertThat(value)
-                .as("Cache hit expected for key: %s", key)
-                .isNotNull();
+        assertThat(value).as("Cache hit expected for key: %s", key).isNotNull();
     }
 
     /**

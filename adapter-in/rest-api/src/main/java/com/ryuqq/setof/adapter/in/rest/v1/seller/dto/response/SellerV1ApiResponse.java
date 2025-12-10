@@ -26,7 +26,7 @@ public record SellerV1ApiResponse(
         @Schema(description = "셀러 ID", example = "100") Long sellerId,
         @Schema(description = "셀러명", example = "판매자A") String sellerName,
         @Schema(description = "로고 이미지 URL", example = "https://cdn.example.com/seller/logo.png")
-        String logoUrl,
+                String logoUrl,
         @Schema(description = "셀러 설명", example = "트렌디한 패션 전문 판매자입니다.") String sellerDescription,
         @Schema(description = "셀러 회사 주소", example = "서울 중구 35-124.") String address,
         @Schema(description = "CS 연락처", example = "02-1234-5678") String csPhoneNumber,

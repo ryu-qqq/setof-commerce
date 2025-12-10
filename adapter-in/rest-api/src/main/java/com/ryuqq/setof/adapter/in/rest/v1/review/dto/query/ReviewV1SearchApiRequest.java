@@ -15,9 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(description = "리뷰 검색 필터")
 public record ReviewV1SearchApiRequest(
-    @Schema(description = "정렬 순", example = "averageRating") String orderType,
-    @Schema(description = "상품 그룹 PK 아이디", example = "1") Long productGroupId,
-    @Schema(description = "리뷰 커서용 PK 아이디", example = "1") Long lastDomainId,
-    @Schema(description = "리뷰 커서용 페이지 크기", example = "10") Integer pageSize
-) {
-}
+        @Schema(description = "정렬 순", example = "averageRating") String orderType,
+        @Schema(description = "상품 그룹 PK 아이디", example = "1") Long productGroupId,
+        @Schema(description = "리뷰 커서용 PK 아이디", example = "1") Long lastDomainId,
+        @Schema(description = "리뷰 커서용 페이지 크기", example = "10") Integer pageSize) {}

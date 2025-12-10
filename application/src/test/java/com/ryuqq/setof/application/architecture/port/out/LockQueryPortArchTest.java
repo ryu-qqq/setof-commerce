@@ -1,21 +1,19 @@
 package com.ryuqq.setof.application.architecture.port.out;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.lang.ArchRule;
-
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.lang.ArchRule;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * LockQueryPort ArchUnit 검증 테스트 (Zero-Tolerance)
@@ -75,8 +73,9 @@ class LockQueryPortArchTest {
     static void setUp() {
         classes = new ClassFileImporter().importPackages("com.ryuqq.setof.application");
 
-        hasLockQueryPortClasses = classes.stream()
-            .anyMatch(javaClass -> javaClass.getSimpleName().endsWith("LockQueryPort"));
+        hasLockQueryPortClasses =
+                classes.stream()
+                        .anyMatch(javaClass -> javaClass.getSimpleName().endsWith("LockQueryPort"));
     }
 
     /** 규칙 1: 인터페이스명 규칙 */

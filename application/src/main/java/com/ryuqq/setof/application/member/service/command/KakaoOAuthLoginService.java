@@ -2,9 +2,9 @@ package com.ryuqq.setof.application.member.service.command;
 
 import com.ryuqq.setof.application.auth.dto.response.TokenPairResponse;
 import com.ryuqq.setof.application.auth.port.in.command.IssueTokensUseCase;
+import com.ryuqq.setof.application.member.dto.bundle.KakaoOAuthResult;
 import com.ryuqq.setof.application.member.dto.command.KakaoOAuthCommand;
 import com.ryuqq.setof.application.member.dto.response.KakaoOAuthResponse;
-import com.ryuqq.setof.application.member.dto.bundle.KakaoOAuthResult;
 import com.ryuqq.setof.application.member.facade.command.KakaoOAuthFacade;
 import com.ryuqq.setof.application.member.port.in.command.KakaoOAuthLoginUseCase;
 import org.springframework.stereotype.Service;

@@ -12,5 +12,4 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record BrandMappingInfoV1ApiResponse(
         @Schema(description = "매핑 브랜드 ID", example = "mapping_123") String brandMappingId,
         @Schema(description = "브랜드명", example = "Nike") String brandName,
-        @Schema(description = "브랜드 ID", example = "1") Long brandId) {
-}
+        @Schema(description = "브랜드 ID", example = "1") Long brandId) {}

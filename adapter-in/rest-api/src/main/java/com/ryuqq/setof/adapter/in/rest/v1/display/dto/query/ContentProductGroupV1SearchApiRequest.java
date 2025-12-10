@@ -1,13 +1,12 @@
 package com.ryuqq.setof.adapter.in.rest.v1.display.dto.query;
 
-import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 
 /**
  * 컨텐츠 상품 그룹 조회 필터 Request
  *
- * <p>
- * 컨텐츠 컴포넌트의 상품 그룹을 조회할 때 사용하는 필터 조건입니다. 컴포넌트 타입, 탭 ID, 제외할 상품 ID 목록, 가격 범위, 카테고리, 브랜드, 판매자 필터를
+ * <p>컨텐츠 컴포넌트의 상품 그룹을 조회할 때 사용하는 필터 조건입니다. 컴포넌트 타입, 탭 ID, 제외할 상품 ID 목록, 가격 범위, 카테고리, 브랜드, 판매자 필터를
  * 지원합니다.
  *
  * @param componentType 컴포넌트 타입
@@ -40,5 +39,4 @@ public record ContentProductGroupV1SearchApiRequest(
         @Schema(description = "카테고리 ID 목록", example = "[1, 2, 3]") List<Long> categoryIds,
         @Schema(description = "브랜드 ID", example = "1") Long brandId,
         @Schema(description = "브랜드 ID 목록", example = "[1, 2, 3]") List<Long> brandIds,
-        @Schema(description = "판매자 ID", example = "100") Long sellerId) {
-}
+        @Schema(description = "판매자 ID", example = "100") Long sellerId) {}

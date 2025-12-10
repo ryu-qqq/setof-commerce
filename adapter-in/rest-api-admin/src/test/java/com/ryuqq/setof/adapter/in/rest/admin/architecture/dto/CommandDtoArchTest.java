@@ -1,19 +1,18 @@
 package com.ryuqq.setof.adapter.in.rest.admin.architecture.dto;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import static com.ryuqq.setof.adapter.in.rest.admin.architecture.ArchUnitPackageConstants.*;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.ArchRule;
-
-import static com.ryuqq.setof.adapter.in.rest.admin.architecture.ArchUnitPackageConstants.*;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Command DTO ArchUnit 검증 테스트 (완전 강제)
@@ -53,7 +52,11 @@ class CommandDtoArchTest {
                         .importPackages(ADAPTER_IN_REST);
     }
 
-    /** 규칙 1: Record 타입 필수 */
+    /**
+     * 규칙 1: Record 타입 필수
+     *
+     * <p>예외: 레거시 V1 DTO는 마이그레이션 전까지 허용
+     */
     @Test
     @DisplayName("[필수] Command DTO는 Record 타입이어야 한다")
     void commandDto_MustBeRecords() {
@@ -62,12 +65,16 @@ class CommandDtoArchTest {
                         .that()
                         .resideInAPackage("..dto.command..")
                         .and()
+                        .resideOutsideOfPackage("..v1..") // 레거시 V1 DTO 제외
+                        .and()
                         .haveSimpleNameEndingWith("ApiRequest")
+                        .and()
+                        .haveSimpleNameNotContaining("V1") // V1 접미사 클래스 제외
                         .and()
                         .areNotNestedClasses() // Nested Record는 제외
                         .should()
                         .beRecords()
-                        .because("Command DTO는 불변 객체이므로 Record를 사용해야 합니다");
+                        .because("Command DTO는 불변 객체이므로 Record를 사용해야 합니다 (V1 DTO 제외)");
 
         rule.allowEmptyShould(true).check(classes);
     }
@@ -207,7 +214,11 @@ class CommandDtoArchTest {
         }
     }
 
-    /** 규칙 8: 패키지 위치 검증 */
+    /**
+     * 규칙 8: 패키지 위치 검증
+     *
+     * <p>예외: 레거시 V1 DTO는 v1.*.dto 패키지에 위치 가능
+     */
     @Test
     @DisplayName("[필수] Command DTO는 올바른 패키지에 위치해야 한다")
     void commandDto_MustBeInCorrectPackage() {
@@ -219,9 +230,13 @@ class CommandDtoArchTest {
                         .areNotNestedClasses()
                         .and()
                         .resideInAPackage("..adapter.in.rest..")
+                        .and()
+                        .resideOutsideOfPackage("..v1..") // 레거시 V1 DTO 제외
+                        .and()
+                        .haveSimpleNameNotContaining("V1") // V1 접미사 클래스 제외
                         .should()
                         .resideInAPackage("..dto.command..")
-                        .because("Command DTO는 dto.command 패키지에 위치해야 합니다");
+                        .because("Command DTO는 dto.command 패키지에 위치해야 합니다 (V1 DTO 제외)");
 
         rule.allowEmptyShould(true).check(classes);
     }

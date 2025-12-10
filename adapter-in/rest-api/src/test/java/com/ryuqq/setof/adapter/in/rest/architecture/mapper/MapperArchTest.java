@@ -1,22 +1,21 @@
 package com.ryuqq.setof.adapter.in.rest.architecture.mapper;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import static com.ryuqq.setof.adapter.in.rest.architecture.ArchUnitPackageConstants.*;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.ArchRule;
-
-import static com.ryuqq.setof.adapter.in.rest.architecture.ArchUnitPackageConstants.*;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Mapper ArchUnit 검증 테스트 (Zero-Tolerance)
@@ -94,7 +93,9 @@ class MapperArchTest {
                             .should()
                             .beAnnotatedWith("org.springframework.stereotype.Component")
                             .allowEmptyShould(true)
-                            .because("Mapper는 @Component로 Bean 등록되어야 하며 Static 메서드는 금지됩니다 (Legacy V1 제외)");
+                            .because(
+                                    "Mapper는 @Component로 Bean 등록되어야 하며 Static 메서드는 금지됩니다 (Legacy V1"
+                                            + " 제외)");
 
             rule.check(allClasses);
         }

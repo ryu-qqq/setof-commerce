@@ -1,22 +1,20 @@
 package com.ryuqq.setof.adapter.in.rest.architecture.common;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.core.importer.ImportOption;
-import com.tngtech.archunit.lang.ArchRule;
-
-import com.tngtech.archunit.base.DescribedPredicate;
-import com.tngtech.archunit.core.domain.JavaClass;
-
 import static com.ryuqq.setof.adapter.in.rest.architecture.ArchUnitPackageConstants.*;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+
+import com.tngtech.archunit.base.DescribedPredicate;
+import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.lang.ArchRule;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * API Response ArchUnit 검증 테스트 (Zero-Tolerance)
@@ -64,7 +62,8 @@ class ApiResponseArchTest {
     /** Common Response DTO 이름 목록 (공통 응답 래퍼만 포함) */
     private static final DescribedPredicate<JavaClass> COMMON_RESPONSE_DTO_NAMES =
             DescribedPredicate.describe(
-                    "Common Response DTOs (ApiResponse, PageApiResponse, SliceApiResponse, ErrorInfo)",
+                    "Common Response DTOs (ApiResponse, PageApiResponse, SliceApiResponse,"
+                            + " ErrorInfo)",
                     javaClass -> {
                         String simpleName = javaClass.getSimpleName();
                         return simpleName.equals("ApiResponse")
@@ -77,6 +76,7 @@ class ApiResponseArchTest {
      * 규칙 1: Common Response DTOs는 common.dto 패키지에 위치
      *
      * <p>검증 대상: ApiResponse, PageApiResponse, SliceApiResponse, ErrorInfo (공통 응답 래퍼)
+     *
      * <p>검증 제외: *ApiResponse 형태의 도메인 응답 DTO (TokenApiResponse, MemberApiResponse 등)
      */
     @Test

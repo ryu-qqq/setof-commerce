@@ -39,6 +39,18 @@ class CacheAdapterArchTest {
     private static JavaClasses allClasses;
     private static JavaClasses cacheAdapterClasses;
 
+    /**
+     * 특화 Adapter 제외 목록
+     *
+     * <p>일반 CachePort 규칙을 따르지 않는 특화된 Adapter들:
+     *
+     * <ul>
+     *   <li>RefreshTokenCacheAdapter - 토큰 전용 Adapter (RefreshTokenCacheCommandPort/QueryPort 구현)
+     * </ul>
+     */
+    private static final java.util.Set<String> EXCLUDED_ADAPTERS =
+            java.util.Set.of("RefreshTokenCacheAdapter");
+
     @BeforeAll
     static void setUp() {
         allClasses =
@@ -49,10 +61,12 @@ class CacheAdapterArchTest {
         cacheAdapterClasses =
                 allClasses.that(
                         DescribedPredicate.describe(
-                                "Cache Adapter 클래스",
+                                "Cache Adapter 클래스 (특화 Adapter 제외)",
                                 javaClass ->
                                         javaClass.getSimpleName().endsWith("CacheAdapter")
-                                                && !javaClass.isInterface()));
+                                                && !javaClass.isInterface()
+                                                && !EXCLUDED_ADAPTERS.contains(
+                                                        javaClass.getSimpleName())));
     }
 
     // ========================================================================

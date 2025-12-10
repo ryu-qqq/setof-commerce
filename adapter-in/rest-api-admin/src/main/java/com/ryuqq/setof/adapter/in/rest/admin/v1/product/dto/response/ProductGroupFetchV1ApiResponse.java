@@ -17,5 +17,4 @@ public record ProductGroupFetchV1ApiResponse(
         @Schema(description = "상품 그룹 이미지 목록") List<ProductImageV1ApiResponse> productGroupImages,
         @Schema(description = "상세 설명", example = "상품 상세 설명입니다.") String detailDescription,
         @Schema(description = "카테고리 목록") List<TreeCategoryContextV1ApiResponse> categories,
-        @Schema(description = "상품 목록") Set<ProductFetchV1ApiResponse> products) {
-}
+        @Schema(description = "상품 목록") Set<ProductFetchV1ApiResponse> products) {}

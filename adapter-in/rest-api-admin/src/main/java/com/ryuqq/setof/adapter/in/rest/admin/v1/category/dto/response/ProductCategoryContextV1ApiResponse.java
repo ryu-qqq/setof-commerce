@@ -15,5 +15,4 @@ public record ProductCategoryContextV1ApiResponse(
         @Schema(description = "표시명", example = "상의 > 티셔츠") String displayName,
         @Schema(description = "카테고리 깊이", example = "1") Integer categoryDepth,
         @Schema(description = "카테고리 전체 경로", example = "상의 > 티셔츠 > 반팔") String categoryFullPath,
-        @Schema(description = "대상 그룹", example = "PRODUCT") String targetGroup) {
-}
+        @Schema(description = "대상 그룹", example = "PRODUCT") String targetGroup) {}

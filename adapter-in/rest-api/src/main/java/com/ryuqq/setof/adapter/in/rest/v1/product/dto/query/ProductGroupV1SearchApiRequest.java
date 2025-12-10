@@ -1,7 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.v1.product.dto.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.util.List;
 
 /**
@@ -22,19 +21,15 @@ import java.util.List;
  * @author development-team
  * @since 1.0.0
  */
-
 @Schema(description = "상품 목록 조회 필터")
 public record ProductGroupV1SearchApiRequest(
-    @Schema(description = "마지막 조회한 도메인 ID (커서 기반 페이징)", example = "100") Long lastDomainId,
-    @Schema(description = "커서 값 (정렬 기준 값)", example = "2024-01-01T00:00:00") String cursorValue,
-    @Schema(description = "최저 가격", example = "10000") Long lowestPrice,
-    @Schema(description = "최고 가격", example = "100000") Long highestPrice,
-    @Schema(description = "카테고리 ID", example = "1") Long categoryId,
-    @Schema(description = "카테고리 ID 목록", example = "[1, 2, 3]") List<Long> categoryIds,
-    @Schema(description = "브랜드 ID", example = "1") Long brandId,
-    @Schema(description = "브랜드 ID 목록", example = "[1, 2, 3]") List<Long> brandIds,
-    @Schema(description = "판매자 ID", example = "100") Long sellerId,
-    @Schema(description = "정렬 타입", example = "LATEST") String orderType
-
-) {
-}
+        @Schema(description = "마지막 조회한 도메인 ID (커서 기반 페이징)", example = "100") Long lastDomainId,
+        @Schema(description = "커서 값 (정렬 기준 값)", example = "2024-01-01T00:00:00") String cursorValue,
+        @Schema(description = "최저 가격", example = "10000") Long lowestPrice,
+        @Schema(description = "최고 가격", example = "100000") Long highestPrice,
+        @Schema(description = "카테고리 ID", example = "1") Long categoryId,
+        @Schema(description = "카테고리 ID 목록", example = "[1, 2, 3]") List<Long> categoryIds,
+        @Schema(description = "브랜드 ID", example = "1") Long brandId,
+        @Schema(description = "브랜드 ID 목록", example = "[1, 2, 3]") List<Long> brandIds,
+        @Schema(description = "판매자 ID", example = "100") Long sellerId,
+        @Schema(description = "정렬 타입", example = "LATEST") String orderType) {}

@@ -13,6 +13,4 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(description = "장바구니 개수 응답")
 public record CartCountV1ApiResponse(
-    @Schema(description = "장바구니 개수", example = "5") Integer cartQuantity
-) {
-}
+        @Schema(description = "장바구니 개수", example = "5") Integer cartQuantity) {}

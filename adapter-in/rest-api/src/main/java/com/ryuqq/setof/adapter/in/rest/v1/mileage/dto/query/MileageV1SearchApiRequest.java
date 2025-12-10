@@ -14,9 +14,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(description = "마일리지 목록 조회 필터")
 public record MileageV1SearchApiRequest(
-    @Schema(description = "마지막 조회한 도메인 ID (커서 기반 페이징)", example = "10") Long lastDomainId,
-    @Schema(description = "마일리지 사유 목록 (복수 선택 가능)", example = "[\"PURCHASE\", \"REVIEW\"]") Long reasons,
-    @Schema(description = "오프셋", example = "10") Long offSet,
-    @Schema(description = "페이지 사이즈", example = "10") Integer pageSize
-) {
-}
+        @Schema(description = "마지막 조회한 도메인 ID (커서 기반 페이징)", example = "10") Long lastDomainId,
+        @Schema(description = "마일리지 사유 목록 (복수 선택 가능)", example = "[\"PURCHASE\", \"REVIEW\"]")
+                Long reasons,
+        @Schema(description = "오프셋", example = "10") Long offSet,
+        @Schema(description = "페이지 사이즈", example = "10") Integer pageSize) {}

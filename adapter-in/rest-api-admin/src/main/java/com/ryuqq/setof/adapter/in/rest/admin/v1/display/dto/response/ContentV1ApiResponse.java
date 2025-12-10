@@ -16,5 +16,4 @@ public record ContentV1ApiResponse(
         @Schema(description = "컨텐츠 내용", example = "새로운 상품을 소개합니다.") String content,
         @Schema(description = "표시 여부", example = "true") Boolean displayYn,
         @Schema(description = "생성일시") LocalDateTime createdAt,
-        @Schema(description = "수정일시") LocalDateTime updatedAt) {
-}
+        @Schema(description = "수정일시") LocalDateTime updatedAt) {}

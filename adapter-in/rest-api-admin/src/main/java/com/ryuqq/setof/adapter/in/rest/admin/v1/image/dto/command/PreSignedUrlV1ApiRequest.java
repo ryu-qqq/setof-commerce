@@ -10,8 +10,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(description = "PreSigned URL 요청")
 public record PreSignedUrlV1ApiRequest(
-        @Schema(description = "파일명", example = "image.jpg",
-                requiredMode = Schema.RequiredMode.REQUIRED) String fileName,
-        @Schema(description = "이미지 경로", example = "PRODUCT",
-                requiredMode = Schema.RequiredMode.REQUIRED) String imagePath) {
-}
+        @Schema(
+                        description = "파일명",
+                        example = "image.jpg",
+                        requiredMode = Schema.RequiredMode.REQUIRED)
+                String fileName,
+        @Schema(
+                        description = "이미지 경로",
+                        example = "PRODUCT",
+                        requiredMode = Schema.RequiredMode.REQUIRED)
+                String imagePath) {}

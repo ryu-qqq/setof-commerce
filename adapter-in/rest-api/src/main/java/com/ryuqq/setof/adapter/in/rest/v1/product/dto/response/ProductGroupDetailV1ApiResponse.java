@@ -1,7 +1,7 @@
 package com.ryuqq.setof.adapter.in.rest.v1.product.dto.response;
 
-import java.util.Set;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Set;
 
 /**
  * V1 상품 그룹 상세 Response
@@ -20,5 +20,4 @@ public record ProductGroupDetailV1ApiResponse(
         @Schema(description = "마일리지 적립률", example = "1.0") Double mileageRate,
         @Schema(description = "예상 마일리지 금액", example = "900.0") Double expectedMileageAmount,
         @Schema(description = "찜 여부", example = "true") Boolean isFavorite,
-        @Schema(description = "이벤트 상품 타입", example = "NORMAL") String eventProductType) {
-}
+        @Schema(description = "이벤트 상품 타입", example = "NORMAL") String eventProductType) {}

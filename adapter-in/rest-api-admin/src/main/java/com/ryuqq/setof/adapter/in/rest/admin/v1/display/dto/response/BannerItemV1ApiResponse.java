@@ -17,5 +17,4 @@ public record BannerItemV1ApiResponse(
         @Schema(description = "링크 URL", example = "https://example.com") String linkUrl,
         @Schema(description = "정렬 순서", example = "1") Integer sortOrder,
         @Schema(description = "생성일시") LocalDateTime createdAt,
-        @Schema(description = "수정일시") LocalDateTime updatedAt) {
-}
+        @Schema(description = "수정일시") LocalDateTime updatedAt) {}

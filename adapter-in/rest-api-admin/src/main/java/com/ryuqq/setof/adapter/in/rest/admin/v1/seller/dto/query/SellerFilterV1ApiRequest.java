@@ -14,5 +14,4 @@ public record SellerFilterV1ApiRequest(
         @Schema(description = "검색 키워드 타입", example = "SELLER_NAME") String searchKeyword,
         @Schema(description = "검색어", example = "셀러명") String searchWord,
         @Schema(description = "사이트 ID 목록", example = "[1, 2, 3]") List<Long> siteIds,
-        @Schema(description = "승인 상태", example = "APPROVED") String status) {
-}
+        @Schema(description = "승인 상태", example = "APPROVED") String status) {}

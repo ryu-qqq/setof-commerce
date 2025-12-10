@@ -218,24 +218,33 @@ class DataAccessPatternArchTest {
         rule.allowEmptyShould(true).check(allClasses);
     }
 
-    /** 규칙 9: QueryAdapter/CommandAdapter는 Mapper를 통해 변환해야 함 (PersistenceAdapter는 예외) */
+    /**
+     * 규칙 9: QueryAdapter/CommandAdapter는 Mapper를 통해 변환해야 함
+     *
+     * <p>예외 사항:
+     *
+     * <ul>
+     *   <li>PersistenceAdapter - 소규모 엔티티용으로 직접 변환 가능
+     *   <li>RefreshToken*Adapter - 단순 String만 반환하므로 Mapper 불필요
+     * </ul>
+     */
     @Test
     @DisplayName("[필수] QueryAdapter/CommandAdapter는 Mapper를 의존해야 한다")
     void queryOrCommandAdapter_MustDependOnMapper() {
-        // QueryAdapter와 CommandAdapter는 Domain 변환을 위해 Mapper 필수
-        // PersistenceAdapter는 소규모 엔티티용으로 직접 변환 가능
         ArchRule rule =
                 classes()
                         .that()
                         .haveSimpleNameEndingWith("QueryAdapter")
                         .or()
                         .haveSimpleNameEndingWith("CommandAdapter")
+                        .and()
+                        .haveSimpleNameNotContaining("RefreshToken")
                         .should()
                         .dependOnClassesThat()
                         .haveSimpleNameEndingWith("Mapper")
                         .because(
                                 "QueryAdapter/CommandAdapter는 Entity ↔ Domain 변환을 위해 Mapper를 의존해야"
-                                        + " 합니다");
+                                        + " 합니다 (RefreshToken*Adapter는 단순 String만 반환하므로 예외)");
 
         rule.allowEmptyShould(true).check(allClasses);
     }

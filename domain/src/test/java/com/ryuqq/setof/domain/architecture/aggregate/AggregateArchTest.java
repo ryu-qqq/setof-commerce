@@ -1,12 +1,6 @@
 package com.ryuqq.setof.domain.architecture.aggregate;
 
-import java.time.Instant;
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
@@ -17,8 +11,12 @@ import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
-
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
+import java.time.Instant;
+import java.util.List;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Aggregate Root ArchUnit 아키텍처 검증 테스트
@@ -485,8 +483,7 @@ class AggregateArchTest {
                         .haveSimpleNameNotContaining("Test")
                         .should(haveFieldOfType(Instant.class))
                         .allowEmptyShould(true)
-                        .because(
-                                "시간 처리를 위해 Instant 필드 필수 (Clock은 파라미터로 주입받아 Instant로 변환)");
+                        .because("시간 처리를 위해 Instant 필드 필수 (Clock은 파라미터로 주입받아 Instant로 변환)");
 
         rule.check(classes);
     }
@@ -652,25 +649,24 @@ class AggregateArchTest {
         List<String> violations = new java.util.ArrayList<>();
 
         JavaClasses targetClasses =
-                classes
-                        .that(
-                                new DescribedPredicate<JavaClass>("aggregate root classes") {
-                                    @Override
-                                    public boolean test(JavaClass javaClass) {
-                                        return javaClass.getPackageName().contains(".aggregate")
-                                                && !javaClass.isInterface()
-                                                && !javaClass.isEnum()
-                                                && !javaClass.isAnonymousClass()
-                                                && !javaClass.isLocalClass()
-                                                && !javaClass.getSimpleName().endsWith("Id")
-                                                && !javaClass.getSimpleName().endsWith("Event")
-                                                && !javaClass.getSimpleName().endsWith("Exception")
-                                                && !javaClass.getSimpleName().endsWith("Status")
-                                                && !javaClass.getSimpleName().contains("Fixture")
-                                                && !javaClass.getSimpleName().contains("Mother")
-                                                && !javaClass.getSimpleName().contains("Test");
-                                    }
-                                });
+                classes.that(
+                        new DescribedPredicate<JavaClass>("aggregate root classes") {
+                            @Override
+                            public boolean test(JavaClass javaClass) {
+                                return javaClass.getPackageName().contains(".aggregate")
+                                        && !javaClass.isInterface()
+                                        && !javaClass.isEnum()
+                                        && !javaClass.isAnonymousClass()
+                                        && !javaClass.isLocalClass()
+                                        && !javaClass.getSimpleName().endsWith("Id")
+                                        && !javaClass.getSimpleName().endsWith("Event")
+                                        && !javaClass.getSimpleName().endsWith("Exception")
+                                        && !javaClass.getSimpleName().endsWith("Status")
+                                        && !javaClass.getSimpleName().contains("Fixture")
+                                        && !javaClass.getSimpleName().contains("Mother")
+                                        && !javaClass.getSimpleName().contains("Test");
+                            }
+                        });
 
         // 확장된 비즈니스 메서드 패턴
         String businessMethodPattern =
@@ -707,8 +703,7 @@ class AggregateArchTest {
                                     violations.add(
                                             String.format(
                                                     "[경고] %s.%s() - 비즈니스 메서드는 명확한 동사로 시작 권장",
-                                                    javaClass.getSimpleName(),
-                                                    method.getName())));
+                                                    javaClass.getSimpleName(), method.getName())));
         }
 
         // 위반 사항 경고 출력 (테스트는 통과)
@@ -896,17 +891,14 @@ class AggregateArchTest {
         rule.check(classes);
     }
 
-/** 클래스가 특정 타입의 필드를 가지고 있는지 검증 */
+    /** 클래스가 특정 타입의 필드를 가지고 있는지 검증 */
     private static ArchCondition<JavaClass> haveFieldOfType(Class<?> fieldType) {
         return new ArchCondition<JavaClass>("have field of type: " + fieldType.getSimpleName()) {
             @Override
             public void check(JavaClass javaClass, ConditionEvents events) {
                 boolean hasField =
                         javaClass.getAllFields().stream()
-                                .anyMatch(
-                                        field ->
-                                                field.getRawType()
-                                                        .isEquivalentTo(fieldType));
+                                .anyMatch(field -> field.getRawType().isEquivalentTo(fieldType));
 
                 if (!hasField) {
                     String message =

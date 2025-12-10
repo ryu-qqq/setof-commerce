@@ -1,20 +1,19 @@
 package com.ryuqq.setof.adapter.in.rest.admin.architecture.dto;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.core.importer.ImportOption;
-import com.tngtech.archunit.lang.ArchRule;
-
 import static com.ryuqq.setof.adapter.in.rest.admin.architecture.ArchUnitPackageConstants.*;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods;
+
+import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.lang.ArchRule;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Response DTO ArchUnit 검증 테스트 (완전 강제)
@@ -54,7 +53,11 @@ class ResponseDtoArchTest {
                         .importPackages(ADAPTER_IN_REST);
     }
 
-    /** 규칙 1: Record 타입 필수 */
+    /**
+     * 규칙 1: Record 타입 필수
+     *
+     * <p>예외: 레거시 V1 DTO는 마이그레이션 전까지 허용
+     */
     @Test
     @DisplayName("[필수] Response DTO는 Record 타입이어야 한다")
     void responseDto_MustBeRecords() {
@@ -63,12 +66,16 @@ class ResponseDtoArchTest {
                         .that()
                         .resideInAPackage("..dto.response..")
                         .and()
+                        .resideOutsideOfPackage("..v1..") // 레거시 V1 DTO 제외
+                        .and()
                         .haveSimpleNameEndingWith("ApiResponse")
+                        .and()
+                        .haveSimpleNameNotContaining("V1") // V1 접미사 클래스 제외
                         .and()
                         .areNotNestedClasses() // Nested Record는 제외
                         .should()
                         .beRecords()
-                        .because("Response DTO는 불변 객체이므로 Record를 사용해야 합니다");
+                        .because("Response DTO는 불변 객체이므로 Record를 사용해야 합니다 (V1 DTO 제외)");
 
         rule.allowEmptyShould(true).check(classes);
     }

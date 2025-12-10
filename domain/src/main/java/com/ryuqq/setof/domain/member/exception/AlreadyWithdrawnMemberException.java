@@ -1,7 +1,6 @@
 package com.ryuqq.setof.domain.member.exception;
 
 import com.ryuqq.setof.domain.common.exception.DomainException;
-
 import java.util.Map;
 import java.util.UUID;
 
@@ -17,9 +16,8 @@ public final class AlreadyWithdrawnMemberException extends DomainException {
 
     public AlreadyWithdrawnMemberException(UUID memberId) {
         super(
-            MemberErrorCode.ALREADY_WITHDRAWN_MEMBER,
-            String.format("이미 탈퇴한 회원입니다. 회원 ID: %s", memberId),
-            Map.of("memberId", memberId)
-        );
+                MemberErrorCode.ALREADY_WITHDRAWN_MEMBER,
+                String.format("이미 탈퇴한 회원입니다. 회원 ID: %s", memberId),
+                Map.of("memberId", memberId));
     }
 }

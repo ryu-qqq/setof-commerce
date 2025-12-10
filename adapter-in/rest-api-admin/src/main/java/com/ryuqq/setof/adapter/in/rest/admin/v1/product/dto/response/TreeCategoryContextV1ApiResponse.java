@@ -17,5 +17,5 @@ public record TreeCategoryContextV1ApiResponse(
         @Schema(description = "표시명", example = "상의 > 티셔츠") String displayName,
         @Schema(description = "카테고리 깊이", example = "1") Integer categoryDepth,
         @Schema(description = "부모 카테고리 ID", example = "0") Long parentCategoryId,
-        @Schema(description = "하위 카테고리 목록") @JsonInclude(JsonInclude.Include.NON_EMPTY) List<TreeCategoryContextV1ApiResponse> children) {
-}
+        @Schema(description = "하위 카테고리 목록") @JsonInclude(JsonInclude.Include.NON_EMPTY)
+                List<TreeCategoryContextV1ApiResponse> children) {}

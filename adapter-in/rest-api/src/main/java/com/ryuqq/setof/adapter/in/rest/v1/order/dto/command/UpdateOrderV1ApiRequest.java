@@ -1,9 +1,9 @@
 package com.ryuqq.setof.adapter.in.rest.v1.order.dto.command;
 
-import jakarta.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * V1 주문 수정 Request (Sealed Interface)
@@ -12,9 +12,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @since 1.0.0
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-@JsonSubTypes({@JsonSubTypes.Type(value = NormalOrderV1ApiRequest.class, name = "normalOrder"),
-        @JsonSubTypes.Type(value = RefundOrderV1ApiRequest.class, name = "refundOrder"),
-        @JsonSubTypes.Type(value = ClaimOrderV1ApiRequest.class, name = "claimOrder")})
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = NormalOrderV1ApiRequest.class, name = "normalOrder"),
+    @JsonSubTypes.Type(value = RefundOrderV1ApiRequest.class, name = "refundOrder"),
+    @JsonSubTypes.Type(value = ClaimOrderV1ApiRequest.class, name = "claimOrder")
+})
 @Schema(description = "주문 수정 요청")
 public sealed interface UpdateOrderV1ApiRequest
         permits NormalOrderV1ApiRequest, RefundOrderV1ApiRequest, ClaimOrderV1ApiRequest {
@@ -26,7 +28,9 @@ public sealed interface UpdateOrderV1ApiRequest
     @Schema(description = "주문 ID", example = "1")
     Long orderId();
 
-    @Schema(description = "주문 상태", example = "CANCELLED",
+    @Schema(
+            description = "주문 상태",
+            example = "CANCELLED",
             requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "주문 상태는 필수입니다.")
     String orderStatus();

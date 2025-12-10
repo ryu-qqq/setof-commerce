@@ -39,7 +39,8 @@ public class MemberReadManager {
     @Transactional(readOnly = true)
     public Member findById(String memberId) {
         MemberId id = MemberId.of(memberId);
-        return memberQueryPort.findById(id)
+        return memberQueryPort
+                .findById(id)
                 .orElseThrow(() -> new MemberNotFoundException(id.value()));
     }
 
@@ -65,7 +66,8 @@ public class MemberReadManager {
     @Transactional(readOnly = true)
     public Member findByPhoneNumber(String phoneNumber) {
         PhoneNumber phone = PhoneNumber.of(phoneNumber);
-        return memberQueryPort.findByPhoneNumber(phone)
+        return memberQueryPort
+                .findByPhoneNumber(phone)
                 .orElseThrow(() -> new MemberNotFoundException(phoneNumber));
     }
 

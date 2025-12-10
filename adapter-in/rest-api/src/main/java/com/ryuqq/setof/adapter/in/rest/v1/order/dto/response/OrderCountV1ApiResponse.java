@@ -11,5 +11,4 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "주문 상태별 개수 응답")
 public record OrderCountV1ApiResponse(
         @Schema(description = "주문 상태", example = "COMPLETED") String orderStatus,
-        @Schema(description = "개수", example = "5") Long count) {
-}
+        @Schema(description = "개수", example = "5") Long count) {}

@@ -1,11 +1,7 @@
 package com.ryuqq.setof.domain.architecture.exception;
 
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
@@ -15,9 +11,11 @@ import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
-
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import java.util.List;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Exception ArchUnit 아키텍처 검증 테스트
@@ -480,8 +478,7 @@ class ExceptionArchTest {
         // 권장 패턴 - 실패해도 테스트 통과, 경고만 출력
         List<String> violations = new java.util.ArrayList<>();
 
-        classes
-                .that(
+        classes.that(
                         new DescribedPredicate<JavaClass>("exception classes") {
                             @Override
                             public boolean test(JavaClass javaClass) {
@@ -499,9 +496,9 @@ class ExceptionArchTest {
                             boolean hasMeaningfulName =
                                     simpleName.matches(
                                             ".*(?:NotFound|Invalid|Already|Cannot|Failed|Exceeded|Unsupported|"
-                                                    + "Insufficient|Constraint|Violation|State|NotEditable|"
-                                                    + "Duplicate|Expired|Unauthorized|Forbidden|Conflict|"
-                                                    + "Timeout|Unavailable|Missing|Empty).*Exception");
+                                                + "Insufficient|Constraint|Violation|State|NotEditable|"
+                                                + "Duplicate|Expired|Unauthorized|Forbidden|Conflict|"
+                                                + "Timeout|Unavailable|Missing|Empty).*Exception");
 
                             if (!hasMeaningfulName) {
                                 violations.add(

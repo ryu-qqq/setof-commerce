@@ -1,8 +1,5 @@
 package com.ryuqq.setof.adapter.in.rest.admin.v1.seller.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
 import com.ryuqq.setof.adapter.in.rest.admin.common.dto.ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.common.dto.PageApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.seller.dto.command.CreateSellerSettlementAccountV1ApiRequest;
@@ -14,9 +11,9 @@ import com.ryuqq.setof.adapter.in.rest.admin.v1.seller.dto.query.SellerFilterV1A
 import com.ryuqq.setof.adapter.in.rest.admin.v1.seller.dto.response.SellerContextV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.seller.dto.response.SellerDetailV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.seller.dto.response.SellerV1ApiResponse;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,8 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * V1 Seller Controller (Legacy)
  *
- * <p>
- * 레거시 API 호환을 위한 V1 Seller 엔드포인트
+ * <p>레거시 API 호환을 위한 V1 Seller 엔드포인트
  *
  * @author development-team
  * @since 1.0.0
@@ -101,7 +97,8 @@ public class SellerV1Controller {
     @Deprecated
     @Operation(summary = "[Legacy] 셀러 수정", description = "셀러 정보를 수정합니다.")
     @PutMapping("/seller/{sellerId}")
-    public ResponseEntity<ApiResponse<Long>> updateSeller(@PathVariable long sellerId,
+    public ResponseEntity<ApiResponse<Long>> updateSeller(
+            @PathVariable long sellerId,
             @RequestBody SellerUpdateDetailV1ApiRequest sellerUpdateDetailRequestDto) {
 
         throw new UnsupportedOperationException("셀러 수정 기능은 아직 지원되지 않습니다.");
@@ -115,5 +112,4 @@ public class SellerV1Controller {
 
         throw new UnsupportedOperationException("셀러 승인 상태 수정 기능은 아직 지원되지 않습니다.");
     }
-
 }

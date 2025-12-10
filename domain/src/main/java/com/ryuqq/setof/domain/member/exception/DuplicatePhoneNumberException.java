@@ -1,7 +1,6 @@
 package com.ryuqq.setof.domain.member.exception;
 
 import com.ryuqq.setof.domain.common.exception.DomainException;
-
 import java.util.Map;
 
 /**
@@ -16,10 +15,9 @@ public final class DuplicatePhoneNumberException extends DomainException {
 
     public DuplicatePhoneNumberException(String phoneNumber) {
         super(
-            MemberErrorCode.DUPLICATE_PHONE_NUMBER,
-            String.format("이미 등록된 핸드폰 번호입니다: %s", maskPhoneNumber(phoneNumber)),
-            Map.of("phoneNumber", maskPhoneNumber(phoneNumber))
-        );
+                MemberErrorCode.DUPLICATE_PHONE_NUMBER,
+                String.format("이미 등록된 핸드폰 번호입니다: %s", maskPhoneNumber(phoneNumber)),
+                Map.of("phoneNumber", maskPhoneNumber(phoneNumber)));
     }
 
     private static String maskPhoneNumber(String phoneNumber) {

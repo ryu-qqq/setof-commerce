@@ -24,16 +24,17 @@ public record ProductGroupInfoV1ApiResponse(
         @Schema(description = "의류 상세 정보") ClothesDetailV1ApiResponse clothesDetailInfo,
         @Schema(description = "배송 고지 정보") DeliveryNoticeV1ApiResponse deliveryNotice,
         @Schema(description = "환불 고지 정보") RefundNoticeV1ApiResponse refundNotice,
-        @Schema(description = "상품 그룹 메인 이미지 URL",
-                example = "https://example.com/image.jpg") String productGroupMainImageUrl,
+        @Schema(description = "상품 그룹 메인 이미지 URL", example = "https://example.com/image.jpg")
+                String productGroupMainImageUrl,
         @Schema(description = "카테고리 전체 경로", example = "상의 > 티셔츠") String categoryFullName,
         @Schema(description = "상품 상태", example = "ON_SALE") String productStatus,
-        @Schema(description = "등록 일시", example = "2024-01-01 00:00:00") @JsonFormat(
-                pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime insertDate,
-        @Schema(description = "수정 일시", example = "2024-01-01 00:00:00") @JsonFormat(
-                pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime updateDate,
+        @Schema(description = "등록 일시", example = "2024-01-01 00:00:00")
+                @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                LocalDateTime insertDate,
+        @Schema(description = "수정 일시", example = "2024-01-01 00:00:00")
+                @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                LocalDateTime updateDate,
         @Schema(description = "등록자", example = "admin") String insertOperator,
         @Schema(description = "수정자", example = "admin") String updateOperator,
         @Schema(description = "크롤 상품 SKU", example = "12345") Long crawlProductSku,
-        @Schema(description = "외부 상품 UUID", example = "uuid-123") String externalProductUuId) {
-}
+        @Schema(description = "외부 상품 UUID", example = "uuid-123") String externalProductUuId) {}

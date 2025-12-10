@@ -1,9 +1,5 @@
 package com.ryuqq.setof.adapter.in.rest.admin.v1.display.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-
 import com.ryuqq.setof.adapter.in.rest.admin.common.dto.ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.common.dto.PageApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.display.dto.command.CreateBannerItemV1ApiRequest;
@@ -22,9 +18,10 @@ import com.ryuqq.setof.adapter.in.rest.admin.v1.display.dto.response.BannerV1Api
 import com.ryuqq.setof.adapter.in.rest.admin.v1.display.dto.response.ContentGroupV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.display.dto.response.ContentV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.display.dto.response.GnbV1ApiResponse;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,8 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * V1 Display Controller (Legacy)
  *
- * <p>
- * 레거시 API 호환을 위한 V1 Display 엔드포인트
+ * <p>레거시 API 호환을 위한 V1 Display 엔드포인트
  *
  * @author development-team
  * @since 1.0.0

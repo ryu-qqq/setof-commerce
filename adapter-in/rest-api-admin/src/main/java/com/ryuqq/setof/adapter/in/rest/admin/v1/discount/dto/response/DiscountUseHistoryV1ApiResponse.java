@@ -20,8 +20,8 @@ public record DiscountUseHistoryV1ApiResponse(
         @Schema(description = "결제 ID", example = "1") Long paymentId,
         @Schema(description = "상품 그룹 ID", example = "12345") Long productGroupId,
         @Schema(description = "직접 할인 금액", example = "10000") BigDecimal directDiscountPrice,
-        @Schema(description = "사용 일시", example = "2024-01-01 00:00:00") @JsonFormat(
-                pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime useDate,
-        @Schema(description = "총 직접 할인 금액",
-                example = "10000") BigDecimal totalDirectDiscountPrice) {
-}
+        @Schema(description = "사용 일시", example = "2024-01-01 00:00:00")
+                @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                LocalDateTime useDate,
+        @Schema(description = "총 직접 할인 금액", example = "10000")
+                BigDecimal totalDirectDiscountPrice) {}

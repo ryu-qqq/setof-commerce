@@ -137,7 +137,7 @@ class AuthControllerDocsTest extends RestDocsTestSupport {
                         document(
                                 "auth-login",
                                 requestFields(
-                                        fieldWithPath("csPhoneNumber")
+                                        fieldWithPath("phoneNumber")
                                                 .type(JsonFieldType.STRING)
                                                 .description("핸드폰 번호 (010으로 시작하는 11자리)"),
                                         fieldWithPath("password")

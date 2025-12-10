@@ -1,27 +1,24 @@
 package com.ryuqq.setof.application.architecture.facade;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.springframework.stereotype.Component;
-
-import com.tngtech.archunit.core.domain.JavaClass;
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.domain.JavaMethod;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.lang.ArchRule;
-
 import static com.tngtech.archunit.core.domain.JavaModifier.FINAL;
 import static com.tngtech.archunit.core.domain.JavaModifier.PUBLIC;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.lang.ArchRule;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.springframework.stereotype.Component;
 
 /**
  * Facade ArchUnit 검증 테스트 (Zero-Tolerance)
@@ -163,18 +160,24 @@ class FacadeArchTest {
                 facade.getMethods().stream()
                         .filter(method -> method.getModifiers().contains(PUBLIC))
                         .filter(method -> !method.isConstructor())
-                        .forEach(method -> {
-                            String name = method.getName();
-                            boolean hasAllowedPrefix = name.startsWith("persist")
-                                    || name.startsWith("process")
-                                    || name.startsWith("execute")
-                                    || name.startsWith("handle");
-                            if (!hasAllowedPrefix) {
-                                System.out.println(
-                                        "[권장] " + facade.getSimpleName() + "." + name
-                                                + "()는 persist/process/execute/handle 중 하나로 시작하는 것을 권장합니다.");
-                            }
-                        });
+                        .forEach(
+                                method -> {
+                                    String name = method.getName();
+                                    boolean hasAllowedPrefix =
+                                            name.startsWith("persist")
+                                                    || name.startsWith("process")
+                                                    || name.startsWith("execute")
+                                                    || name.startsWith("handle");
+                                    if (!hasAllowedPrefix) {
+                                        System.out.println(
+                                                "[권장] "
+                                                        + facade.getSimpleName()
+                                                        + "."
+                                                        + name
+                                                        + "()는 persist/process/execute/handle 중 하나로"
+                                                        + " 시작하는 것을 권장합니다.");
+                                    }
+                                });
             }
         }
 
@@ -401,8 +404,8 @@ class FacadeArchTest {
                             .dependOnClassesThat()
                             .haveSimpleNameEndingWith("EventRegistry")
                             .because(
-                                    "Facade는 Manager와 EventRegistry를 의존할 수 있습니다. "
-                                            + "TransactionEventRegistry를 통해 트랜잭션 커밋 후 Event를 발행합니다.");
+                                    "Facade는 Manager와 EventRegistry를 의존할 수 있습니다."
+                                        + " TransactionEventRegistry를 통해 트랜잭션 커밋 후 Event를 발행합니다.");
 
             rule.check(classes);
         }

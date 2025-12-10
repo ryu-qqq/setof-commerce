@@ -9,6 +9,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @since 1.0.0
  */
 @Schema(description = "브랜드 응답")
-public record BrandV1ApiResponse(@Schema(description = "브랜드 ID", example = "1") Long brandId,
-        @Schema(description = "브랜드명", example = "Nike") String brandName) {
-}
+public record BrandV1ApiResponse(
+        @Schema(description = "브랜드 ID", example = "1") Long brandId,
+        @Schema(description = "브랜드명", example = "Nike") String brandName) {}

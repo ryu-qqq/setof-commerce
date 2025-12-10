@@ -17,5 +17,4 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record FaqV1ApiResponse(
         @Schema(description = "faq 타입", example = "MEMBER_LOGIN") String faqType,
         @Schema(description = "faq 제목", example = "회원 가입 FAQ") String title,
-        @Schema(description = "faq 본문", example = "회원 가입 약관...") String contents
-) {}
+        @Schema(description = "faq 본문", example = "회원 가입 약관...") String contents) {}

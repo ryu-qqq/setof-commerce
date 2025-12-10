@@ -12,5 +12,4 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record CategoryMappingInfoV1ApiRequest(
         @Schema(description = "매핑 카테고리 ID", example = "mapping_123") String categoryMappingId,
         @Schema(description = "카테고리명", example = "상의") String categoryName,
-        @Schema(description = "카테고리 ID", example = "1") Long categoryId) {
-}
+        @Schema(description = "카테고리 ID", example = "1") Long categoryId) {}

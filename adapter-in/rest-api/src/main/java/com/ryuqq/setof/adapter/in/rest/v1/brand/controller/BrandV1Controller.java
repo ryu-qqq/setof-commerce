@@ -1,12 +1,5 @@
 package com.ryuqq.setof.adapter.in.rest.v1.brand.controller;
 
-import java.util.List;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.ryuqq.setof.adapter.in.rest.auth.paths.ApiPaths;
 import com.ryuqq.setof.adapter.in.rest.common.dto.ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.common.dto.PageApiResponse;
@@ -14,6 +7,13 @@ import com.ryuqq.setof.adapter.in.rest.v1.brand.dto.query.BrandV1SearchApiReques
 import com.ryuqq.setof.adapter.in.rest.v1.brand.dto.response.BrandV1ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Brand (Legacy V1)", description = "레거시 Brand API - V2로 마이그레이션 권장")
 @Deprecated
@@ -36,5 +36,4 @@ public class BrandV1Controller {
             @ModelAttribute BrandV1SearchApiRequest request) {
         throw new UnsupportedOperationException("Brand 목록 조회 기능은 아직 지원되지 않습니다.");
     }
-
 }

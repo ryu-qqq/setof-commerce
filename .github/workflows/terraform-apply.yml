@@ -5,15 +5,7 @@ on:
   workflow_call:      # 다른 워크플로우에서 호출 가능
     inputs:
       web-api-image-tag:
-        description: 'Web API Docker image tag (e.g., web-api-92-f08d571)'
-        required: false
-        type: string
-      download-worker-image-tag:
-        description: 'Download Worker Docker image tag'
-        required: false
-        type: string
-      scheduler-image-tag:
-        description: 'Scheduler Docker image tag'
+        description: 'Web API Docker image tag (e.g., web-api-1-abc1234)'
         required: false
         type: string
     secrets:
@@ -38,24 +30,15 @@ jobs:
           - name: ecr
             dir: terraform/ecr
             order: 0
-          # - name: elasticache  # TODO: State migration needed - existing resources don't match module paths
-          #   dir: terraform/elasticache
-          #   order: 1
-          - name: s3
-            dir: terraform/s3
+          - name: ecs-cluster
+            dir: terraform/ecs-cluster
+            order: 1
+          - name: elasticache
+            dir: terraform/elasticache
             order: 2
-          - name: sqs
-            dir: terraform/sqs
-            order: 3
           - name: ecs-web-api
             dir: terraform/ecs-web-api
-            order: 4
-          - name: ecs-scheduler
-            dir: terraform/ecs-scheduler
-            order: 5
-          - name: ecs-download-worker
-            dir: terraform/ecs-download-worker
-            order: 6
+            order: 3
 
     steps:
       - name: Checkout code
@@ -72,7 +55,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ap-northeast-2
           role-duration-seconds: 3600
-          role-session-name: GitHubActions-FileFlow-TerraformApply
+          role-session-name: GitHubActions-SetOfCommerce-TerraformApply
 
       - name: Terraform Init - ${{ matrix.module.name }}
         working-directory: ${{ matrix.module.dir }}
@@ -93,62 +76,50 @@ jobs:
           if grep -q "EntityAlreadyExists\|already exists" plan_output.txt; then
             echo "⚠️  기존 리소스 발견! Import 작업 시작..."
 
-            # ECS Service 모듈
-            if [ "${{ matrix.module.name }}" == "ecs-service" ]; then
-              echo "📦 ECS Service 리소스 Import 중..."
-
-              # IAM Execution Role
-              if aws iam get-role --role-name fileflow-prod-ecs-execution-role --region ap-northeast-2 >/dev/null 2>&1; then
-                echo "  → Importing fileflow-prod-ecs-execution-role..."
-                terraform import -input=false aws_iam_role.fileflow_execution_role fileflow-prod-ecs-execution-role || echo "  ⚠️  Import failed or already in state"
-              fi
-
-              # IAM Task Role
-              if aws iam get-role --role-name fileflow-prod-ecs-task-role --region ap-northeast-2 >/dev/null 2>&1; then
-                echo "  → Importing fileflow-prod-ecs-task-role..."
-                terraform import -input=false aws_iam_role.fileflow_task_role fileflow-prod-ecs-task-role || echo "  ⚠️  Import failed or already in state"
-              fi
-
-              # ALB
-              ALB_ARN=$(aws elbv2 describe-load-balancers --names fileflow-prod-alb --region ap-northeast-2 --query 'LoadBalancers[0].LoadBalancerArn' --output text 2>/dev/null || echo "")
-              if [ -n "$ALB_ARN" ] && [ "$ALB_ARN" != "None" ]; then
-                echo "  → Importing ALB: $ALB_ARN"
-                terraform import -input=false aws_lb.fileflow_alb "$ALB_ARN" || echo "  ⚠️  Import failed or already in state"
-              fi
-
-              # Target Group
-              TG_ARN=$(aws elbv2 describe-target-groups --names fileflow-prod-alb-fileflow --region ap-northeast-2 --query 'TargetGroups[0].TargetGroupArn' --output text 2>/dev/null || echo "")
-              if [ -n "$TG_ARN" ] && [ "$TG_ARN" != "None" ]; then
-                echo "  → Importing Target Group: $TG_ARN"
-                terraform import -input=false aws_lb_target_group.fileflow "$TG_ARN" || echo "  ⚠️  Import failed or already in state"
-              fi
-            fi
-
-            # ElastiCache Redis 모듈
-            if [ "${{ matrix.module.name }}" == "elasticache-redis" ]; then
-              echo "📦 ElastiCache Redis 리소스 Import 중..."
-              if aws elasticache describe-replication-groups --replication-group-id fileflow-prod-redis --region ap-northeast-2 >/dev/null 2>&1; then
-                echo "  → Importing fileflow-prod-redis..."
-                terraform import -input=false aws_elasticache_replication_group.redis fileflow-prod-redis || echo "  ⚠️  Import failed or already in state"
-              fi
-            fi
-
-            # S3 Bucket 모듈
-            if [ "${{ matrix.module.name }}" == "s3-bucket" ]; then
-              echo "📦 S3 Bucket 리소스 Import 중..."
-              BUCKET_NAME="fileflow-prod"
-              if aws s3api head-bucket --bucket "$BUCKET_NAME" --region ap-northeast-2 >/dev/null 2>&1; then
-                echo "  → Importing $BUCKET_NAME..."
-                terraform import -input=false aws_s3_bucket.main "$BUCKET_NAME" || echo "  ⚠️  Import failed or already in state"
-              fi
-            fi
-
             # ECR 모듈
             if [ "${{ matrix.module.name }}" == "ecr" ]; then
               echo "📦 ECR Repository 리소스 Import 중..."
-              if aws ecr describe-repositories --repository-names fileflow-prod --region ap-northeast-2 >/dev/null 2>&1; then
-                echo "  → Importing fileflow-prod ECR repository..."
-                terraform import -input=false aws_ecr_repository.fileflow fileflow-prod || echo "  ⚠️  Import failed or already in state"
+              if aws ecr describe-repositories --repository-names setof-commerce-web-api-prod --region ap-northeast-2 >/dev/null 2>&1; then
+                echo "  → Importing setof-commerce-web-api-prod ECR repository..."
+                terraform import -input=false 'module.ecr_web_api.aws_ecr_repository.this[0]' setof-commerce-web-api-prod || echo "  ⚠️  Import failed or already in state"
+              fi
+            fi
+
+            # ECS Cluster 모듈
+            if [ "${{ matrix.module.name }}" == "ecs-cluster" ]; then
+              echo "📦 ECS Cluster 리소스 Import 중..."
+              CLUSTER_ARN=$(aws ecs describe-clusters --clusters setof-commerce-cluster-prod --region ap-northeast-2 --query 'clusters[0].clusterArn' --output text 2>/dev/null || echo "")
+              if [ -n "$CLUSTER_ARN" ] && [ "$CLUSTER_ARN" != "None" ]; then
+                echo "  → Importing ECS Cluster: $CLUSTER_ARN"
+                terraform import -input=false aws_ecs_cluster.main "$CLUSTER_ARN" || echo "  ⚠️  Import failed or already in state"
+              fi
+            fi
+
+            # ElastiCache 모듈
+            if [ "${{ matrix.module.name }}" == "elasticache" ]; then
+              echo "📦 ElastiCache Redis 리소스 Import 중..."
+              if aws elasticache describe-cache-clusters --cache-cluster-id setof-commerce-redis-prod --region ap-northeast-2 >/dev/null 2>&1; then
+                echo "  → Importing setof-commerce-redis-prod..."
+                terraform import -input=false 'module.redis.aws_elasticache_cluster.this[0]' setof-commerce-redis-prod || echo "  ⚠️  Import failed or already in state"
+              fi
+            fi
+
+            # ECS Web API 모듈
+            if [ "${{ matrix.module.name }}" == "ecs-web-api" ]; then
+              echo "📦 ECS Web API 리소스 Import 중..."
+
+              # ALB
+              ALB_ARN=$(aws elbv2 describe-load-balancers --names setof-commerce-alb-prod --region ap-northeast-2 --query 'LoadBalancers[0].LoadBalancerArn' --output text 2>/dev/null || echo "")
+              if [ -n "$ALB_ARN" ] && [ "$ALB_ARN" != "None" ]; then
+                echo "  → Importing ALB: $ALB_ARN"
+                terraform import -input=false aws_lb.web_api "$ALB_ARN" || echo "  ⚠️  Import failed or already in state"
+              fi
+
+              # Target Group
+              TG_ARN=$(aws elbv2 describe-target-groups --names setof-commerce-web-api-tg-prod --region ap-northeast-2 --query 'TargetGroups[0].TargetGroupArn' --output text 2>/dev/null || echo "")
+              if [ -n "$TG_ARN" ] && [ "$TG_ARN" != "None" ]; then
+                echo "  → Importing Target Group: $TG_ARN"
+                terraform import -input=false aws_lb_target_group.web_api "$TG_ARN" || echo "  ⚠️  Import failed or already in state"
               fi
             fi
 
@@ -171,12 +142,6 @@ jobs:
           if [ "${{ matrix.module.name }}" == "ecs-web-api" ] && [ -n "${{ inputs.web-api-image-tag }}" ]; then
             echo "📦 Using Web API image tag: ${{ inputs.web-api-image-tag }}"
             EXTRA_VARS="-var=image_tag=${{ inputs.web-api-image-tag }}"
-          elif [ "${{ matrix.module.name }}" == "ecs-download-worker" ] && [ -n "${{ inputs.download-worker-image-tag }}" ]; then
-            echo "📦 Using Download Worker image tag: ${{ inputs.download-worker-image-tag }}"
-            EXTRA_VARS="-var=image_tag=${{ inputs.download-worker-image-tag }}"
-          elif [ "${{ matrix.module.name }}" == "ecs-scheduler" ] && [ -n "${{ inputs.scheduler-image-tag }}" ]; then
-            echo "📦 Using Scheduler image tag: ${{ inputs.scheduler-image-tag }}"
-            EXTRA_VARS="-var=image_tag=${{ inputs.scheduler-image-tag }}"
           else
             echo "ℹ️  No image tag provided for ${{ matrix.module.name }}, using default from provider.tf"
           fi
@@ -212,7 +177,7 @@ jobs:
     steps:
       - name: Create Deployment Summary
         run: |
-          echo "## 🎉 FileFlow Infrastructure Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "## 🎉 SetOf Commerce Infrastructure Deployment" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Status**: ${{ needs.terraform-apply.result }}" >> $GITHUB_STEP_SUMMARY
           echo "**Environment**: Production" >> $GITHUB_STEP_SUMMARY
@@ -221,12 +186,11 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Modules Deployed" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ ECR Repository" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ ElastiCache" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ S3" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ SQS Queue" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ ECS Cluster" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ ElastiCache (Redis)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ ECS Web API" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ ECS Scheduler" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ ECS Download Worker" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Application URL**: https://commerce.set-of.com" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Next Steps**:" >> $GITHUB_STEP_SUMMARY
           echo "1. Verify infrastructure in AWS Console" >> $GITHUB_STEP_SUMMARY

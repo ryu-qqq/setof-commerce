@@ -11,7 +11,6 @@ public record CreateProductQnaReplyV1ApiRequest(
     @Schema(description = "Q&A 내용")
     public record QnaContentsV1ApiRequest(
             @Schema(description = "제목", example = "상품 문의 제목") @Size(max = 100) String title,
-            @Schema(description = "내용",
-                    example = "상품 정보가 궁금합니다.") @Size(max = 500) String content) {
-    }
+            @Schema(description = "내용", example = "상품 정보가 궁금합니다.") @Size(max = 500)
+                    String content) {}
 }

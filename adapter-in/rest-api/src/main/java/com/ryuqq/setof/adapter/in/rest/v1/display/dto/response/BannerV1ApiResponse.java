@@ -1,10 +1,8 @@
 package com.ryuqq.setof.adapter.in.rest.v1.display.dto.response;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 
 /**
  * 배너 Response
@@ -21,20 +19,19 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 @Schema(description = "Banner 응답")
 public record BannerV1ApiResponse(
-    @Schema(description = "배너 ID", example = "1") Long bannerItemId,
-    @Schema(description = "제목", example = "여름 세일 배너") String title,
-    @Schema(description = "이미지 URL", example = "https://cdn.example.com/banner/summer-pc.jpg")
-    String imageUrl,
-    @Schema(description = "링크 URL", example = "/event/summer-sale") String linkUrl,
-    @Schema(description = "전시 기간") BannerDisplayPeriodV1Response displayPeriod
-) {
+        @Schema(description = "배너 ID", example = "1") Long bannerItemId,
+        @Schema(description = "제목", example = "여름 세일 배너") String title,
+        @Schema(description = "이미지 URL", example = "https://cdn.example.com/banner/summer-pc.jpg")
+                String imageUrl,
+        @Schema(description = "링크 URL", example = "/event/summer-sale") String linkUrl,
+        @Schema(description = "전시 기간") BannerDisplayPeriodV1Response displayPeriod) {
 
     @Schema(description = "Banner 전시 기간 응답")
     public record BannerDisplayPeriodV1Response(
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        @Schema(description = "전시 시작 기간", example = "2024-12-30 00:00:00") LocalDateTime displayStartDate,
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        @Schema(description = "전시 종료 기간", example = "2025-12-30 00:00:00") LocalDateTime displayEndDate
-    ){}
-
+            @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                    @Schema(description = "전시 시작 기간", example = "2024-12-30 00:00:00")
+                    LocalDateTime displayStartDate,
+            @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                    @Schema(description = "전시 종료 기간", example = "2025-12-30 00:00:00")
+                    LocalDateTime displayEndDate) {}
 }

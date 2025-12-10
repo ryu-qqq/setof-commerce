@@ -1,10 +1,7 @@
 package com.ryuqq.setof.domain.architecture.vo;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
@@ -13,9 +10,11 @@ import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
-
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * CacheKey VO ArchUnit 아키텍처 검증 테스트
@@ -236,10 +235,11 @@ class CacheKeyArchTest {
                             .resideInAPackage("..domain..vo..")
                             .because(
                                     "CacheKey 구현체는 domain.[bc].vo 패키지에 위치해야 합니다\n"
-                                        + "예시:\n"
-                                        + "  - domain.product.vo.ProductCacheKey ✅\n"
-                                        + "  - domain.common.vo.CacheKey ✅ (기반 인터페이스)\n"
-                                        + "  - domain.product.aggregate.ProductCacheKey ❌ (잘못된 패키지)");
+                                            + "예시:\n"
+                                            + "  - domain.product.vo.ProductCacheKey ✅\n"
+                                            + "  - domain.common.vo.CacheKey ✅ (기반 인터페이스)\n"
+                                            + "  - domain.product.aggregate.ProductCacheKey ❌ (잘못된"
+                                            + " 패키지)");
 
             rule.allowEmptyShould(true).check(classes);
         }

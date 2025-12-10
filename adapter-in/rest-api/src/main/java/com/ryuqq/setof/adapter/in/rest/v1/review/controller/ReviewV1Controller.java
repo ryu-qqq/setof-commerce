@@ -1,5 +1,16 @@
 package com.ryuqq.setof.adapter.in.rest.v1.review.controller;
 
+import com.ryuqq.setof.adapter.in.rest.auth.paths.ApiPaths;
+import com.ryuqq.setof.adapter.in.rest.auth.security.MemberPrincipal;
+import com.ryuqq.setof.adapter.in.rest.common.dto.ApiResponse;
+import com.ryuqq.setof.adapter.in.rest.common.dto.SliceApiResponse;
+import com.ryuqq.setof.adapter.in.rest.v1.review.dto.command.CreateReviewV1ApiRequest;
+import com.ryuqq.setof.adapter.in.rest.v1.review.dto.query.ReviewV1SearchApiRequest;
+import com.ryuqq.setof.adapter.in.rest.v1.review.dto.response.CreateReviewV1ApiResponse;
+import com.ryuqq.setof.adapter.in.rest.v1.review.dto.response.ReviewAvailableV1ApiResponse;
+import com.ryuqq.setof.adapter.in.rest.v1.review.dto.response.ReviewV1ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,23 +23,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.ryuqq.setof.adapter.in.rest.auth.paths.ApiPaths;
-import com.ryuqq.setof.adapter.in.rest.auth.security.MemberPrincipal;
-import com.ryuqq.setof.adapter.in.rest.common.dto.ApiResponse;
-import com.ryuqq.setof.adapter.in.rest.common.dto.SliceApiResponse;
-import com.ryuqq.setof.adapter.in.rest.v1.review.dto.command.CreateReviewV1ApiRequest;
-import com.ryuqq.setof.adapter.in.rest.v1.review.dto.query.ReviewV1SearchApiRequest;
-import com.ryuqq.setof.adapter.in.rest.v1.review.dto.response.CreateReviewV1ApiResponse;
-import com.ryuqq.setof.adapter.in.rest.v1.review.dto.response.ReviewAvailableV1ApiResponse;
-import com.ryuqq.setof.adapter.in.rest.v1.review.dto.response.ReviewV1ApiResponse;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * V1 Review Controller (Legacy)
  *
- * <p>
- * 레거시 API 호환을 위한 V1 Review 엔드포인트 V2 UseCase를 재사용하며, V1 DTO로 변환하여 응답
+ * <p>레거시 API 호환을 위한 V1 Review 엔드포인트 V2 UseCase를 재사용하며, V1 DTO로 변환하여 응답
  *
  * @author development-team
  * @since 1.0.0
@@ -72,9 +71,10 @@ public class ReviewV1Controller {
     @Deprecated
     @Operation(summary = "[Legacy] 작성 가능한 리뷰 목록 조회", description = "작성 가능한 리뷰 목록을 조회합니다.")
     @GetMapping(ApiPaths.Review.AVAILABLE)
-    public ResponseEntity<ApiResponse<SliceApiResponse<ReviewAvailableV1ApiResponse>>> getAvailableReviews(
-            @AuthenticationPrincipal MemberPrincipal principal,
-            @ModelAttribute @Validated ReviewV1SearchApiRequest request) {
+    public ResponseEntity<ApiResponse<SliceApiResponse<ReviewAvailableV1ApiResponse>>>
+            getAvailableReviews(
+                    @AuthenticationPrincipal MemberPrincipal principal,
+                    @ModelAttribute @Validated ReviewV1SearchApiRequest request) {
         throw new UnsupportedOperationException("작성 가능한 리뷰 목록 조회 기능은 아직 지원되지 않습니다.");
     }
 
@@ -86,5 +86,4 @@ public class ReviewV1Controller {
             @ModelAttribute @Validated ReviewV1SearchApiRequest request) {
         throw new UnsupportedOperationException("작성한 리뷰 목록 조회 기능은 아직 지원되지 않습니다.");
     }
-
 }

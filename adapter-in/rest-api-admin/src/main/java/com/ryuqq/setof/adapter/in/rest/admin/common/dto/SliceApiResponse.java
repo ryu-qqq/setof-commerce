@@ -1,7 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.admin.common.dto;
 
 import com.ryuqq.setof.application.common.response.SliceResponse;
-
 import java.util.List;
 import java.util.function.Function;
 

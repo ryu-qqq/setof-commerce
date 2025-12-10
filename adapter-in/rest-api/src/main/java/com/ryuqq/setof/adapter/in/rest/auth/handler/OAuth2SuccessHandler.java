@@ -1,17 +1,5 @@
 package com.ryuqq.setof.adapter.in.rest.auth.handler;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 import com.ryuqq.setof.adapter.in.rest.auth.component.TokenCookieWriter;
 import com.ryuqq.setof.adapter.in.rest.auth.config.SecurityProperties;
 import com.ryuqq.setof.adapter.in.rest.auth.mapper.KakaoOAuth2ApiMapper;
@@ -20,32 +8,41 @@ import com.ryuqq.setof.adapter.in.rest.auth.utils.CookieUtils;
 import com.ryuqq.setof.application.member.dto.command.KakaoOAuthCommand;
 import com.ryuqq.setof.application.member.dto.response.KakaoOAuthResponse;
 import com.ryuqq.setof.application.member.port.in.command.KakaoOAuthLoginUseCase;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * OAuth2 Success Handler (레거시 리다이렉트 방식)
  *
- * <p>
- * 카카오 로그인 성공 후 처리를 담당
+ * <p>카카오 로그인 성공 후 처리를 담당
  *
- * <p>
- * 동작 방식:
+ * <p>동작 방식:
  *
  * <ol>
- * <li>Spring Security OAuth2가 카카오 인증 처리
- * <li>성공 시 이 핸들러가 호출됨
- * <li>OAuth2User에서 카카오 사용자 정보 추출
- * <li>integration 쿠키 확인 → 통합 여부 결정
- * <li>KakaoOAuthLoginUseCase 호출
- * <li>토큰을 쿠키에 설정
- * <li>프론트엔드로 리다이렉트 (joined, referer 쿼리 파라미터 포함)
+ *   <li>Spring Security OAuth2가 카카오 인증 처리
+ *   <li>성공 시 이 핸들러가 호출됨
+ *   <li>OAuth2User에서 카카오 사용자 정보 추출
+ *   <li>integration 쿠키 확인 → 통합 여부 결정
+ *   <li>KakaoOAuthLoginUseCase 호출
+ *   <li>토큰을 쿠키에 설정
+ *   <li>프론트엔드로 리다이렉트 (joined, referer 쿼리 파라미터 포함)
  * </ol>
  *
- * <p>
- * 쿼리 파라미터:
+ * <p>쿼리 파라미터:
  *
  * <ul>
- * <li>joined: true (기존 회원) / false (신규 회원 또는 통합됨)
- * <li>referer: 원래 페이지 URL (있을 경우)
+ *   <li>joined: true (기존 회원) / false (신규 회원 또는 통합됨)
+ *   <li>referer: 원래 페이지 URL (있을 경우)
  * </ul>
  *
  * @author development-team
@@ -63,8 +60,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final OAuth2CookieAuthorizationRequestRepository authorizationRequestRepository;
     private final SecurityProperties securityProperties;
 
-    public OAuth2SuccessHandler(KakaoOAuthLoginUseCase kakaoOAuthLoginUseCase,
-            KakaoOAuth2ApiMapper kakaoOAuth2ApiMapper, TokenCookieWriter tokenCookieWriter,
+    public OAuth2SuccessHandler(
+            KakaoOAuthLoginUseCase kakaoOAuthLoginUseCase,
+            KakaoOAuth2ApiMapper kakaoOAuth2ApiMapper,
+            TokenCookieWriter tokenCookieWriter,
             OAuth2CookieAuthorizationRequestRepository authorizationRequestRepository,
             SecurityProperties securityProperties) {
         this.kakaoOAuthLoginUseCase = kakaoOAuthLoginUseCase;
@@ -75,8 +74,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     }
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-            Authentication authentication) throws IOException {
+    public void onAuthenticationSuccess(
+            HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+            throws IOException {
 
         if (!(authentication instanceof OAuth2AuthenticationToken authToken)) {
             throw new IllegalArgumentException("Authentication must be OAuth2AuthenticationToken");
@@ -95,8 +95,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         KakaoOAuthResponse result = kakaoOAuthLoginUseCase.execute(command);
 
         // 토큰 쿠키 설정
-        tokenCookieWriter.addTokenCookies(response, result.tokens().accessToken(),
-                result.tokens().refreshToken(), result.tokens().accessTokenExpiresIn(),
+        tokenCookieWriter.addTokenCookies(
+                response,
+                result.tokens().accessToken(),
+                result.tokens().refreshToken(),
+                result.tokens().accessTokenExpiresIn(),
                 result.tokens().refreshTokenExpiresIn());
 
         // 리다이렉트 URL 생성
@@ -117,20 +120,19 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     /**
      * 리다이렉트 URL 결정
      *
-     * <p>
-     * 쿠키에서 redirect_uri 추출 → 없으면 frontDomainUrl 사용
+     * <p>쿠키에서 redirect_uri 추출 → 없으면 frontDomainUrl 사용
      *
-     * <p>
-     * 쿼리 파라미터:
+     * <p>쿼리 파라미터:
      *
      * <ul>
-     * <li>joined: 기존 회원 여부 (신규/통합은 false)
-     * <li>referer: 원래 페이지 URL
+     *   <li>joined: 기존 회원 여부 (신규/통합은 false)
+     *   <li>referer: 원래 페이지 URL
      * </ul>
      */
     private String determineTargetUrl(HttpServletRequest request, KakaoOAuthResponse result) {
-        String baseUrl = CookieUtils.getRedirectUri(request)
-                .orElse(securityProperties.getOauth2().getFrontDomainUrl());
+        String baseUrl =
+                CookieUtils.getRedirectUri(request)
+                        .orElse(securityProperties.getOauth2().getFrontDomainUrl());
 
         // joined 판단: 신규 회원이거나 통합되었으면 false
         boolean isJoined = !result.isNewMember() && !result.wasIntegrated();
@@ -139,10 +141,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 UriComponentsBuilder.fromUriString(baseUrl).queryParam(JOINED_PARAM, isJoined);
 
         // referer 추가
-        CookieUtils.getReferer(request).ifPresent(referer -> {
-            String encodedReferer = URLEncoder.encode(referer, StandardCharsets.UTF_8);
-            builder.queryParam(REFERER_PARAM, encodedReferer);
-        });
+        CookieUtils.getReferer(request)
+                .ifPresent(
+                        referer -> {
+                            String encodedReferer =
+                                    URLEncoder.encode(referer, StandardCharsets.UTF_8);
+                            builder.queryParam(REFERER_PARAM, encodedReferer);
+                        });
 
         return builder.build().toUriString();
     }
@@ -150,8 +155,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     /**
      * 리다이렉트 URI 검증
      *
-     * <p>
-     * frontDomainUrl과 동일한 호스트/포트인지 확인
+     * <p>frontDomainUrl과 동일한 호스트/포트인지 확인
      */
     private boolean isAuthorizedRedirectUri(String uri) {
         try {
@@ -171,11 +175,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     /**
      * 인증 관련 속성 정리
      *
-     * <p>
-     * 세션 속성 + OAuth2 쿠키 삭제
+     * <p>세션 속성 + OAuth2 쿠키 삭제
      */
-    private void clearAuthenticationAttributes(HttpServletRequest request,
-            HttpServletResponse response) {
+    private void clearAuthenticationAttributes(
+            HttpServletRequest request, HttpServletResponse response) {
         super.clearAuthenticationAttributes(request);
         authorizationRequestRepository.removeAuthorizationRequestCookies(response);
     }

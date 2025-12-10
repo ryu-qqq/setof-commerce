@@ -1,7 +1,6 @@
 package com.ryuqq.setof.domain.member.exception;
 
 import com.ryuqq.setof.domain.common.exception.DomainException;
-
 import java.util.Map;
 
 /**
@@ -27,9 +26,8 @@ public final class InvalidPasswordException extends DomainException {
 
     public InvalidPasswordException(String reason) {
         super(
-            MemberErrorCode.INVALID_PASSWORD,
-            String.format("비밀번호가 올바르지 않습니다: %s", reason),
-            Map.of("reason", reason)
-        );
+                MemberErrorCode.INVALID_PASSWORD,
+                String.format("비밀번호가 올바르지 않습니다: %s", reason),
+                Map.of("reason", reason));
     }
 }

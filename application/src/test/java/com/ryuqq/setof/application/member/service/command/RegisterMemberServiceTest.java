@@ -82,7 +82,8 @@ class RegisterMemberServiceTest {
             assertNotNull(result.tokens());
 
             verify(memberReadManager).existsByPhoneNumber(command.phoneNumber());
-            verify(memberPolicyValidator).validatePhoneNumberNotDuplicate(command.phoneNumber(), false);
+            verify(memberPolicyValidator)
+                    .validatePhoneNumberNotDuplicate(command.phoneNumber(), false);
             verify(memberCommandFactory).create(command);
             verify(registerMemberFacade).persistMember(newMember);
         }
@@ -102,7 +103,8 @@ class RegisterMemberServiceTest {
             assertThrows(DuplicatePhoneNumberException.class, () -> service.execute(command));
 
             verify(memberReadManager).existsByPhoneNumber(command.phoneNumber());
-            verify(memberPolicyValidator).validatePhoneNumberNotDuplicate(command.phoneNumber(), true);
+            verify(memberPolicyValidator)
+                    .validatePhoneNumberNotDuplicate(command.phoneNumber(), true);
             verify(memberCommandFactory, never()).create(any(RegisterMemberCommand.class));
             verify(registerMemberFacade, never()).persistMember(any());
         }

@@ -1,17 +1,5 @@
 package com.ryuqq.setof.adapter.in.rest.v1.payment.controller;
 
-import java.util.List;
-import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.ryuqq.setof.adapter.in.rest.auth.paths.ApiPaths;
 import com.ryuqq.setof.adapter.in.rest.auth.security.MemberPrincipal;
 import com.ryuqq.setof.adapter.in.rest.common.dto.ApiResponse;
@@ -28,12 +16,23 @@ import com.ryuqq.setof.adapter.in.rest.v1.payment.dto.response.PaymentResultV1Ap
 import com.ryuqq.setof.adapter.in.rest.v1.payment.dto.response.PaymentV1ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * V1 Payment Controller (Legacy)
  *
- * <p>
- * 레거시 API 호환을 위한 V1 Payment 엔드포인트
+ * <p>레거시 API 호환을 위한 V1 Payment 엔드포인트
  *
  * @author development-team
  * @since 1.0.0
@@ -122,7 +121,6 @@ public class PaymentV1Controller {
 
         throw new UnsupportedOperationException("장바구니 결제 기능은 아직 지원되지 않습니다.");
     }
-
 
     @Deprecated
     @Operation(summary = "[Legacy] 결제 실패 처리", description = "결제 실패를 처리합니다.")

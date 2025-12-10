@@ -86,8 +86,12 @@ public class GlobalExceptionHandler {
         // Tracing 정보 (MDC에서)
         String traceId = MDC.get("traceId");
         String spanId = MDC.get("spanId");
-        if (traceId != null) pd.setProperty("traceId", traceId);
-        if (spanId != null) pd.setProperty("spanId", spanId);
+        if (traceId != null) {
+            pd.setProperty("traceId", traceId);
+        }
+        if (spanId != null) {
+            pd.setProperty("spanId", spanId);
+        }
 
         // RFC 7807: Content-Type + x-error-code 헤더
         return ResponseEntity.status(status)
@@ -269,7 +273,9 @@ public class GlobalExceptionHandler {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON);
         headers.add(ERROR_CODE_HEADER, METHOD_NOT_ALLOWED);
-        if (!supported.isEmpty()) headers.setAllow(supported);
+        if (!supported.isEmpty()) {
+            headers.setAllow(supported);
+        }
 
         log.warn(
                 "MethodNotAllowed: code={}, method={}, supported={}",
@@ -353,8 +359,12 @@ public class GlobalExceptionHandler {
         // Tracing 정보 (MDC에서)
         String traceId = MDC.get("traceId");
         String spanId = MDC.get("spanId");
-        if (traceId != null) pd.setProperty("traceId", traceId);
-        if (spanId != null) pd.setProperty("spanId", spanId);
+        if (traceId != null) {
+            pd.setProperty("traceId", traceId);
+        }
+        if (spanId != null) {
+            pd.setProperty("spanId", spanId);
+        }
 
         // HTTP 상태 코드에 따라 로깅 레벨 구분
         if (mapped.status().is5xxServerError()) {

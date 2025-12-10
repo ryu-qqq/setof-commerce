@@ -1,19 +1,18 @@
 package com.ryuqq.setof.application.architecture.dto;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.lang.ArchRule;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.lang.ArchRule;
-
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * DTO Record ArchUnit 검증 테스트 (Zero-Tolerance)
@@ -244,7 +243,9 @@ class DtoRecordArchTest {
         }
 
         @Test
-        @DisplayName("[필수] Response는 ..application..dto.response.. 또는 ..application..common.response.. 패키지에 위치해야 한다")
+        @DisplayName(
+                "[필수] Response는 ..application..dto.response.. 또는 ..application..common.response.."
+                        + " 패키지에 위치해야 한다")
         void response_MustBeInCorrectPackage() {
             assumeTrue(hasResponseClasses, "Response 클래스가 없어 테스트를 스킵합니다");
 
@@ -259,7 +260,9 @@ class DtoRecordArchTest {
                             .resideInAnyPackage(
                                     "..application..dto.response..",
                                     "..application..common.response..")
-                            .because("Response는 application.*.dto.response 또는 application.common.response 패키지에 위치해야 합니다");
+                            .because(
+                                    "Response는 application.*.dto.response 또는"
+                                            + " application.common.response 패키지에 위치해야 합니다");
 
             rule.check(classes);
         }

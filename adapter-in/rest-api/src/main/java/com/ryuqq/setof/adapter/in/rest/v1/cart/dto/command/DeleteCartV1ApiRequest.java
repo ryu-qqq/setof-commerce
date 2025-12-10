@@ -13,8 +13,5 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(description = "장바구니 삭제 요청")
 public record DeleteCartV1ApiRequest(
-    @Schema(description = "장바구니 ID", example = "1",
-        requiredMode = Schema.RequiredMode.REQUIRED)
-    long cartId
-) {
-}
+        @Schema(description = "장바구니 ID", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
+                long cartId) {}

@@ -1,7 +1,18 @@
 package com.ryuqq.setof.adapter.in.rest.architecture.security;
 
-import java.util.UUID;
+import static com.ryuqq.setof.adapter.in.rest.architecture.ArchUnitPackageConstants.ADAPTER_IN_REST;
+import static com.ryuqq.setof.adapter.in.rest.architecture.ArchUnitPackageConstants.DOMAIN_ALL;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
+import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.domain.JavaModifier;
+import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.lang.ArchRule;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -11,19 +22,6 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.domain.JavaModifier;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.core.importer.ImportOption;
-import com.tngtech.archunit.lang.ArchRule;
-
-import static com.ryuqq.setof.adapter.in.rest.architecture.ArchUnitPackageConstants.ADAPTER_IN_REST;
-import static com.ryuqq.setof.adapter.in.rest.architecture.ArchUnitPackageConstants.DOMAIN_ALL;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 /**
  * Security Layer ArchUnit 검증 테스트 (Zero-Tolerance)
@@ -295,8 +293,7 @@ class SecurityArchTest {
                             .resideInAPackage("..adapter.in.rest..")
                             .should()
                             .beAssignableTo(OncePerRequestFilter.class)
-                            .because(
-                                    "인증 필터는 요청당 한 번만 실행되어야 하므로 OncePerRequestFilter를 상속해야 합니다");
+                            .because("인증 필터는 요청당 한 번만 실행되어야 하므로 OncePerRequestFilter를 상속해야 합니다");
 
             rule.allowEmptyShould(true).check(classes);
         }
@@ -409,8 +406,8 @@ class SecurityArchTest {
         /**
          * 규칙 17: Security Component는 @Component를 가져야 한다.
          *
-         * <p>auth.component 패키지에서 컴포넌트 역할을 하는 클래스는 @Component가 필수입니다.
-         * 단, 값 객체(record)는 Bean이 아니므로 제외합니다.
+         * <p>auth.component 패키지에서 컴포넌트 역할을 하는 클래스는 @Component가 필수입니다. 단, 값 객체(record)는 Bean이 아니므로
+         * 제외합니다.
          */
         @Test
         @DisplayName("[필수] Security Component는 @Component를 가져야 한다")
@@ -563,27 +560,28 @@ class SecurityArchTest {
         /**
          * 규칙 23: auth 패키지 하위 구조 (선택적)
          *
-         * <p>auth 패키지의 표준 하위 구조는 권장 사항입니다.
-         * 소셜 로그인, OAuth2, 토큰 발급 등 다양한 인증 시나리오에서
-         * controller, service, dto, mapper, client 등 추가 패키지가 필요할 수 있습니다.
+         * <p>auth 패키지의 표준 하위 구조는 권장 사항입니다. 소셜 로그인, OAuth2, 토큰 발급 등 다양한 인증 시나리오에서 controller,
+         * service, dto, mapper, client 등 추가 패키지가 필요할 수 있습니다.
          *
          * <p><strong>권장 구조:</strong>
+         *
          * <ul>
-         *   <li>auth.paths - API 경로 상수</li>
-         *   <li>auth.config - Security 설정</li>
-         *   <li>auth.filter - 인증 필터</li>
-         *   <li>auth.handler - 인증/인가 핸들러</li>
-         *   <li>auth.component - 토큰 프로바이더 등 컴포넌트</li>
+         *   <li>auth.paths - API 경로 상수
+         *   <li>auth.config - Security 설정
+         *   <li>auth.filter - 인증 필터
+         *   <li>auth.handler - 인증/인가 핸들러
+         *   <li>auth.component - 토큰 프로바이더 등 컴포넌트
          * </ul>
          *
          * <p><strong>확장 가능 구조 (필요 시):</strong>
+         *
          * <ul>
-         *   <li>auth.controller - 로그인/로그아웃 API</li>
-         *   <li>auth.service - 인증 서비스</li>
-         *   <li>auth.dto - 인증 관련 DTO</li>
-         *   <li>auth.mapper - DTO 변환</li>
-         *   <li>auth.client - 외부 인증 서버 클라이언트</li>
-         *   <li>auth.oauth2 - OAuth2/소셜 로그인</li>
+         *   <li>auth.controller - 로그인/로그아웃 API
+         *   <li>auth.service - 인증 서비스
+         *   <li>auth.dto - 인증 관련 DTO
+         *   <li>auth.mapper - DTO 변환
+         *   <li>auth.client - 외부 인증 서버 클라이언트
+         *   <li>auth.oauth2 - OAuth2/소셜 로그인
          * </ul>
          *
          * <p>강제 규칙에서 권장 사항으로 변경됨 (v1.1.0)
@@ -635,10 +633,11 @@ class SecurityArchTest {
                             .and()
                             .areNotInterfaces()
                             .should()
-                            .resideInAnyPackage("..auth.component..", "..auth.filter..", "..auth.config..")
+                            .resideInAnyPackage(
+                                    "..auth.component..", "..auth.filter..", "..auth.config..")
                             .because(
-                                    "Gateway 관련 컴포넌트는 auth.component, auth.filter, 또는 auth.config 패키지에"
-                                            + " 위치해야 합니다");
+                                    "Gateway 관련 컴포넌트는 auth.component, auth.filter, 또는 auth.config"
+                                            + " 패키지에 위치해야 합니다");
 
             rule.allowEmptyShould(true).check(classes);
         }
@@ -715,8 +714,7 @@ class SecurityArchTest {
         /**
          * 규칙 28: GatewayUser의 userId 필드는 UUID 타입이어야 한다.
          *
-         * <p>UUIDv7을 사용하여 시간 순서가 보장되는 고유 식별자를 사용합니다.
-         * Long 타입은 보안상 취약하므로 금지됩니다.
+         * <p>UUIDv7을 사용하여 시간 순서가 보장되는 고유 식별자를 사용합니다. Long 타입은 보안상 취약하므로 금지됩니다.
          */
         @Test
         @DisplayName("[필수] GatewayUser의 userId 필드는 UUID 타입이어야 한다")
@@ -739,14 +737,15 @@ class SecurityArchTest {
         /**
          * 규칙 29: SecurityContextAuthenticator의 Gateway 인증 메서드는 UUID를 반환해야 한다.
          *
-         * <p>GatewayUser를 파라미터로 받는 authenticate 메서드는 UUID를 반환해야 합니다.
-         * JWT 모드용 authenticate(String) 메서드는 별도 검사 대상입니다.
+         * <p>GatewayUser를 파라미터로 받는 authenticate 메서드는 UUID를 반환해야 합니다. JWT 모드용 authenticate(String)
+         * 메서드는 별도 검사 대상입니다.
          */
         @Test
         @DisplayName("[필수] SecurityContextAuthenticator.authenticate(GatewayUser)는 UUID를 반환해야 한다")
         void securityContextAuthenticator_GatewayAuthenticateMustReturnUUID() {
             ArchRule rule =
-                    methods().that()
+                    methods()
+                            .that()
                             .areDeclaredInClassesThat()
                             .haveSimpleName("SecurityContextAuthenticator")
                             .and()

@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
 import java.util.List;
 
 /**
@@ -30,11 +29,11 @@ public record CreateReviewV1ApiRequest(
                 @NotNull(message = "주문 ID는 필수입니다.")
                 Long orderId,
         @Schema(
-            description = "상품 ID",
-            example = "12345",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotNull(message = "상품 ID는 필수입니다.")
-        Long productGroupId,
+                        description = "상품 ID",
+                        example = "12345",
+                        requiredMode = Schema.RequiredMode.REQUIRED)
+                @NotNull(message = "상품 ID는 필수입니다.")
+                Long productGroupId,
         @Schema(
                         description = "평점 (1-5)",
                         example = "5",
@@ -53,8 +52,5 @@ public record CreateReviewV1ApiRequest(
                 List<CreateReviewImageV1ApiRequest> reviewImages) {
 
     public record CreateReviewImageV1ApiRequest(
-        @Schema(description = "리뷰 이미지 URL")
-        String imageUrl
-    ){}
-
+            @Schema(description = "리뷰 이미지 URL") String imageUrl) {}
 }

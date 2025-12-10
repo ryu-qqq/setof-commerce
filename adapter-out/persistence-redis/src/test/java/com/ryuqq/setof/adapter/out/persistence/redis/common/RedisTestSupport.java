@@ -16,18 +16,19 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 /**
  * Redis 통합 테스트 지원 추상 클래스
  *
- * <p>모든 Redis 관련 통합 테스트는 이 클래스를 상속받아 작성합니다.
- * Cache Adapter와 Lock Adapter 테스트 모두 사용 가능합니다.
+ * <p>모든 Redis 관련 통합 테스트는 이 클래스를 상속받아 작성합니다. Cache Adapter와 Lock Adapter 테스트 모두 사용 가능합니다.
  *
  * <p>제공 기능:
+ *
  * <ul>
- *   <li>TestContainers Redis 자동 설정</li>
- *   <li>RedisTemplate 자동 주입</li>
- *   <li>테스트 후 데이터 자동 정리</li>
- *   <li>기본 검증 유틸리티</li>
+ *   <li>TestContainers Redis 자동 설정
+ *   <li>RedisTemplate 자동 주입
+ *   <li>테스트 후 데이터 자동 정리
+ *   <li>기본 검증 유틸리티
  * </ul>
  *
  * <h2>사용 예시:</h2>
+ *
  * <pre>{@code
  * @DisplayName("ObjectCacheAdapter 통합 테스트")
  * class ObjectCacheAdapterTest extends RedisTestSupport {
@@ -66,20 +67,18 @@ public abstract class RedisTestSupport {
     /**
      * Redis TestContainer
      *
-     * <p>모든 테스트에서 공유되는 단일 컨테이너입니다.
-     * 테스트 클래스 간 재사용하여 시작 시간을 최소화합니다.
+     * <p>모든 테스트에서 공유되는 단일 컨테이너입니다. 테스트 클래스 간 재사용하여 시작 시간을 최소화합니다.
      */
     @Container
-    protected static GenericContainer<?> redis = new GenericContainer<>("redis:7-alpine")
-            .withExposedPorts(6379);
+    protected static GenericContainer<?> redis =
+            new GenericContainer<>("redis:7-alpine").withExposedPorts(6379);
 
     /**
      * RedisTemplate - Redis 작업용
      *
      * <p>테스트에서 직접적인 Redis 조작이 필요할 때 사용합니다.
      */
-    @Autowired
-    protected RedisTemplate<String, Object> redisTemplate;
+    @Autowired protected RedisTemplate<String, Object> redisTemplate;
 
     /**
      * TestContainers 동적 프로퍼티 설정
@@ -97,15 +96,11 @@ public abstract class RedisTestSupport {
     /**
      * 테스트 후 Redis 데이터 정리
      *
-     * <p>각 테스트 종료 후 Redis의 모든 데이터를 삭제합니다.
-     * 테스트 간 데이터 격리를 보장합니다.
+     * <p>각 테스트 종료 후 Redis의 모든 데이터를 삭제합니다. 테스트 간 데이터 격리를 보장합니다.
      */
     @AfterEach
     void tearDown() {
-        redisTemplate.getConnectionFactory()
-                .getConnection()
-                .serverCommands()
-                .flushDb();
+        redisTemplate.getConnectionFactory().getConnection().serverCommands().flushDb();
     }
 
     /**
@@ -115,9 +110,7 @@ public abstract class RedisTestSupport {
      */
     protected void assertKeyExists(String key) {
         Boolean exists = redisTemplate.hasKey(key);
-        assertThat(exists)
-                .as("Key '%s' should exist in Redis", key)
-                .isTrue();
+        assertThat(exists).as("Key '%s' should exist in Redis", key).isTrue();
     }
 
     /**
@@ -127,9 +120,7 @@ public abstract class RedisTestSupport {
      */
     protected void assertKeyNotExists(String key) {
         Boolean exists = redisTemplate.hasKey(key);
-        assertThat(exists)
-                .as("Key '%s' should not exist in Redis", key)
-                .isFalse();
+        assertThat(exists).as("Key '%s' should not exist in Redis", key).isFalse();
     }
 
     /**

@@ -1,9 +1,6 @@
 package com.ryuqq.setof.domain.architecture.vo;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
@@ -13,8 +10,10 @@ import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
-
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Value Object ArchUnit 아키텍처 검증 테스트
@@ -177,8 +176,8 @@ class VOArchTest {
                         .allowEmptyShould(true) // ID VO가 없으면 통과
                         .because(
                                 "ID Value Object는 forNew() 메서드를 가져야 합니다\n"
-                                        + "  - Long ID: forNew()가 null 반환 (DB가 ID 생성)\n"
-                                        + "  - UUID ID: forNew()가 UUIDv7 문자열 반환 (Application이 ID 생성)");
+                                    + "  - Long ID: forNew()가 null 반환 (DB가 ID 생성)\n"
+                                    + "  - UUID ID: forNew()가 UUIDv7 문자열 반환 (Application이 ID 생성)");
 
         rule.check(classes);
     }
@@ -356,7 +355,7 @@ class VOArchTest {
                         .allowEmptyShould(true) // Enum VO가 없으면 통과
                         .because(
                                 "Enum VO는 displayName() 메서드로 화면 표시용 이름을 제공해야 합니다\n"
-                                        + "  - 예시: public String displayName() { return this.name; }");
+                                    + "  - 예시: public String displayName() { return this.name; }");
 
         rule.check(classes);
     }

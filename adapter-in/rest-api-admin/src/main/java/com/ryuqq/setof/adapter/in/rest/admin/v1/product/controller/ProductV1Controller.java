@@ -1,9 +1,5 @@
 package com.ryuqq.setof.adapter.in.rest.admin.v1.product.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-
 import com.ryuqq.setof.adapter.in.rest.admin.common.dto.ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.common.dto.PageApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.command.CreateDeliveryNoticeV1ApiRequest;
@@ -25,10 +21,11 @@ import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.response.CreateProdu
 import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.response.ProductFetchV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.response.ProductGroupDetailV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.response.ProductGroupFetchV1ApiResponse;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Set;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,8 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * V1 Product Controller (Legacy)
  *
- * <p>
- * 레거시 API 호환을 위한 V1 Product 엔드포인트
+ * <p>레거시 API 호환을 위한 V1 Product 엔드포인트
  *
  * @author development-team
  * @since 1.0.0
@@ -69,12 +65,11 @@ public class ProductV1Controller {
         throw new UnsupportedOperationException("상품 그룹 조회 기능은 아직 지원되지 않습니다.");
     }
 
-
     @Deprecated
     @Operation(summary = "[Legacy] 상품 그룹 목록 조회", description = "상품 그룹 목록을 조회합니다.")
     @GetMapping("/products/group")
-    public ResponseEntity<ApiResponse<PageApiResponse<ProductGroupDetailV1ApiResponse>>> fetchProductGroups(
-            @ModelAttribute @Validated ProductGroupFilterV1ApiRequest filter) {
+    public ResponseEntity<ApiResponse<PageApiResponse<ProductGroupDetailV1ApiResponse>>>
+            fetchProductGroups(@ModelAttribute @Validated ProductGroupFilterV1ApiRequest filter) {
 
         throw new UnsupportedOperationException("상품 그룹 목록 조회 기능은 아직 지원되지 않습니다.");
     }
@@ -102,7 +97,8 @@ public class ProductV1Controller {
     @Deprecated
     @Operation(summary = "[Legacy] 상품 고지 수정", description = "상품 고지를 수정합니다.")
     @PutMapping("/product/group/{productGroupId}/notice")
-    public ResponseEntity<ApiResponse<Long>> updateProductNotice(@PathVariable long productGroupId,
+    public ResponseEntity<ApiResponse<Long>> updateProductNotice(
+            @PathVariable long productGroupId,
             @Valid @RequestBody CreateProductNoticeV1ApiRequest createProductNotice) {
 
         throw new UnsupportedOperationException("상품 고지 수정 기능은 아직 지원되지 않습니다.");
@@ -131,7 +127,8 @@ public class ProductV1Controller {
     @Deprecated
     @Operation(summary = "[Legacy] 상품 이미지 수정", description = "상품 이미지를 수정합니다.")
     @PutMapping("/product/group/{productGroupId}/images")
-    public ResponseEntity<ApiResponse<Long>> updateProductImages(@PathVariable long productGroupId,
+    public ResponseEntity<ApiResponse<Long>> updateProductImages(
+            @PathVariable long productGroupId,
             @Valid @RequestBody List<CreateProductImageV1ApiRequest> createProductImages) {
 
         throw new UnsupportedOperationException("상품 이미지 수정 기능은 아직 지원되지 않습니다.");
@@ -160,7 +157,8 @@ public class ProductV1Controller {
     @Deprecated
     @Operation(summary = "[Legacy] 가격 수정", description = "상품 그룹의 가격을 수정합니다.")
     @PatchMapping("/product/group/{productGroupId}/price")
-    public ResponseEntity<ApiResponse<Long>> updatePrice(@PathVariable long productGroupId,
+    public ResponseEntity<ApiResponse<Long>> updatePrice(
+            @PathVariable long productGroupId,
             @Valid @RequestBody CreatePriceV1ApiRequest createPrice) {
 
         throw new UnsupportedOperationException("가격 수정 기능은 아직 지원되지 않습니다.");
@@ -178,7 +176,8 @@ public class ProductV1Controller {
     @Deprecated
     @Operation(summary = "[Legacy] 상품 그룹 전시 여부 수정", description = "상품 그룹의 전시 여부를 수정합니다.")
     @PatchMapping("/product/group/{productGroupId}/display-yn")
-    public ResponseEntity<ApiResponse<Long>> updateDisplayYnGroup(@PathVariable long productGroupId,
+    public ResponseEntity<ApiResponse<Long>> updateDisplayYnGroup(
+            @PathVariable long productGroupId,
             @RequestBody UpdateDisplayYnV1ApiRequest updateDisplayYn) {
 
         throw new UnsupportedOperationException("상품 그룹 전시 여부 수정 기능은 아직 지원되지 않습니다.");
@@ -187,7 +186,8 @@ public class ProductV1Controller {
     @Deprecated
     @Operation(summary = "[Legacy] 상품 그룹 수정", description = "상품 그룹을 수정합니다.")
     @PutMapping("/product/group/{productGroupId}")
-    public ResponseEntity<ApiResponse<Long>> updateProductGroup(@PathVariable long productGroupId,
+    public ResponseEntity<ApiResponse<Long>> updateProductGroup(
+            @PathVariable long productGroupId,
             @RequestBody UpdateProductGroupV1ApiRequest updateProductGroup) {
 
         throw new UnsupportedOperationException("상품 그룹 수정 기능은 아직 지원되지 않습니다.");
@@ -196,7 +196,8 @@ public class ProductV1Controller {
     @Deprecated
     @Operation(summary = "[Legacy] 개별 상품 전시 여부 수정", description = "개별 상품의 전시 여부를 수정합니다.")
     @PatchMapping("/product/{productId}/display-yn")
-    public ResponseEntity<ApiResponse<Long>> updateDisplayYnIndividual(@PathVariable long productId,
+    public ResponseEntity<ApiResponse<Long>> updateDisplayYnIndividual(
+            @PathVariable long productId,
             @RequestBody UpdateDisplayYnV1ApiRequest updateDisplayYn) {
 
         throw new UnsupportedOperationException("개별 상품 전시 여부 수정 기능은 아직 지원되지 않습니다.");
@@ -249,5 +250,4 @@ public class ProductV1Controller {
 
         throw new UnsupportedOperationException("상품 그룹 재고 수정 기능은 아직 지원되지 않습니다.");
     }
-
 }

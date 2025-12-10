@@ -9,6 +9,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @since 1.0.0
  */
 @Schema(description = "사업자 등록번호 검증")
-public record BusinessValidationV1ApiRequest(@Schema(description = "사업자 등록번호",
-        example = "123-45-67890") String businessRegistrationNumber) {
-}
+public record BusinessValidationV1ApiRequest(
+        @Schema(description = "사업자 등록번호", example = "123-45-67890")
+                String businessRegistrationNumber) {}

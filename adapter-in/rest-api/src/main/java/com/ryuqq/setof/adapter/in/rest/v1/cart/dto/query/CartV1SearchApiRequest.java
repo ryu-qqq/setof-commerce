@@ -2,10 +2,6 @@ package com.ryuqq.setof.adapter.in.rest.v1.cart.dto.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.time.LocalDateTime;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
 /**
  * 장바구니 목록 조회 필터 Request
  *
@@ -19,9 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @Schema(description = "장바구니 목록 조회 필터")
 public record CartV1SearchApiRequest(
-    @Schema(description = "마지막 조회한 도메인 ID (커서 기반 페이징)", example = "100") Long lastDomainId,
-    @Schema(description = "커서 값 (정렬 기준 값)", example = "2024-01-01T00:00:00") String cursorValue,
-    @Schema(description = "정렬 타입", example = "LATEST") String orderType,
-    @Schema(description = "페이지 사이즈", example = "10") Integer pageSize
-) {
-}
+        @Schema(description = "마지막 조회한 도메인 ID (커서 기반 페이징)", example = "100") Long lastDomainId,
+        @Schema(description = "커서 값 (정렬 기준 값)", example = "2024-01-01T00:00:00") String cursorValue,
+        @Schema(description = "정렬 타입", example = "LATEST") String orderType,
+        @Schema(description = "페이지 사이즈", example = "10") Integer pageSize) {}

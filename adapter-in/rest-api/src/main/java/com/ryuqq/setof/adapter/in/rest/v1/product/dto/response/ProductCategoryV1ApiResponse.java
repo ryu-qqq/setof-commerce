@@ -14,5 +14,4 @@ public record ProductCategoryV1ApiResponse(
         @Schema(description = "카테고리명", example = "상의") String categoryName,
         @Schema(description = "표시명", example = "상의 > 티셔츠") String displayName,
         @Schema(description = "부모 카테고리 ID", example = "0") Long parentCategoryId,
-        @Schema(description = "카테고리 깊이", example = "1") Integer categoryDepth) {
-}
+        @Schema(description = "카테고리 깊이", example = "1") Integer categoryDepth) {}

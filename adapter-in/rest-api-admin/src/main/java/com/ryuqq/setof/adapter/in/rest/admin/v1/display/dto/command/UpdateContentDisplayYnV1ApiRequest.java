@@ -11,5 +11,4 @@ import jakarta.validation.constraints.NotNull;
  */
 @Schema(description = "컨텐츠 표시 상태 변경 요청")
 public record UpdateContentDisplayYnV1ApiRequest(
-        @Schema(description = "표시 여부", example = "true") @NotNull Boolean displayYn) {
-}
+        @Schema(description = "표시 여부", example = "true") @NotNull Boolean displayYn) {}

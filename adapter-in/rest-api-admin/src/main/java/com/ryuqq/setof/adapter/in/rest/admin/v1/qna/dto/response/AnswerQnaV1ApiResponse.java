@@ -20,16 +20,17 @@ public record AnswerQnaV1ApiResponse(
         @Schema(description = "QNA 이미지 목록") List<QnaImageV1ApiResponse> qnaImages,
         @Schema(description = "등록자", example = "admin") String insertOperator,
         @Schema(description = "수정자", example = "admin") String updateOperator,
-        @Schema(description = "등록 일시", example = "2024-01-01 00:00:00") @JsonFormat(
-                pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime insertDate,
-        @Schema(description = "수정 일시", example = "2024-01-01 00:00:00") @JsonFormat(
-                pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime updateDate) {
+        @Schema(description = "등록 일시", example = "2024-01-01 00:00:00")
+                @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                LocalDateTime insertDate,
+        @Schema(description = "수정 일시", example = "2024-01-01 00:00:00")
+                @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                LocalDateTime updateDate) {
 
     @Schema(description = "QNA 내용")
     public record QnaContentsV1ApiResponse(
             @Schema(description = "제목", example = "답변 제목") String title,
-            @Schema(description = "내용", example = "답변 내용") String content) {
-    }
+            @Schema(description = "내용", example = "답변 내용") String content) {}
 
     @Schema(description = "QNA 이미지")
     public record QnaImageV1ApiResponse(
@@ -37,8 +38,7 @@ public record AnswerQnaV1ApiResponse(
             @Schema(description = "QNA 이미지 ID", example = "1") Long qnaImageId,
             @Schema(description = "QNA ID", example = "1") Long qnaId,
             @Schema(description = "QNA 답변 ID", example = "1") Long qnaAnswerId,
-            @Schema(description = "이미지 URL",
-                    example = "https://example.com/image.jpg") String imageUrl,
-            @Schema(description = "표시 순서", example = "1") Integer displayOrder) {
-    }
+            @Schema(description = "이미지 URL", example = "https://example.com/image.jpg")
+                    String imageUrl,
+            @Schema(description = "표시 순서", example = "1") Integer displayOrder) {}
 }

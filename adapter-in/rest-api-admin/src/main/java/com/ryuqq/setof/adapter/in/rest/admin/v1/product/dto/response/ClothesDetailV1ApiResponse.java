@@ -12,5 +12,4 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record ClothesDetailV1ApiResponse(
         @Schema(description = "상품 상태", example = "NEW") String productCondition,
         @Schema(description = "원산지", example = "한국") String origin,
-        @Schema(description = "스타일 코드", example = "STYLE001") String styleCode) {
-}
+        @Schema(description = "스타일 코드", example = "STYLE001") String styleCode) {}

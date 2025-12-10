@@ -20,7 +20,6 @@ import com.ryuqq.setof.domain.member.vo.SocialId;
 import java.time.Clock;
 import java.util.List;
 import java.util.Locale;
-
 import org.springframework.stereotype.Component;
 
 /**
@@ -44,10 +43,7 @@ public class MemberAssembler {
      * @return Member Domain 객체
      */
     public Member toDomain(
-            MemberId memberId,
-            RegisterMemberCommand command,
-            String hashedPassword,
-            Clock clock) {
+            MemberId memberId, RegisterMemberCommand command, String hashedPassword, Clock clock) {
         return Member.forNew(
                 memberId,
                 PhoneNumber.of(command.phoneNumber()),

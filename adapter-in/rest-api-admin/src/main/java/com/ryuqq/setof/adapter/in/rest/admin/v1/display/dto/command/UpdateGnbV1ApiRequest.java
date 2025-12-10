@@ -13,13 +13,10 @@ import java.util.List;
 public record UpdateGnbV1ApiRequest(
         @Schema(description = "GNB 아이템 목록") List<GnbItemV1ApiRequest> items) {
 
-    /**
-     * GNB 아이템 Request
-     */
+    /** GNB 아이템 Request */
     @Schema(description = "GNB 아이템")
     public record GnbItemV1ApiRequest(
             @Schema(description = "GNB명", example = "홈") String name,
             @Schema(description = "링크 URL", example = "/") String linkUrl,
-            @Schema(description = "정렬 순서", example = "1") Integer sortOrder) {
-    }
+            @Schema(description = "정렬 순서", example = "1") Integer sortOrder) {}
 }

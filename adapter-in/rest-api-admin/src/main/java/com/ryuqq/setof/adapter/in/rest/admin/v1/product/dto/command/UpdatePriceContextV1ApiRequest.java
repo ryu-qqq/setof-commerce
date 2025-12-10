@@ -15,11 +15,19 @@ public record UpdatePriceContextV1ApiRequest(
 
     @Schema(description = "가격 명령")
     public record PriceCommandV1ApiRequest(
-            @Schema(description = "상품 그룹 ID", example = "12345",
-                    requiredMode = Schema.RequiredMode.REQUIRED) Long productGroupId,
-            @Schema(description = "정가", example = "50000",
-                    requiredMode = Schema.RequiredMode.REQUIRED) java.math.BigDecimal regularPrice,
-            @Schema(description = "현재가", example = "40000",
-                    requiredMode = Schema.RequiredMode.REQUIRED) java.math.BigDecimal currentPrice) {
-    }
+            @Schema(
+                            description = "상품 그룹 ID",
+                            example = "12345",
+                            requiredMode = Schema.RequiredMode.REQUIRED)
+                    Long productGroupId,
+            @Schema(
+                            description = "정가",
+                            example = "50000",
+                            requiredMode = Schema.RequiredMode.REQUIRED)
+                    java.math.BigDecimal regularPrice,
+            @Schema(
+                            description = "현재가",
+                            example = "40000",
+                            requiredMode = Schema.RequiredMode.REQUIRED)
+                    java.math.BigDecimal currentPrice) {}
 }

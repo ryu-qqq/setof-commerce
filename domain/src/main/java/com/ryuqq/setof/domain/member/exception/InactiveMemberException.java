@@ -1,7 +1,6 @@
 package com.ryuqq.setof.domain.member.exception;
 
 import com.ryuqq.setof.domain.common.exception.DomainException;
-
 import java.util.Map;
 import java.util.UUID;
 
@@ -17,17 +16,15 @@ public final class InactiveMemberException extends DomainException {
 
     public InactiveMemberException(UUID memberId, String status) {
         super(
-            MemberErrorCode.INACTIVE_MEMBER,
-            String.format("휴면 또는 정지된 회원입니다. 회원 ID: %s, 상태: %s", memberId, status),
-            Map.of("memberId", memberId, "status", status)
-        );
+                MemberErrorCode.INACTIVE_MEMBER,
+                String.format("휴면 또는 정지된 회원입니다. 회원 ID: %s, 상태: %s", memberId, status),
+                Map.of("memberId", memberId, "status", status));
     }
 
     public InactiveMemberException(UUID memberId) {
         super(
-            MemberErrorCode.INACTIVE_MEMBER,
-            String.format("휴면 또는 정지된 회원입니다. 회원 ID: %s", memberId),
-            Map.of("memberId", memberId)
-        );
+                MemberErrorCode.INACTIVE_MEMBER,
+                String.format("휴면 또는 정지된 회원입니다. 회원 ID: %s", memberId),
+                Map.of("memberId", memberId));
     }
 }

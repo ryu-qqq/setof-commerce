@@ -23,8 +23,7 @@ public record CreateQnaAnswerV1ApiResponse(
             @Schema(description = "QNA 이미지 ID", example = "1") Long qnaImageId,
             @Schema(description = "QNA ID", example = "1") Long qnaId,
             @Schema(description = "QNA 답변 ID", example = "1") Long qnaAnswerId,
-            @Schema(description = "이미지 URL",
-                    example = "https://example.com/image.jpg") String imageUrl,
-            @Schema(description = "표시 순서", example = "1") Integer displayOrder) {
-    }
+            @Schema(description = "이미지 URL", example = "https://example.com/image.jpg")
+                    String imageUrl,
+            @Schema(description = "표시 순서", example = "1") Integer displayOrder) {}
 }

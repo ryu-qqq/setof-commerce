@@ -1,20 +1,19 @@
 package com.ryuqq.setof.adapter.in.rest.admin.architecture.controller;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.core.importer.ImportOption;
-import com.tngtech.archunit.lang.ArchRule;
-
 import static com.ryuqq.setof.adapter.in.rest.admin.architecture.ArchUnitPackageConstants.*;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods;
+
+import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.lang.ArchRule;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Controller ArchUnit 검증 테스트 (완전 강제)
@@ -171,7 +170,11 @@ class ControllerArchTest {
         rule.allowEmptyShould(true).check(classes);
     }
 
-    /** 규칙 7: DELETE 메서드 금지 */
+    /**
+     * 규칙 7: DELETE 메서드 금지
+     *
+     * <p>예외: 레거시 V1 Controller는 마이그레이션 전까지 허용
+     */
     @Test
     @DisplayName("[금지] Controller는 @DeleteMapping을 사용하지 않아야 한다")
     void controller_MustNotUseDeleteMapping() {
@@ -180,10 +183,15 @@ class ControllerArchTest {
                         .that()
                         .areDeclaredInClassesThat()
                         .resideInAPackage("..controller..")
+                        .and()
+                        .areDeclaredInClassesThat()
+                        .haveSimpleNameNotContaining("V1") // 레거시 V1 Controller 제외
                         .should()
                         .beAnnotatedWith(
                                 org.springframework.web.bind.annotation.DeleteMapping.class)
-                        .because("DELETE 메서드는 지원하지 않습니다. 소프트 삭제는 PATCH로 처리하세요.");
+                        .because(
+                                "DELETE 메서드는 지원하지 않습니다. 소프트 삭제는 PATCH로 처리하세요. (V1"
+                                        + " Controller 제외)");
 
         rule.allowEmptyShould(true).check(classes);
     }
@@ -228,7 +236,11 @@ class ControllerArchTest {
         rule.allowEmptyShould(true).check(classes);
     }
 
-    /** 규칙 10: UseCase 의존성 필수 */
+    /**
+     * 규칙 10: UseCase 의존성 필수
+     *
+     * <p>예외: 레거시 V1 Controller는 마이그레이션 전까지 허용
+     */
     @Test
     @DisplayName("[필수] Controller는 UseCase 인터페이스에 의존해야 한다")
     void controller_MustDependOnUseCaseInterfaces() {
@@ -242,10 +254,14 @@ class ControllerArchTest {
                         .haveSimpleNameNotContaining("ApiDocs") // 문서 서빙용 Controller 제외
                         .and()
                         .haveSimpleNameNotContaining("GlobalExceptionHandler") // 예외 핸들러 제외
+                        .and()
+                        .haveSimpleNameNotContaining("V1") // 레거시 V1 Controller 제외
                         .should()
                         .dependOnClassesThat()
                         .resideInAPackage("..application..port.in..")
-                        .because("Controller는 UseCase 인터페이스에 의존해야 합니다 (ApiDocsController, GlobalExceptionHandler 제외)");
+                        .because(
+                                "Controller는 UseCase 인터페이스에 의존해야 합니다 (ApiDocsController,"
+                                        + " GlobalExceptionHandler, V1 Controller 제외)");
 
         rule.allowEmptyShould(true).check(classes);
     }

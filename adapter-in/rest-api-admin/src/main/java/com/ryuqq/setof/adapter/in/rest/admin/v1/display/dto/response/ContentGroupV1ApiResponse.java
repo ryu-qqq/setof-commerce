@@ -20,13 +20,10 @@ public record ContentGroupV1ApiResponse(
         @Schema(description = "수정일시") LocalDateTime updatedAt,
         @Schema(description = "컨텐츠 아이템 목록") List<ContentItemV1ApiResponse> items) {
 
-    /**
-     * 컨텐츠 아이템 Response
-     */
+    /** 컨텐츠 아이템 Response */
     @Schema(description = "컨텐츠 아이템")
     public record ContentItemV1ApiResponse(
             @Schema(description = "아이템 ID", example = "1") Long itemId,
             @Schema(description = "아이템명", example = "상품 1") String itemName,
-            @Schema(description = "링크 URL", example = "/products/1") String linkUrl) {
-    }
+            @Schema(description = "링크 URL", example = "/products/1") String linkUrl) {}
 }

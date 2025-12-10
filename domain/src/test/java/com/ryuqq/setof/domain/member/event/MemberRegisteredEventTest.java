@@ -24,14 +24,14 @@ class MemberRegisteredEventTest {
         @DisplayName("모든 필드가 올바르게 설정됨")
         void shouldCreateEventWithAllFields() {
             // When
-            MemberRegisteredEvent event = MemberRegisteredEvent.of(
-                    "member-123",
-                    "01012345678",
-                    "test@example.com",
-                    "홍길동",
-                    "LOCAL",
-                    FIXED_INSTANT
-            );
+            MemberRegisteredEvent event =
+                    MemberRegisteredEvent.of(
+                            "member-123",
+                            "01012345678",
+                            "test@example.com",
+                            "홍길동",
+                            "LOCAL",
+                            FIXED_INSTANT);
 
             // Then
             assertEquals("member-123", event.memberId());

@@ -13,6 +13,4 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(description = "Faq 검색 필터")
 public record FaqV1SearchApiRequest(
-    @Schema(description = "Faq Type", example = "MEMBER_LOGIN") String faqType
-) {
-}
+        @Schema(description = "Faq Type", example = "MEMBER_LOGIN") String faqType) {}

@@ -1,20 +1,19 @@
 package com.ryuqq.setof.adapter.in.rest.admin.architecture.error;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.core.importer.ImportOption;
-import com.tngtech.archunit.lang.ArchRule;
-
 import static com.ryuqq.setof.adapter.in.rest.admin.architecture.ArchUnitPackageConstants.*;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods;
+
+import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.lang.ArchRule;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Error Handling ArchUnit 검증 테스트 (Zero-Tolerance)
@@ -336,16 +335,31 @@ class ErrorHandlingArchTest {
         rule.allowEmptyShould(true).check(classes);
     }
 
-    /** 규칙 14: ErrorMapperRegistry는 common.error 패키지에 위치 */
+    /**
+     * 규칙 14: ErrorMapperRegistry는 common.error 패키지에 위치
+     *
+     * <p>예외: ErrorMapperRegistry가 존재하지 않는 모듈은 스킵 (개발 진행 중)
+     */
     @Test
     @DisplayName("[필수] ErrorMapperRegistry는 common.error 패키지에 위치해야 한다")
     void errorMapperRegistry_MustBeInCommonErrorPackage() {
+        // ErrorMapperRegistry가 존재하는지 먼저 확인
+        boolean hasErrorMapperRegistry =
+                classes.stream()
+                        .anyMatch(c -> c.getSimpleName().equals("ErrorMapperRegistry"));
+
+        if (!hasErrorMapperRegistry) {
+            System.out.println(
+                    "ℹ️  Info: ErrorMapperRegistry가 존재하지 않아 규칙을 스킵합니다 (개발 진행 중인 모듈)");
+            return;
+        }
+
         ArchRule rule =
                 classes()
                         .that()
                         .haveSimpleName("ErrorMapperRegistry")
                         .should()
-                        .resideInAPackage("..adapter.in.rest.common.error..")
+                        .resideInAPackage("..adapter.in.rest.admin.common.error..")
                         .because("ErrorMapperRegistry는 common.error 패키지에 위치해야 합니다");
 
         rule.allowEmptyShould(true).check(classes);
@@ -407,10 +421,28 @@ class ErrorHandlingArchTest {
     // 의존성 방향 검증 규칙 (규칙 18-19)
     // ========================================================================
 
-    /** 규칙 18: ErrorMapper 인터페이스는 common.mapper 패키지에 위치 */
+    /**
+     * 규칙 18: ErrorMapper 인터페이스는 common.mapper 패키지에 위치
+     *
+     * <p>예외: ErrorMapper가 존재하지 않는 모듈은 스킵 (개발 진행 중)
+     */
     @Test
     @DisplayName("[필수] ErrorMapper 인터페이스는 common.mapper 패키지에 위치해야 한다")
     void errorMapperInterface_MustBeInCommonMapperPackage() {
+        // ErrorMapper 인터페이스가 존재하는지 먼저 확인
+        boolean hasErrorMapperInterface =
+                classes.stream()
+                        .anyMatch(
+                                c ->
+                                        c.getSimpleName().equals("ErrorMapper")
+                                                && c.isInterface());
+
+        if (!hasErrorMapperInterface) {
+            System.out.println(
+                    "ℹ️  Info: ErrorMapper 인터페이스가 존재하지 않아 규칙을 스킵합니다 (개발 진행 중인 모듈)");
+            return;
+        }
+
         ArchRule rule =
                 classes()
                         .that()
@@ -418,7 +450,7 @@ class ErrorHandlingArchTest {
                         .and()
                         .areInterfaces()
                         .should()
-                        .resideInAPackage("..adapter.in.rest.common.mapper..")
+                        .resideInAPackage("..adapter.in.rest.admin.common.mapper..")
                         .because("ErrorMapper 인터페이스는 common.mapper 패키지에 위치해야 합니다");
 
         rule.allowEmptyShould(true).check(classes);

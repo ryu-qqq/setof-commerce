@@ -17,5 +17,4 @@ public record GnbV1ApiResponse(
         @Schema(description = "정렬 순서", example = "1") Integer sortOrder,
         @Schema(description = "표시 여부", example = "true") Boolean displayYn,
         @Schema(description = "생성일시") LocalDateTime createdAt,
-        @Schema(description = "수정일시") LocalDateTime updatedAt) {
-}
+        @Schema(description = "수정일시") LocalDateTime updatedAt) {}

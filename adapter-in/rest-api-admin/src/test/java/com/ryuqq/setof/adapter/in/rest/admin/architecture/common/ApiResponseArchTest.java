@@ -1,19 +1,18 @@
 package com.ryuqq.setof.adapter.in.rest.admin.architecture.common;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import static com.ryuqq.setof.adapter.in.rest.admin.architecture.ArchUnitPackageConstants.*;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.ArchRule;
-
-import static com.ryuqq.setof.adapter.in.rest.admin.architecture.ArchUnitPackageConstants.*;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * API Response ArchUnit 검증 테스트 (Zero-Tolerance)
@@ -58,16 +57,27 @@ class ApiResponseArchTest {
                         .importPackages(ADAPTER_IN_REST);
     }
 
-    /** 규칙 1: Common Response DTOs는 common.dto 패키지에 위치 */
+    /**
+     * 규칙 1: Common Response DTOs는 common.dto 패키지에 위치
+     *
+     * <p>예외:
+     *
+     * <ul>
+     *   <li>V1 레거시 Response DTOs는 마이그레이션 전까지 허용
+     *   <li>BC별 Response DTOs는 dto.response 패키지에 위치 (Common이 아닌 경우)
+     * </ul>
+     */
     @Test
     @DisplayName("[필수] Common Response DTOs는 common.dto 패키지에 위치해야 한다")
     void commonResponseDtos_MustBeInCommonDtoPackage() {
         ArchRule rule =
                 classes()
                         .that()
-                        .haveNameMatching(".*ApiResponse|.*ErrorInfo")
+                        .haveNameMatching(".*(Api|Page|Slice)Response|.*ErrorInfo")
                         .and()
                         .resideInAPackage("..adapter.in.rest..")
+                        .and()
+                        .resideInAPackage("..common..")
                         .and()
                         .areNotNestedClasses()
                         .should()

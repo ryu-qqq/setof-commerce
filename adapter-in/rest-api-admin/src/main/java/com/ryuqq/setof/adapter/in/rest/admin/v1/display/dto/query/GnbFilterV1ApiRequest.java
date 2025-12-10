@@ -11,5 +11,4 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "GNB 필터")
 public record GnbFilterV1ApiRequest(
         @Schema(description = "GNB명", example = "홈") String name,
-        @Schema(description = "표시 여부", example = "true") Boolean displayYn) {
-}
+        @Schema(description = "표시 여부", example = "true") Boolean displayYn) {}

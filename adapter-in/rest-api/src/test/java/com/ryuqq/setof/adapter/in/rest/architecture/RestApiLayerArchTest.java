@@ -1,19 +1,18 @@
 package com.ryuqq.setof.adapter.in.rest.architecture;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import static com.ryuqq.setof.adapter.in.rest.architecture.ArchUnitPackageConstants.*;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.ArchRule;
-
-import static com.ryuqq.setof.adapter.in.rest.architecture.ArchUnitPackageConstants.*;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * REST API Layer ArchUnit 검증 테스트 (Zero-Tolerance)
@@ -161,7 +160,9 @@ class RestApiLayerArchTest {
                         .haveSimpleNameNotEndingWith("Test")
                         .should()
                         .resideInAnyPackage("..dto.command..", "..dto.query..", "..dto.response..")
-                        .because("DTO는 command(상태 변경), query(조회), response(응답)로 분리되어야 합니다 (Legacy V1 제외)");
+                        .because(
+                                "DTO는 command(상태 변경), query(조회), response(응답)로 분리되어야 합니다 (Legacy V1"
+                                        + " 제외)");
 
         rule.allowEmptyShould(true).check(classes);
     }
@@ -189,7 +190,9 @@ class RestApiLayerArchTest {
                         .should()
                         .dependOnClassesThat()
                         .resideInAnyPackage("..application..port..")
-                        .because("Controller는 Application Layer의 UseCase Port를 의존해야 합니다 (ApiDocsController, Legacy V1 제외)");
+                        .because(
+                                "Controller는 Application Layer의 UseCase Port를 의존해야 합니다"
+                                        + " (ApiDocsController, Legacy V1 제외)");
 
         rule.allowEmptyShould(true).check(classes);
     }
@@ -358,7 +361,9 @@ class RestApiLayerArchTest {
                         .orShould()
                         .beAnnotatedWith(
                                 org.springframework.web.bind.annotation.RestControllerAdvice.class)
-                        .because("Controller는 @RestController 또는 @RestControllerAdvice를 사용해야 합니다 (ApiDocsController 제외)");
+                        .because(
+                                "Controller는 @RestController 또는 @RestControllerAdvice를 사용해야 합니다"
+                                        + " (ApiDocsController 제외)");
 
         ArchRule mapperRule =
                 classes()
