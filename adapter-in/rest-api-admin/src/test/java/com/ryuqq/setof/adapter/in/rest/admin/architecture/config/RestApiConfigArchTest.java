@@ -73,8 +73,7 @@ class RestApiConfigArchTest {
             Path localYaml = RESOURCES_PATH.resolve("rest-api-local.yml");
 
             if (!Files.exists(localYaml)) {
-                System.out.println(
-                        "ℹ️ rest-api-local.yml 파일이 없습니다 - 개발 중 모듈 검증 스킵");
+                System.out.println("ℹ️ rest-api-local.yml 파일이 없습니다 - 개발 중 모듈 검증 스킵");
                 return;
             }
 
@@ -94,8 +93,7 @@ class RestApiConfigArchTest {
             Path prodYaml = RESOURCES_PATH.resolve("rest-api-prod.yml");
 
             if (!Files.exists(prodYaml)) {
-                System.out.println(
-                        "ℹ️ rest-api-prod.yml 파일이 없습니다 - 개발 중 모듈 검증 스킵");
+                System.out.println("ℹ️ rest-api-prod.yml 파일이 없습니다 - 개발 중 모듈 검증 스킵");
                 return;
             }
 
@@ -119,8 +117,7 @@ class RestApiConfigArchTest {
             Path prodYaml = RESOURCES_PATH.resolve("rest-api-prod.yml");
 
             if (!Files.exists(prodYaml)) {
-                System.out.println(
-                        "ℹ️ rest-api-prod.yml 파일이 없습니다 - 개발 중 모듈 검증 스킵");
+                System.out.println("ℹ️ rest-api-prod.yml 파일이 없습니다 - 개발 중 모듈 검증 스킵");
                 return;
             }
 
@@ -139,8 +136,7 @@ class RestApiConfigArchTest {
             Path prodYaml = RESOURCES_PATH.resolve("rest-api-prod.yml");
 
             if (!Files.exists(prodYaml)) {
-                System.out.println(
-                        "ℹ️ rest-api-prod.yml 파일이 없습니다 - 개발 중 모듈 검증 스킵");
+                System.out.println("ℹ️ rest-api-prod.yml 파일이 없습니다 - 개발 중 모듈 검증 스킵");
                 return;
             }
 

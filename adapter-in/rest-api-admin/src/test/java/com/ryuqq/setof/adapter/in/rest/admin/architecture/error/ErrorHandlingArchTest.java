@@ -345,12 +345,10 @@ class ErrorHandlingArchTest {
     void errorMapperRegistry_MustBeInCommonErrorPackage() {
         // ErrorMapperRegistry가 존재하는지 먼저 확인
         boolean hasErrorMapperRegistry =
-                classes.stream()
-                        .anyMatch(c -> c.getSimpleName().equals("ErrorMapperRegistry"));
+                classes.stream().anyMatch(c -> c.getSimpleName().equals("ErrorMapperRegistry"));
 
         if (!hasErrorMapperRegistry) {
-            System.out.println(
-                    "ℹ️  Info: ErrorMapperRegistry가 존재하지 않아 규칙을 스킵합니다 (개발 진행 중인 모듈)");
+            System.out.println("ℹ️  Info: ErrorMapperRegistry가 존재하지 않아 규칙을 스킵합니다 (개발 진행 중인 모듈)");
             return;
         }
 
@@ -432,14 +430,10 @@ class ErrorHandlingArchTest {
         // ErrorMapper 인터페이스가 존재하는지 먼저 확인
         boolean hasErrorMapperInterface =
                 classes.stream()
-                        .anyMatch(
-                                c ->
-                                        c.getSimpleName().equals("ErrorMapper")
-                                                && c.isInterface());
+                        .anyMatch(c -> c.getSimpleName().equals("ErrorMapper") && c.isInterface());
 
         if (!hasErrorMapperInterface) {
-            System.out.println(
-                    "ℹ️  Info: ErrorMapper 인터페이스가 존재하지 않아 규칙을 스킵합니다 (개발 진행 중인 모듈)");
+            System.out.println("ℹ️  Info: ErrorMapper 인터페이스가 존재하지 않아 규칙을 스킵합니다 (개발 진행 중인 모듈)");
             return;
         }
 

@@ -227,8 +227,7 @@ class RestApiLayerArchTest {
 
         if (!hasGlobalExceptionHandler) {
             System.out.println(
-                    "ℹ️  Info: GlobalExceptionHandler가 존재하지 않아 규칙을 스킵합니다"
-                            + " (개발 진행 중인 모듈)");
+                    "ℹ️  Info: GlobalExceptionHandler가 존재하지 않아 규칙을 스킵합니다" + " (개발 진행 중인 모듈)");
             return;
         }
 

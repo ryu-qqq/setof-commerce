@@ -120,5 +120,4 @@ public class RefreshTokenFacade {
     public Optional<String> findTokenByMemberId(String memberId) {
         return refreshTokenReadManager.findTokenByMemberId(memberId);
     }
-
 }

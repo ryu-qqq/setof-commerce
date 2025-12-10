@@ -95,7 +95,9 @@ class OpenApiArchTest {
                             .should()
                             .beAnnotatedWith("io.swagger.v3.oas.annotations.tags.Tag")
                             .allowEmptyShould(true)
-                            .because("Controller는 @Tag로 API 그룹을 정의해야 합니다 (V1, ApiDocs Controller 제외)");
+                            .because(
+                                    "Controller는 @Tag로 API 그룹을 정의해야 합니다 (V1, ApiDocs Controller"
+                                            + " 제외)");
 
             rule.allowEmptyShould(true).check(allClasses);
         }
