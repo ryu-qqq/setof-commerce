@@ -26,6 +26,9 @@ dependencies {
     // Validation
     implementation libs.spring.boot.starter.validation
 
+    // UUID v7 Generator (Application에서 ID 생성)
+    implementation libs.uuid.creator
+
     // ========================================
     // Test Dependencies
     // ========================================

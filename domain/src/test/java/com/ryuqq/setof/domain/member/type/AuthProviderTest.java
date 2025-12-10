@@ -1,0 +1,34 @@
+package com.ryuqq.setof.domain.member.type;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import com.ryuqq.setof.domain.member.vo.AuthProvider;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+@DisplayName("AuthProvider Enum")
+class AuthProviderTest {
+
+    @Test
+    @DisplayName("LOCAL과 KAKAO 값 존재 확인")
+    void shouldHaveLocalAndKakaoValues() {
+        assertNotNull(AuthProvider.LOCAL);
+        assertNotNull(AuthProvider.KAKAO);
+        assertEquals(2, AuthProvider.values().length);
+    }
+
+    @Test
+    @DisplayName("valueOf로 Enum 조회")
+    void shouldGetEnumByValueOf() {
+        assertEquals(AuthProvider.LOCAL, AuthProvider.valueOf("LOCAL"));
+        assertEquals(AuthProvider.KAKAO, AuthProvider.valueOf("KAKAO"));
+    }
+
+    @Test
+    @DisplayName("displayName 메서드로 한글 표시명 반환")
+    void shouldReturnDisplayName() {
+        assertEquals("자체 가입", AuthProvider.LOCAL.displayName());
+        assertEquals("카카오", AuthProvider.KAKAO.displayName());
+    }
+}

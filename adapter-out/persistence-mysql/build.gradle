@@ -36,7 +36,7 @@ dependencies {
     annotationProcessor libs.jakarta.persistence.api
 
     // Database Drivers (Runtime)
-    runtimeOnly libs.postgresql
+    runtimeOnly libs.mysql.connector
     runtimeOnly libs.h2 // For testing
 
     // Connection Pooling
@@ -44,13 +44,13 @@ dependencies {
 
     // Flyway Migration
     implementation libs.flyway.core
-    runtimeOnly libs.flyway.postgresql
+    runtimeOnly libs.flyway.mysql
 
     // ========================================
     // Test Dependencies
     // ========================================
     testImplementation libs.spring.boot.starter.test
-    testImplementation libs.testcontainers.postgresql
+    testImplementation libs.testcontainers.mysql
     testImplementation libs.testcontainers.junit
 
     // ArchUnit for architecture validation
@@ -130,4 +130,24 @@ tasks.clean {
 // ========================================
 tasks.withType(Checkstyle).configureEach {
     exclude '**/Q*.java'
+    // Exclude generated sources directory from checkstyle
+    source = fileTree('src/main/java')
+}
+
+// ========================================
+// PMD Configuration
+// Exclude QueryDSL generated sources and fix task dependencies
+// ========================================
+tasks.withType(Pmd).configureEach {
+    exclude '**/Q*.java'
+    source = fileTree('src/main/java')
+}
+
+// ========================================
+// SpotBugs Configuration
+// Exclude QueryDSL generated sources and fix task dependencies
+// ========================================
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
+    // Only analyze hand-written source code
+    sourceDirs = files('src/main/java')
 }

@@ -1,149 +1,47 @@
-# ===============================================
-# Persistence MySQL Adapter Configuration
-# ===============================================
-# MySQL 영속성 어댑터 모듈 전용 설정
-# Bootstrap 모듈에서 import하여 사용
-#
-# @author ryuqq
-# @since 1.0.0
-# ===============================================
+# ============================================================
+# Persistence Layer 공통 설정
+# ============================================================
+# 환경별 설정은 persistence-{profile}.yml 참조
+# - persistence-local.yml: 로컬 개발 환경
+# - persistence-prod.yml: 운영 환경
+# ============================================================
 
-# ===============================================
-# DataSource Configuration
-# ===============================================
 spring:
   datasource:
-    # HikariCP Connection Pool
-    hikari:
-      # 커넥션 풀 이름
-      pool-name: SetofCommerceHikariCP
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-      # 풀 크기 설정
-      minimum-idle: 10  # 최소 유휴 커넥션
-      maximum-pool-size: 50  # 최대 커넥션
-
-      # 타임아웃 설정
-      connection-timeout: 30000  # 커넥션 획득 대기 시간 (30초)
-      idle-timeout: 600000  # 유휴 커넥션 유지 시간 (10분)
-      max-lifetime: 1800000  # 커넥션 최대 수명 (30분)
-
-      # 검증 설정
-      validation-timeout: 5000  # 커넥션 검증 타임아웃 (5초)
-
-      # 누수 감지
-      leak-detection-threshold: 60000  # 누수 감지 임계값 (1분)
-
-      # 자동 커밋 설정
-      auto-commit: false  # 트랜잭션 관리를 위해 false 권장
-
-  # ===============================================
-  # JPA Configuration
-  # ===============================================
   jpa:
-    # Hibernate 설정
+    # ⚠️ OSIV 비활성화 (필수!)
+    # - 커넥션 점유 시간 최소화
+    # - Lazy Loading은 Transaction 내에서만
+    open-in-view: false
+
     hibernate:
-      # DDL 자동 생성 (프로덕션에서는 none 필수)
+      # ⚠️ Flyway가 스키마 관리, Hibernate는 검증만
       ddl-auto: validate
 
-    # JPA 속성
     properties:
       hibernate:
-        # 다이얼렉트
-        dialect: org.hibernate.dialect.MySQLDialect
-
-        # SQL 포맷팅 (개발 환경에서만)
-        format_sql: true
-
-        # 배치 처리
+        # Batch Processing
         jdbc:
           batch_size: 50
-          batch_versioned_data: true
-
-        # 정렬 (INSERT 배치 최적화)
+          fetch_size: 50
         order_inserts: true
         order_updates: true
+        batch_versioned_data: true
 
-        # 통계 (개발 환경에서만)
-        generate_statistics: false
+        # Query Plan Cache
+        query:
+          plan_cache_max_size: 2048
+          in_clause_parameter_padding: true
 
-        # 2차 캐시 (필요 시 활성화)
-        cache:
-          use_second_level_cache: false
-          use_query_cache: false
-
-    # SQL 로깅 (개발 환경에서만)
     show-sql: false
-    open-in-view: false  # OSIV 비활성화 (성능 향상)
 
----
-# Local 환경
-spring:
-  config:
-    activate:
-      on-profile: local
-
-  datasource:
-    url: jdbc:mysql://localhost:3306/setof_commerce?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-    hikari:
-      minimum-idle: 5
-      maximum-pool-size: 10
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        generate_statistics: true
-
----
-# Development 환경
-spring:
-  config:
-    activate:
-      on-profile: dev
-
-  datasource:
-    url: jdbc:mysql://dev-db:3306/setof_commerce?useSSL=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: ${DB_USERNAME:setof_dev}
-    password: ${DB_PASSWORD:setof_dev_password}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-    hikari:
-      minimum-idle: 10
-      maximum-pool-size: 30
-
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: true
-
----
-# Production 환경
-spring:
-  config:
-    activate:
-      on-profile: prod
-
-  datasource:
-    url: jdbc:mysql://${DB_HOST:prod-db}:${DB_PORT:3306}/${DB_NAME:setof_commerce}?useSSL=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-    hikari:
-      minimum-idle: 20
-      maximum-pool-size: 50
-
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: false
-    properties:
-      hibernate:
-        generate_statistics: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+    out-of-order: false
+    # ⚠️ clean 명령어 비활성화 (데이터 보호)
+    clean-disabled: true

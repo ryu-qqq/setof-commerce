@@ -8,4 +8,6 @@ package com.ryuqq.setof.application.member.dto.command;
  * @author development-team
  * @since 1.0.0
  */
-public record WithdrawMemberCommand(String memberId, String reason) {}
+public record WithdrawMemberCommand(String memberId, String reason) {
+    // Immutable command object - no additional behavior
+}

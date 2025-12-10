@@ -1,9 +1,9 @@
 package com.ryuqq.setof.application.member.port.out.query;
 
-import com.ryuqq.setof.domain.core.member.aggregate.Member;
-import com.ryuqq.setof.domain.core.member.vo.MemberId;
-import com.ryuqq.setof.domain.core.member.vo.PhoneNumber;
-import com.ryuqq.setof.domain.core.member.vo.SocialId;
+import com.ryuqq.setof.domain.member.aggregate.Member;
+import com.ryuqq.setof.domain.member.vo.MemberId;
+import com.ryuqq.setof.domain.member.vo.PhoneNumber;
+import com.ryuqq.setof.domain.member.vo.SocialId;
 import java.util.Optional;
 
 /**

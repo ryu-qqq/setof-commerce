@@ -8,4 +8,6 @@ package com.ryuqq.setof.application.member.dto.query;
  * @author development-team
  * @since 1.0.0
  */
-public record GetCurrentMemberQuery(String memberId) {}
+public record GetCurrentMemberQuery(String memberId) {
+    // Immutable query object - no additional behavior
+}

@@ -1,24 +1,26 @@
 package com.ryuqq.setof.application.member.assembler;
 
-import com.ryuqq.setof.application.member.dto.command.ConsentItem;
+import com.ryuqq.setof.application.auth.dto.response.TokenPairResponse;
+import com.ryuqq.setof.application.member.dto.bundle.ConsentItem;
 import com.ryuqq.setof.application.member.dto.command.KakaoOAuthCommand;
 import com.ryuqq.setof.application.member.dto.command.RegisterMemberCommand;
 import com.ryuqq.setof.application.member.dto.response.KakaoOAuthResponse;
 import com.ryuqq.setof.application.member.dto.response.LocalLoginResponse;
 import com.ryuqq.setof.application.member.dto.response.MemberDetailResponse;
-import com.ryuqq.setof.application.member.dto.response.TokenPairResponse;
-import com.ryuqq.setof.domain.core.member.aggregate.Member;
-import com.ryuqq.setof.domain.core.member.vo.AuthProvider;
-import com.ryuqq.setof.domain.core.member.vo.Consent;
-import com.ryuqq.setof.domain.core.member.vo.Email;
-import com.ryuqq.setof.domain.core.member.vo.Gender;
-import com.ryuqq.setof.domain.core.member.vo.MemberName;
-import com.ryuqq.setof.domain.core.member.vo.Password;
-import com.ryuqq.setof.domain.core.member.vo.PhoneNumber;
-import com.ryuqq.setof.domain.core.member.vo.SocialId;
+import com.ryuqq.setof.domain.member.aggregate.Member;
+import com.ryuqq.setof.domain.member.vo.AuthProvider;
+import com.ryuqq.setof.domain.member.vo.Consent;
+import com.ryuqq.setof.domain.member.vo.Email;
+import com.ryuqq.setof.domain.member.vo.Gender;
+import com.ryuqq.setof.domain.member.vo.MemberId;
+import com.ryuqq.setof.domain.member.vo.MemberName;
+import com.ryuqq.setof.domain.member.vo.Password;
+import com.ryuqq.setof.domain.member.vo.PhoneNumber;
+import com.ryuqq.setof.domain.member.vo.SocialId;
 import java.time.Clock;
 import java.util.List;
 import java.util.Locale;
+
 import org.springframework.stereotype.Component;
 
 /**
@@ -35,13 +37,19 @@ public class MemberAssembler {
     /**
      * Command → Domain (신규 회원 생성)
      *
+     * @param memberId Application Layer에서 생성한 MemberId (UUID v7)
      * @param command 회원가입 커맨드
      * @param hashedPassword BCrypt 해시된 비밀번호
      * @param clock 시간 제공자
      * @return Member Domain 객체
      */
-    public Member toDomain(RegisterMemberCommand command, String hashedPassword, Clock clock) {
+    public Member toDomain(
+            MemberId memberId,
+            RegisterMemberCommand command,
+            String hashedPassword,
+            Clock clock) {
         return Member.forNew(
+                memberId,
                 PhoneNumber.of(command.phoneNumber()),
                 toEmail(command.email()),
                 Password.of(hashedPassword),
@@ -108,14 +116,29 @@ public class MemberAssembler {
     }
 
     /**
+     * 카카오 통합 완료 회원 응답 생성
+     *
+     * @param memberId 회원 ID
+     * @param tokens 발급된 토큰 쌍
+     * @param memberName 회원 이름
+     * @return 카카오 OAuth 응답 (wasIntegrated=true)
+     */
+    public KakaoOAuthResponse toIntegratedMemberResponse(
+            String memberId, TokenPairResponse tokens, String memberName) {
+        return KakaoOAuthResponse.integrated(memberId, tokens, memberName);
+    }
+
+    /**
      * KakaoOAuthCommand → Domain (카카오 회원 생성)
      *
+     * @param memberId Application Layer에서 생성한 MemberId (UUID v7)
      * @param command 카카오 로그인 커맨드
      * @param clock 시간 제공자
      * @return Member Domain 객체
      */
-    public Member toKakaoDomain(KakaoOAuthCommand command, Clock clock) {
+    public Member toKakaoDomain(MemberId memberId, KakaoOAuthCommand command, Clock clock) {
         return Member.forNew(
+                memberId,
                 PhoneNumber.of(command.phoneNumber()),
                 toEmail(command.email()),
                 null,

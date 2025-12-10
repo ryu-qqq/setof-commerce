@@ -1,6 +1,7 @@
 package com.ryuqq.setof.application.member.port.out.command;
 
-import com.ryuqq.setof.domain.core.member.aggregate.Member;
+import com.ryuqq.setof.domain.member.aggregate.Member;
+import com.ryuqq.setof.domain.member.vo.MemberId;
 
 /**
  * Member Persistence Port (Command)
@@ -15,9 +16,8 @@ public interface MemberPersistencePort {
     /**
      * Member 저장 (신규 생성 또는 수정)
      *
-     * <p>Member는 UUID v7 ID를 이미 갖고 있으므로 ID 반환 불필요
-     *
      * @param member 저장할 Member (Domain Aggregate, UUID v7 ID 포함)
+     * @return 저장된 Member의 ID
      */
-    void persist(Member member);
+    MemberId persist(Member member);
 }

@@ -1,7 +1,7 @@
 package com.ryuqq.setof.application.member.dto.response;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * Member Detail Result
@@ -20,4 +20,6 @@ public record MemberDetailResponse(
         String gender,
         String provider,
         String status,
-        LocalDateTime createdAt) {}
+        Instant createdAt) {
+    // Immutable value object - no additional behavior
+}

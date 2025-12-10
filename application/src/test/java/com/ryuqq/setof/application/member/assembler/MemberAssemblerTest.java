@@ -1,18 +1,24 @@
 package com.ryuqq.setof.application.member.assembler;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.ryuqq.setof.application.member.dto.command.ConsentItem;
+import com.ryuqq.setof.application.auth.dto.response.TokenPairResponse;
+import com.ryuqq.setof.application.member.dto.bundle.ConsentItem;
 import com.ryuqq.setof.application.member.dto.command.KakaoOAuthCommand;
 import com.ryuqq.setof.application.member.dto.command.RegisterMemberCommand;
 import com.ryuqq.setof.application.member.dto.response.KakaoOAuthResponse;
 import com.ryuqq.setof.application.member.dto.response.LocalLoginResponse;
 import com.ryuqq.setof.application.member.dto.response.MemberDetailResponse;
-import com.ryuqq.setof.application.member.dto.response.TokenPairResponse;
-import com.ryuqq.setof.domain.core.member.MemberFixture;
-import com.ryuqq.setof.domain.core.member.aggregate.Member;
-import com.ryuqq.setof.domain.core.member.vo.AuthProvider;
-import com.ryuqq.setof.domain.core.member.vo.Gender;
+import com.ryuqq.setof.domain.member.MemberFixture;
+import com.ryuqq.setof.domain.member.aggregate.Member;
+import com.ryuqq.setof.domain.member.vo.AuthProvider;
+import com.ryuqq.setof.domain.member.vo.Gender;
+import com.ryuqq.setof.domain.member.vo.MemberId;
+import com.ryuqq.setof.domain.member.vo.MemberIdFixture;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -43,6 +49,7 @@ class MemberAssemblerTest {
         @DisplayName("RegisterMemberCommand를 Member로 변환 성공")
         void shouldConvertRegisterMemberCommandToMember() {
             // Given
+            MemberId memberId = MemberIdFixture.createNew();
             List<ConsentItem> consents =
                     List.of(
                             new ConsentItem("PRIVACY", true),
@@ -62,7 +69,7 @@ class MemberAssemblerTest {
             String hashedPassword = "$2a$10$hashedPassword";
 
             // When
-            Member result = memberAssembler.toDomain(command, hashedPassword, fixedClock);
+            Member result = memberAssembler.toDomain(memberId, command, hashedPassword, fixedClock);
 
             // Then
             assertNotNull(result);
@@ -79,6 +86,7 @@ class MemberAssemblerTest {
         @DisplayName("이메일 없이 변환 성공")
         void shouldConvertWithoutEmail() {
             // Given
+            MemberId memberId = MemberIdFixture.createNew();
             List<ConsentItem> consents =
                     List.of(new ConsentItem("PRIVACY", true), new ConsentItem("SERVICE", true));
 
@@ -95,7 +103,7 @@ class MemberAssemblerTest {
             String hashedPassword = "$2a$10$hashedPassword";
 
             // When
-            Member result = memberAssembler.toDomain(command, hashedPassword, fixedClock);
+            Member result = memberAssembler.toDomain(memberId, command, hashedPassword, fixedClock);
 
             // Then
             assertNotNull(result);
@@ -106,6 +114,7 @@ class MemberAssemblerTest {
         @DisplayName("성별 null일 때 N으로 변환")
         void shouldConvertNullGenderToN() {
             // Given
+            MemberId memberId = MemberIdFixture.createNew();
             List<ConsentItem> consents =
                     List.of(new ConsentItem("PRIVACY", true), new ConsentItem("SERVICE", true));
 
@@ -122,7 +131,7 @@ class MemberAssemblerTest {
             String hashedPassword = "$2a$10$hashedPassword";
 
             // When
-            Member result = memberAssembler.toDomain(command, hashedPassword, fixedClock);
+            Member result = memberAssembler.toDomain(memberId, command, hashedPassword, fixedClock);
 
             // Then
             assertEquals(Gender.N, result.getGender());
@@ -132,6 +141,7 @@ class MemberAssemblerTest {
         @DisplayName("소문자 성별 대문자로 변환")
         void shouldConvertLowercaseGenderToUppercase() {
             // Given
+            MemberId memberId = MemberIdFixture.createNew();
             List<ConsentItem> consents =
                     List.of(new ConsentItem("PRIVACY", true), new ConsentItem("SERVICE", true));
 
@@ -148,7 +158,7 @@ class MemberAssemblerTest {
             String hashedPassword = "$2a$10$hashedPassword";
 
             // When
-            Member result = memberAssembler.toDomain(command, hashedPassword, fixedClock);
+            Member result = memberAssembler.toDomain(memberId, command, hashedPassword, fixedClock);
 
             // Then
             assertEquals(Gender.W, result.getGender());
@@ -163,6 +173,7 @@ class MemberAssemblerTest {
         @DisplayName("KakaoOAuthCommand를 Member로 변환 성공")
         void shouldConvertKakaoOAuthCommandToMember() {
             // Given
+            MemberId memberId = MemberIdFixture.createNew();
             List<ConsentItem> consents =
                     List.of(new ConsentItem("PRIVACY", true), new ConsentItem("SERVICE", true));
 
@@ -174,10 +185,11 @@ class MemberAssemblerTest {
                             "카카오",
                             LocalDate.of(1995, 5, 15),
                             "W",
-                            consents);
+                            consents,
+                            false);
 
             // When
-            Member result = memberAssembler.toKakaoDomain(command, fixedClock);
+            Member result = memberAssembler.toKakaoDomain(memberId, command, fixedClock);
 
             // Then
             assertNotNull(result);
@@ -193,12 +205,13 @@ class MemberAssemblerTest {
         @DisplayName("동의 항목 없을 때 기본값 적용")
         void shouldApplyDefaultConsentsWhenEmpty() {
             // Given
+            MemberId memberId = MemberIdFixture.createNew();
             KakaoOAuthCommand command =
                     new KakaoOAuthCommand(
-                            "kakao_12345", "01087654321", null, "카카오", null, null, null);
+                            "kakao_12345", "01087654321", null, "카카오", null, null, null, false);
 
             // When
-            Member result = memberAssembler.toKakaoDomain(command, fixedClock);
+            Member result = memberAssembler.toKakaoDomain(memberId, command, fixedClock);
 
             // Then
             assertNotNull(result);
@@ -216,7 +229,7 @@ class MemberAssemblerTest {
             // Given
             String memberId = "01936ddc-8d37-7c6e-8ad6-18c76adc9dfa";
             TokenPairResponse tokens =
-                    new TokenPairResponse("access_token", "refresh_token", 3600L, 604800L);
+                    new TokenPairResponse("access_token", 3600L, "refresh_token", 604800L);
 
             // When
             LocalLoginResponse result = memberAssembler.toLocalLoginResponse(memberId, tokens);
@@ -265,7 +278,7 @@ class MemberAssemblerTest {
             // Given
             String memberId = "01936ddc-8d37-7c6e-8ad6-18c76adc9dfa";
             TokenPairResponse tokens =
-                    new TokenPairResponse("access_token", "refresh_token", 3600L, 604800L);
+                    new TokenPairResponse("access_token", 3600L, "refresh_token", 604800L);
 
             // When
             KakaoOAuthResponse result = memberAssembler.toNewKakaoMemberResponse(memberId, tokens);
@@ -287,7 +300,7 @@ class MemberAssemblerTest {
             // Given
             String memberId = "01936ddc-8d37-7c6e-8ad6-18c76adc9dfa";
             TokenPairResponse tokens =
-                    new TokenPairResponse("access_token", "refresh_token", 3600L, 604800L);
+                    new TokenPairResponse("access_token", 3600L, "refresh_token", 604800L);
 
             // When
             KakaoOAuthResponse result =
@@ -297,6 +310,50 @@ class MemberAssemblerTest {
             assertNotNull(result);
             assertEquals(memberId, result.memberId());
             assertFalse(result.isNewMember());
+        }
+    }
+
+    @Nested
+    @DisplayName("toIntegratedMemberResponse")
+    class ToIntegratedMemberResponseTest {
+
+        @Test
+        @DisplayName("카카오 통합 완료 회원 응답 생성 성공")
+        void shouldCreateIntegratedMemberResponse() {
+            // Given
+            String memberId = "01936ddc-8d37-7c6e-8ad6-18c76adc9dfa";
+            TokenPairResponse tokens =
+                    new TokenPairResponse("access_token", 3600L, "refresh_token", 604800L);
+            String memberName = "홍길동";
+
+            // When
+            KakaoOAuthResponse result =
+                    memberAssembler.toIntegratedMemberResponse(memberId, tokens, memberName);
+
+            // Then
+            assertNotNull(result);
+            assertEquals(memberId, result.memberId());
+            assertEquals(tokens, result.tokens());
+            assertFalse(result.isNewMember());
+            assertTrue(result.wasIntegrated());
+            assertEquals(memberName, result.memberName());
+        }
+
+        @Test
+        @DisplayName("통합된 회원은 신규 회원이 아님")
+        void integratedMemberShouldNotBeNewMember() {
+            // Given
+            String memberId = "01936ddc-8d37-7c6e-8ad6-18c76adc9dfa";
+            TokenPairResponse tokens =
+                    new TokenPairResponse("access_token", 3600L, "refresh_token", 604800L);
+
+            // When
+            KakaoOAuthResponse result =
+                    memberAssembler.toIntegratedMemberResponse(memberId, tokens, "테스트");
+
+            // Then
+            assertFalse(result.isNewMember());
+            assertTrue(result.wasIntegrated());
         }
     }
 }

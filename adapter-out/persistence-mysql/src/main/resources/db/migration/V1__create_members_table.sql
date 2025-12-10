@@ -71,18 +71,6 @@ CREATE TABLE members (
 -- 소셜 ID 인덱스 (카카오 로그인 조회용)
 CREATE INDEX idx_members_social_id ON members (social_id);
 
--- 이메일 인덱스 (이메일 로그인 조회용, nullable이므로 unique 아님)
-CREATE INDEX idx_members_email ON members (email);
-
--- 상태 인덱스 (활성 회원 조회용)
-CREATE INDEX idx_members_status ON members (status);
-
--- 삭제 여부 인덱스 (소프트 딜리트 조회용)
-CREATE INDEX idx_members_deleted_at ON members (deleted_at);
-
--- 생성일시 인덱스 (최신 가입 회원 조회용)
-CREATE INDEX idx_members_created_at ON members (created_at);
-
 -- -----------------------------------------------------------------------------
 -- 3. 테이블 설명
 -- -----------------------------------------------------------------------------

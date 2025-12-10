@@ -8,4 +8,6 @@ package com.ryuqq.setof.application.member.dto.command;
  * @author development-team
  * @since 1.0.0
  */
-public record LocalLoginCommand(String phoneNumber, String rawPassword) {}
+public record LocalLoginCommand(String phoneNumber, String rawPassword) {
+    // Immutable command object - no additional behavior
+}

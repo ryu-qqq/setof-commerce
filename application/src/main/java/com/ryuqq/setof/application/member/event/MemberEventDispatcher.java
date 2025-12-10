@@ -1,6 +1,6 @@
 package com.ryuqq.setof.application.member.event;
 
-import com.ryuqq.setof.domain.core.member.aggregate.Member;
+import com.ryuqq.setof.domain.member.aggregate.Member;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
@@ -31,25 +31,14 @@ public class MemberEventDispatcher {
     }
 
     /**
-     * 도메인 이벤트 발행 후 클리어
+     * 도메인 이벤트 발행 (pullDomainEvents 패턴)
      *
-     * <p>Member Aggregate에 등록된 모든 도메인 이벤트를 발행하고, 발행 완료 후 이벤트 목록을 클리어합니다.
-     *
-     * @param member 이벤트가 등록된 Member Aggregate
-     */
-    public void publishAndClear(Member member) {
-        member.getDomainEvents().forEach(eventPublisher::publishEvent);
-        member.clearDomainEvents();
-    }
-
-    /**
-     * 도메인 이벤트 발행만 수행 (클리어하지 않음)
-     *
-     * <p>특수한 경우에만 사용. 일반적으로는 publishAndClear 사용 권장.
+     * <p>Member Aggregate에 등록된 모든 도메인 이벤트를 발행합니다. pullDomainEvents()는 이벤트를 반환하면서 동시에 내부 목록을 클리어하므로
+     * 중복 발행이 방지됩니다.
      *
      * @param member 이벤트가 등록된 Member Aggregate
      */
-    public void publishOnly(Member member) {
-        member.getDomainEvents().forEach(eventPublisher::publishEvent);
+    public void publish(Member member) {
+        member.pullDomainEvents().forEach(eventPublisher::publishEvent);
     }
 }
