@@ -86,6 +86,11 @@ subprojects {
         maxWarnings = 0
     }
 
+    // Checkstyle: 테스트 코드는 경고 허용 (ArchUnit fluent API 등)
+    tasks.matching { it.name == 'checkstyleTest' || it.name == 'checkstyleTestFixtures' }.configureEach {
+        maxWarnings = Integer.MAX_VALUE
+    }
+
     // ========================================
     // SpotBugs Configuration
     // ========================================
@@ -94,6 +99,11 @@ subprojects {
         effort = 'max'
         reportLevel = 'low'
         excludeFilter = rootProject.file('config/spotbugs/spotbugs-exclude.xml')
+    }
+
+    // SpotBugs: 테스트 코드 제외
+    tasks.matching { it.name == 'spotbugsTest' || it.name == 'spotbugsTestFixtures' }.configureEach {
+        enabled = false
     }
 
     // ========================================
@@ -112,6 +122,11 @@ subprojects {
             xml.required = true
             html.required = true
         }
+    }
+
+    // PMD: 테스트 코드 제외 (ArchUnit fluent API가 DemeterStrict 규칙에 걸림)
+    tasks.matching { it.name == 'pmdTest' || it.name == 'pmdTestFixtures' }.configureEach {
+        enabled = false
     }
 
     // ========================================

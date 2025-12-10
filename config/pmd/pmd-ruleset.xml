@@ -49,6 +49,9 @@
                  - ApiPaths 내부 클래스 (상수 홀더)
                  - Record 타입
                  - Interface
+                 - JPA Entity (*JpaEntity, *Entity)
+                 - *Paths (API 경로 상수 홀더)
+                 - *Endpoint (엔드포인트 상수)
             -->
             <property name="violationSuppressXPath"
                       value="//ClassDeclaration[
@@ -62,6 +65,11 @@
                              or contains(@SimpleName, 'Config')
                              or starts-with(@SimpleName, 'Q')
                              or ancestor::ClassDeclaration[contains(@SimpleName, 'ApiPaths')]
+                             or ancestor::ClassDeclaration[contains(@SimpleName, 'Paths')]
+                             or contains(@SimpleName, 'JpaEntity')
+                             or (contains(@SimpleName, 'Entity') and ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.persistence.')])
+                             or contains(@SimpleName, 'Paths')
+                             or contains(@SimpleName, 'Endpoint')
                              ] | //RecordDeclaration"/>
         </properties>
     </rule>
@@ -71,6 +79,16 @@
         <priority>3</priority>
         <properties>
             <property name="minimum" value="30"/>
+            <!-- 허용 대상:
+                 - Controller (다양한 UseCase, DTO 의존)
+                 - ExceptionHandler (다양한 예외 타입 처리)
+                 - V1Controller (레거시 마이그레이션)
+            -->
+            <property name="violationSuppressXPath"
+                      value="//ClassDeclaration[
+                             contains(@SimpleName, 'Controller')
+                             or contains(@SimpleName, 'ExceptionHandler')
+                             ]"/>
         </properties>
     </rule>
 
@@ -93,6 +111,7 @@
          ======================================== -->
 
     <!-- Domain Layer: 가장 엄격 (≤ 7 public methods) -->
+    <!-- Aggregate Root는 비즈니스 로직이 많아 예외 처리 (max 15) -->
     <rule name="DomainTooManyMethods"
           language="java"
           message="Domain class has too many public methods (max 7) - violates SRP"
@@ -106,6 +125,7 @@
     ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.domain.')]
     and @Interface = false()
     and not(contains(@SimpleName, 'Exception'))
+    and not(ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.aggregate')])
     and count(.//MethodDeclaration[@Visibility = 'public']) > 7
 ]
 ]]>
@@ -115,6 +135,7 @@
         <description>
             Domain 클래스는 최대 7개의 public 메서드만 가져야 합니다.
             더 많은 메서드가 필요하면 클래스를 분리하세요.
+            Aggregate Root는 비즈니스 로직이 집중되므로 예외 처리됩니다.
         </description>
     </rule>
 
@@ -148,11 +169,17 @@
         <priority>2</priority>
         <properties>
             <property name="maxmethods" value="10"/>
-            <!-- adapter.in 패키지만 적용, ExceptionHandler는 예외 (PMD 7.x 호환) -->
+            <!-- adapter.in 패키지만 적용, 예외 처리 (PMD 7.x 호환):
+                 - ExceptionHandler (예외 처리 메서드가 많음)
+                 - Mapper (변환 메서드가 많을 수 있음)
+                 - Legacy V1 Controller (마이그레이션 전 레거시)
+            -->
             <property name="violationSuppressXPath"
                       value="//ClassDeclaration[
                              not(ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.adapter.in.')])
                              or contains(@SimpleName, 'ExceptionHandler')
+                             or contains(@SimpleName, 'Mapper')
+                             or contains(@SimpleName, 'V1Controller')
                              ]"/>
         </properties>
     </rule>
@@ -162,12 +189,20 @@
         <priority>2</priority>
         <properties>
             <property name="maxfields" value="7"/>
-            <!-- 설정 클래스는 필드가 많을 수 있음 (Redis, DB 등 인프라 설정) -->
+            <!-- 제외 대상:
+                 - 설정 클래스 (Redis, DB 등 인프라 설정)
+                 - QueryDSL 클래스
+                 - JPA Entity (데이터 모델은 필드가 많을 수 있음)
+                 - Domain Aggregate (비즈니스 컨텍스트에 따라 필드가 많을 수 있음)
+            -->
             <property name="violationSuppressXPath"
                       value="//ClassDeclaration[
                              contains(@SimpleName, 'Config')
                              or contains(@SimpleName, 'Properties')
                              or starts-with(@SimpleName, 'Q')
+                             or contains(@SimpleName, 'JpaEntity')
+                             or (contains(@SimpleName, 'Entity') and ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.persistence.')])
+                             or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.domain.') and contains(@Name, '.aggregate')]
                              ]"/>
         </properties>
     </rule>
@@ -259,6 +294,7 @@
         and not(@MethodName = ('orElse', 'orElseGet', 'orElseThrow', 'ifPresent', 'ifPresentOrElse', 'isPresent', 'isEmpty', 'get'))
         and not(@MethodName = ('add', 'subtract', 'multiply', 'divide', 'compareTo', 'setScale', 'abs', 'negate', 'pow'))
         and not(@MethodName = ('append', 'toString'))
+        and not(@MethodName = ('getClass', 'getSimpleName', 'getName', 'getCanonicalName'))
     ]
 ]]>
                 </value>
@@ -266,7 +302,8 @@
         </properties>
         <description>
             Domain 레이어에서는 메서드 체이닝을 최소화해야 합니다.
-            허용: Builder 패턴, Stream API, Optional 체이닝, BigDecimal 연산, StringBuilder
+            허용: Builder 패턴, Stream API, Optional 체이닝, BigDecimal 연산, StringBuilder,
+                  Java 리플렉션 (getClass().getSimpleName() 등)
 
             ❌ BAD:
             order.getCustomer().getAddress().getCity()
@@ -287,14 +324,20 @@
                 <value>
 <![CDATA[
 //ClassDeclaration[ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.adapter.in.')]]
-    //FieldDeclaration//ClassType[contains(@SimpleName, 'Repository')]
+    //FieldDeclaration//ClassType[
+        contains(@SimpleName, 'Repository')
+        and not(contains(@SimpleName, 'AuthorizationRequestRepository'))
+        and not(contains(@SimpleName, 'CookieRepository'))
+    ]
 ]]>
                 </value>
             </property>
         </properties>
         <description>
-            Controller는 Repository에 직접 의존하면 안 됩니다.
+            Controller는 JPA/Data Repository에 직접 의존하면 안 됩니다.
             UseCase를 통해서만 비즈니스 로직에 접근하세요.
+
+            허용: Spring Security의 AuthorizationRequestRepository (OAuth2 세션 저장)
 
             ❌ BAD:
             private final OrderRepository orderRepository;

@@ -87,18 +87,13 @@ dependencies {
 // ========================================
 // Spring Boot Configuration
 // ========================================
+// Note: bootJar is disabled until Application class is created
 tasks.bootJar {
-    archiveFileName = "${project.rootProject.name}-web-api.jar"
+    enabled = false
+}
 
-    manifest {
-        attributes(
-            'Implementation-Title': project.rootProject.name,
-            'Implementation-Version': project.version,
-            'Built-By': System.getProperty('user.name'),
-            'Built-JDK': System.getProperty('java.version'),
-            'Build-Timestamp': Instant.now().toString()
-        )
-    }
+tasks.jar {
+    enabled = true
 }
 
 // ========================================
