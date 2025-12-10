@@ -48,7 +48,7 @@ jobs:
       # 코드 품질 검증 (QA Tools)
       # ----------------------------------------------------------------------
       - name: Run Checkstyle
-        run: ./gradlew checkstyleMain checkstyleTest --no-daemon
+        run: ./gradlew checkstyleMain checkstyleTest --no-daemon -x asciidoctor
         continue-on-error: false
 
       - name: Run SpotBugs
@@ -77,7 +77,7 @@ jobs:
       # 테스트 실행 (단위 + ArchUnit)
       # ----------------------------------------------------------------------
       - name: Run Tests
-        run: ./gradlew test --no-daemon
+        run: ./gradlew test --no-daemon -x asciidoctor
 
       # ----------------------------------------------------------------------
       # JaCoCo 커버리지 검증
