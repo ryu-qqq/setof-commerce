@@ -10,6 +10,22 @@
 plugins {
     id 'java-library'
     id 'java-test-fixtures'
+    id 'org.asciidoctor.jvm.convert' version '3.3.2'
+}
+
+// ========================================
+// REST Docs Configuration
+// ========================================
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
+
+configurations {
+    asciidoctorExt
+}
+
+dependencies {
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor:3.0.1'
 }
 
 // ========================================
@@ -94,5 +110,39 @@ tasks.jacocoTestCoverageVerification {
 }
 
 tasks.test {
+    outputs.dir snippetsDir
     finalizedBy tasks.jacocoTestCoverageVerification
+}
+
+// ========================================
+// Asciidoctor Configuration
+// ========================================
+asciidoctor {
+    configurations 'asciidoctorExt'
+    dependsOn test
+
+    // snippets 디렉토리가 존재할 때만 실행 (CI -x test 대응)
+    onlyIf {
+        snippetsDir.exists()
+    }
+
+    baseDirFollowsSourceFile()
+
+    attributes(
+        'snippets': snippetsDir,
+        'source-highlighter': 'highlightjs',
+        'toc': 'left',
+        'toclevels': 3,
+        'sectlinks': true,
+        'sectnums': true
+    )
+}
+
+// ========================================
+// Copy REST Docs to static resources (bootstrap 모듈에서 사용)
+// ========================================
+tasks.register('copyRestDocs', Copy) {
+    dependsOn asciidoctor
+    from "${asciidoctor.outputDir}"
+    into "${buildDir}/docs/asciidoc"
 }

@@ -10,42 +10,51 @@
 
 ```
 프로젝트 루트/
-├── bootstrap/
-│   └── bootstrap-web-api/
+├── adapter-in/
+│   └── rest-api/
 │       ├── src/
-│       │   └── docs/
-│       │       └── asciidoc/           ← 📝 AsciiDoc 소스
-│       │           ├── index.adoc      ← 메인 문서
-│       │           ├── common/         ← 공통 섹션
-│       │           └── {bc}/           ← BC별 API 문서
+│       │   ├── docs/
+│       │   │   └── asciidoc/                    ← 📝 AsciiDoc 소스
+│       │   │       ├── index.adoc               ← 메인 문서
+│       │   │       └── v2/                      ← API 버전별 디렉토리
+│       │   │           ├── auth/
+│       │   │           │   └── auth.adoc        ← Auth BC 문서
+│       │   │           ├── member/
+│       │   │           │   └── member.adoc      ← Member BC 문서
+│       │   │           └── {bc}/                ← 새 BC 추가 시
+│       │   │               └── {bc}.adoc
+│       │   └── main/java/.../common/controller/
+│       │       └── ApiDocsController.java       ← 🌐 문서 서빙 컨트롤러
 │       └── build/
-│           ├── generated-snippets/     ← 🔧 테스트 생성 스니펫
-│           └── docs/asciidoc/          ← 📄 빌드된 HTML
+│           ├── generated-snippets/              ← 🔧 테스트 생성 스니펫
+│           └── docs/asciidoc/                   ← 📄 빌드된 HTML
 │
-└── adapter-in/
-    └── rest-api/
-        └── src/main/java/.../common/controller/
-            └── ApiDocsController.java   ← 🌐 문서 서빙 컨트롤러
+└── bootstrap/
+    └── bootstrap-web-api/
+        ├── build.gradle                         ← copyRestDocs 태스크
+        └── build/resources/main/static/docs/    ← 📦 JAR 포함 문서
 ```
 
 ### 접근 경로
 
 | 경로 | 설명 |
 |------|------|
-| `/docs` | API 문서 (리다이렉트) |
-| `/docs/index.html` | API 문서 메인 페이지 |
+| `/docs` | API 문서 메인 페이지 |
+| `/docs/v2/auth/auth.html` | Auth API 문서 |
+| `/docs/v2/member/member.html` | Member API 문서 |
+| `/docs/v2/{bc}/{bc}.html` | BC별 API 문서 |
 
 ### 빌드 명령어
 
 ```bash
 # REST Docs 생성 (테스트 실행 + HTML 변환)
-./gradlew :bootstrap:bootstrap-web-api:asciidoctor
+./gradlew :adapter-in:rest-api:asciidoctor
 
 # JAR에 문서 포함하여 빌드
 ./gradlew :bootstrap:bootstrap-web-api:bootJar
 
-# 문서 확인
-open bootstrap/bootstrap-web-api/build/docs/asciidoc/index.html
+# 문서 확인 (로컬)
+open adapter-in/rest-api/build/docs/asciidoc/index.html
 ```
 
 ---
@@ -87,13 +96,18 @@ open bootstrap/bootstrap-web-api/build/docs/asciidoc/index.html
 
 ## 2. 설정
 
-### 2.1 Gradle 의존성
+### 2.1 rest-api 모듈 (adapter-in/rest-api/build.gradle)
 
 ```gradle
-// build.gradle (rest-api 모듈)
-
 plugins {
+    id 'java-library'
+    id 'java-test-fixtures'
     id 'org.asciidoctor.jvm.convert' version '3.3.2'
+}
+
+// REST Docs Configuration
+ext {
+    snippetsDir = file('build/generated-snippets')
 }
 
 configurations {
@@ -101,18 +115,14 @@ configurations {
 }
 
 dependencies {
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor:3.0.1'
+
     // Spring REST Docs
     testImplementation libs.spring.restdocs.mockmvc
-    asciidoctorExt libs.spring.restdocs.asciidoctor
-}
-
-// REST Docs 스니펫 출력 위치
-ext {
-    snippetsDir = file('build/generated-snippets')
 }
 
 // 테스트 실행 시 스니펫 생성
-test {
+tasks.test {
     outputs.dir snippetsDir
 }
 
@@ -124,29 +134,42 @@ asciidoctor {
 
     baseDirFollowsSourceFile()
 
-    sources {
-        include '**/index.adoc'
-    }
-}
-
-// 빌드 시 문서 복사
-bootJar {
-    dependsOn asciidoctor
-    from("${asciidoctor.outputDir}") {
-        into 'static/docs'
-    }
+    attributes(
+        'snippets': snippetsDir,
+        'source-highlighter': 'highlightjs',
+        'toc': 'left',
+        'toclevels': 3,
+        'sectlinks': true,
+        'sectnums': true
+    )
 }
 ```
 
-### 2.2 libs.versions.toml
+### 2.2 bootstrap 모듈 (bootstrap/bootstrap-web-api/build.gradle)
+
+```gradle
+// REST Docs Configuration
+// rest-api 모듈에서 생성된 문서를 static 리소스로 복사
+tasks.register('copyRestDocs', Copy) {
+    dependsOn ':adapter-in:rest-api:asciidoctor'
+    from "${project(':adapter-in:rest-api').buildDir}/docs/asciidoc"
+    into "${sourceSets.main.output.resourcesDir}/static/docs"
+}
+
+tasks.processResources {
+    dependsOn copyRestDocs
+}
+```
+
+### 2.3 libs.versions.toml
 
 ```toml
 [versions]
-spring-restdocs = "3.0.1"
+restdocs = "3.0.1"
+asciidoctor = "3.3.2"
 
 [libraries]
-spring-restdocs-mockmvc = { module = "org.springframework.restdocs:spring-restdocs-mockmvc", version.ref = "spring-restdocs" }
-spring-restdocs-asciidoctor = { module = "org.springframework.restdocs:spring-restdocs-asciidoctor", version.ref = "spring-restdocs" }
+spring-restdocs-mockmvc = { module = "org.springframework.restdocs:spring-restdocs-mockmvc", version.ref = "restdocs" }
 ```
 
 ---
@@ -158,16 +181,16 @@ spring-restdocs-asciidoctor = { module = "org.springframework.restdocs:spring-re
 > **중요**: REST Docs는 MockMvc 기반이지만, **통합 테스트와 별도로** 문서화 전용 테스트를 작성합니다.
 
 ```java
-package com.ryuqq.adapter.in.rest.order.docs;
+package com.ryuqq.setof.adapter.in.rest.auth.controller;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -176,26 +199,20 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Order API 문서화 테스트
- *
- * <p><strong>목적:</strong> Spring REST Docs를 통한 API 문서 자동 생성
- *
- * <p><strong>주의:</strong> 이 테스트는 문서화 목적이며,
- * 실제 API 검증은 {@link OrderApiIntegrationTest}에서 수행합니다.
+ * Auth API 문서화 테스트
  */
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
 @ExtendWith(RestDocumentationExtension.class)
-@DisplayName("Order API 문서화")
-class OrderApiDocsTest {
+@DisplayName("Auth API 문서화")
+class AuthControllerDocsTest {
 
     private MockMvc mockMvc;
 
@@ -208,31 +225,42 @@ class OrderApiDocsTest {
             .apply(documentationConfiguration(restDocumentation)
                 .uris()
                     .withScheme("https")
-                    .withHost("api.example.com")
+                    .withHost("api.setof.com")
                     .withPort(443))
             .build();
     }
 
-    @Test
-    @Sql("/sql/orders-test-data.sql")
-    @DisplayName("주문 단건 조회 API")
-    void getOrder() throws Exception {
-        mockMvc.perform(get("/api/v1/orders/{orderId}", 100L)
-                .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andDo(document("order-get",
-                pathParameters(
-                    parameterWithName("orderId").description("주문 ID")
-                ),
-                responseFields(
-                    fieldWithPath("success").description("성공 여부"),
-                    fieldWithPath("data.orderId").description("주문 ID"),
-                    fieldWithPath("data.customerId").description("고객 ID"),
-                    fieldWithPath("data.status").description("주문 상태 (PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED)"),
-                    fieldWithPath("data.totalAmount").description("총 주문 금액"),
-                    fieldWithPath("data.orderDate").description("주문 일자 (yyyy-MM-dd)")
-                )
-            ));
+    @Nested
+    @DisplayName("로그인 API")
+    class LoginTest {
+
+        @Test
+        @DisplayName("로그인 성공")
+        void loginSuccess() throws Exception {
+            String requestBody = """
+                {
+                    "email": "test@example.com",
+                    "password": "password123!"
+                }
+                """;
+
+            mockMvc.perform(post("/api/v2/auth/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestBody))
+                .andExpect(status().isOk())
+                .andDo(document("auth-login",
+                    requestFields(
+                        fieldWithPath("email").description("이메일"),
+                        fieldWithPath("password").description("비밀번호")
+                    ),
+                    responseFields(
+                        fieldWithPath("result").description("결과 상태"),
+                        fieldWithPath("data.memberId").description("회원 ID"),
+                        fieldWithPath("data.email").description("이메일"),
+                        fieldWithPath("message").description("메시지").optional()
+                    )
+                ));
+        }
     }
 }
 ```
@@ -240,16 +268,24 @@ class OrderApiDocsTest {
 ### 3.2 테스트 파일 위치
 
 ```
-src/test/java/com/ryuqq/adapter/in/rest/
-├── order/
-│   ├── OrderApiIntegrationTest.java    # 통합 테스트 (필수)
-│   └── docs/
-│       └── OrderApiDocsTest.java       # 문서화 테스트 (REST Docs)
-├── customer/
-│   ├── CustomerApiIntegrationTest.java
-│   └── docs/
-│       └── CustomerApiDocsTest.java
+adapter-in/rest-api/src/test/java/com/ryuqq/setof/adapter/in/rest/
+├── auth/
+│   └── controller/
+│       └── AuthControllerDocsTest.java      # Auth API 문서화 테스트
+├── member/
+│   └── controller/
+│       └── MemberControllerDocsTest.java    # Member API 문서화 테스트
+└── {bc}/
+    └── controller/
+        └── {Bc}ControllerDocsTest.java      # 새 BC 문서화 테스트
 ```
+
+### 3.3 테스트 파일 네이밍 규칙
+
+| 패턴 | 용도 |
+|------|------|
+| `*ControllerDocsTest.java` | REST Docs 문서화 테스트 |
+| `*ControllerTest.java` | Controller 단위 테스트 |
 
 ---
 
@@ -272,9 +308,7 @@ src/test/java/com/ryuqq/adapter/in/rest/
     queryParameters(
         parameterWithName("page").description("페이지 번호 (0부터 시작)").optional(),
         parameterWithName("size").description("페이지 크기 (기본값: 20)").optional(),
-        parameterWithName("status").description("주문 상태 필터").optional(),
-        parameterWithName("startDate").description("시작일 (yyyy-MM-dd)").optional(),
-        parameterWithName("endDate").description("종료일 (yyyy-MM-dd)").optional()
+        parameterWithName("status").description("주문 상태 필터").optional()
     )
 ));
 ```
@@ -296,11 +330,11 @@ src/test/java/com/ryuqq/adapter/in/rest/
 ```java
 .andDo(document("order-create",
     responseFields(
-        fieldWithPath("success").description("성공 여부"),
+        fieldWithPath("result").description("결과 상태"),
         fieldWithPath("data").description("응답 데이터"),
         fieldWithPath("data.orderId").description("생성된 주문 ID"),
         fieldWithPath("data.status").description("주문 상태"),
-        fieldWithPath("data.createdAt").description("생성 시각")
+        fieldWithPath("message").description("메시지").optional()
     )
 ));
 ```
@@ -323,126 +357,143 @@ src/test/java/com/ryuqq/adapter/in/rest/
 ### 5.1 디렉토리 구조
 
 ```
-src/docs/asciidoc/
+adapter-in/rest-api/src/docs/asciidoc/
 ├── index.adoc              # 메인 문서
-├── common/
-│   ├── overview.adoc       # API 개요
-│   └── errors.adoc         # 에러 코드
-├── order/
-│   ├── order-create.adoc   # 주문 생성
-│   ├── order-get.adoc      # 주문 조회
-│   └── order-list.adoc     # 주문 목록
-└── customer/
-    └── customer.adoc       # 고객 API
+└── v2/                     # API V2 문서
+    ├── auth/
+    │   └── auth.adoc       # Auth API
+    ├── member/
+    │   └── member.adoc     # Member API
+    └── {bc}/               # 새 BC 추가 시
+        └── {bc}.adoc
 ```
 
 ### 5.2 index.adoc (메인 문서)
 
 ```asciidoc
-= API 문서
+= SetOf Commerce API Documentation
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
 :toc: left
 :toclevels: 3
 :sectlinks:
+:sectnums:
 
 [[overview]]
-== 개요
+== Overview
 
-본 문서는 API 명세를 제공합니다.
+SetOf Commerce REST API 문서입니다.
 
-include::common/overview.adoc[]
+=== Base URL
 
-[[resources]]
-== 리소스
+[cols="1,3"]
+|===
+| Environment | URL
 
-include::order/order-create.adoc[]
-include::order/order-get.adoc[]
-include::order/order-list.adoc[]
+| Development
+| `http://localhost:8080`
 
-include::common/errors.adoc[]
+| Production
+| `https://api.setof.com`
+|===
+
+[[api-v2]]
+== API V2
+
+include::v2/auth/auth.adoc[]
+
+include::v2/member/member.adoc[]
 ```
 
-### 5.3 API 문서 템플릿
+### 5.3 BC별 문서 템플릿 (v2/{bc}/{bc}.adoc)
 
 ```asciidoc
-[[order-create]]
-=== 주문 생성
+[[{bc}]]
+=== {BC 한글명} ({BC})
 
-새로운 주문을 생성합니다.
+{BC 설명}
 
-==== HTTP Request
+[[{bc}-{action}]]
+==== {API 이름}
 
-include::{snippets}/order-create/http-request.adoc[]
+{API 설명}
 
-==== Path Parameters
+===== HTTP Request
 
-include::{snippets}/order-create/path-parameters.adoc[]
+include::{snippets}/{bc}-{action}/http-request.adoc[]
 
-==== Request Fields
+===== Request Fields
 
-include::{snippets}/order-create/request-fields.adoc[]
+include::{snippets}/{bc}-{action}/request-fields.adoc[]
 
-==== HTTP Response
+===== HTTP Response
 
-include::{snippets}/order-create/http-response.adoc[]
+include::{snippets}/{bc}-{action}/http-response.adoc[]
 
-==== Response Fields
+===== Response Fields
 
-include::{snippets}/order-create/response-fields.adoc[]
+include::{snippets}/{bc}-{action}/response-fields.adoc[]
 
-==== Example
+===== Example
 
-===== Request
-
-include::{snippets}/order-create/curl-request.adoc[]
-
-===== Response
-
-include::{snippets}/order-create/response-body.adoc[]
+include::{snippets}/{bc}-{action}/curl-request.adoc[]
 ```
 
 ---
 
-## 6. 스니펫 커스터마이징
+## 6. 새 BC 추가 가이드
 
-### 6.1 공통 필드 재사용
+### Step 1: DocsTest 작성
 
 ```java
-// 공통 응답 필드 정의
-public class ApiDocumentUtils {
-
-    public static FieldDescriptor[] commonResponseFields() {
-        return new FieldDescriptor[] {
-            fieldWithPath("success").description("성공 여부"),
-            fieldWithPath("timestamp").description("응답 시각"),
-            fieldWithPath("data").description("응답 데이터")
-        };
-    }
-
-    public static FieldDescriptor[] pageResponseFields() {
-        return new FieldDescriptor[] {
-            fieldWithPath("data.content[]").description("데이터 목록"),
-            fieldWithPath("data.hasNext").description("다음 페이지 존재 여부"),
-            fieldWithPath("data.number").description("현재 페이지 번호"),
-            fieldWithPath("data.size").description("페이지 크기")
-        };
-    }
+// adapter-in/rest-api/src/test/java/.../order/controller/OrderControllerDocsTest.java
+@SpringBootTest
+@ActiveProfiles("test")
+@Transactional
+@ExtendWith(RestDocumentationExtension.class)
+@DisplayName("Order API 문서화")
+class OrderControllerDocsTest {
+    // ... 테스트 작성
 }
 ```
 
-### 6.2 테스트에서 활용
+### Step 2: AsciiDoc 파일 생성
 
-```java
-.andDo(document("orders-list",
-    responseFields(
-        ApiDocumentUtils.commonResponseFields(),
-        ApiDocumentUtils.pageResponseFields(),
-        fieldWithPath("data.content[].orderId").description("주문 ID"),
-        fieldWithPath("data.content[].status").description("주문 상태")
-    )
-));
+```bash
+mkdir -p adapter-in/rest-api/src/docs/asciidoc/v2/order
+```
+
+```asciidoc
+// v2/order/order.adoc
+[[order]]
+=== 주문 (Order)
+
+주문 관련 API입니다.
+
+[[order-create]]
+==== 주문 생성
+
+include::{snippets}/order-create/http-request.adoc[]
+// ...
+```
+
+### Step 3: index.adoc에 include 추가
+
+```asciidoc
+[[api-v2]]
+== API V2
+
+include::v2/auth/auth.adoc[]
+include::v2/member/member.adoc[]
+include::v2/order/order.adoc[]    // ← 추가
+```
+
+### Step 4: 빌드 및 확인
+
+```bash
+./gradlew :bootstrap:bootstrap-web-api:bootJar
+open adapter-in/rest-api/build/docs/asciidoc/index.html
 ```
 
 ---
@@ -459,12 +510,22 @@ public class ApiDocumentUtils {
 open adapter-in/rest-api/build/docs/asciidoc/index.html
 ```
 
-### 7.2 CI/CD 통합
+### 7.2 JAR에 포함하여 빌드
+
+```bash
+# bootJar 빌드 (REST Docs 자동 포함)
+./gradlew :bootstrap:bootstrap-web-api:bootJar
+
+# JAR 내 문서 확인
+jar tf bootstrap/bootstrap-web-api/build/libs/setof-commerce-web-api.jar | grep static/docs
+```
+
+### 7.3 CI/CD 통합
 
 ```yaml
 # GitHub Actions 예시
 - name: Build with REST Docs
-  run: ./gradlew :adapter-in:rest-api:asciidoctor
+  run: ./gradlew :bootstrap:bootstrap-web-api:bootJar
 
 - name: Upload API Docs
   uses: actions/upload-artifact@v3
@@ -503,39 +564,29 @@ public ResponseEntity<ApiResponse<OrderApiResponse>> createOrder(
 
 ### 8.2 역할 분담
 
-| 도구 | 용도 |
-|------|------|
-| **REST Docs** | 정적 HTML 문서 (배포용, 인쇄용) |
-| **OpenAPI/Swagger** | 대화형 API 탐색기 (개발자용) |
+| 도구 | 용도 | 접근 경로 |
+|------|------|----------|
+| **REST Docs** | 정적 HTML 문서 (배포용, 인쇄용) | `/docs` |
+| **OpenAPI/Swagger** | 대화형 API 탐색기 (개발자용) | `/swagger-ui/index.html` |
 
 ---
 
 ## 9. 체크리스트
 
-### 설정
+### 새 BC 추가 시
 
-- [ ] Gradle 의존성 추가 (`spring-restdocs-mockmvc`)
-- [ ] Asciidoctor 플러그인 설정
-- [ ] 스니펫 출력 디렉토리 설정
-
-### 테스트 작성
-
-- [ ] `@ExtendWith(RestDocumentationExtension.class)` 추가
-- [ ] MockMvc 설정 (documentationConfiguration)
-- [ ] `document()` 호출로 스니펫 생성
-- [ ] Path/Query/Request/Response 필드 문서화
-
-### AsciiDoc
-
-- [ ] `index.adoc` 메인 문서 작성
-- [ ] 각 API별 문서 파일 분리
-- [ ] 공통 필드 재사용
-
-### 빌드
-
-- [ ] `./gradlew asciidoctor` 정상 실행
+- [ ] `*ControllerDocsTest.java` 작성
+- [ ] `src/docs/asciidoc/v2/{bc}/{bc}.adoc` 생성
+- [ ] `index.adoc`에 `include::v2/{bc}/{bc}.adoc[]` 추가
+- [ ] `./gradlew :adapter-in:rest-api:asciidoctor` 정상 실행
 - [ ] 생성된 HTML 확인
-- [ ] CI/CD 파이프라인 통합
+
+### API 추가 시
+
+- [ ] DocsTest에 새 테스트 메서드 추가
+- [ ] `document("{bc}-{action}", ...)` 호출
+- [ ] BC의 `.adoc` 파일에 include 추가
+- [ ] 빌드 후 문서 확인
 
 ---
 
@@ -548,5 +599,5 @@ public ResponseEntity<ApiResponse<OrderApiResponse>> createOrder(
 ---
 
 **작성자**: Development Team
-**최종 수정일**: 2025-12-08
-**버전**: 1.0.0
+**최종 수정일**: 2025-12-10
+**버전**: 1.1.0

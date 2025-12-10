@@ -1,0 +1,131 @@
+[[member]]
+=== Member (회원)
+
+회원 관련 API입니다. 회원가입, 내 정보 조회, 회원 탈퇴 등의 기능을 제공합니다.
+
+[[member-register]]
+==== 회원가입
+
+새로운 회원을 등록합니다.
+
+===== HTTP Request
+
+include::{snippets}/member-register/http-request.adoc[]
+
+===== Request Fields
+
+include::{snippets}/member-register/request-fields.adoc[]
+
+===== HTTP Response
+
+include::{snippets}/member-register/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/member-register/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/member-register/curl-request.adoc[]
+
+[[member-me]]
+==== 내 정보 조회
+
+현재 로그인한 회원의 정보를 조회합니다.
+
+NOTE: 인증 필요 (JWT Token 또는 Cookie)
+
+===== HTTP Request
+
+include::{snippets}/member-me/http-request.adoc[]
+
+===== HTTP Response
+
+include::{snippets}/member-me/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/member-me/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/member-me/curl-request.adoc[]
+
+[[member-withdraw]]
+==== 회원 탈퇴
+
+회원 탈퇴를 요청합니다. 탈퇴 사유와 동의 여부가 필요합니다.
+
+NOTE: 인증 필요 (JWT Token 또는 Cookie)
+
+===== HTTP Request
+
+include::{snippets}/member-withdraw/http-request.adoc[]
+
+===== Request Fields
+
+include::{snippets}/member-withdraw/request-fields.adoc[]
+
+===== HTTP Response
+
+include::{snippets}/member-withdraw/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/member-withdraw/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/member-withdraw/curl-request.adoc[]
+
+[[member-kakao-link]]
+==== 카카오 계정 연동
+
+기존 회원 계정에 카카오 계정을 연동합니다.
+
+NOTE: 인증 필요 (JWT Token 또는 Cookie)
+
+===== HTTP Request
+
+include::{snippets}/member-kakao-link/http-request.adoc[]
+
+===== Request Fields
+
+include::{snippets}/member-kakao-link/request-fields.adoc[]
+
+===== HTTP Response
+
+include::{snippets}/member-kakao-link/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/member-kakao-link/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/member-kakao-link/curl-request.adoc[]
+
+[[member-password-reset]]
+==== 비밀번호 재설정
+
+비밀번호를 재설정합니다. 이메일 인증 후 새 비밀번호를 설정합니다.
+
+===== HTTP Request
+
+include::{snippets}/member-passwordHash-reset/http-request.adoc[]
+
+===== Request Fields
+
+include::{snippets}/member-passwordHash-reset/request-fields.adoc[]
+
+===== HTTP Response
+
+include::{snippets}/member-passwordHash-reset/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/member-passwordHash-reset/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/member-passwordHash-reset/curl-request.adoc[]
