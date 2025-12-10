@@ -93,13 +93,22 @@ public class RefreshTokenFacade {
     }
 
     /**
-     * Refresh Token으로 회원 ID 조회 (Cache 우선)
+     * Refresh Token으로 회원 ID 조회 (Cache-Aside with RDB Fallback)
+     *
+     * <p>조회 순서:
+     *
+     * <ol>
+     *   <li>Cache(Redis) 조회
+     *   <li>Cache Miss 시 RDB 조회 (Fallback)
+     * </ol>
      *
      * @param tokenValue 토큰 값
      * @return 회원 ID (UUID 문자열, Optional)
      */
     public Optional<String> findMemberIdByToken(String tokenValue) {
-        return refreshTokenCacheReadManager.findMemberIdByToken(tokenValue);
+        return refreshTokenCacheReadManager
+                .findMemberIdByToken(tokenValue)
+                .or(() -> refreshTokenReadManager.findMemberIdByToken(tokenValue));
     }
 
     /**
@@ -111,4 +120,5 @@ public class RefreshTokenFacade {
     public Optional<String> findTokenByMemberId(String memberId) {
         return refreshTokenReadManager.findTokenByMemberId(memberId);
     }
+
 }
