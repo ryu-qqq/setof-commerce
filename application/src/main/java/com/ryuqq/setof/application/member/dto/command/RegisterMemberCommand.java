@@ -1,5 +1,6 @@
 package com.ryuqq.setof.application.member.dto.command;
 
+import com.ryuqq.setof.application.member.dto.bundle.ConsentItem;
 import java.time.LocalDate;
 import java.util.List;
 

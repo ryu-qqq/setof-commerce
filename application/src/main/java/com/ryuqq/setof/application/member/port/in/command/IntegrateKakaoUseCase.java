@@ -8,6 +8,7 @@ import com.ryuqq.setof.application.member.dto.command.IntegrateKakaoCommand;
  * <p>기존 LOCAL 회원에 카카오 계정을 통합하는 Inbound Port
  *
  * <p>비즈니스 로직:
+ *
  * <ol>
  *   <li>회원 조회
  *   <li>provider: LOCAL → KAKAO 변경

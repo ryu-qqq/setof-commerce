@@ -1,0 +1,58 @@
+# ============================================================================
+# SetOf Commerce - Atlantis Configuration
+# ============================================================================
+# PR-based Terraform automation for SetOf Commerce infrastructure
+# ============================================================================
+
+version: 3
+
+automerge: false
+delete_source_branch_on_merge: false
+# Disable parallel plan to prevent plugin cache conflicts
+parallel_plan: false
+parallel_apply: false
+
+projects:
+  # ============================================================================
+  # Container Registry
+  # ============================================================================
+
+  # ECR repository for web-api
+  - name: setof-commerce-ecr-prod
+    dir: terraform/ecr
+    workspace: default
+    autoplan:
+      when_modified: ["*.tf", "*.tfvars", "../*.tf"]
+      enabled: true
+
+  # ============================================================================
+  # Core Infrastructure
+  # ============================================================================
+
+  # ECS Cluster (dedicated for setof-commerce)
+  - name: setof-commerce-ecs-cluster-prod
+    dir: terraform/ecs-cluster
+    workspace: default
+    autoplan:
+      when_modified: ["*.tf", "*.tfvars", "../*.tf"]
+      enabled: true
+
+  # ElastiCache (Redis)
+  - name: setof-commerce-elasticache-prod
+    dir: terraform/elasticache
+    workspace: default
+    autoplan:
+      when_modified: ["*.tf", "*.tfvars", "../*.tf"]
+      enabled: true
+
+  # ============================================================================
+  # Application Infrastructure
+  # ============================================================================
+
+  # ECS Service for web-api (ALB + Auto Scaling)
+  - name: setof-commerce-ecs-web-api-prod
+    dir: terraform/ecs-web-api
+    workspace: default
+    autoplan:
+      when_modified: ["*.tf", "*.tfvars", "../*.tf"]
+      enabled: true

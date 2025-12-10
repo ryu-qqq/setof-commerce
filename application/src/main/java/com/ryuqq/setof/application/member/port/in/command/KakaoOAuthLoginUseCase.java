@@ -9,6 +9,7 @@ import com.ryuqq.setof.application.member.dto.response.KakaoOAuthResponse;
  * <p>카카오 로그인을 담당하는 Inbound Port
  *
  * <p>시나리오:
+ *
  * <ul>
  *   <li>신규 카카오 회원: 자동 회원가입 후 토큰 발급
  *   <li>기존 카카오 회원: 토큰 발급

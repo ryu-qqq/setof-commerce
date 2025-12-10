@@ -46,10 +46,9 @@ logs/
 /coverage/
 
 # ========================================
-# Generated
+# Generated (QueryDSL Q클래스는 generated/ 디렉토리에 생성됨)
 # ========================================
 **/generated/
-**/Q*.java
 
 # ========================================
 # Docker
@@ -67,3 +66,22 @@ temp/
 # ========================================
 legacy-admin/
 legacy-web/
+
+
+.env.aws
+local-dev/.env.local
+local-dev/.env.aws
+local-dev/test-files/
+# Backup folders
+*.backup.*
+
+# ========================================
+# Serena MCP
+# ========================================
+.serena/
+
+# ========================================
+# Eclipse bin folders (build artifacts)
+# ========================================
+**/bin/
+

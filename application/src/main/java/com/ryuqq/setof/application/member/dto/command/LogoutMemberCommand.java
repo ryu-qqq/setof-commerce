@@ -8,4 +8,6 @@ package com.ryuqq.setof.application.member.dto.command;
  * @author development-team
  * @since 1.0.0
  */
-public record LogoutMemberCommand(String memberId) {}
+public record LogoutMemberCommand(String memberId) {
+    // Immutable command object - no additional behavior
+}

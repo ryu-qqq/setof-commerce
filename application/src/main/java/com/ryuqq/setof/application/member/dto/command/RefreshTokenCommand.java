@@ -8,4 +8,6 @@ package com.ryuqq.setof.application.member.dto.command;
  * @author development-team
  * @since 1.0.0
  */
-public record RefreshTokenCommand(String refreshToken) {}
+public record RefreshTokenCommand(String refreshToken) {
+    // Immutable command object - no additional behavior
+}

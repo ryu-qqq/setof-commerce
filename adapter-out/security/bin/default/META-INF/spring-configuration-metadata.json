@@ -1,0 +1,35 @@
+{
+  "groups": [
+    {
+      "name": "security.jwt",
+      "type": "com.ryuqq.setof.adapter.out.security.config.JwtProperties",
+      "sourceType": "com.ryuqq.setof.adapter.out.security.config.JwtProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "security.jwt.access-token-expiration",
+      "type": "java.lang.Long",
+      "sourceType": "com.ryuqq.setof.adapter.out.security.config.JwtProperties"
+    },
+    {
+      "name": "security.jwt.issuer",
+      "type": "java.lang.String",
+      "sourceType": "com.ryuqq.setof.adapter.out.security.config.JwtProperties"
+    },
+    {
+      "name": "security.jwt.refresh-token-expiration",
+      "type": "java.lang.Long",
+      "sourceType": "com.ryuqq.setof.adapter.out.security.config.JwtProperties"
+    },
+    {
+      "name": "security.jwt.secret",
+      "type": "java.lang.String",
+      "sourceType": "com.ryuqq.setof.adapter.out.security.config.JwtProperties"
+    }
+  ],
+  "hints": [],
+  "ignored": {
+    "properties": []
+  }
+}

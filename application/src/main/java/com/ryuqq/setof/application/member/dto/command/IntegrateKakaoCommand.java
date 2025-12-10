@@ -37,30 +37,22 @@ public record IntegrateKakaoCommand(
         return new IntegrateKakaoCommand(memberId, kakaoId, null, null, null, null);
     }
 
-    /**
-     * 이메일 존재 여부 확인
-     */
+    /** 이메일 존재 여부 확인 */
     public boolean hasEmail() {
         return email != null && !email.isBlank();
     }
 
-    /**
-     * 이름 존재 여부 확인
-     */
+    /** 이름 존재 여부 확인 */
     public boolean hasName() {
         return name != null && !name.isBlank();
     }
 
-    /**
-     * 생년월일 존재 여부 확인
-     */
+    /** 생년월일 존재 여부 확인 */
     public boolean hasDateOfBirth() {
         return dateOfBirth != null;
     }
 
-    /**
-     * 성별 존재 여부 확인
-     */
+    /** 성별 존재 여부 확인 */
     public boolean hasGender() {
         return gender != null && !gender.isBlank();
     }

@@ -1,5 +1,7 @@
 package com.ryuqq.setof.application.member.dto.response;
 
+import com.ryuqq.setof.application.auth.dto.response.TokenPairResponse;
+
 /**
  * Local Login Response
  *
@@ -8,4 +10,6 @@ package com.ryuqq.setof.application.member.dto.response;
  * @author development-team
  * @since 1.0.0
  */
-public record LocalLoginResponse(String memberId, TokenPairResponse tokens) {}
+public record LocalLoginResponse(String memberId, TokenPairResponse tokens) {
+    // Immutable value object - no additional behavior
+}

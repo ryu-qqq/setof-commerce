@@ -1,18 +1,21 @@
 package com.ryuqq.setof.application.member.event;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-import com.ryuqq.setof.domain.core.member.aggregate.Member;
-import com.ryuqq.setof.domain.core.member.event.MemberRegisteredEvent;
-import com.ryuqq.setof.domain.core.member.vo.AuthProvider;
-import com.ryuqq.setof.domain.core.member.vo.Consent;
-import com.ryuqq.setof.domain.core.member.vo.Email;
-import com.ryuqq.setof.domain.core.member.vo.Gender;
-import com.ryuqq.setof.domain.core.member.vo.MemberName;
-import com.ryuqq.setof.domain.core.member.vo.Password;
-import com.ryuqq.setof.domain.core.member.vo.PhoneNumber;
+import com.ryuqq.setof.domain.member.aggregate.Member;
+import com.ryuqq.setof.domain.member.event.MemberRegisteredEvent;
+import com.ryuqq.setof.domain.member.vo.AuthProvider;
+import com.ryuqq.setof.domain.member.vo.Consent;
+import com.ryuqq.setof.domain.member.vo.Email;
+import com.ryuqq.setof.domain.member.vo.Gender;
+import com.ryuqq.setof.domain.member.vo.MemberIdFixture;
+import com.ryuqq.setof.domain.member.vo.MemberName;
+import com.ryuqq.setof.domain.member.vo.Password;
+import com.ryuqq.setof.domain.member.vo.PhoneNumber;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -41,35 +44,18 @@ class MemberEventDispatcherTest {
     }
 
     @Test
-    @DisplayName("publishAndClear 호출 시 이벤트 발행 후 클리어")
+    @DisplayName("publish 호출 시 이벤트 발행 후 클리어 (pullDomainEvents 패턴)")
     void shouldPublishEventsAndClear() {
         // Given
         Member member = createMemberWithEvent();
-        int eventCount = member.getDomainEvents().size();
-        assertEquals(1, eventCount);
 
         // When
-        memberEventDispatcher.publishAndClear(member);
+        memberEventDispatcher.publish(member);
 
         // Then
-        verify(eventPublisher, times(eventCount)).publishEvent(any(MemberRegisteredEvent.class));
-        assertTrue(member.getDomainEvents().isEmpty());
-    }
-
-    @Test
-    @DisplayName("publishOnly 호출 시 이벤트 발행만 수행 (클리어하지 않음)")
-    void shouldPublishEventsWithoutClear() {
-        // Given
-        Member member = createMemberWithEvent();
-        int eventCount = member.getDomainEvents().size();
-        assertEquals(1, eventCount);
-
-        // When
-        memberEventDispatcher.publishOnly(member);
-
-        // Then
-        verify(eventPublisher, times(eventCount)).publishEvent(any(MemberRegisteredEvent.class));
-        assertFalse(member.getDomainEvents().isEmpty());
+        verify(eventPublisher, times(1)).publishEvent(any(MemberRegisteredEvent.class));
+        // pullDomainEvents()가 호출되면 내부적으로 클리어됨
+        assertTrue(member.pullDomainEvents().isEmpty());
     }
 
     @Test
@@ -77,10 +63,10 @@ class MemberEventDispatcherTest {
     void shouldNotPublishWhenNoEvents() {
         // Given
         Member member = createMemberWithEvent();
-        member.clearDomainEvents();
+        member.pullDomainEvents(); // 이벤트 클리어
 
         // When
-        memberEventDispatcher.publishAndClear(member);
+        memberEventDispatcher.publish(member);
 
         // Then
         verify(eventPublisher, never()).publishEvent(any());
@@ -88,6 +74,7 @@ class MemberEventDispatcherTest {
 
     private Member createMemberWithEvent() {
         return Member.forNew(
+                MemberIdFixture.createNew(),
                 PhoneNumber.of("01012345678"),
                 Email.of("test@example.com"),
                 Password.of("$2a$10$hashedPassword"),
