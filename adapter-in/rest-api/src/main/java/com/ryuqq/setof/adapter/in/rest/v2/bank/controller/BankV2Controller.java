@@ -45,9 +45,7 @@ public class BankV2Controller {
      *
      * @return 활성 은행 목록 (displayOrder 정렬)
      */
-    @Operation(
-            summary = "은행 목록 조회",
-            description = "활성 상태인 은행 목록을 조회합니다. 환불계좌 등록 시 은행 선택에 사용됩니다.")
+    @Operation(summary = "은행 목록 조회", description = "활성 상태인 은행 목록을 조회합니다. 환불계좌 등록 시 은행 선택에 사용됩니다.")
     @ApiResponses(
             value = {
                 @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -62,8 +60,7 @@ public class BankV2Controller {
     public ResponseEntity<ApiResponse<List<BankV2ApiResponse>>> getActiveBanks() {
         List<BankResponse> banks = getBanksUseCase.execute();
 
-        List<BankV2ApiResponse> response =
-                banks.stream().map(BankV2ApiResponse::from).toList();
+        List<BankV2ApiResponse> response = banks.stream().map(BankV2ApiResponse::from).toList();
 
         return ResponseEntity.ok(ApiResponse.ofSuccess(response));
     }

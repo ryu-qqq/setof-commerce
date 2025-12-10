@@ -5,8 +5,7 @@ import com.ryuqq.setof.domain.shippingaddress.exception.InvalidDeliveryAddressEx
 /**
  * 배송 주소 Value Object (Composite VO)
  *
- * <p>도로명주소/지번주소와 상세주소, 우편번호를 함께 관리합니다.
- * 도로명주소 또는 지번주소 중 하나는 반드시 입력해야 합니다.
+ * <p>도로명주소/지번주소와 상세주소, 우편번호를 함께 관리합니다. 도로명주소 또는 지번주소 중 하나는 반드시 입력해야 합니다.
  *
  * <p>Domain Layer Zero-Tolerance 규칙:
  *
@@ -90,13 +89,15 @@ public record DeliveryAddress(
             throw InvalidDeliveryAddressException.addressTooLong("roadAddress", ADDRESS_MAX_LENGTH);
         }
         if (hasJibun && jibunAddress.length() > ADDRESS_MAX_LENGTH) {
-            throw InvalidDeliveryAddressException.addressTooLong("jibunAddress", ADDRESS_MAX_LENGTH);
+            throw InvalidDeliveryAddressException.addressTooLong(
+                    "jibunAddress", ADDRESS_MAX_LENGTH);
         }
     }
 
     private static void validateDetailAddress(String detailAddress) {
         if (detailAddress != null && detailAddress.length() > DETAIL_MAX_LENGTH) {
-            throw InvalidDeliveryAddressException.addressTooLong("detailAddress", DETAIL_MAX_LENGTH);
+            throw InvalidDeliveryAddressException.addressTooLong(
+                    "detailAddress", DETAIL_MAX_LENGTH);
         }
     }
 

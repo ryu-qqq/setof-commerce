@@ -10,9 +10,7 @@ import java.util.UUID;
  */
 public record DeleteRefundAccountCommand(UUID memberId, Long refundAccountId) {
 
-    /**
-     * Static Factory Method
-     */
+    /** Static Factory Method */
     public static DeleteRefundAccountCommand of(UUID memberId, Long refundAccountId) {
         return new DeleteRefundAccountCommand(memberId, refundAccountId);
     }

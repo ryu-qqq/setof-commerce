@@ -53,9 +53,11 @@ class DeleteShippingAddressServiceTest {
             Long shippingAddressId = 1L;
             DeleteShippingAddressCommand command =
                     DeleteShippingAddressCommand.of(memberId, shippingAddressId);
-            ShippingAddress shippingAddress = ShippingAddressFixture.createNonDefault(shippingAddressId);
+            ShippingAddress shippingAddress =
+                    ShippingAddressFixture.createNonDefault(shippingAddressId);
 
-            when(shippingAddressReadManager.findById(shippingAddressId)).thenReturn(shippingAddress);
+            when(shippingAddressReadManager.findById(shippingAddressId))
+                    .thenReturn(shippingAddress);
             when(clockHolder.getClock()).thenReturn(ShippingAddressFixture.FIXED_CLOCK);
 
             // When
@@ -73,9 +75,11 @@ class DeleteShippingAddressServiceTest {
             Long shippingAddressId = 1L;
             DeleteShippingAddressCommand command =
                     DeleteShippingAddressCommand.of(otherMemberId, shippingAddressId);
-            ShippingAddress shippingAddress = ShippingAddressFixture.createWithId(shippingAddressId);
+            ShippingAddress shippingAddress =
+                    ShippingAddressFixture.createWithId(shippingAddressId);
 
-            when(shippingAddressReadManager.findById(shippingAddressId)).thenReturn(shippingAddress);
+            when(shippingAddressReadManager.findById(shippingAddressId))
+                    .thenReturn(shippingAddress);
 
             // When & Then
             assertThrows(
@@ -137,9 +141,11 @@ class DeleteShippingAddressServiceTest {
             Long shippingAddressId = 1L;
             DeleteShippingAddressCommand command =
                     DeleteShippingAddressCommand.of(memberId, shippingAddressId);
-            ShippingAddress shippingAddress = ShippingAddressFixture.createNonDefault(shippingAddressId);
+            ShippingAddress shippingAddress =
+                    ShippingAddressFixture.createNonDefault(shippingAddressId);
 
-            when(shippingAddressReadManager.findById(shippingAddressId)).thenReturn(shippingAddress);
+            when(shippingAddressReadManager.findById(shippingAddressId))
+                    .thenReturn(shippingAddress);
             when(clockHolder.getClock()).thenReturn(ShippingAddressFixture.FIXED_CLOCK);
 
             // When

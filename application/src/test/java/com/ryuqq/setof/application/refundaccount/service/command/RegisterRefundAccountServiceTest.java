@@ -157,8 +157,7 @@ class RegisterRefundAccountServiceTest {
         }
 
         private RegisterRefundAccountCommand createCommand(UUID memberId, Long bankId) {
-            return RegisterRefundAccountCommand.of(
-                    memberId, bankId, "1234567890123", "홍길동");
+            return RegisterRefundAccountCommand.of(memberId, bankId, "1234567890123", "홍길동");
         }
     }
 }

@@ -27,15 +27,15 @@ class InvalidShippingAddressIdExceptionTest {
         // Then
         assertThat(exception.getMessage()).contains("유효하지 않은 배송지 ID");
         assertThat(exception.getMessage()).contains("-1");
-        assertThat(exception.getErrorCode()).isEqualTo(ShippingAddressErrorCode.INVALID_SHIPPING_ADDRESS_ID);
+        assertThat(exception.getErrorCode())
+                .isEqualTo(ShippingAddressErrorCode.INVALID_SHIPPING_ADDRESS_ID);
     }
 
     @Test
     @DisplayName("성공 - null ID로 예외를 생성한다")
     void shouldCreateWithNullId() {
         // When
-        InvalidShippingAddressIdException exception =
-                new InvalidShippingAddressIdException(null);
+        InvalidShippingAddressIdException exception = new InvalidShippingAddressIdException(null);
 
         // Then
         assertThat(exception.getMessage()).contains("유효하지 않은 배송지 ID");

@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 /**
  * RefundAccountQueryAdapter - RefundAccount Query Adapter
  *
- * <p>CQRS의 Query(읽기) 담당으로, RefundAccount 조회 요청을 QueryDslRepository에 위임하고 Mapper를 통해
- * Domain으로 변환하여 반환합니다.
+ * <p>CQRS의 Query(읽기) 담당으로, RefundAccount 조회 요청을 QueryDslRepository에 위임하고 Mapper를 통해 Domain으로 변환하여
+ * 반환합니다.
  *
  * <p><strong>책임:</strong>
  *
@@ -47,9 +47,7 @@ public class RefundAccountQueryAdapter implements RefundAccountQueryPort {
      */
     @Override
     public Optional<RefundAccount> findById(RefundAccountId id) {
-        return queryDslRepository
-                .findById(id.value())
-                .map(refundAccountJpaEntityMapper::toDomain);
+        return queryDslRepository.findById(id.value()).map(refundAccountJpaEntityMapper::toDomain);
     }
 
     /**

@@ -28,9 +28,7 @@ public record UpdateShippingAddressCommand(
         String zipCode,
         String deliveryRequest) {
 
-    /**
-     * Static Factory Method
-     */
+    /** Static Factory Method */
     public static UpdateShippingAddressCommand of(
             UUID memberId,
             Long shippingAddressId,

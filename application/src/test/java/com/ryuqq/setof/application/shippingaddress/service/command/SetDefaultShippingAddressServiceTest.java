@@ -61,9 +61,11 @@ class SetDefaultShippingAddressServiceTest {
             Long shippingAddressId = 1L;
             SetDefaultShippingAddressCommand command =
                     SetDefaultShippingAddressCommand.of(memberId, shippingAddressId);
-            ShippingAddress shippingAddress = ShippingAddressFixture.createNonDefault(shippingAddressId);
+            ShippingAddress shippingAddress =
+                    ShippingAddressFixture.createNonDefault(shippingAddressId);
 
-            when(shippingAddressReadManager.findById(shippingAddressId)).thenReturn(shippingAddress);
+            when(shippingAddressReadManager.findById(shippingAddressId))
+                    .thenReturn(shippingAddress);
             when(shippingAddressReadManager.findDefaultByMemberId(memberId))
                     .thenReturn(Optional.empty());
             when(clockHolder.getClock()).thenReturn(ShippingAddressFixture.FIXED_CLOCK);
@@ -84,9 +86,11 @@ class SetDefaultShippingAddressServiceTest {
             Long shippingAddressId = 1L;
             SetDefaultShippingAddressCommand command =
                     SetDefaultShippingAddressCommand.of(otherMemberId, shippingAddressId);
-            ShippingAddress shippingAddress = ShippingAddressFixture.createWithId(shippingAddressId);
+            ShippingAddress shippingAddress =
+                    ShippingAddressFixture.createWithId(shippingAddressId);
 
-            when(shippingAddressReadManager.findById(shippingAddressId)).thenReturn(shippingAddress);
+            when(shippingAddressReadManager.findById(shippingAddressId))
+                    .thenReturn(shippingAddress);
 
             // When & Then
             assertThrows(
@@ -127,9 +131,11 @@ class SetDefaultShippingAddressServiceTest {
             Long shippingAddressId = 1L;
             SetDefaultShippingAddressCommand command =
                     SetDefaultShippingAddressCommand.of(memberId, shippingAddressId);
-            ShippingAddress shippingAddress = ShippingAddressFixture.createWithId(shippingAddressId);
+            ShippingAddress shippingAddress =
+                    ShippingAddressFixture.createWithId(shippingAddressId);
 
-            when(shippingAddressReadManager.findById(shippingAddressId)).thenReturn(shippingAddress);
+            when(shippingAddressReadManager.findById(shippingAddressId))
+                    .thenReturn(shippingAddress);
             when(shippingAddressReadManager.findDefaultByMemberId(memberId))
                     .thenReturn(Optional.of(shippingAddress));
             when(clockHolder.getClock()).thenReturn(ShippingAddressFixture.FIXED_CLOCK);
@@ -150,9 +156,11 @@ class SetDefaultShippingAddressServiceTest {
             Long shippingAddressId = 1L;
             SetDefaultShippingAddressCommand command =
                     SetDefaultShippingAddressCommand.of(memberId, shippingAddressId);
-            ShippingAddress shippingAddress = ShippingAddressFixture.createNonDefault(shippingAddressId);
+            ShippingAddress shippingAddress =
+                    ShippingAddressFixture.createNonDefault(shippingAddressId);
 
-            when(shippingAddressReadManager.findById(shippingAddressId)).thenReturn(shippingAddress);
+            when(shippingAddressReadManager.findById(shippingAddressId))
+                    .thenReturn(shippingAddress);
             when(shippingAddressReadManager.findDefaultByMemberId(memberId))
                     .thenReturn(Optional.empty());
             when(clockHolder.getClock()).thenReturn(ShippingAddressFixture.FIXED_CLOCK);

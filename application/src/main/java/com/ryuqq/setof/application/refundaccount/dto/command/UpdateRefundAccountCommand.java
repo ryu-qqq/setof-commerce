@@ -18,9 +18,7 @@ public record UpdateRefundAccountCommand(
         String accountNumber,
         String accountHolderName) {
 
-    /**
-     * Static Factory Method
-     */
+    /** Static Factory Method */
     public static UpdateRefundAccountCommand of(
             UUID memberId,
             Long refundAccountId,

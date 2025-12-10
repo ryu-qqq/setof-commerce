@@ -35,7 +35,8 @@ class GetShippingAddressesServiceTest {
     void setUp() {
         shippingAddressAssembler = new ShippingAddressAssembler();
         getShippingAddressesService =
-                new GetShippingAddressesService(shippingAddressReadManager, shippingAddressAssembler);
+                new GetShippingAddressesService(
+                        shippingAddressReadManager, shippingAddressAssembler);
     }
 
     @Nested

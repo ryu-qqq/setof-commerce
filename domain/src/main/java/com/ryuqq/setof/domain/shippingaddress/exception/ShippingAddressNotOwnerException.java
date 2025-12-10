@@ -14,9 +14,13 @@ public class ShippingAddressNotOwnerException extends DomainException {
     public ShippingAddressNotOwnerException(Long shippingAddressId, UUID requestMemberId) {
         super(
                 ShippingAddressErrorCode.NOT_OWNER,
-                String.format("해당 배송지에 대한 권한이 없습니다. shippingAddressId: %d, memberId: %s",
+                String.format(
+                        "해당 배송지에 대한 권한이 없습니다. shippingAddressId: %d, memberId: %s",
                         shippingAddressId, requestMemberId),
-                Map.of("shippingAddressId", shippingAddressId,
-                        "requestMemberId", requestMemberId.toString()));
+                Map.of(
+                        "shippingAddressId",
+                        shippingAddressId,
+                        "requestMemberId",
+                        requestMemberId.toString()));
     }
 }

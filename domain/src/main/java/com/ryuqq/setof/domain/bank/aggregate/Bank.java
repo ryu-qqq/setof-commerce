@@ -8,8 +8,7 @@ import java.time.Instant;
 /**
  * Bank Aggregate Root
  *
- * <p>은행 정보를 나타내는 코드 테이블 엔티티입니다.
- * 일반적으로 관리자가 직접 DB에서 관리하며, 애플리케이션에서는 조회만 수행합니다.
+ * <p>은행 정보를 나타내는 코드 테이블 엔티티입니다. 일반적으로 관리자가 직접 DB에서 관리하며, 애플리케이션에서는 조회만 수행합니다.
  *
  * <p>Domain Layer Zero-Tolerance 규칙:
  *

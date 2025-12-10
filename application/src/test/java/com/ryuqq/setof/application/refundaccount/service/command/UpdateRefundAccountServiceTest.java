@@ -97,7 +97,8 @@ class UpdateRefundAccountServiceTest {
             UUID otherMemberId = UUID.randomUUID();
             Long refundAccountId = 1L;
             Long bankId = RefundAccountFixture.DEFAULT_BANK_ID;
-            UpdateRefundAccountCommand command = createCommand(otherMemberId, refundAccountId, bankId);
+            UpdateRefundAccountCommand command =
+                    createCommand(otherMemberId, refundAccountId, bankId);
             RefundAccount refundAccount = RefundAccountFixture.createWithId(refundAccountId);
 
             when(refundAccountReadManager.findById(refundAccountId)).thenReturn(refundAccount);

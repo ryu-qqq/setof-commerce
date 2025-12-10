@@ -48,9 +48,11 @@ class GetShippingAddressServiceTest {
             // Given
             UUID memberId = ShippingAddressFixture.DEFAULT_MEMBER_ID;
             Long shippingAddressId = 1L;
-            ShippingAddress shippingAddress = ShippingAddressFixture.createWithId(shippingAddressId);
+            ShippingAddress shippingAddress =
+                    ShippingAddressFixture.createWithId(shippingAddressId);
 
-            when(shippingAddressReadManager.findById(shippingAddressId)).thenReturn(shippingAddress);
+            when(shippingAddressReadManager.findById(shippingAddressId))
+                    .thenReturn(shippingAddress);
 
             // When
             ShippingAddressResponse result =
@@ -68,9 +70,11 @@ class GetShippingAddressServiceTest {
             // Given
             UUID otherMemberId = UUID.randomUUID();
             Long shippingAddressId = 1L;
-            ShippingAddress shippingAddress = ShippingAddressFixture.createWithId(shippingAddressId);
+            ShippingAddress shippingAddress =
+                    ShippingAddressFixture.createWithId(shippingAddressId);
 
-            when(shippingAddressReadManager.findById(shippingAddressId)).thenReturn(shippingAddress);
+            when(shippingAddressReadManager.findById(shippingAddressId))
+                    .thenReturn(shippingAddress);
 
             // When & Then
             assertThrows(
@@ -84,9 +88,11 @@ class GetShippingAddressServiceTest {
             // Given
             UUID memberId = ShippingAddressFixture.DEFAULT_MEMBER_ID;
             Long shippingAddressId = 1L;
-            ShippingAddress shippingAddress = ShippingAddressFixture.createWithId(shippingAddressId);
+            ShippingAddress shippingAddress =
+                    ShippingAddressFixture.createWithId(shippingAddressId);
 
-            when(shippingAddressReadManager.findById(shippingAddressId)).thenReturn(shippingAddress);
+            when(shippingAddressReadManager.findById(shippingAddressId))
+                    .thenReturn(shippingAddress);
 
             // When
             ShippingAddressResponse result =

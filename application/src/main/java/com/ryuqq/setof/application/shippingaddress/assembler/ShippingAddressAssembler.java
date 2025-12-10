@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
  * <p>ShippingAddress 도메인 객체를 Response DTO로 변환하는 Assembler
  *
  * <p>역할:
+ *
  * <ul>
  *   <li>Domain → Response DTO 변환
  *   <li>Law of Demeter Helper 메서드 활용

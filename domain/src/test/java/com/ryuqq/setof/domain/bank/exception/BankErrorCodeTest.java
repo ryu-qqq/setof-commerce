@@ -18,23 +18,20 @@ class BankErrorCodeTest {
     @DisplayName("성공 - 에러 코드가 올바른 값을 반환한다")
     void shouldReturnCorrectCode() {
         // When & Then
-        assertThat(BankErrorCode.BANK_NOT_FOUND.getCode())
-                .isEqualTo("BNK-001");
+        assertThat(BankErrorCode.BANK_NOT_FOUND.getCode()).isEqualTo("BNK-001");
     }
 
     @Test
     @DisplayName("성공 - HTTP 상태 코드가 올바른 값을 반환한다")
     void shouldReturnCorrectHttpStatus() {
         // When & Then
-        assertThat(BankErrorCode.BANK_NOT_FOUND.getHttpStatus())
-                .isEqualTo(404);
+        assertThat(BankErrorCode.BANK_NOT_FOUND.getHttpStatus()).isEqualTo(404);
     }
 
     @Test
     @DisplayName("성공 - 메시지가 올바른 값을 반환한다")
     void shouldReturnCorrectMessage() {
         // When & Then
-        assertThat(BankErrorCode.BANK_NOT_FOUND.getMessage())
-                .isEqualTo("은행을 찾을 수 없습니다.");
+        assertThat(BankErrorCode.BANK_NOT_FOUND.getMessage()).isEqualTo("은행을 찾을 수 없습니다.");
     }
 }

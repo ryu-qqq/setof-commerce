@@ -143,7 +143,8 @@ class DeliveryAddressTest {
         @DisplayName("fullAddress()는 도로명 주소가 없으면 지번 주소를 반환한다")
         void shouldReturnFullAddressWithJibunAddress() {
             // Given
-            DeliveryAddress deliveryAddress = DeliveryAddress.of(null, "역삼동 123-45", "101동 1001호", "06234");
+            DeliveryAddress deliveryAddress =
+                    DeliveryAddress.of(null, "역삼동 123-45", "101동 1001호", "06234");
 
             // When
             String fullAddress = deliveryAddress.fullAddress();
@@ -157,7 +158,8 @@ class DeliveryAddressTest {
         @DisplayName("fullAddress()는 상세 주소가 없어도 동작한다")
         void shouldReturnFullAddressWithoutDetailAddress() {
             // Given
-            DeliveryAddress deliveryAddress = DeliveryAddress.of("서울시 강남구 테헤란로 123", null, null, "06234");
+            DeliveryAddress deliveryAddress =
+                    DeliveryAddress.of("서울시 강남구 테헤란로 123", null, null, "06234");
 
             // When
             String fullAddress = deliveryAddress.fullAddress();

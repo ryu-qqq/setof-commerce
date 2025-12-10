@@ -3,9 +3,7 @@ package com.ryuqq.setof.application.shippingaddress.service.command;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -61,9 +59,11 @@ class UpdateShippingAddressServiceTest {
             UUID memberId = ShippingAddressFixture.DEFAULT_MEMBER_ID;
             Long shippingAddressId = 1L;
             UpdateShippingAddressCommand command = createCommand(memberId, shippingAddressId);
-            ShippingAddress shippingAddress = ShippingAddressFixture.createWithId(shippingAddressId);
+            ShippingAddress shippingAddress =
+                    ShippingAddressFixture.createWithId(shippingAddressId);
 
-            when(shippingAddressReadManager.findById(shippingAddressId)).thenReturn(shippingAddress);
+            when(shippingAddressReadManager.findById(shippingAddressId))
+                    .thenReturn(shippingAddress);
 
             // When
             ShippingAddressResponse result = updateShippingAddressService.execute(command);
@@ -71,7 +71,8 @@ class UpdateShippingAddressServiceTest {
             // Then
             assertNotNull(result);
             assertEquals(shippingAddressId, result.id());
-            verify(shippingAddressCommandFactory, times(1)).applyUpdate(eq(shippingAddress), eq(command));
+            verify(shippingAddressCommandFactory, times(1))
+                    .applyUpdate(eq(shippingAddress), eq(command));
             verify(shippingAddressPersistenceManager, times(1)).persist(shippingAddress);
         }
 
@@ -82,9 +83,11 @@ class UpdateShippingAddressServiceTest {
             UUID otherMemberId = UUID.randomUUID();
             Long shippingAddressId = 1L;
             UpdateShippingAddressCommand command = createCommand(otherMemberId, shippingAddressId);
-            ShippingAddress shippingAddress = ShippingAddressFixture.createWithId(shippingAddressId);
+            ShippingAddress shippingAddress =
+                    ShippingAddressFixture.createWithId(shippingAddressId);
 
-            when(shippingAddressReadManager.findById(shippingAddressId)).thenReturn(shippingAddress);
+            when(shippingAddressReadManager.findById(shippingAddressId))
+                    .thenReturn(shippingAddress);
 
             // When & Then
             assertThrows(
@@ -99,9 +102,11 @@ class UpdateShippingAddressServiceTest {
             UUID memberId = ShippingAddressFixture.DEFAULT_MEMBER_ID;
             Long shippingAddressId = 1L;
             UpdateShippingAddressCommand command = createCommand(memberId, shippingAddressId);
-            ShippingAddress shippingAddress = ShippingAddressFixture.createWithId(shippingAddressId);
+            ShippingAddress shippingAddress =
+                    ShippingAddressFixture.createWithId(shippingAddressId);
 
-            when(shippingAddressReadManager.findById(shippingAddressId)).thenReturn(shippingAddress);
+            when(shippingAddressReadManager.findById(shippingAddressId))
+                    .thenReturn(shippingAddress);
 
             // When
             ShippingAddressResponse result = updateShippingAddressService.execute(command);

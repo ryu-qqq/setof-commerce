@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <p>환불계좌 삭제 UseCase 구현체
  *
  * <p>비즈니스 규칙:
+ *
  * <ul>
  *   <li>Soft Delete 적용
  * </ul>
@@ -41,8 +42,7 @@ public class DeleteRefundAccountService implements DeleteRefundAccountUseCase {
     @Override
     @Transactional
     public void execute(DeleteRefundAccountCommand command) {
-        RefundAccount refundAccount =
-                refundAccountReadManager.findById(command.refundAccountId());
+        RefundAccount refundAccount = refundAccountReadManager.findById(command.refundAccountId());
 
         refundAccount.validateOwnership(command.memberId());
 

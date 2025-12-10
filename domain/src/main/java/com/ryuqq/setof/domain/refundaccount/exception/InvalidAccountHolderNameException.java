@@ -14,6 +14,8 @@ public class InvalidAccountHolderNameException extends DomainException {
         super(
                 RefundAccountErrorCode.INVALID_ACCOUNT_HOLDER_NAME,
                 String.format("유효하지 않은 예금주명: %s (1~20자 필요)", accountHolderName),
-                Map.of("accountHolderName", accountHolderName != null ? accountHolderName : "null"));
+                Map.of(
+                        "accountHolderName",
+                        accountHolderName != null ? accountHolderName : "null"));
     }
 }

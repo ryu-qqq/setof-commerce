@@ -23,7 +23,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author development-team
  * @since 1.0.0
  */
-public interface ShippingAddressJpaRepository extends JpaRepository<ShippingAddressJpaEntity, Long> {
+public interface ShippingAddressJpaRepository
+        extends JpaRepository<ShippingAddressJpaEntity, Long> {
     // Query Method 추가 금지
     // @Query 추가 금지
 }

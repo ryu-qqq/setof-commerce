@@ -72,16 +72,12 @@ public class RefundAccountJpaEntity extends SoftDeletableEntity {
     @Column(name = "verified_at")
     private Instant verifiedAt;
 
-    /**
-     * JPA 기본 생성자 (protected)
-     */
+    /** JPA 기본 생성자 (protected) */
     protected RefundAccountJpaEntity() {
         // JPA 기본 생성자
     }
 
-    /**
-     * 전체 필드 생성자 (private)
-     */
+    /** 전체 필드 생성자 (private) */
     private RefundAccountJpaEntity(
             Long id,
             String memberId,
@@ -103,9 +99,7 @@ public class RefundAccountJpaEntity extends SoftDeletableEntity {
         this.verifiedAt = verifiedAt;
     }
 
-    /**
-     * of() 스태틱 팩토리 메서드 (Mapper 전용)
-     */
+    /** of() 스태틱 팩토리 메서드 (Mapper 전용) */
     public static RefundAccountJpaEntity of(
             Long id,
             String memberId,

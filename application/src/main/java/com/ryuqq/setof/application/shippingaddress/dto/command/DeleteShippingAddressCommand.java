@@ -10,9 +10,7 @@ import java.util.UUID;
  */
 public record DeleteShippingAddressCommand(UUID memberId, Long shippingAddressId) {
 
-    /**
-     * Static Factory Method
-     */
+    /** Static Factory Method */
     public static DeleteShippingAddressCommand of(UUID memberId, Long shippingAddressId) {
         return new DeleteShippingAddressCommand(memberId, shippingAddressId);
     }

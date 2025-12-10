@@ -32,7 +32,8 @@ class RefundAccountTest {
     private static final Clock FIXED_CLOCK =
             Clock.fixed(Instant.parse("2025-01-01T00:00:00Z"), ZoneId.of("Asia/Seoul"));
 
-    private static final UUID TEST_MEMBER_ID = UUID.fromString("01234567-89ab-cdef-0123-456789abcdef");
+    private static final UUID TEST_MEMBER_ID =
+            UUID.fromString("01234567-89ab-cdef-0123-456789abcdef");
 
     @Nested
     @DisplayName("forNew() - 신규 환불계좌 생성 (미검증)")
@@ -48,7 +49,8 @@ class RefundAccountTest {
 
             // when
             RefundAccount account =
-                    RefundAccount.forNew(TEST_MEMBER_ID, bankId, accountNumber, accountHolderName, FIXED_CLOCK);
+                    RefundAccount.forNew(
+                            TEST_MEMBER_ID, bankId, accountNumber, accountHolderName, FIXED_CLOCK);
 
             // then
             assertNotNull(account);

@@ -110,7 +110,8 @@ public class BankJpaEntity extends BaseAuditEntity {
             int displayOrder,
             Instant createdAt,
             Instant updatedAt) {
-        return new BankJpaEntity(id, bankCode, bankName, isActive, displayOrder, createdAt, updatedAt);
+        return new BankJpaEntity(
+                id, bankCode, bankName, isActive, displayOrder, createdAt, updatedAt);
     }
 
     // ===== Getters (Setter 제공 금지) =====

@@ -24,7 +24,10 @@ public class BankAssembler {
      */
     public BankResponse toBankResponse(Bank bank) {
         return BankResponse.of(
-                bank.getIdValue(), bank.getBankCodeValue(), bank.getBankNameValue(), bank.getDisplayOrder());
+                bank.getIdValue(),
+                bank.getBankCodeValue(),
+                bank.getBankNameValue(),
+                bank.getDisplayOrder());
     }
 
     /**

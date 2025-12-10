@@ -67,5 +67,6 @@ public interface ShippingAddressQueryPort {
      * @param excludeId 제외할 배송지 ID (삭제되는 기본 배송지)
      * @return 가장 최근 배송지 (Optional)
      */
-    Optional<ShippingAddress> findLatestByMemberIdExcluding(UUID memberId, ShippingAddressId excludeId);
+    Optional<ShippingAddress> findLatestByMemberIdExcluding(
+            UUID memberId, ShippingAddressId excludeId);
 }

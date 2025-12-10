@@ -33,7 +33,8 @@ class ShippingAddressNotFoundExceptionTest {
             // Then
             assertThat(exception.getMessage()).contains("배송지를 찾을 수 없습니다");
             assertThat(exception.getMessage()).contains("1");
-            assertThat(exception.getErrorCode()).isEqualTo(ShippingAddressErrorCode.SHIPPING_ADDRESS_NOT_FOUND);
+            assertThat(exception.getErrorCode())
+                    .isEqualTo(ShippingAddressErrorCode.SHIPPING_ADDRESS_NOT_FOUND);
         }
     }
 

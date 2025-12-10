@@ -50,7 +50,8 @@ class RefundAccountJpaEntityMapperTest extends MapperTestSupport {
             assertThat(entity.getMemberId()).isEqualTo(refundAccount.getMemberId().toString());
             assertThat(entity.getBankId()).isEqualTo(refundAccount.getBankId());
             assertThat(entity.getAccountNumber()).isEqualTo(refundAccount.getAccountNumberValue());
-            assertThat(entity.getAccountHolderName()).isEqualTo(refundAccount.getAccountHolderNameValue());
+            assertThat(entity.getAccountHolderName())
+                    .isEqualTo(refundAccount.getAccountHolderNameValue());
             assertThat(entity.isVerified()).isEqualTo(refundAccount.isVerified());
         }
 
@@ -109,17 +110,18 @@ class RefundAccountJpaEntityMapperTest extends MapperTestSupport {
             // Given
             Instant now = Instant.now();
             UUID memberId = UUID.randomUUID();
-            RefundAccountJpaEntity entity = RefundAccountJpaEntity.of(
-                    1L,
-                    memberId.toString(),
-                    1L,
-                    "1234567890123",
-                    "홍길동",
-                    true,
-                    now,
-                    now,
-                    now,
-                    null);
+            RefundAccountJpaEntity entity =
+                    RefundAccountJpaEntity.of(
+                            1L,
+                            memberId.toString(),
+                            1L,
+                            "1234567890123",
+                            "홍길동",
+                            true,
+                            now,
+                            now,
+                            now,
+                            null);
 
             // When
             RefundAccount domain = mapper.toDomain(entity);
@@ -140,17 +142,18 @@ class RefundAccountJpaEntityMapperTest extends MapperTestSupport {
             // Given
             Instant now = Instant.now();
             UUID memberId = UUID.randomUUID();
-            RefundAccountJpaEntity entity = RefundAccountJpaEntity.of(
-                    2L,
-                    memberId.toString(),
-                    2L,
-                    "9876543210987",
-                    "김철수",
-                    false,
-                    null,
-                    now,
-                    now,
-                    null);
+            RefundAccountJpaEntity entity =
+                    RefundAccountJpaEntity.of(
+                            2L,
+                            memberId.toString(),
+                            2L,
+                            "9876543210987",
+                            "김철수",
+                            false,
+                            null,
+                            now,
+                            now,
+                            null);
 
             // When
             RefundAccount domain = mapper.toDomain(entity);
@@ -166,17 +169,18 @@ class RefundAccountJpaEntityMapperTest extends MapperTestSupport {
             // Given
             Instant now = Instant.now();
             UUID memberId = UUID.randomUUID();
-            RefundAccountJpaEntity entity = RefundAccountJpaEntity.of(
-                    3L,
-                    memberId.toString(),
-                    1L,
-                    "1234567890123",
-                    "홍길동",
-                    true,
-                    now,
-                    now,
-                    now,
-                    now);
+            RefundAccountJpaEntity entity =
+                    RefundAccountJpaEntity.of(
+                            3L,
+                            memberId.toString(),
+                            1L,
+                            "1234567890123",
+                            "홍길동",
+                            true,
+                            now,
+                            now,
+                            now,
+                            now);
 
             // When
             RefundAccount domain = mapper.toDomain(entity);
@@ -206,8 +210,10 @@ class RefundAccountJpaEntityMapperTest extends MapperTestSupport {
             assertThat(converted.getIdValue()).isEqualTo(original.getIdValue());
             assertThat(converted.getMemberId()).isEqualTo(original.getMemberId());
             assertThat(converted.getBankId()).isEqualTo(original.getBankId());
-            assertThat(converted.getAccountNumberValue()).isEqualTo(original.getAccountNumberValue());
-            assertThat(converted.getAccountHolderNameValue()).isEqualTo(original.getAccountHolderNameValue());
+            assertThat(converted.getAccountNumberValue())
+                    .isEqualTo(original.getAccountNumberValue());
+            assertThat(converted.getAccountHolderNameValue())
+                    .isEqualTo(original.getAccountHolderNameValue());
             assertThat(converted.isVerified()).isEqualTo(original.isVerified());
         }
 
@@ -217,17 +223,18 @@ class RefundAccountJpaEntityMapperTest extends MapperTestSupport {
             // Given
             Instant now = Instant.now();
             UUID memberId = UUID.randomUUID();
-            RefundAccountJpaEntity original = RefundAccountJpaEntity.of(
-                    5L,
-                    memberId.toString(),
-                    3L,
-                    "5555666677778888",
-                    "박영희",
-                    true,
-                    now,
-                    now,
-                    now,
-                    null);
+            RefundAccountJpaEntity original =
+                    RefundAccountJpaEntity.of(
+                            5L,
+                            memberId.toString(),
+                            3L,
+                            "5555666677778888",
+                            "박영희",
+                            true,
+                            now,
+                            now,
+                            now,
+                            null);
 
             // When
             RefundAccount domain = mapper.toDomain(original);

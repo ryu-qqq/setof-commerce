@@ -32,7 +32,8 @@ public enum RefundAccountErrorCode implements ErrorCode {
 
     // === 계좌 검증 관련 (RFA-300 ~ RFA-399) ===
     ACCOUNT_VERIFICATION_FAILED("RFA-300", 400, "계좌 검증에 실패했습니다. 계좌 정보를 확인해주세요."),
-    ACCOUNT_VERIFICATION_SERVICE_ERROR("RFA-301", 503, "계좌 검증 서비스에 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요."),
+    ACCOUNT_VERIFICATION_SERVICE_ERROR(
+            "RFA-301", 503, "계좌 검증 서비스에 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요."),
     ACCOUNT_NOT_VERIFIED("RFA-302", 400, "검증되지 않은 계좌입니다.");
 
     private final String code;

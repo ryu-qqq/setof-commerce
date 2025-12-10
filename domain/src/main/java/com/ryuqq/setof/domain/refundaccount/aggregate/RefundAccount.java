@@ -15,6 +15,7 @@ import java.util.UUID;
  * <p>회원의 환불계좌 정보를 관리하는 Aggregate Root입니다.
  *
  * <p>비즈니스 규칙:
+ *
  * <ul>
  *   <li>회원당 최대 1개 등록 가능 (memberId UNIQUE)
  *   <li>은행 정보는 Bank 테이블 참조 (Long FK)
@@ -71,9 +72,8 @@ public class RefundAccount {
     /**
      * 신규 환불계좌 생성용 Static Factory Method (검증 전)
      *
-     * <p>ID 없이 생성 (Persistence Layer에서 Auto-increment)
-     * 초기 상태는 미검증 상태로 생성됩니다.
-     * Application Layer에서 검증 후 verify() 호출이 필요합니다.
+     * <p>ID 없이 생성 (Persistence Layer에서 Auto-increment) 초기 상태는 미검증 상태로 생성됩니다. Application Layer에서 검증
+     * 후 verify() 호출이 필요합니다.
      *
      * @param memberId 회원 ID
      * @param bankId 은행 ID (FK)
@@ -222,8 +222,7 @@ public class RefundAccount {
     /**
      * 계좌 정보 수정 (재검증 필요)
      *
-     * <p>계좌 정보가 변경되면 미검증 상태로 변경됩니다.
-     * Application Layer에서 재검증 후 verify() 호출이 필요합니다.
+     * <p>계좌 정보가 변경되면 미검증 상태로 변경됩니다. Application Layer에서 재검증 후 verify() 호출이 필요합니다.
      *
      * @param bankId 새 은행 ID
      * @param accountNumber 새 계좌번호

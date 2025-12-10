@@ -13,8 +13,7 @@ import org.springframework.stereotype.Component;
 /**
  * BankQueryAdapter - Bank Query Adapter
  *
- * <p>CQRS의 Query(읽기) 담당으로, Bank 조회 요청을 QueryDslRepository에 위임하고 Mapper를 통해 Domain으로 변환하여
- * 반환합니다.
+ * <p>CQRS의 Query(읽기) 담당으로, Bank 조회 요청을 QueryDslRepository에 위임하고 Mapper를 통해 Domain으로 변환하여 반환합니다.
  *
  * <p><strong>책임:</strong>
  *

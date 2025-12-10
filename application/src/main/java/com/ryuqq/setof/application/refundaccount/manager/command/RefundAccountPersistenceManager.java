@@ -21,7 +21,8 @@ public class RefundAccountPersistenceManager {
 
     private final RefundAccountPersistencePort refundAccountPersistencePort;
 
-    public RefundAccountPersistenceManager(RefundAccountPersistencePort refundAccountPersistencePort) {
+    public RefundAccountPersistenceManager(
+            RefundAccountPersistencePort refundAccountPersistencePort) {
         this.refundAccountPersistencePort = refundAccountPersistencePort;
     }
 

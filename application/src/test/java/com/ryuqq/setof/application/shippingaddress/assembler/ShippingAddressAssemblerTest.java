@@ -97,9 +97,7 @@ class ShippingAddressAssemblerTest {
             assertEquals(shippingAddresses.size(), results.size());
 
             for (int i = 0; i < shippingAddresses.size(); i++) {
-                assertEquals(
-                        shippingAddresses.get(i).getIdValue(),
-                        results.get(i).id());
+                assertEquals(shippingAddresses.get(i).getIdValue(), results.get(i).id());
             }
         }
 

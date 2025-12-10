@@ -68,7 +68,9 @@ public record AccountNumber(String value) {
     public String masked() {
         String normalized = normalized();
         if (normalized.length() <= 8) {
-            return normalized.substring(0, 2) + "****" + normalized.substring(normalized.length() - 2);
+            return normalized.substring(0, 2)
+                    + "****"
+                    + normalized.substring(normalized.length() - 2);
         }
         return normalized.substring(0, 4) + "****" + normalized.substring(normalized.length() - 4);
     }

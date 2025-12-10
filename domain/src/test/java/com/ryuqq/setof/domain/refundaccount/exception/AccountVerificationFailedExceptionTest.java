@@ -35,7 +35,8 @@ class AccountVerificationFailedExceptionTest {
             assertThat(exception.getMessage()).contains("계좌 검증에 실패했습니다");
             assertThat(exception.getMessage()).contains("004");
             assertThat(exception.getMessage()).contains("계좌번호 불일치");
-            assertThat(exception.getErrorCode()).isEqualTo(RefundAccountErrorCode.ACCOUNT_VERIFICATION_FAILED);
+            assertThat(exception.getErrorCode())
+                    .isEqualTo(RefundAccountErrorCode.ACCOUNT_VERIFICATION_FAILED);
         }
     }
 

@@ -9,6 +9,7 @@ import com.ryuqq.setof.application.shippingaddress.dto.response.ShippingAddressR
  * <p>배송지 등록을 담당하는 Inbound Port
  *
  * <p>비즈니스 규칙:
+ *
  * <ul>
  *   <li>회원당 최대 5개까지 등록 가능
  *   <li>기본 배송지로 등록 시 기존 기본 배송지 해제

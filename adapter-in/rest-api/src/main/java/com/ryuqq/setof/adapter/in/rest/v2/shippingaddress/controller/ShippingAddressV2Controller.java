@@ -145,7 +145,8 @@ public class ShippingAddressV2Controller {
     @GetMapping(ApiV2Paths.ShippingAddresses.ID_PATH)
     public ResponseEntity<ApiResponse<ShippingAddressV2ApiResponse>> getShippingAddress(
             @AuthenticationPrincipal MemberPrincipal principal,
-            @Parameter(description = "배송지 ID", example = "1") @PathVariable Long shippingAddressId) {
+            @Parameter(description = "배송지 ID", example = "1") @PathVariable
+                    Long shippingAddressId) {
 
         UUID memberId = UUID.fromString(principal.getMemberId());
         ShippingAddressResponse response =
@@ -165,9 +166,7 @@ public class ShippingAddressV2Controller {
      * @param request 배송지 등록 요청
      * @return 등록된 배송지 정보
      */
-    @Operation(
-            summary = "배송지 등록",
-            description = "새로운 배송지를 등록합니다. 회원당 최대 5개까지 등록 가능합니다.")
+    @Operation(summary = "배송지 등록", description = "새로운 배송지를 등록합니다. 회원당 최대 5개까지 등록 가능합니다.")
     @ApiResponses(
             value = {
                 @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -257,8 +256,7 @@ public class ShippingAddressV2Controller {
      */
     @Operation(
             summary = "배송지 삭제",
-            description =
-                    "배송지를 삭제합니다 (소프트 삭제). 기본 배송지 삭제 시 가장 최근 등록 배송지로 자동 변경됩니다.")
+            description = "배송지를 삭제합니다 (소프트 삭제). 기본 배송지 삭제 시 가장 최근 등록 배송지로 자동 변경됩니다.")
     @ApiResponses(
             value = {
                 @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -276,7 +274,8 @@ public class ShippingAddressV2Controller {
     @PatchMapping(ApiV2Paths.ShippingAddresses.ID_PATH + ApiV2Paths.ShippingAddresses.DELETE_PATH)
     public ResponseEntity<ApiResponse<Void>> deleteShippingAddress(
             @AuthenticationPrincipal MemberPrincipal principal,
-            @Parameter(description = "배송지 ID", example = "1") @PathVariable Long shippingAddressId) {
+            @Parameter(description = "배송지 ID", example = "1") @PathVariable
+                    Long shippingAddressId) {
 
         UUID memberId = UUID.fromString(principal.getMemberId());
         DeleteShippingAddressCommand command =
@@ -296,9 +295,7 @@ public class ShippingAddressV2Controller {
      * @param shippingAddressId 배송지 ID
      * @return 설정된 배송지 정보
      */
-    @Operation(
-            summary = "기본 배송지 설정",
-            description = "배송지를 기본 배송지로 설정합니다. 기존 기본 배송지가 있으면 해제됩니다.")
+    @Operation(summary = "기본 배송지 설정", description = "배송지를 기본 배송지로 설정합니다. 기존 기본 배송지가 있으면 해제됩니다.")
     @ApiResponses(
             value = {
                 @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -316,7 +313,8 @@ public class ShippingAddressV2Controller {
     @PatchMapping(ApiV2Paths.ShippingAddresses.ID_PATH + ApiV2Paths.ShippingAddresses.DEFAULT_PATH)
     public ResponseEntity<ApiResponse<ShippingAddressV2ApiResponse>> setDefaultShippingAddress(
             @AuthenticationPrincipal MemberPrincipal principal,
-            @Parameter(description = "배송지 ID", example = "1") @PathVariable Long shippingAddressId) {
+            @Parameter(description = "배송지 ID", example = "1") @PathVariable
+                    Long shippingAddressId) {
 
         UUID memberId = UUID.fromString(principal.getMemberId());
         SetDefaultShippingAddressCommand command =

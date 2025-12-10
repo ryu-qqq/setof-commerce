@@ -33,7 +33,8 @@ class ShippingAddressTest {
     private static final Clock FIXED_CLOCK =
             Clock.fixed(Instant.parse("2025-01-01T00:00:00Z"), ZoneId.of("Asia/Seoul"));
 
-    private static final UUID TEST_MEMBER_ID = UUID.fromString("01234567-89ab-cdef-0123-456789abcdef");
+    private static final UUID TEST_MEMBER_ID =
+            UUID.fromString("01234567-89ab-cdef-0123-456789abcdef");
 
     @Nested
     @DisplayName("forNew() - 신규 배송지 생성")
@@ -196,7 +197,11 @@ class ShippingAddressTest {
 
             // when
             address.update(
-                    newAddressName, newReceiverInfo, newDeliveryAddress, newDeliveryRequest, FIXED_CLOCK);
+                    newAddressName,
+                    newReceiverInfo,
+                    newDeliveryAddress,
+                    newDeliveryRequest,
+                    FIXED_CLOCK);
 
             // then
             assertEquals("새 집", address.getAddressNameValue());

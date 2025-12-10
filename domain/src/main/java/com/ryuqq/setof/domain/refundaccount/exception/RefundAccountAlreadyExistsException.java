@@ -7,8 +7,7 @@ import java.util.UUID;
 /**
  * 환불계좌 중복 등록 예외
  *
- * <p>회원이 이미 환불계좌를 보유하고 있는 상태에서 새로 등록하려는 경우 발생합니다.
- * 회원당 최대 1개의 환불계좌만 등록 가능합니다.
+ * <p>회원이 이미 환불계좌를 보유하고 있는 상태에서 새로 등록하려는 경우 발생합니다. 회원당 최대 1개의 환불계좌만 등록 가능합니다.
  */
 public class RefundAccountAlreadyExistsException extends DomainException {
 

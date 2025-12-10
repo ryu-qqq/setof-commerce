@@ -16,6 +16,7 @@ import java.util.UUID;
  * <p>회원의 배송지 정보를 관리하는 Aggregate Root입니다.
  *
  * <p>비즈니스 규칙:
+ *
  * <ul>
  *   <li>회원당 최대 5개까지 등록 가능
  *   <li>기본 배송지는 0~1개

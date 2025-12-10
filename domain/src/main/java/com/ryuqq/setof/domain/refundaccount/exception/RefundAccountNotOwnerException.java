@@ -14,9 +14,13 @@ public class RefundAccountNotOwnerException extends DomainException {
     public RefundAccountNotOwnerException(Long refundAccountId, UUID requestMemberId) {
         super(
                 RefundAccountErrorCode.NOT_OWNER,
-                String.format("해당 환불계좌에 대한 권한이 없습니다. refundAccountId: %d, memberId: %s",
+                String.format(
+                        "해당 환불계좌에 대한 권한이 없습니다. refundAccountId: %d, memberId: %s",
                         refundAccountId, requestMemberId),
-                Map.of("refundAccountId", refundAccountId,
-                        "requestMemberId", requestMemberId.toString()));
+                Map.of(
+                        "refundAccountId",
+                        refundAccountId,
+                        "requestMemberId",
+                        requestMemberId.toString()));
     }
 }

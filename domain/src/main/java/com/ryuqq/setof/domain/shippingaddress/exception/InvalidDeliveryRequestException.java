@@ -13,7 +13,8 @@ public class InvalidDeliveryRequestException extends DomainException {
     public InvalidDeliveryRequestException(String deliveryRequest) {
         super(
                 ShippingAddressErrorCode.INVALID_DELIVERY_REQUEST,
-                String.format("배송 요청사항이 최대 길이(200자)를 초과했습니다. 현재 길이: %d",
+                String.format(
+                        "배송 요청사항이 최대 길이(200자)를 초과했습니다. 현재 길이: %d",
                         deliveryRequest != null ? deliveryRequest.length() : 0),
                 Map.of("currentLength", deliveryRequest != null ? deliveryRequest.length() : 0));
     }

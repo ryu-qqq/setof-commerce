@@ -10,27 +10,33 @@ import java.util.Map;
  */
 public class AccountVerificationFailedException extends DomainException {
 
-    public AccountVerificationFailedException(String bankCode, String accountNumber, String reason) {
+    public AccountVerificationFailedException(
+            String bankCode, String accountNumber, String reason) {
         super(
                 RefundAccountErrorCode.ACCOUNT_VERIFICATION_FAILED,
                 String.format("계좌 검증에 실패했습니다. bankCode: %s, reason: %s", bankCode, reason),
-                Map.of("bankCode", bankCode,
-                        "accountNumber", maskAccountNumber(accountNumber),
-                        "reason", reason));
+                Map.of(
+                        "bankCode",
+                        bankCode,
+                        "accountNumber",
+                        maskAccountNumber(accountNumber),
+                        "reason",
+                        reason));
     }
 
     public AccountVerificationFailedException(String bankCode, String accountNumber) {
         super(
                 RefundAccountErrorCode.ACCOUNT_VERIFICATION_FAILED,
                 String.format("계좌 검증에 실패했습니다. bankCode: %s", bankCode),
-                Map.of("bankCode", bankCode,
-                        "accountNumber", maskAccountNumber(accountNumber)));
+                Map.of("bankCode", bankCode, "accountNumber", maskAccountNumber(accountNumber)));
     }
 
     private static String maskAccountNumber(String accountNumber) {
         if (accountNumber == null || accountNumber.length() <= 8) {
             return "****";
         }
-        return accountNumber.substring(0, 4) + "****" + accountNumber.substring(accountNumber.length() - 4);
+        return accountNumber.substring(0, 4)
+                + "****"
+                + accountNumber.substring(accountNumber.length() - 4);
     }
 }

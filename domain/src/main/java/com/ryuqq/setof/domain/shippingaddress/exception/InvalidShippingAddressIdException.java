@@ -14,6 +14,8 @@ public class InvalidShippingAddressIdException extends DomainException {
         super(
                 ShippingAddressErrorCode.INVALID_SHIPPING_ADDRESS_ID,
                 String.format("유효하지 않은 배송지 ID: %s", shippingAddressId),
-                Map.of("shippingAddressId", shippingAddressId != null ? shippingAddressId : "null"));
+                Map.of(
+                        "shippingAddressId",
+                        shippingAddressId != null ? shippingAddressId : "null"));
     }
 }

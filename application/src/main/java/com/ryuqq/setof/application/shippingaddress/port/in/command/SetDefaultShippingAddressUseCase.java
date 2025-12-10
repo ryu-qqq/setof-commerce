@@ -9,6 +9,7 @@ import com.ryuqq.setof.application.shippingaddress.dto.response.ShippingAddressR
  * <p>기본 배송지 설정을 담당하는 Inbound Port
  *
  * <p>비즈니스 규칙:
+ *
  * <ul>
  *   <li>기존 기본 배송지가 있으면 해제 후 새로 설정
  * </ul>

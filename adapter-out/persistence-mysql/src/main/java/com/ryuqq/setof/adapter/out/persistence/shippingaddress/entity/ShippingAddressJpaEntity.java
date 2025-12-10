@@ -87,16 +87,12 @@ public class ShippingAddressJpaEntity extends SoftDeletableEntity {
     @Column(name = "is_default", nullable = false)
     private boolean isDefault;
 
-    /**
-     * JPA 기본 생성자 (protected)
-     */
+    /** JPA 기본 생성자 (protected) */
     protected ShippingAddressJpaEntity() {
         // JPA 기본 생성자
     }
 
-    /**
-     * 전체 필드 생성자 (private)
-     */
+    /** 전체 필드 생성자 (private) */
     private ShippingAddressJpaEntity(
             Long id,
             String memberId,
@@ -126,9 +122,7 @@ public class ShippingAddressJpaEntity extends SoftDeletableEntity {
         this.isDefault = isDefault;
     }
 
-    /**
-     * of() 스태틱 팩토리 메서드 (Mapper 전용)
-     */
+    /** of() 스태틱 팩토리 메서드 (Mapper 전용) */
     public static ShippingAddressJpaEntity of(
             Long id,
             String memberId,

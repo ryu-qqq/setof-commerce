@@ -64,7 +64,9 @@ public class BankReadManager {
     @Transactional(readOnly = true)
     public Bank findByBankCode(String bankCode) {
         BankCode code = BankCode.of(bankCode);
-        return bankQueryPort.findByBankCode(code).orElseThrow(() -> new BankNotFoundException(bankCode));
+        return bankQueryPort
+                .findByBankCode(code)
+                .orElseThrow(() -> new BankNotFoundException(bankCode));
     }
 
     /**

@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <p>환불계좌 수정 UseCase 구현체
  *
  * <p>비즈니스 규칙:
+ *
  * <ul>
  *   <li>수정 시 외부 계좌 검증 API 통해 재검증 필수
  *   <li>검증 실패 시 수정 불가
@@ -57,8 +58,7 @@ public class UpdateRefundAccountService implements UpdateRefundAccountUseCase {
     @Override
     @Transactional
     public RefundAccountResponse execute(UpdateRefundAccountCommand command) {
-        RefundAccount refundAccount =
-                refundAccountReadManager.findById(command.refundAccountId());
+        RefundAccount refundAccount = refundAccountReadManager.findById(command.refundAccountId());
 
         refundAccount.validateOwnership(command.memberId());
 

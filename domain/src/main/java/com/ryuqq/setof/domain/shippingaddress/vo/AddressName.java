@@ -5,8 +5,7 @@ import com.ryuqq.setof.domain.shippingaddress.exception.InvalidAddressNameExcept
 /**
  * 배송지 이름 Value Object
  *
- * <p>사용자가 배송지를 구분하기 위해 지정하는 이름입니다.
- * 예: "집", "회사", "부모님댁"
+ * <p>사용자가 배송지를 구분하기 위해 지정하는 이름입니다. 예: "집", "회사", "부모님댁"
  *
  * <p>Domain Layer Zero-Tolerance 규칙:
  *

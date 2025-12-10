@@ -85,8 +85,7 @@ public class BankQueryDslRepository {
      * @return 존재 여부
      */
     public boolean existsById(Long id) {
-        Integer count =
-                queryFactory.selectOne().from(qBank).where(qBank.id.eq(id)).fetchFirst();
+        Integer count = queryFactory.selectOne().from(qBank).where(qBank.id.eq(id)).fetchFirst();
         return count != null;
     }
 

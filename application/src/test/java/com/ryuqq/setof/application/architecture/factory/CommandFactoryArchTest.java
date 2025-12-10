@@ -146,7 +146,9 @@ class CommandFactoryArchTest {
                             .doNotHaveFullName(".*<init>.*")
                             .should()
                             .haveNameMatching("create.*|apply.*")
-                            .because("CommandFactory 메서드는 create*() (생성) 또는 apply*() (수정 적용) 네이밍을 권장합니다");
+                            .because(
+                                    "CommandFactory 메서드는 create*() (생성) 또는 apply*() (수정 적용) 네이밍을"
+                                            + " 권장합니다");
 
             rule.check(classes);
         }

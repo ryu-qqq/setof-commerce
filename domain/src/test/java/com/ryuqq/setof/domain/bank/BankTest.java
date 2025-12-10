@@ -41,7 +41,9 @@ class BankTest {
             Instant updatedAt = NOW;
 
             // when
-            Bank bank = Bank.reconstitute(id, bankCode, bankName, displayOrder, active, createdAt, updatedAt);
+            Bank bank =
+                    Bank.reconstitute(
+                            id, bankCode, bankName, displayOrder, active, createdAt, updatedAt);
 
             // then
             assertNotNull(bank);
@@ -118,7 +120,13 @@ class BankTest {
             // given
             Bank bank =
                     Bank.reconstitute(
-                            BankId.of(1L), BankCode.of("004"), BankName.of("KB국민은행"), 1, true, NOW, NOW);
+                            BankId.of(1L),
+                            BankCode.of("004"),
+                            BankName.of("KB국민은행"),
+                            1,
+                            true,
+                            NOW,
+                            NOW);
 
             // then
             assertTrue(bank.isActive());
@@ -130,7 +138,13 @@ class BankTest {
             // given
             Bank bank =
                     Bank.reconstitute(
-                            BankId.of(1L), BankCode.of("004"), BankName.of("KB국민은행"), 1, false, NOW, NOW);
+                            BankId.of(1L),
+                            BankCode.of("004"),
+                            BankName.of("KB국민은행"),
+                            1,
+                            false,
+                            NOW,
+                            NOW);
 
             // then
             assertFalse(bank.isActive());
@@ -152,7 +166,9 @@ class BankTest {
             Instant createdAt = Instant.parse("2024-01-01T00:00:00Z");
             Instant updatedAt = Instant.parse("2024-06-01T00:00:00Z");
 
-            Bank bank = Bank.reconstitute(id, bankCode, bankName, displayOrder, true, createdAt, updatedAt);
+            Bank bank =
+                    Bank.reconstitute(
+                            id, bankCode, bankName, displayOrder, true, createdAt, updatedAt);
 
             // then
             assertEquals(id, bank.getId());

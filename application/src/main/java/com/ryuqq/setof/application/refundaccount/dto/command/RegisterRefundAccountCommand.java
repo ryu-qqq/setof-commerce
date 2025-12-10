@@ -13,9 +13,7 @@ import java.util.UUID;
 public record RegisterRefundAccountCommand(
         UUID memberId, Long bankId, String accountNumber, String accountHolderName) {
 
-    /**
-     * Static Factory Method
-     */
+    /** Static Factory Method */
     public static RegisterRefundAccountCommand of(
             UUID memberId, Long bankId, String accountNumber, String accountHolderName) {
         return new RegisterRefundAccountCommand(memberId, bankId, accountNumber, accountHolderName);

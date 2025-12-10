@@ -10,7 +10,8 @@ import java.util.Map;
  */
 public class InvalidReceiverInfoException extends DomainException {
 
-    private InvalidReceiverInfoException(ShippingAddressErrorCode errorCode, String message, Map<String, Object> args) {
+    private InvalidReceiverInfoException(
+            ShippingAddressErrorCode errorCode, String message, Map<String, Object> args) {
         super(errorCode, message, args);
     }
 

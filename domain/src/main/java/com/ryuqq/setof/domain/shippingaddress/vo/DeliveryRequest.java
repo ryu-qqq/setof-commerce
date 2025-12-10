@@ -5,8 +5,7 @@ import com.ryuqq.setof.domain.shippingaddress.exception.InvalidDeliveryRequestEx
 /**
  * 배송 요청사항 Value Object
  *
- * <p>배송 시 요청사항을 관리합니다.
- * 예: "문 앞에 놔주세요", "부재 시 경비실에 맡겨주세요"
+ * <p>배송 시 요청사항을 관리합니다. 예: "문 앞에 놔주세요", "부재 시 경비실에 맡겨주세요"
  *
  * <p>Domain Layer Zero-Tolerance 규칙:
  *

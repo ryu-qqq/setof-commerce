@@ -40,17 +40,7 @@ class BankNameTest {
 
         @ParameterizedTest
         @DisplayName("다양한 유효한 은행명으로 생성")
-        @ValueSource(
-                strings = {
-                    "KB국민은행",
-                    "신한은행",
-                    "우리은행",
-                    "하나은행",
-                    "농협은행",
-                    "카카오뱅크",
-                    "토스뱅크",
-                    "케이뱅크"
-                })
+        @ValueSource(strings = {"KB국민은행", "신한은행", "우리은행", "하나은행", "농협은행", "카카오뱅크", "토스뱅크", "케이뱅크"})
         void shouldCreateBankNameWithVariousValidFormats(String validName) {
             // When
             BankName bankName = BankName.of(validName);

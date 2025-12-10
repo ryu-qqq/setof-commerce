@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <p>배송지 삭제 UseCase 구현체
  *
  * <p>비즈니스 규칙:
+ *
  * <ul>
  *   <li>Soft Delete 적용
  *   <li>기본 배송지 삭제 시 가장 최근 등록 배송지로 자동 변경

@@ -131,8 +131,7 @@ public class RefundAccountV2Controller {
      */
     @Operation(
             summary = "환불계좌 등록",
-            description =
-                    "환불계좌를 등록합니다. 회원당 1개만 등록 가능합니다. 등록 시 계좌 소유 확인을 진행합니다.")
+            description = "환불계좌를 등록합니다. 회원당 1개만 등록 가능합니다. 등록 시 계좌 소유 확인을 진행합니다.")
     @ApiResponses(
             value = {
                 @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -175,9 +174,7 @@ public class RefundAccountV2Controller {
      * @param request 환불계좌 수정 요청
      * @return 수정된 환불계좌 정보
      */
-    @Operation(
-            summary = "환불계좌 수정",
-            description = "환불계좌 정보를 수정합니다. 수정 시 계좌 소유 확인을 다시 진행합니다.")
+    @Operation(summary = "환불계좌 수정", description = "환불계좌 정보를 수정합니다. 수정 시 계좌 소유 확인을 다시 진행합니다.")
     @ApiResponses(
             value = {
                 @io.swagger.v3.oas.annotations.responses.ApiResponse(

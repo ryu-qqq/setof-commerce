@@ -141,7 +141,8 @@ class BankReadManagerTest {
             when(bankQueryPort.findByBankCode(any(BankCode.class))).thenReturn(Optional.empty());
 
             // When & Then
-            assertThrows(BankNotFoundException.class, () -> bankReadManager.findByBankCode(bankCode));
+            assertThrows(
+                    BankNotFoundException.class, () -> bankReadManager.findByBankCode(bankCode));
         }
     }
 

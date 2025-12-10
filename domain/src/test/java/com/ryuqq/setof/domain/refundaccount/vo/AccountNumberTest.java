@@ -41,7 +41,8 @@ class AccountNumberTest {
 
         @ParameterizedTest
         @DisplayName("다양한 유효한 계좌번호로 생성")
-        @ValueSource(strings = {"12345678", "123456789012", "12345678901234567890", "123-456-789012"})
+        @ValueSource(
+                strings = {"12345678", "123456789012", "12345678901234567890", "123-456-789012"})
         void shouldCreateAccountNumberWithVariousValidFormats(String validAccountNumber) {
             // When
             AccountNumber accountNumber = AccountNumber.of(validAccountNumber);
@@ -91,7 +92,8 @@ class AccountNumberTest {
             String longAccountNumber = "1".repeat(31);
 
             // When & Then
-            assertThrows(InvalidAccountNumberException.class, () -> AccountNumber.of(longAccountNumber));
+            assertThrows(
+                    InvalidAccountNumberException.class, () -> AccountNumber.of(longAccountNumber));
         }
 
         @ParameterizedTest
@@ -100,7 +102,8 @@ class AccountNumberTest {
         void shouldThrowExceptionWhenNormalizedAccountNumberIsTooShort(String shortAccountNumber) {
             // When & Then
             assertThrows(
-                    InvalidAccountNumberException.class, () -> AccountNumber.of(shortAccountNumber));
+                    InvalidAccountNumberException.class,
+                    () -> AccountNumber.of(shortAccountNumber));
         }
     }
 

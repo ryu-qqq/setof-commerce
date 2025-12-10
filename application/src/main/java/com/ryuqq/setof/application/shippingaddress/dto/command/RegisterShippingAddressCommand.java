@@ -28,9 +28,7 @@ public record RegisterShippingAddressCommand(
         String deliveryRequest,
         boolean isDefault) {
 
-    /**
-     * Static Factory Method
-     */
+    /** Static Factory Method */
     public static RegisterShippingAddressCommand of(
             UUID memberId,
             String addressName,

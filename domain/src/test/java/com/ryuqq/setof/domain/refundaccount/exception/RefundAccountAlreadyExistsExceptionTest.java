@@ -28,6 +28,7 @@ class RefundAccountAlreadyExistsExceptionTest {
         // Then
         assertThat(exception.getMessage()).contains("이미 등록된 환불계좌가 있습니다");
         assertThat(exception.getMessage()).contains(memberId.toString());
-        assertThat(exception.getErrorCode()).isEqualTo(RefundAccountErrorCode.REFUND_ACCOUNT_ALREADY_EXISTS);
+        assertThat(exception.getErrorCode())
+                .isEqualTo(RefundAccountErrorCode.REFUND_ACCOUNT_ALREADY_EXISTS);
     }
 }

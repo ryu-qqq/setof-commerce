@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
  * <p>Command → Domain 변환 전용 Factory
  *
  * <p>역할:
+ *
  * <ul>
  *   <li>Command DTO를 Domain 객체로 변환
  *   <li>도메인 생성 로직 캡슐화

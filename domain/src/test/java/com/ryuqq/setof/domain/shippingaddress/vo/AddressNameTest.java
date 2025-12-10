@@ -12,9 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-/**
- * AddressName Value Object 테스트
- */
+/** AddressName Value Object 테스트 */
 @DisplayName("AddressName Value Object")
 class AddressNameTest {
 

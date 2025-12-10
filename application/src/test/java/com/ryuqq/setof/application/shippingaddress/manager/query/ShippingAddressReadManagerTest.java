@@ -1,7 +1,6 @@
 package com.ryuqq.setof.application.shippingaddress.manager.query;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -48,7 +47,8 @@ class ShippingAddressReadManagerTest {
         void shouldReturnShippingAddress() {
             // Given
             Long shippingAddressId = 1L;
-            ShippingAddress shippingAddress = ShippingAddressFixture.createWithId(shippingAddressId);
+            ShippingAddress shippingAddress =
+                    ShippingAddressFixture.createWithId(shippingAddressId);
             ShippingAddressId id = ShippingAddressId.of(shippingAddressId);
 
             when(shippingAddressQueryPort.findById(any())).thenReturn(Optional.of(shippingAddress));
@@ -85,7 +85,8 @@ class ShippingAddressReadManagerTest {
         void shouldReturnOptionalShippingAddress() {
             // Given
             Long shippingAddressId = 1L;
-            ShippingAddress shippingAddress = ShippingAddressFixture.createWithId(shippingAddressId);
+            ShippingAddress shippingAddress =
+                    ShippingAddressFixture.createWithId(shippingAddressId);
 
             when(shippingAddressQueryPort.findById(any())).thenReturn(Optional.of(shippingAddress));
 

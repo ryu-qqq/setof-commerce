@@ -10,9 +10,7 @@ import java.util.UUID;
  */
 public record SetDefaultShippingAddressCommand(UUID memberId, Long shippingAddressId) {
 
-    /**
-     * Static Factory Method
-     */
+    /** Static Factory Method */
     public static SetDefaultShippingAddressCommand of(UUID memberId, Long shippingAddressId) {
         return new SetDefaultShippingAddressCommand(memberId, shippingAddressId);
     }

@@ -16,10 +16,15 @@ public class ShippingAddressLimitExceededException extends DomainException {
     public ShippingAddressLimitExceededException(UUID memberId, int currentCount) {
         super(
                 ShippingAddressErrorCode.SHIPPING_ADDRESS_LIMIT_EXCEEDED,
-                String.format("배송지는 최대 %d개까지만 등록할 수 있습니다. 현재: %d개",
+                String.format(
+                        "배송지는 최대 %d개까지만 등록할 수 있습니다. 현재: %d개",
                         MAX_SHIPPING_ADDRESS_COUNT, currentCount),
-                Map.of("memberId", memberId.toString(),
-                        "currentCount", currentCount,
-                        "maxCount", MAX_SHIPPING_ADDRESS_COUNT));
+                Map.of(
+                        "memberId",
+                        memberId.toString(),
+                        "currentCount",
+                        currentCount,
+                        "maxCount",
+                        MAX_SHIPPING_ADDRESS_COUNT));
     }
 }

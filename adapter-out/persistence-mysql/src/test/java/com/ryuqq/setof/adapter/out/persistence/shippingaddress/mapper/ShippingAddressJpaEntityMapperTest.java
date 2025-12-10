@@ -50,12 +50,15 @@ class ShippingAddressJpaEntityMapperTest extends MapperTestSupport {
             assertThat(entity.getMemberId()).isEqualTo(shippingAddress.getMemberId().toString());
             assertThat(entity.getAddressName()).isEqualTo(shippingAddress.getAddressNameValue());
             assertThat(entity.getReceiverName()).isEqualTo(shippingAddress.getReceiverNameValue());
-            assertThat(entity.getReceiverPhone()).isEqualTo(shippingAddress.getReceiverPhoneValue());
+            assertThat(entity.getReceiverPhone())
+                    .isEqualTo(shippingAddress.getReceiverPhoneValue());
             assertThat(entity.getZipCode()).isEqualTo(shippingAddress.getZipCodeValue());
             assertThat(entity.getRoadAddress()).isEqualTo(shippingAddress.getRoadAddressValue());
             assertThat(entity.getJibunAddress()).isEqualTo(shippingAddress.getJibunAddressValue());
-            assertThat(entity.getDetailAddress()).isEqualTo(shippingAddress.getDetailAddressValue());
-            assertThat(entity.getDeliveryRequest()).isEqualTo(shippingAddress.getDeliveryRequestValue());
+            assertThat(entity.getDetailAddress())
+                    .isEqualTo(shippingAddress.getDetailAddressValue());
+            assertThat(entity.getDeliveryRequest())
+                    .isEqualTo(shippingAddress.getDeliveryRequestValue());
             assertThat(entity.isDefault()).isEqualTo(shippingAddress.isDefault());
         }
 
@@ -99,21 +102,22 @@ class ShippingAddressJpaEntityMapperTest extends MapperTestSupport {
             // Given
             Instant now = Instant.now();
             UUID memberId = UUID.randomUUID();
-            ShippingAddressJpaEntity entity = ShippingAddressJpaEntity.of(
-                    1L,
-                    memberId.toString(),
-                    "집",
-                    "홍길동",
-                    "01012345678",
-                    "06234",
-                    "서울시 강남구 테헤란로 123",
-                    "서울시 강남구 역삼동 123-45",
-                    "101동 1001호",
-                    "문 앞에 놔주세요",
-                    true,
-                    now,
-                    now,
-                    null);
+            ShippingAddressJpaEntity entity =
+                    ShippingAddressJpaEntity.of(
+                            1L,
+                            memberId.toString(),
+                            "집",
+                            "홍길동",
+                            "01012345678",
+                            "06234",
+                            "서울시 강남구 테헤란로 123",
+                            "서울시 강남구 역삼동 123-45",
+                            "101동 1001호",
+                            "문 앞에 놔주세요",
+                            true,
+                            now,
+                            now,
+                            null);
 
             // When
             ShippingAddress domain = mapper.toDomain(entity);
@@ -139,21 +143,22 @@ class ShippingAddressJpaEntityMapperTest extends MapperTestSupport {
             // Given
             Instant now = Instant.now();
             UUID memberId = UUID.randomUUID();
-            ShippingAddressJpaEntity entity = ShippingAddressJpaEntity.of(
-                    2L,
-                    memberId.toString(),
-                    "회사",
-                    "홍길동",
-                    "01012345678",
-                    "06789",
-                    "서울시 서초구 서초대로 456",
-                    null,
-                    "A동 501호",
-                    null,
-                    false,
-                    now,
-                    now,
-                    null);
+            ShippingAddressJpaEntity entity =
+                    ShippingAddressJpaEntity.of(
+                            2L,
+                            memberId.toString(),
+                            "회사",
+                            "홍길동",
+                            "01012345678",
+                            "06789",
+                            "서울시 서초구 서초대로 456",
+                            null,
+                            "A동 501호",
+                            null,
+                            false,
+                            now,
+                            now,
+                            null);
 
             // When
             ShippingAddress domain = mapper.toDomain(entity);
@@ -171,21 +176,22 @@ class ShippingAddressJpaEntityMapperTest extends MapperTestSupport {
             // Given
             Instant now = Instant.now();
             UUID memberId = UUID.randomUUID();
-            ShippingAddressJpaEntity entity = ShippingAddressJpaEntity.of(
-                    3L,
-                    memberId.toString(),
-                    "이전 집",
-                    "홍길동",
-                    "01012345678",
-                    "04001",
-                    "서울시 마포구 마포대로 789",
-                    null,
-                    "203호",
-                    null,
-                    false,
-                    now,
-                    now,
-                    now);
+            ShippingAddressJpaEntity entity =
+                    ShippingAddressJpaEntity.of(
+                            3L,
+                            memberId.toString(),
+                            "이전 집",
+                            "홍길동",
+                            "01012345678",
+                            "04001",
+                            "서울시 마포구 마포대로 789",
+                            null,
+                            "203호",
+                            null,
+                            false,
+                            now,
+                            now,
+                            now);
 
             // When
             ShippingAddress domain = mapper.toDomain(entity);
@@ -216,12 +222,15 @@ class ShippingAddressJpaEntityMapperTest extends MapperTestSupport {
             assertThat(converted.getMemberId()).isEqualTo(original.getMemberId());
             assertThat(converted.getAddressNameValue()).isEqualTo(original.getAddressNameValue());
             assertThat(converted.getReceiverNameValue()).isEqualTo(original.getReceiverNameValue());
-            assertThat(converted.getReceiverPhoneValue()).isEqualTo(original.getReceiverPhoneValue());
+            assertThat(converted.getReceiverPhoneValue())
+                    .isEqualTo(original.getReceiverPhoneValue());
             assertThat(converted.getZipCodeValue()).isEqualTo(original.getZipCodeValue());
             assertThat(converted.getRoadAddressValue()).isEqualTo(original.getRoadAddressValue());
             assertThat(converted.getJibunAddressValue()).isEqualTo(original.getJibunAddressValue());
-            assertThat(converted.getDetailAddressValue()).isEqualTo(original.getDetailAddressValue());
-            assertThat(converted.getDeliveryRequestValue()).isEqualTo(original.getDeliveryRequestValue());
+            assertThat(converted.getDetailAddressValue())
+                    .isEqualTo(original.getDetailAddressValue());
+            assertThat(converted.getDeliveryRequestValue())
+                    .isEqualTo(original.getDeliveryRequestValue());
             assertThat(converted.isDefault()).isEqualTo(original.isDefault());
         }
 
@@ -231,21 +240,22 @@ class ShippingAddressJpaEntityMapperTest extends MapperTestSupport {
             // Given
             Instant now = Instant.now();
             UUID memberId = UUID.randomUUID();
-            ShippingAddressJpaEntity original = ShippingAddressJpaEntity.of(
-                    5L,
-                    memberId.toString(),
-                    "집",
-                    "김철수",
-                    "01087654321",
-                    "12345",
-                    "서울시 송파구 올림픽로 300",
-                    "서울시 송파구 잠실동 300-1",
-                    "202동 505호",
-                    "경비실에 맡겨주세요",
-                    true,
-                    now,
-                    now,
-                    null);
+            ShippingAddressJpaEntity original =
+                    ShippingAddressJpaEntity.of(
+                            5L,
+                            memberId.toString(),
+                            "집",
+                            "김철수",
+                            "01087654321",
+                            "12345",
+                            "서울시 송파구 올림픽로 300",
+                            "서울시 송파구 잠실동 300-1",
+                            "202동 505호",
+                            "경비실에 맡겨주세요",
+                            true,
+                            now,
+                            now,
+                            null);
 
             // When
             ShippingAddress domain = mapper.toDomain(original);

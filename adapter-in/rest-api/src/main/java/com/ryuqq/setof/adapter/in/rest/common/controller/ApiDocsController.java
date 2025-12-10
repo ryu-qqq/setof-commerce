@@ -42,7 +42,9 @@ public class ApiDocsController {
      *
      * @return API 문서 HTML
      */
-    @Operation(summary = "API 문서 메인 페이지", description = "Spring REST Docs로 생성된 API 문서 메인 페이지를 제공합니다.")
+    @Operation(
+            summary = "API 문서 메인 페이지",
+            description = "Spring REST Docs로 생성된 API 문서 메인 페이지를 제공합니다.")
     @GetMapping(value = "/docs", produces = MediaType.TEXT_HTML_VALUE)
     public ResponseEntity<Resource> getApiDocs() {
         Resource resource = new ClassPathResource(DOCS_BASE_PATH + "index.html");

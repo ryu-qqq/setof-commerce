@@ -10,15 +10,14 @@ import java.util.Map;
  */
 public class InvalidDeliveryAddressException extends DomainException {
 
-    private InvalidDeliveryAddressException(ShippingAddressErrorCode errorCode, String message, Map<String, Object> args) {
+    private InvalidDeliveryAddressException(
+            ShippingAddressErrorCode errorCode, String message, Map<String, Object> args) {
         super(errorCode, message, args);
     }
 
     public static InvalidDeliveryAddressException addressRequired() {
         return new InvalidDeliveryAddressException(
-                ShippingAddressErrorCode.ADDRESS_REQUIRED,
-                "도로명주소 또는 지번주소 중 하나는 필수입니다.",
-                Map.of());
+                ShippingAddressErrorCode.ADDRESS_REQUIRED, "도로명주소 또는 지번주소 중 하나는 필수입니다.", Map.of());
     }
 
     public static InvalidDeliveryAddressException addressTooLong(String fieldName, int maxLength) {
@@ -30,9 +29,7 @@ public class InvalidDeliveryAddressException extends DomainException {
 
     public static InvalidDeliveryAddressException zipCodeRequired() {
         return new InvalidDeliveryAddressException(
-                ShippingAddressErrorCode.ZIP_CODE_REQUIRED,
-                "우편번호는 필수입니다.",
-                Map.of());
+                ShippingAddressErrorCode.ZIP_CODE_REQUIRED, "우편번호는 필수입니다.", Map.of());
     }
 
     public static InvalidDeliveryAddressException invalidZipCode(String zipCode) {

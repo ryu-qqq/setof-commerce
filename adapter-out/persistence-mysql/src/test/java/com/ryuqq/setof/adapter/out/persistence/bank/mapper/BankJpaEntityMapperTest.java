@@ -96,8 +96,7 @@ class BankJpaEntityMapperTest extends MapperTestSupport {
         void toDomain_success() {
             // Given
             Instant now = Instant.now();
-            BankJpaEntity entity =
-                    BankJpaEntity.of(1L, "004", "KB국민은행", true, 1, now, now);
+            BankJpaEntity entity = BankJpaEntity.of(1L, "004", "KB국민은행", true, 1, now, now);
 
             // When
             Bank domain = mapper.toDomain(entity);

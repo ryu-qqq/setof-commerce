@@ -14,6 +14,7 @@ import com.ryuqq.setof.domain.bank.exception.InvalidBankCodeException;
  * </ul>
  *
  * <p>은행 코드 예시:
+ *
  * <ul>
  *   <li>004: KB국민은행
  *   <li>088: 신한은행

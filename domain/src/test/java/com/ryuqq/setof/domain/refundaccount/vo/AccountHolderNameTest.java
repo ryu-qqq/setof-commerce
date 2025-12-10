@@ -73,7 +73,8 @@ class AccountHolderNameTest {
         @DisplayName("공백 문자열로 생성 시 예외 발생")
         void shouldThrowExceptionWhenNameIsBlank() {
             // When & Then
-            assertThrows(InvalidAccountHolderNameException.class, () -> AccountHolderName.of("   "));
+            assertThrows(
+                    InvalidAccountHolderNameException.class, () -> AccountHolderName.of("   "));
         }
 
         @Test
@@ -83,7 +84,8 @@ class AccountHolderNameTest {
             String longName = "가".repeat(21);
 
             // When & Then
-            assertThrows(InvalidAccountHolderNameException.class, () -> AccountHolderName.of(longName));
+            assertThrows(
+                    InvalidAccountHolderNameException.class, () -> AccountHolderName.of(longName));
         }
     }
 

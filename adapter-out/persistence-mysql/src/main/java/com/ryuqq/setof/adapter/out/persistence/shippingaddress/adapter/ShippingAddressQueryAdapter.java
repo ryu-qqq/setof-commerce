@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 /**
  * ShippingAddressQueryAdapter - ShippingAddress Query Adapter
  *
- * <p>CQRS의 Query(읽기) 담당으로, ShippingAddress 조회 요청을 QueryDslRepository에 위임하고 Mapper를 통해
- * Domain으로 변환하여 반환합니다.
+ * <p>CQRS의 Query(읽기) 담당으로, ShippingAddress 조회 요청을 QueryDslRepository에 위임하고 Mapper를 통해 Domain으로 변환하여
+ * 반환합니다.
  *
  * <p><strong>책임:</strong>
  *
@@ -114,7 +114,8 @@ public class ShippingAddressQueryAdapter implements ShippingAddressQueryPort {
      * @return ShippingAddress (Optional)
      */
     @Override
-    public Optional<ShippingAddress> findLatestByMemberIdExcluding(UUID memberId, ShippingAddressId excludeId) {
+    public Optional<ShippingAddress> findLatestByMemberIdExcluding(
+            UUID memberId, ShippingAddressId excludeId) {
         return queryDslRepository
                 .findLatestExcluding(memberId.toString(), excludeId.value())
                 .map(shippingAddressJpaEntityMapper::toDomain);

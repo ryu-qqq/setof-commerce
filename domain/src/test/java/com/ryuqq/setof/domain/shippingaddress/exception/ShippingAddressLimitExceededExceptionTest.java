@@ -29,6 +29,7 @@ class ShippingAddressLimitExceededExceptionTest {
         // Then
         assertThat(exception.getMessage()).contains("최대 5개까지만 등록");
         assertThat(exception.getMessage()).contains("현재: 5개");
-        assertThat(exception.getErrorCode()).isEqualTo(ShippingAddressErrorCode.SHIPPING_ADDRESS_LIMIT_EXCEEDED);
+        assertThat(exception.getErrorCode())
+                .isEqualTo(ShippingAddressErrorCode.SHIPPING_ADDRESS_LIMIT_EXCEEDED);
     }
 }

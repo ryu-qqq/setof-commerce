@@ -40,7 +40,8 @@ class BankCodeTest {
 
         @ParameterizedTest
         @DisplayName("다양한 유효한 은행 코드로 생성")
-        @ValueSource(strings = {"004", "088", "020", "011", "023", "039", "031", "032", "002", "003"})
+        @ValueSource(
+                strings = {"004", "088", "020", "011", "023", "039", "031", "032", "002", "003"})
         void shouldCreateBankCodeWithVariousValidFormats(String validCode) {
             // When
             BankCode bankCode = BankCode.of(validCode);

@@ -412,14 +412,11 @@ class RefundAccountV2ControllerDocsTest extends RestDocsTestSupport {
                 .thenReturn(Optional.of(existingResponse));
         when(refundAccountV2ApiMapper.toDeleteCommand(any(UUID.class), any(Long.class)))
                 .thenReturn(DeleteRefundAccountCommand.of(UUID.fromString(MEMBER_ID), 1L));
-        doNothing()
-                .when(deleteRefundAccountUseCase)
-                .execute(any(DeleteRefundAccountCommand.class));
+        doNothing().when(deleteRefundAccountUseCase).execute(any(DeleteRefundAccountCommand.class));
 
         // When & Then
         mockMvc.perform(
-                        patch(ApiV2Paths.RefundAccount.BASE
-                                        + ApiV2Paths.RefundAccount.DELETE_PATH)
+                        patch(ApiV2Paths.RefundAccount.BASE + ApiV2Paths.RefundAccount.DELETE_PATH)
                                 .with(user(principal))
                                 .with(csrf()))
                 .andExpect(status().isOk())

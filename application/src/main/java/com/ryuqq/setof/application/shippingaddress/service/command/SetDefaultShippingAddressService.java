@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <p>기본 배송지 설정 UseCase 구현체
  *
  * <p>비즈니스 규칙:
+ *
  * <ul>
  *   <li>기존 기본 배송지가 있으면 해제 후 새로 설정
  * </ul>

@@ -11,8 +11,8 @@ import com.ryuqq.setof.application.refundaccount.port.in.command.RegisterRefundA
 import com.ryuqq.setof.application.refundaccount.port.out.external.AccountVerificationPort;
 import com.ryuqq.setof.domain.bank.aggregate.Bank;
 import com.ryuqq.setof.domain.refundaccount.aggregate.RefundAccount;
-import com.ryuqq.setof.domain.refundaccount.exception.RefundAccountAlreadyExistsException;
 import com.ryuqq.setof.domain.refundaccount.exception.AccountVerificationFailedException;
+import com.ryuqq.setof.domain.refundaccount.exception.RefundAccountAlreadyExistsException;
 import com.ryuqq.setof.domain.refundaccount.vo.RefundAccountId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <p>환불계좌 등록 UseCase 구현체
  *
  * <p>비즈니스 규칙:
+ *
  * <ul>
  *   <li>회원당 최대 1개까지만 등록 가능
  *   <li>등록 시 외부 계좌 검증 API 통해 검증 필수

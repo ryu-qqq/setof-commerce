@@ -33,7 +33,8 @@ class RefundAccountNotFoundExceptionTest {
             // Then
             assertThat(exception.getMessage()).contains("환불계좌를 찾을 수 없습니다");
             assertThat(exception.getMessage()).contains("1");
-            assertThat(exception.getErrorCode()).isEqualTo(RefundAccountErrorCode.REFUND_ACCOUNT_NOT_FOUND);
+            assertThat(exception.getErrorCode())
+                    .isEqualTo(RefundAccountErrorCode.REFUND_ACCOUNT_NOT_FOUND);
         }
     }
 
@@ -48,8 +49,7 @@ class RefundAccountNotFoundExceptionTest {
             UUID memberId = UUID.randomUUID();
 
             // When
-            RefundAccountNotFoundException exception =
-                    new RefundAccountNotFoundException(memberId);
+            RefundAccountNotFoundException exception = new RefundAccountNotFoundException(memberId);
 
             // Then
             assertThat(exception.getMessage()).contains("환불계좌를 찾을 수 없습니다");

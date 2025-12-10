@@ -61,21 +61,25 @@ class ReceiverInfoTest {
         @DisplayName("이름이 null이면 예외 발생")
         void shouldThrowExceptionWhenNameIsNull() {
             // When & Then
-            assertThrows(InvalidReceiverInfoException.class, () -> ReceiverInfo.of(null, "01012345678"));
+            assertThrows(
+                    InvalidReceiverInfoException.class, () -> ReceiverInfo.of(null, "01012345678"));
         }
 
         @Test
         @DisplayName("이름이 빈 문자열이면 예외 발생")
         void shouldThrowExceptionWhenNameIsEmpty() {
             // When & Then
-            assertThrows(InvalidReceiverInfoException.class, () -> ReceiverInfo.of("", "01012345678"));
+            assertThrows(
+                    InvalidReceiverInfoException.class, () -> ReceiverInfo.of("", "01012345678"));
         }
 
         @Test
         @DisplayName("이름이 공백이면 예외 발생")
         void shouldThrowExceptionWhenNameIsBlank() {
             // When & Then
-            assertThrows(InvalidReceiverInfoException.class, () -> ReceiverInfo.of("   ", "01012345678"));
+            assertThrows(
+                    InvalidReceiverInfoException.class,
+                    () -> ReceiverInfo.of("   ", "01012345678"));
         }
 
         @Test
@@ -85,7 +89,9 @@ class ReceiverInfoTest {
             String longName = "가".repeat(21);
 
             // When & Then
-            assertThrows(InvalidReceiverInfoException.class, () -> ReceiverInfo.of(longName, "01012345678"));
+            assertThrows(
+                    InvalidReceiverInfoException.class,
+                    () -> ReceiverInfo.of(longName, "01012345678"));
         }
     }
 
@@ -111,7 +117,8 @@ class ReceiverInfoTest {
         @DisplayName("전화번호가 10자리 미만이면 예외 발생")
         void shouldThrowExceptionWhenPhoneIsTooShort() {
             // When & Then
-            assertThrows(InvalidReceiverInfoException.class, () -> ReceiverInfo.of("홍길동", "123456789"));
+            assertThrows(
+                    InvalidReceiverInfoException.class, () -> ReceiverInfo.of("홍길동", "123456789"));
         }
 
         @Test
@@ -121,7 +128,8 @@ class ReceiverInfoTest {
             String longPhone = "1234567890123456"; // 16자리
 
             // When & Then
-            assertThrows(InvalidReceiverInfoException.class, () -> ReceiverInfo.of("홍길동", longPhone));
+            assertThrows(
+                    InvalidReceiverInfoException.class, () -> ReceiverInfo.of("홍길동", longPhone));
         }
     }
 
