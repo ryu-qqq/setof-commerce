@@ -121,15 +121,9 @@ asciidoctor {
     configurations 'asciidoctorExt'
     dependsOn test
 
-    // snippets 디렉토리가 존재할 때만 input으로 추가 (CI -x test 대응)
+    // snippets 디렉토리가 존재할 때만 실행 (CI -x test 대응)
     onlyIf {
         snippetsDir.exists()
-    }
-
-    doFirst {
-        if (snippetsDir.exists()) {
-            inputs.dir snippetsDir
-        }
     }
 
     baseDirFollowsSourceFile()
