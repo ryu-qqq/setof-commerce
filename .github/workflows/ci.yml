@@ -69,8 +69,9 @@ jobs:
       - name: Verify No Lombok
         run: ./gradlew checkNoLombok --no-daemon
 
-      - name: Verify Version Catalog Consistency
-        run: ./gradlew verifyVersionCatalog --no-daemon
+      # TODO: verifyVersionCatalog 태스크 구현 후 활성화
+      # - name: Verify Version Catalog Consistency
+      #   run: ./gradlew verifyVersionCatalog --no-daemon
 
       # ----------------------------------------------------------------------
       # 테스트 실행 (단위 + ArchUnit)
