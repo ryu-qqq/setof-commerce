@@ -87,3 +87,13 @@ SetOf Commerce REST API 문서입니다.
 include::v2/auth/auth.adoc[]
 
 include::v2/member/member.adoc[]
+
+include::v2/bank/bank.adoc[]
+
+include::v2/brand/brand.adoc[]
+
+include::v2/category/category.adoc[]
+
+include::v2/refundaccount/refundaccount.adoc[]
+
+include::v2/shippingaddress/shippingaddress.adoc[]

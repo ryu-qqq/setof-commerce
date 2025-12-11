@@ -8,7 +8,7 @@ import com.ryuqq.setof.application.refundaccount.factory.command.RefundAccountCo
 import com.ryuqq.setof.application.refundaccount.manager.command.RefundAccountPersistenceManager;
 import com.ryuqq.setof.application.refundaccount.manager.query.RefundAccountReadManager;
 import com.ryuqq.setof.application.refundaccount.port.in.command.RegisterRefundAccountUseCase;
-import com.ryuqq.setof.application.refundaccount.port.out.external.AccountVerificationPort;
+import com.ryuqq.setof.application.refundaccount.port.out.client.AccountVerificationPort;
 import com.ryuqq.setof.domain.bank.aggregate.Bank;
 import com.ryuqq.setof.domain.refundaccount.aggregate.RefundAccount;
 import com.ryuqq.setof.domain.refundaccount.exception.AccountVerificationFailedException;

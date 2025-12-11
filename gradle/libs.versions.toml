@@ -91,6 +91,7 @@ spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-
 spring-boot-starter-oauth2-client = { module = "org.springframework.boot:spring-boot-starter-oauth2-client" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-starter-jdbc = { module = "org.springframework.boot:spring-boot-starter-jdbc" }
 spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor" }
 
 # ========================================

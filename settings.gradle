@@ -17,6 +17,7 @@ include 'adapter-in:rest-api-admin'
 include 'adapter-out:persistence-mysql'
 include 'adapter-out:persistence-redis'
 include 'adapter-out:security'
+include 'adapter-out:portone-client'
 
 // ========================================
 // Bootstrap Modules (Runnable Applications)
@@ -34,6 +35,7 @@ project(':adapter-in:rest-api-admin').projectDir = file('adapter-in/rest-api-adm
 project(':adapter-out:persistence-mysql').projectDir = file('adapter-out/persistence-mysql')
 project(':adapter-out:persistence-redis').projectDir = file('adapter-out/persistence-redis')
 project(':adapter-out:security').projectDir = file('adapter-out/security')
+project(':adapter-out:portone-client').projectDir = file('adapter-out/portone-client')
 
 project(':bootstrap:bootstrap-web-api').projectDir = file('bootstrap/bootstrap-web-api')
 project(':bootstrap:bootstrap-web-api-admin').projectDir = file('bootstrap/bootstrap-web-api-admin')

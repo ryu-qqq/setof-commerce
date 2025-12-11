@@ -18,7 +18,7 @@ import com.ryuqq.setof.application.refundaccount.dto.response.RefundAccountRespo
 import com.ryuqq.setof.application.refundaccount.factory.command.RefundAccountCommandFactory;
 import com.ryuqq.setof.application.refundaccount.manager.command.RefundAccountPersistenceManager;
 import com.ryuqq.setof.application.refundaccount.manager.query.RefundAccountReadManager;
-import com.ryuqq.setof.application.refundaccount.port.out.external.AccountVerificationPort;
+import com.ryuqq.setof.application.refundaccount.port.out.client.AccountVerificationPort;
 import com.ryuqq.setof.domain.bank.BankFixture;
 import com.ryuqq.setof.domain.bank.aggregate.Bank;
 import com.ryuqq.setof.domain.refundaccount.RefundAccountFixture;

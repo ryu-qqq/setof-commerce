@@ -1,6 +1,7 @@
 package com.ryuqq.setof.adapter.in.rest.common.dto;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * ApiResponse - 표준 API 응답 래퍼
@@ -35,7 +36,10 @@ import java.time.LocalDateTime;
  * @since 2025-10-23
  */
 public record ApiResponse<T>(
-        boolean success, T data, ErrorInfo error, LocalDateTime timestamp, String requestId) {
+        boolean success, T data, ErrorInfo error, String timestamp, String requestId) {
+
+    private static final DateTimeFormatter TIMESTAMP_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     /**
      * 성공 응답 생성
@@ -47,7 +51,12 @@ public record ApiResponse<T>(
      * @since 2025-10-23
      */
     public static <T> ApiResponse<T> ofSuccess(T data) {
-        return new ApiResponse<>(true, data, null, LocalDateTime.now(), generateRequestId());
+        return new ApiResponse<>(
+                true,
+                data,
+                null,
+                LocalDateTime.now().format(TIMESTAMP_FORMATTER),
+                generateRequestId());
     }
 
     /**
@@ -72,7 +81,12 @@ public record ApiResponse<T>(
      * @since 2025-10-23
      */
     public static <T> ApiResponse<T> ofFailure(ErrorInfo error) {
-        return new ApiResponse<>(false, null, error, LocalDateTime.now(), generateRequestId());
+        return new ApiResponse<>(
+                false,
+                null,
+                error,
+                LocalDateTime.now().format(TIMESTAMP_FORMATTER),
+                generateRequestId());
     }
 
     /**

@@ -125,4 +125,36 @@ public final class ApiV2Paths {
 
         private RefundAccount() {}
     }
+
+    /** Brand 도메인 경로 */
+    public static final class Brands {
+        public static final String BASE = API_V2 + "/brands";
+
+        // ===== 상대 경로 (Controller용) =====
+        public static final String ID_PATH = "/{brandId}";
+
+        // ===== 전체 경로 (SecurityPaths용) =====
+        public static final String LIST = BASE;
+        public static final String DETAIL = BASE + ID_PATH;
+
+        private Brands() {}
+    }
+
+    /** Category 도메인 경로 */
+    public static final class Categories {
+        public static final String BASE = API_V2 + "/categories";
+
+        // ===== 상대 경로 (Controller용) =====
+        public static final String ID_PATH = "/{categoryId}";
+        public static final String TREE_PATH = "/tree";
+        public static final String PATH_PATH = "/{categoryId}/path";
+
+        // ===== 전체 경로 (SecurityPaths용) =====
+        public static final String LIST = BASE;
+        public static final String DETAIL = BASE + ID_PATH;
+        public static final String TREE = BASE + TREE_PATH;
+        public static final String PATH = BASE + PATH_PATH;
+
+        private Categories() {}
+    }
 }

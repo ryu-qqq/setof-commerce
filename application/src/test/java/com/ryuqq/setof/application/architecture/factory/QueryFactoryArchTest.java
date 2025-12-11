@@ -67,6 +67,7 @@ class QueryFactoryArchTest {
                 .that().resideInAPackage("..application..factory.query..")
                 .and().haveSimpleNameContaining("Factory")
                 .and().areNotInterfaces()
+                .and().haveSimpleNameNotEndingWith("Test")
                 .should().haveSimpleNameEndingWith("QueryFactory")
                 .because("Query Factory는 'QueryFactory' 접미사를 사용해야 합니다");
 

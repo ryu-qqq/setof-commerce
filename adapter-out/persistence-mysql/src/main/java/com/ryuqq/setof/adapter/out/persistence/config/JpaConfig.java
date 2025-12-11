@@ -32,8 +32,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  * @since 1.0.0
  */
 @Configuration
-@EnableJpaRepositories(basePackages = "com.ryuqq.setof.storage.mysql")
-@EntityScan(basePackages = "com.ryuqq.setof.storage.mysql")
+@EnableJpaRepositories(basePackages = "com.ryuqq.setof.adapter.out.persistence")
+@EntityScan(basePackages = "com.ryuqq.setof.adapter.out.persistence")
 public class JpaConfig {
 
     @PersistenceContext private EntityManager entityManager;

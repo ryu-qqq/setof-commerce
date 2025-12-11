@@ -1,0 +1,131 @@
+[[shipping-address]]
+=== Shipping Address (배송지)
+
+배송지 관리 API입니다. 회원당 최대 10개의 배송지를 등록할 수 있습니다.
+
+NOTE: 모든 배송지 API는 인증이 필요합니다.
+
+[[shipping-address-list]]
+==== 배송지 목록 조회
+
+내 배송지 목록을 조회합니다. 기본 배송지가 먼저 표시됩니다.
+
+===== HTTP Request
+
+include::{snippets}/shipping-address-list/http-request.adoc[]
+
+===== HTTP Response
+
+include::{snippets}/shipping-address-list/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/shipping-address-list/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/shipping-address-list/curl-request.adoc[]
+
+[[shipping-address-register]]
+==== 배송지 등록
+
+새 배송지를 등록합니다.
+
+===== HTTP Request
+
+include::{snippets}/shipping-address-register/http-request.adoc[]
+
+===== Request Fields
+
+include::{snippets}/shipping-address-register/request-fields.adoc[]
+
+===== HTTP Response
+
+include::{snippets}/shipping-address-register/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/shipping-address-register/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/shipping-address-register/curl-request.adoc[]
+
+[[shipping-address-update]]
+==== 배송지 수정
+
+기존 배송지 정보를 수정합니다.
+
+===== HTTP Request
+
+include::{snippets}/shipping-address-update/http-request.adoc[]
+
+===== Path Parameters
+
+include::{snippets}/shipping-address-update/path-parameters.adoc[]
+
+===== Request Fields
+
+include::{snippets}/shipping-address-update/request-fields.adoc[]
+
+===== HTTP Response
+
+include::{snippets}/shipping-address-update/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/shipping-address-update/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/shipping-address-update/curl-request.adoc[]
+
+[[shipping-address-delete]]
+==== 배송지 삭제
+
+배송지를 삭제합니다. (Soft Delete)
+
+===== HTTP Request
+
+include::{snippets}/shipping-address-delete/http-request.adoc[]
+
+===== Path Parameters
+
+include::{snippets}/shipping-address-delete/path-parameters.adoc[]
+
+===== HTTP Response
+
+include::{snippets}/shipping-address-delete/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/shipping-address-delete/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/shipping-address-delete/curl-request.adoc[]
+
+[[shipping-address-set-default]]
+==== 기본 배송지 설정
+
+특정 배송지를 기본 배송지로 설정합니다. 기존 기본 배송지는 해제됩니다.
+
+===== HTTP Request
+
+include::{snippets}/shipping-address-set-default/http-request.adoc[]
+
+===== Path Parameters
+
+include::{snippets}/shipping-address-set-default/path-parameters.adoc[]
+
+===== HTTP Response
+
+include::{snippets}/shipping-address-set-default/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/shipping-address-set-default/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/shipping-address-set-default/curl-request.adoc[]
