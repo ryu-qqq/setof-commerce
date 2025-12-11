@@ -237,15 +237,17 @@ class PersistenceLayerArchTest {
         rule.allowEmptyShould(true).check(allClasses);
     }
 
-    /** 규칙 6: Domain Layer 의존 - Adapter와 Mapper만 허용 (Enum은 예외) */
+    /** 규칙 6: Domain Layer 의존 - Adapter와 Mapper만 허용 (Enum, Criteria는 예외) */
     @Test
     @DisplayName(
-            "[금지] Repository/Entity는 Domain Layer를 직접 의존하지 않아야 한다 (Mapper와 Adapter는 허용, Enum 예외)")
+            "[금지] Repository/Entity는 Domain Layer를 직접 의존하지 않아야 한다 (Mapper와 Adapter는 허용,"
+                    + " Enum/Criteria 예외)")
     void persistence_RepositoryEntityMustNotDependOnDomain() {
         // Mapper는 Entity ↔ Domain 변환을 위해 Domain 의존 필수
         // Adapter도 Domain을 반환해야 하므로 Domain 의존 필수
-        // Repository와 Entity만 Domain 의존 금지 (단, Enum은 예외)
+        // Repository와 Entity만 Domain 의존 금지 (단, Enum과 Criteria는 예외)
         // Entity가 Domain의 Enum을 사용하는 것은 허용 (Gender, AuthProvider, MemberStatus 등)
+        // Repository가 Domain의 Criteria를 사용하는 것은 허용 (검색 조건 VO)
         ArchRule rule =
                 noClasses()
                         .that()
@@ -255,13 +257,16 @@ class PersistenceLayerArchTest {
                         .should()
                         .dependOnClassesThat(
                                 com.tngtech.archunit.base.DescribedPredicate.describe(
-                                        "Domain Layer classes that are not enums",
+                                        "Domain Layer classes that are not enums or criteria",
                                         javaClass ->
                                                 javaClass.getPackageName().contains(".domain.")
-                                                        && !javaClass.isEnum()))
+                                                        && !javaClass.isEnum()
+                                                        && !javaClass
+                                                                .getPackageName()
+                                                                .contains(".query.criteria")))
                         .because(
                                 "Repository/Entity는 Domain Layer를 직접 의존하면 안 됩니다 (Mapper와 Adapter만"
-                                        + " Domain 접근 가능, Enum은 예외)");
+                                        + " Domain 접근 가능, Enum과 Criteria는 예외)");
 
         rule.allowEmptyShould(true).check(allClasses);
     }

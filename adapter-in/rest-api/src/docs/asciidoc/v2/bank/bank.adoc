@@ -1,0 +1,25 @@
+[[bank]]
+=== Bank (은행)
+
+은행 정보 조회 API입니다. 환불계좌 등록 시 은행 선택에 사용됩니다.
+
+[[bank-list]]
+==== 은행 목록 조회
+
+활성 상태인 은행 목록을 조회합니다.
+
+===== HTTP Request
+
+include::{snippets}/bank-list/http-request.adoc[]
+
+===== HTTP Response
+
+include::{snippets}/bank-list/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/bank-list/response-fields.adoc[]
+
+===== Example
+
+include::{snippets}/bank-list/curl-request.adoc[]

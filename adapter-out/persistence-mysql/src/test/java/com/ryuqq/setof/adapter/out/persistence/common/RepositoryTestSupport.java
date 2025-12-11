@@ -54,7 +54,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * @since 1.0.0
  * @see JpaSliceTestSupport @DataJpaTest 기반 Slice 테스트용
  */
-@SpringBootTest
+@SpringBootTest(classes = com.ryuqq.setof.adapter.out.persistence.TestPersistenceApplication.class)
 @ActiveProfiles("test")
 @Testcontainers
 @Transactional

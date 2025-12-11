@@ -73,6 +73,14 @@ dependencies {
     testImplementation libs.archunit.junit5
     testImplementation testFixtures(project(":domain"))
 
+    // TestContainers (API 통합 테스트용)
+    testImplementation libs.bundles.testcontainers
+    testImplementation libs.mysql.connector
+    testImplementation libs.spring.boot.starter.jdbc
+
+    // Persistence Layer (API 통합 테스트용 - DB 연동)
+    testImplementation project(':adapter-out:persistence-mysql')
+
     // ========================================
     // Test Fixtures Dependencies
     // ========================================

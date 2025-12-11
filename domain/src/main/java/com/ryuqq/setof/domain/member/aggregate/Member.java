@@ -259,10 +259,10 @@ public class Member {
     /**
      * 비밀번호 해시 값 반환 (Law of Demeter 준수)
      *
-     * @return 비밀번호 해시 문자열
+     * @return 비밀번호 해시 문자열 또는 null (소셜 로그인 시)
      */
     public String getPasswordValue() {
-        return password.value();
+        return password != null ? password.value() : null;
     }
 
     /**

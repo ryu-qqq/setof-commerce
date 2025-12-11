@@ -2,8 +2,6 @@ package com.ryuqq.setof.adapter.out.persistence.refreshtoken.mapper;
 
 import com.ryuqq.setof.adapter.out.persistence.refreshtoken.entity.RefreshTokenJpaEntity;
 import com.ryuqq.setof.domain.auth.aggregate.RefreshToken;
-import com.ryuqq.setof.domain.common.util.ClockHolder;
-import java.time.Instant;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,8 +19,8 @@ import org.springframework.stereotype.Component;
  * <p><strong>시간 처리:</strong>
  *
  * <ul>
- *   <li>ClockHolder를 통한 현재 시간 획득
- *   <li>createdAt, expiresAt 계산
+ *   <li>Domain에서 이미 계산된 시간값을 그대로 사용
+ *   <li>Mapper는 단순 변환만 담당 (비즈니스 로직 없음)
  * </ul>
  *
  * @author setof-commerce
@@ -30,12 +28,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class RefreshTokenJpaEntityMapper {
-
-    private final ClockHolder clockHolder;
-
-    public RefreshTokenJpaEntityMapper(ClockHolder clockHolder) {
-        this.clockHolder = clockHolder;
-    }
 
     /**
      * Domain → Entity 변환
@@ -51,19 +43,19 @@ public class RefreshTokenJpaEntityMapper {
      * <ul>
      *   <li>memberId: String UUID 그대로 전달
      *   <li>tokenValue: 토큰 값 그대로 전달
-     *   <li>expiresAt: 현재 시간 + expiresInSeconds 계산
-     *   <li>createdAt: 현재 시간
+     *   <li>expiresAt: Domain에서 계산된 값 그대로 전달
+     *   <li>createdAt: Domain에서 계산된 값 그대로 전달
      * </ul>
      *
      * @param domain RefreshToken 도메인
      * @return RefreshTokenJpaEntity
      */
     public RefreshTokenJpaEntity toEntity(RefreshToken domain) {
-        Instant now = Instant.now(clockHolder.getClock());
-        Instant expiresAt = now.plusSeconds(domain.getExpiresInSeconds());
-
         return RefreshTokenJpaEntity.of(
-                domain.getMemberId(), domain.getTokenValue(), expiresAt, now);
+                domain.getMemberId(),
+                domain.getTokenValue(),
+                domain.getExpiresAt(),
+                domain.getCreatedAt());
     }
 
     /**

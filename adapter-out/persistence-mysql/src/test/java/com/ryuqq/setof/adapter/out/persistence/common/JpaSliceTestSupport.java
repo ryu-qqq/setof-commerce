@@ -159,4 +159,18 @@ public abstract class JpaSliceTestSupport {
     protected boolean contains(Object entity) {
         return testEntityManager.getEntityManager().contains(entity);
     }
+
+    /**
+     * JPQL 쿼리 실행
+     *
+     * <p>테스트에서 간단한 조회 쿼리가 필요할 때 사용합니다.
+     *
+     * @param jpql JPQL 쿼리 문자열
+     * @param resultClass 결과 타입 클래스
+     * @param <T> 결과 타입
+     * @return 쿼리 결과 목록
+     */
+    protected <T> java.util.List<T> query(String jpql, Class<T> resultClass) {
+        return testEntityManager.getEntityManager().createQuery(jpql, resultClass).getResultList();
+    }
 }
