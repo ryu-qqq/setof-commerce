@@ -4,6 +4,7 @@ import com.ryuqq.setof.adapter.out.client.portone.config.PortOneProperties;
 import com.ryuqq.setof.adapter.out.client.portone.dto.PortOneApiResponse;
 import com.ryuqq.setof.adapter.out.client.portone.dto.PortOneBankHolderResponse;
 import com.ryuqq.setof.adapter.out.client.portone.dto.PortOneTokenResponse;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
@@ -42,6 +43,11 @@ public class PortOneClient {
     private final PortOneProperties properties;
     private final AtomicReference<CachedToken> cachedToken = new AtomicReference<>();
 
+    @SuppressFBWarnings(
+            value = "EI_EXPOSE_REP2",
+            justification =
+                    "RestClient and PortOneProperties are Spring-managed beans, immutable after"
+                            + " injection")
     public PortOneClient(RestClient portOneRestClient, PortOneProperties properties) {
         this.restClient = portOneRestClient;
         this.properties = properties;

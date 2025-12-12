@@ -105,7 +105,7 @@ public class AccountVerificationAdapter implements AccountVerificationPort {
         if (holderName == null) {
             return "";
         }
-        return holderName.replaceAll("\\s+", "").toLowerCase();
+        return holderName.replaceAll("\\s+", "").toLowerCase(java.util.Locale.ROOT);
     }
 
     /**
