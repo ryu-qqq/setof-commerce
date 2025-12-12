@@ -89,8 +89,8 @@ class AuthApiIntegrationTest extends ApiIntegrationTestSupport {
         }
 
         @Test
-        @DisplayName("실패 - 존재하지 않는 회원으로 로그인 시 401 에러")
-        void login_nonExistentMember_returnsUnauthorized() {
+        @DisplayName("실패 - 존재하지 않는 회원으로 로그인 시 404 에러")
+        void login_nonExistentMember_returnsNotFound() {
             // Given
             LoginApiRequest request = new LoginApiRequest("01099990000", "Password1!");
 
@@ -98,8 +98,8 @@ class AuthApiIntegrationTest extends ApiIntegrationTestSupport {
             ResponseEntity<ProblemDetail> response =
                     restTemplate.postForEntity(LOGIN_URL, request, ProblemDetail.class);
 
-            // Then
-            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+            // Then - RESTful: 존재하지 않는 리소스는 404 반환
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         }
 
         @Test

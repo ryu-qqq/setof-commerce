@@ -40,9 +40,16 @@ import org.springframework.context.annotation.FilterType;
             "com.ryuqq.setof.adapter.in.rest.v2.refundaccount",
             "com.ryuqq.setof.adapter.in.rest.v2.member",
             "com.ryuqq.setof.adapter.in.rest.common",
-            // REST API - Auth components (for JwtAuthenticationFilter)
+            // REST API - Auth (controller, dto, mapper, filter, handler, etc.)
+            "com.ryuqq.setof.adapter.in.rest.auth.controller",
+            "com.ryuqq.setof.adapter.in.rest.auth.dto",
+            "com.ryuqq.setof.adapter.in.rest.auth.mapper",
+            "com.ryuqq.setof.adapter.in.rest.auth.filter",
+            "com.ryuqq.setof.adapter.in.rest.auth.handler",
             "com.ryuqq.setof.adapter.in.rest.auth.component",
             "com.ryuqq.setof.adapter.in.rest.auth.security",
+            "com.ryuqq.setof.adapter.in.rest.auth.utils",
+            "com.ryuqq.setof.adapter.in.rest.auth.repository",
             // Test Stub Adapters
             "com.ryuqq.setof.adapter.in.rest.integration.stub",
             // Persistence

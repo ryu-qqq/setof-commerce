@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -38,6 +39,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * @see TestMockBeanConfig
  */
 @TestConfiguration
+@EnableWebSecurity
 public class TestSecurityConfig {
 
     private final TokenProviderPort tokenProviderPort;
@@ -51,6 +53,7 @@ public class TestSecurityConfig {
     @Order(1)
     public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
+                .anonymous(AbstractHttpConfigurer::disable)
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
@@ -58,6 +61,8 @@ public class TestSecurityConfig {
                                 auth
                                         // 인증 필수 엔드포인트
                                         .requestMatchers(ApiV2Paths.Members.ME)
+                                        .authenticated()
+                                        .requestMatchers(ApiV2Paths.Auth.LOGOUT)
                                         .authenticated()
                                         // 나머지는 허용
                                         .anyRequest()

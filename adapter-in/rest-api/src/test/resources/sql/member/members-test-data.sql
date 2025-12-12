@@ -1,6 +1,12 @@
 -- Members Test Data
 -- Generated for MemberApiIntegrationTest and AuthApiIntegrationTest
 
+-- Clean up existing data to avoid duplicate key violations
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE refresh_tokens;
+TRUNCATE TABLE members;
+SET FOREIGN_KEY_CHECKS = 1;
+
 -- Member 1: Active LOCAL member (for login test)
 -- Password: "Password1!" BCrypt hash
 INSERT INTO members (
@@ -13,7 +19,7 @@ INSERT INTO members (
     '01936ddc-8d37-7c6e-8ad6-18c76adc9d01',
     '01012345678',
     'active@example.com',
-    '$2a$10$N9qo8uLOickgx2ZMRZoMye7H5PqRjSt6Q5g6e/JjL1Y/O3hKhL1oa',
+    '$2a$10$v6JM8vGbCAO67WWo6Ni4neK5MxghDeetpCq5MHIi7Fe9BF4xYglLq',
     '활성회원',
     '1990-01-15',
     'M',
@@ -69,7 +75,7 @@ INSERT INTO members (
     '01936ddc-8d37-7c6e-8ad6-18c76adc9d03',
     '01099998888',
     'withdrawn@example.com',
-    '$2a$10$N9qo8uLOickgx2ZMRZoMye7H5PqRjSt6Q5g6e/JjL1Y/O3hKhL1oa',
+    '$2a$10$v6JM8vGbCAO67WWo6Ni4neK5MxghDeetpCq5MHIi7Fe9BF4xYglLq',
     '탈퇴회원',
     '1985-12-25',
     'M',
@@ -97,7 +103,7 @@ INSERT INTO members (
     '01936ddc-8d37-7c6e-8ad6-18c76adc9d04',
     '01044445555',
     'inactive@example.com',
-    '$2a$10$N9qo8uLOickgx2ZMRZoMye7H5PqRjSt6Q5g6e/JjL1Y/O3hKhL1oa',
+    '$2a$10$v6JM8vGbCAO67WWo6Ni4neK5MxghDeetpCq5MHIi7Fe9BF4xYglLq',
     '휴면회원',
     '1992-06-10',
     'M',
