@@ -103,7 +103,7 @@ class SellerAssemblerTest {
 
             // Then
             assertNotNull(response);
-            assertEquals(1L, response.sellerId());
+            assertEquals(1L, response.id());
             assertEquals("테스트 셀러", response.sellerName());
             assertEquals("https://example.com/logo.png", response.logoUrl());
             assertEquals("테스트 셀러 설명", response.description());
@@ -115,7 +115,7 @@ class SellerAssemblerTest {
 
             // CS Info
             assertNotNull(response.csInfo());
-            assertEquals("cs@example.com", response.csInfo().csEmail());
+            assertEquals("cs@example.com", response.csInfo().email());
         }
     }
 
@@ -134,7 +134,7 @@ class SellerAssemblerTest {
 
             // Then
             assertNotNull(response);
-            assertEquals(1L, response.sellerId());
+            assertEquals(1L, response.id());
             assertEquals("테스트 셀러", response.sellerName());
             assertEquals("https://example.com/logo.png", response.logoUrl());
             assertEquals("APPROVED", response.approvalStatus());
@@ -158,15 +158,15 @@ class SellerAssemblerTest {
             // Then
             assertNotNull(responses);
             assertEquals(2, responses.size());
-            assertEquals(1L, responses.get(0).sellerId());
-            assertEquals(2L, responses.get(1).sellerId());
+            assertEquals(1L, responses.get(0).id());
+            assertEquals(2L, responses.get(1).id());
         }
     }
 
     // ========== Helper Methods ==========
 
     private RegisterSellerCommand createFullCommand() {
-        return RegisterSellerCommand.of(
+        return new RegisterSellerCommand(
                 "테스트 셀러",
                 "https://example.com/logo.png",
                 "테스트 셀러 설명",
@@ -182,7 +182,7 @@ class SellerAssemblerTest {
     }
 
     private RegisterSellerCommand createMinimalCommand() {
-        return RegisterSellerCommand.of(
+        return new RegisterSellerCommand(
                 "최소 셀러",
                 null,
                 null,

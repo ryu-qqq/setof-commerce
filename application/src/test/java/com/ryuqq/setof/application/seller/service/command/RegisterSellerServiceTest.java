@@ -104,7 +104,7 @@ class RegisterSellerServiceTest {
     // ========== Helper Methods ==========
 
     private RegisterSellerCommand createCommand() {
-        return RegisterSellerCommand.of(
+        return new RegisterSellerCommand(
                 "테스트 셀러",
                 "https://example.com/logo.png",
                 "테스트 셀러 설명",
