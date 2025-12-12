@@ -127,7 +127,10 @@ public class ShippingPolicyAdminV2Controller {
             @Parameter(description = "셀러 ID") @PathVariable Long sellerId,
             @Parameter(description = "배송 정책 ID") @PathVariable Long shippingPolicyId) {
 
-        ShippingPolicyResponse response = getShippingPolicyUseCase.execute(shippingPolicyId);
+        // UseCase에서 소유권 검증 수행
+        ShippingPolicyResponse response =
+                getShippingPolicyUseCase.execute(shippingPolicyId, sellerId);
+
         ShippingPolicyV2ApiResponse apiResponse = ShippingPolicyV2ApiResponse.from(response);
 
         return ResponseEntity.ok(ApiResponse.ofSuccess(apiResponse));
@@ -149,7 +152,7 @@ public class ShippingPolicyAdminV2Controller {
             @Parameter(description = "셀러 ID") @PathVariable Long sellerId,
             @Valid @RequestBody RegisterShippingPolicyV2ApiRequest request) {
 
-        RegisterShippingPolicyCommand command = mapper.toRegisterCommand(request);
+        RegisterShippingPolicyCommand command = mapper.toRegisterCommand(sellerId, request);
         Long shippingPolicyId = registerShippingPolicyUseCase.execute(command);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -177,7 +180,8 @@ public class ShippingPolicyAdminV2Controller {
             @Parameter(description = "배송 정책 ID") @PathVariable Long shippingPolicyId,
             @Valid @RequestBody UpdateShippingPolicyV2ApiRequest request) {
 
-        UpdateShippingPolicyCommand command = mapper.toUpdateCommand(shippingPolicyId, request);
+        UpdateShippingPolicyCommand command =
+                mapper.toUpdateCommand(shippingPolicyId, sellerId, request);
         updateShippingPolicyUseCase.execute(command);
 
         return ResponseEntity.ok(ApiResponse.ofSuccess());

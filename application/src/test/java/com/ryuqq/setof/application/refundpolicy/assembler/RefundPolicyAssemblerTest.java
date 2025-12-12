@@ -139,7 +139,7 @@ class RefundPolicyAssemblerTest {
     // ========== Helper Methods ==========
 
     private RegisterRefundPolicyCommand createFullCommand() {
-        return RegisterRefundPolicyCommand.of(
+        return new RegisterRefundPolicyCommand(
                 TEST_SELLER_ID,
                 "기본 환불",
                 "서울시 강남구",
@@ -153,7 +153,7 @@ class RefundPolicyAssemblerTest {
     }
 
     private RegisterRefundPolicyCommand createMinimalCommand() {
-        return RegisterRefundPolicyCommand.of(
+        return new RegisterRefundPolicyCommand(
                 TEST_SELLER_ID, "심플 환불", "서울시 강남구", null, "06234", 14, 0, null, false, 2);
     }
 

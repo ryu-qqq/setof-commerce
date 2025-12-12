@@ -98,7 +98,7 @@ class SellerCommandFactoryTest {
     // ========== Helper Methods ==========
 
     private RegisterSellerCommand createFullCommand() {
-        return RegisterSellerCommand.of(
+        return new RegisterSellerCommand(
                 "테스트 셀러",
                 "https://example.com/logo.png",
                 "테스트 셀러 설명",
@@ -114,7 +114,7 @@ class SellerCommandFactoryTest {
     }
 
     private RegisterSellerCommand createMinimalCommand() {
-        return RegisterSellerCommand.of(
+        return new RegisterSellerCommand(
                 "최소 셀러",
                 null,
                 null,

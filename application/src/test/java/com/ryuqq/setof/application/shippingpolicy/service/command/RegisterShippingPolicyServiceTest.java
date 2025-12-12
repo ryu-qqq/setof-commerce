@@ -98,7 +98,7 @@ class RegisterShippingPolicyServiceTest {
     // ========== Helper Methods ==========
 
     private RegisterShippingPolicyCommand createCommand() {
-        return RegisterShippingPolicyCommand.of(
+        return new RegisterShippingPolicyCommand(
                 TEST_SELLER_ID, "기본 배송", 3000, 50000, "주문 후 1-3일 이내 배송", true, 1);
     }
 

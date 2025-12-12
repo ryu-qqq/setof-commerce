@@ -98,7 +98,7 @@ class RegisterRefundPolicyServiceTest {
     // ========== Helper Methods ==========
 
     private RegisterRefundPolicyCommand createCommand() {
-        return RegisterRefundPolicyCommand.of(
+        return new RegisterRefundPolicyCommand(
                 TEST_SELLER_ID,
                 "기본 환불",
                 "서울시 강남구",

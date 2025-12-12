@@ -30,7 +30,8 @@ public enum ShippingPolicyErrorCode implements ErrorCode {
 
     // === 배송 정책 비즈니스 규칙 관련 (SHP-200 ~ SHP-299) ===
     DEFAULT_SHIPPING_POLICY_REQUIRED("SHP-200", 400, "기본 배송 정책이 반드시 1개 존재해야 합니다."),
-    LAST_SHIPPING_POLICY_CANNOT_BE_DELETED("SHP-201", 400, "마지막 배송 정책은 삭제할 수 없습니다.");
+    LAST_SHIPPING_POLICY_CANNOT_BE_DELETED("SHP-201", 400, "마지막 배송 정책은 삭제할 수 없습니다."),
+    NOT_OWNER("SHP-202", 403, "해당 배송 정책에 대한 권한이 없습니다.");
 
     private final String code;
     private final int httpStatus;

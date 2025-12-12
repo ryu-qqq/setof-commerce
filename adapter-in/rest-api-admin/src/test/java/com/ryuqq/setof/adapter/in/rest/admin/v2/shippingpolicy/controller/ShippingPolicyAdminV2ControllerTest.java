@@ -67,7 +67,7 @@ class ShippingPolicyAdminV2ControllerTest extends ApiIntegrationTestSupport {
             Long sellerId = 1L;
             RegisterShippingPolicyV2ApiRequest request =
                     new RegisterShippingPolicyV2ApiRequest(
-                            sellerId, "기본 배송 정책", 3000, 50000, "주문 후 2-3일 내 배송", true, 1);
+                            "기본 배송 정책", 3000, 50000, "주문 후 2-3일 내 배송", true, 1);
 
             given(registerShippingPolicyUseCase.execute(any(RegisterShippingPolicyCommand.class)))
                     .willReturn(1L);

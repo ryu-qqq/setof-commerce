@@ -7,6 +7,7 @@ import com.ryuqq.setof.application.shippingpolicy.manager.query.ShippingPolicyRe
 import com.ryuqq.setof.application.shippingpolicy.port.in.query.GetShippingPoliciesUseCase;
 import com.ryuqq.setof.application.shippingpolicy.port.in.query.GetShippingPolicyUseCase;
 import com.ryuqq.setof.domain.shippingpolicy.aggregate.ShippingPolicy;
+import com.ryuqq.setof.domain.shippingpolicy.exception.ShippingPolicyNotOwnerException;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,18 @@ public class ShippingPolicyQueryService
     @Override
     public ShippingPolicyResponse execute(Long shippingPolicyId) {
         ShippingPolicy shippingPolicy = shippingPolicyReadManager.findById(shippingPolicyId);
+        return shippingPolicyAssembler.toResponse(shippingPolicy);
+    }
+
+    @Override
+    public ShippingPolicyResponse execute(Long shippingPolicyId, Long sellerId) {
+        ShippingPolicy shippingPolicy = shippingPolicyReadManager.findById(shippingPolicyId);
+
+        // 소유권 검증: 요청한 sellerId와 정책의 sellerId가 일치하는지 확인
+        if (!shippingPolicy.getSellerId().equals(sellerId)) {
+            throw new ShippingPolicyNotOwnerException(shippingPolicyId, sellerId);
+        }
+
         return shippingPolicyAssembler.toResponse(shippingPolicy);
     }
 

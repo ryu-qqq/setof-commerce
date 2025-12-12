@@ -19,14 +19,20 @@ import org.springframework.context.annotation.FilterType;
         basePackages = {
             // Domain
             "com.ryuqq.setof.domain",
-            // Application - Seller 관련
+            // Application - Seller, ShippingPolicy, RefundPolicy 관련
             "com.ryuqq.setof.application.seller",
+            "com.ryuqq.setof.application.shippingpolicy",
+            "com.ryuqq.setof.application.refundpolicy",
             "com.ryuqq.setof.application.common",
             // REST API Admin - V2 Controllers
             "com.ryuqq.setof.adapter.in.rest.admin.v2.seller",
+            "com.ryuqq.setof.adapter.in.rest.admin.v2.shippingpolicy",
+            "com.ryuqq.setof.adapter.in.rest.admin.v2.refundpolicy",
             "com.ryuqq.setof.adapter.in.rest.admin.common",
-            // Persistence - Seller 관련
+            // Persistence - Seller, ShippingPolicy, RefundPolicy 관련
             "com.ryuqq.setof.adapter.out.persistence.seller",
+            "com.ryuqq.setof.adapter.out.persistence.shippingpolicy",
+            "com.ryuqq.setof.adapter.out.persistence.refundpolicy",
             "com.ryuqq.setof.adapter.out.persistence.config",
         },
         excludeFilters = {

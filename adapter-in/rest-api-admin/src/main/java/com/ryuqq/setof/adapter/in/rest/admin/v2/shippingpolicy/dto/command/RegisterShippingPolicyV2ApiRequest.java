@@ -9,7 +9,8 @@ import jakarta.validation.constraints.Size;
 /**
  * 배송 정책 등록 API 요청 DTO
  *
- * @param sellerId 셀러 ID
+ * <p>sellerId는 URL PathVariable로 전달됩니다.
+ *
  * @param policyName 정책명
  * @param defaultDeliveryCost 기본 배송비
  * @param freeShippingThreshold 무료 배송 기준 금액 (nullable)
@@ -21,9 +22,6 @@ import jakarta.validation.constraints.Size;
  */
 @Schema(description = "배송 정책 등록 요청")
 public record RegisterShippingPolicyV2ApiRequest(
-        @Schema(description = "셀러 ID", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-                @NotNull(message = "셀러 ID는 필수입니다")
-                Long sellerId,
         @Schema(
                         description = "정책명",
                         example = "기본 배송 정책",

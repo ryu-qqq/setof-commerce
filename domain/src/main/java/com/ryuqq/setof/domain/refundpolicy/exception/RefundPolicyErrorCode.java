@@ -30,7 +30,8 @@ public enum RefundPolicyErrorCode implements ErrorCode {
 
     // === 반품 정책 비즈니스 규칙 관련 (RFD-200 ~ RFD-299) ===
     DEFAULT_REFUND_POLICY_REQUIRED("RFD-200", 400, "기본 반품 정책이 반드시 1개 존재해야 합니다."),
-    LAST_REFUND_POLICY_CANNOT_BE_DELETED("RFD-201", 400, "마지막 반품 정책은 삭제할 수 없습니다.");
+    LAST_REFUND_POLICY_CANNOT_BE_DELETED("RFD-201", 400, "마지막 반품 정책은 삭제할 수 없습니다."),
+    NOT_OWNER("RFD-202", 403, "해당 반품 정책에 대한 권한이 없습니다.");
 
     private final String code;
     private final int httpStatus;

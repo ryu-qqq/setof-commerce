@@ -1,9 +1,28 @@
 package com.ryuqq.setof.adapter.in.rest.admin.common;
 
+import com.ryuqq.setof.application.refundpolicy.port.in.command.DeleteRefundPolicyUseCase;
+import com.ryuqq.setof.application.refundpolicy.port.in.command.RegisterRefundPolicyUseCase;
+import com.ryuqq.setof.application.refundpolicy.port.in.command.SetDefaultRefundPolicyUseCase;
+import com.ryuqq.setof.application.refundpolicy.port.in.command.UpdateRefundPolicyUseCase;
+import com.ryuqq.setof.application.refundpolicy.port.in.query.GetRefundPoliciesUseCase;
+import com.ryuqq.setof.application.refundpolicy.port.in.query.GetRefundPolicyUseCase;
+import com.ryuqq.setof.application.seller.port.in.command.DeleteSellerUseCase;
+import com.ryuqq.setof.application.seller.port.in.command.RegisterSellerUseCase;
+import com.ryuqq.setof.application.seller.port.in.command.UpdateApprovalStatusUseCase;
+import com.ryuqq.setof.application.seller.port.in.command.UpdateSellerUseCase;
+import com.ryuqq.setof.application.seller.port.in.query.GetSellerUseCase;
+import com.ryuqq.setof.application.seller.port.in.query.GetSellersUseCase;
+import com.ryuqq.setof.application.shippingpolicy.port.in.command.DeleteShippingPolicyUseCase;
+import com.ryuqq.setof.application.shippingpolicy.port.in.command.RegisterShippingPolicyUseCase;
+import com.ryuqq.setof.application.shippingpolicy.port.in.command.SetDefaultShippingPolicyUseCase;
+import com.ryuqq.setof.application.shippingpolicy.port.in.command.UpdateShippingPolicyUseCase;
+import com.ryuqq.setof.application.shippingpolicy.port.in.query.GetShippingPoliciesUseCase;
+import com.ryuqq.setof.application.shippingpolicy.port.in.query.GetShippingPolicyUseCase;
 import com.ryuqq.setof.domain.common.util.ClockHolder;
 import java.time.Clock;
 import java.time.ZoneId;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -36,4 +55,46 @@ public class TestMockBeanConfig {
     public ClockHolder clockHolder() {
         return () -> Clock.system(ZoneId.of("Asia/Seoul"));
     }
+
+    // ===== Seller UseCase Mocks =====
+
+    @MockBean private RegisterSellerUseCase registerSellerUseCase;
+
+    @MockBean private GetSellerUseCase getSellerUseCase;
+
+    @MockBean private GetSellersUseCase getSellersUseCase;
+
+    @MockBean private UpdateSellerUseCase updateSellerUseCase;
+
+    @MockBean private UpdateApprovalStatusUseCase updateApprovalStatusUseCase;
+
+    @MockBean private DeleteSellerUseCase deleteSellerUseCase;
+
+    // ===== ShippingPolicy UseCase Mocks =====
+
+    @MockBean private RegisterShippingPolicyUseCase registerShippingPolicyUseCase;
+
+    @MockBean private GetShippingPolicyUseCase getShippingPolicyUseCase;
+
+    @MockBean private GetShippingPoliciesUseCase getShippingPoliciesUseCase;
+
+    @MockBean private UpdateShippingPolicyUseCase updateShippingPolicyUseCase;
+
+    @MockBean private SetDefaultShippingPolicyUseCase setDefaultShippingPolicyUseCase;
+
+    @MockBean private DeleteShippingPolicyUseCase deleteShippingPolicyUseCase;
+
+    // ===== RefundPolicy UseCase Mocks =====
+
+    @MockBean private RegisterRefundPolicyUseCase registerRefundPolicyUseCase;
+
+    @MockBean private GetRefundPolicyUseCase getRefundPolicyUseCase;
+
+    @MockBean private GetRefundPoliciesUseCase getRefundPoliciesUseCase;
+
+    @MockBean private UpdateRefundPolicyUseCase updateRefundPolicyUseCase;
+
+    @MockBean private SetDefaultRefundPolicyUseCase setDefaultRefundPolicyUseCase;
+
+    @MockBean private DeleteRefundPolicyUseCase deleteRefundPolicyUseCase;
 }

@@ -6,6 +6,7 @@ import com.ryuqq.setof.application.refundpolicy.manager.query.RefundPolicyReadMa
 import com.ryuqq.setof.application.refundpolicy.port.in.command.UpdateRefundPolicyUseCase;
 import com.ryuqq.setof.domain.common.util.ClockHolder;
 import com.ryuqq.setof.domain.refundpolicy.aggregate.RefundPolicy;
+import com.ryuqq.setof.domain.refundpolicy.exception.RefundPolicyNotOwnerException;
 import com.ryuqq.setof.domain.refundpolicy.vo.PolicyName;
 import com.ryuqq.setof.domain.refundpolicy.vo.RefundDeliveryCost;
 import com.ryuqq.setof.domain.refundpolicy.vo.RefundGuide;
@@ -47,6 +48,11 @@ public class UpdateRefundPolicyService implements UpdateRefundPolicyUseCase {
     @Override
     public void execute(UpdateRefundPolicyCommand command) {
         RefundPolicy existingPolicy = refundPolicyReadManager.findById(command.refundPolicyId());
+
+        // 소유권 검증: 요청한 sellerId와 정책의 sellerId가 일치하는지 확인
+        if (!existingPolicy.getSellerId().equals(command.sellerId())) {
+            throw new RefundPolicyNotOwnerException(command.refundPolicyId(), command.sellerId());
+        }
 
         PolicyName policyName = PolicyName.of(command.policyName());
         ReturnAddress returnAddress =

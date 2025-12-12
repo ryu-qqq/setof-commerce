@@ -296,7 +296,6 @@ class RefundPolicyAdminV2ControllerDocsTest extends RestDocsTestSupport {
         Long sellerId = 1L;
         RegisterRefundPolicyV2ApiRequest request =
                 new RegisterRefundPolicyV2ApiRequest(
-                        sellerId,
                         "기본 환불 정책",
                         "서울시 강남구",
                         "역삼동 123-45",
@@ -307,7 +306,9 @@ class RefundPolicyAdminV2ControllerDocsTest extends RestDocsTestSupport {
                         true,
                         1);
 
-        given(mapper.toRegisterCommand(any(RegisterRefundPolicyV2ApiRequest.class)))
+        given(
+                        mapper.toRegisterCommand(
+                                any(Long.class), any(RegisterRefundPolicyV2ApiRequest.class)))
                 .willReturn(
                         new RegisterRefundPolicyCommand(
                                 sellerId,
@@ -335,9 +336,6 @@ class RefundPolicyAdminV2ControllerDocsTest extends RestDocsTestSupport {
                                 "admin-refund-policy-register",
                                 pathParameters(parameterWithName("sellerId").description("셀러 ID")),
                                 requestFields(
-                                        fieldWithPath("sellerId")
-                                                .type(JsonFieldType.NUMBER)
-                                                .description("셀러 ID (필수)"),
                                         fieldWithPath("policyName")
                                                 .type(JsonFieldType.STRING)
                                                 .description("정책명 (필수)"),
@@ -398,10 +396,15 @@ class RefundPolicyAdminV2ControllerDocsTest extends RestDocsTestSupport {
                 new UpdateRefundPolicyV2ApiRequest(
                         "수정된 환불 정책", "서울시 서초구", "서초동 456-78", "06789", 14, 5000, "수정된 환불 안내");
 
-        given(mapper.toUpdateCommand(any(), any(UpdateRefundPolicyV2ApiRequest.class)))
+        given(
+                        mapper.toUpdateCommand(
+                                any(Long.class),
+                                any(Long.class),
+                                any(UpdateRefundPolicyV2ApiRequest.class)))
                 .willReturn(
                         new UpdateRefundPolicyCommand(
                                 refundPolicyId,
+                                sellerId,
                                 "수정된 환불 정책",
                                 "서울시 서초구",
                                 "서초동 456-78",

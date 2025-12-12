@@ -68,7 +68,7 @@ class UpdateApprovalStatusServiceTest {
             // Given
             Long sellerId = 1L;
             UpdateApprovalStatusCommand command =
-                    UpdateApprovalStatusCommand.of(sellerId, "APPROVED");
+                    new UpdateApprovalStatusCommand(sellerId, "APPROVED");
             Seller pendingSeller = createPendingSeller();
 
             when(sellerReadManager.findById(sellerId)).thenReturn(pendingSeller);
@@ -88,7 +88,7 @@ class UpdateApprovalStatusServiceTest {
             // Given
             Long sellerId = 1L;
             UpdateApprovalStatusCommand command =
-                    UpdateApprovalStatusCommand.of(sellerId, "REJECTED");
+                    new UpdateApprovalStatusCommand(sellerId, "REJECTED");
             Seller pendingSeller = createPendingSeller();
 
             when(sellerReadManager.findById(sellerId)).thenReturn(pendingSeller);
@@ -108,7 +108,7 @@ class UpdateApprovalStatusServiceTest {
             // Given
             Long sellerId = 1L;
             UpdateApprovalStatusCommand command =
-                    UpdateApprovalStatusCommand.of(sellerId, "SUSPENDED");
+                    new UpdateApprovalStatusCommand(sellerId, "SUSPENDED");
             Seller approvedSeller = createApprovedSeller();
 
             when(sellerReadManager.findById(sellerId)).thenReturn(approvedSeller);
@@ -128,7 +128,7 @@ class UpdateApprovalStatusServiceTest {
             // Given
             Long sellerId = 1L;
             UpdateApprovalStatusCommand command =
-                    UpdateApprovalStatusCommand.of(sellerId, "PENDING");
+                    new UpdateApprovalStatusCommand(sellerId, "PENDING");
             Seller pendingSeller = createPendingSeller();
 
             when(sellerReadManager.findById(sellerId)).thenReturn(pendingSeller);

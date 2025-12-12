@@ -6,6 +6,7 @@ import com.ryuqq.setof.application.shippingpolicy.manager.query.ShippingPolicyRe
 import com.ryuqq.setof.application.shippingpolicy.port.in.command.UpdateShippingPolicyUseCase;
 import com.ryuqq.setof.domain.common.util.ClockHolder;
 import com.ryuqq.setof.domain.shippingpolicy.aggregate.ShippingPolicy;
+import com.ryuqq.setof.domain.shippingpolicy.exception.ShippingPolicyNotOwnerException;
 import com.ryuqq.setof.domain.shippingpolicy.vo.DeliveryCost;
 import com.ryuqq.setof.domain.shippingpolicy.vo.DeliveryGuide;
 import com.ryuqq.setof.domain.shippingpolicy.vo.DisplayOrder;
@@ -48,6 +49,12 @@ public class UpdateShippingPolicyService implements UpdateShippingPolicyUseCase 
     public void execute(UpdateShippingPolicyCommand command) {
         ShippingPolicy existingPolicy =
                 shippingPolicyReadManager.findById(command.shippingPolicyId());
+
+        // 소유권 검증: 요청한 sellerId와 정책의 sellerId가 일치하는지 확인
+        if (!existingPolicy.getSellerId().equals(command.sellerId())) {
+            throw new ShippingPolicyNotOwnerException(
+                    command.shippingPolicyId(), command.sellerId());
+        }
 
         PolicyName policyName = PolicyName.of(command.policyName());
         DeliveryCost defaultDeliveryCost = DeliveryCost.of(command.defaultDeliveryCost());

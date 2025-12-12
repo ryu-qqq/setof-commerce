@@ -67,7 +67,6 @@ class RefundPolicyAdminV2ControllerTest extends ApiIntegrationTestSupport {
             Long sellerId = 1L;
             RegisterRefundPolicyV2ApiRequest request =
                     new RegisterRefundPolicyV2ApiRequest(
-                            sellerId,
                             "기본 환불 정책",
                             "서울시 강남구",
                             "역삼동 123-45",

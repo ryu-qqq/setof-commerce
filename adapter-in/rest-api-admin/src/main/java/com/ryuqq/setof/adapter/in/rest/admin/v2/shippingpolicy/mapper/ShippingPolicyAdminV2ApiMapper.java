@@ -20,11 +20,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class ShippingPolicyAdminV2ApiMapper {
 
-    /** 배송 정책 등록 요청 → 등록 커맨드 변환 */
+    /** 배송 정책 등록 요청 → 등록 커맨드 변환 (PathVariable sellerId 사용) */
     public RegisterShippingPolicyCommand toRegisterCommand(
-            RegisterShippingPolicyV2ApiRequest request) {
+            Long sellerId, RegisterShippingPolicyV2ApiRequest request) {
         return new RegisterShippingPolicyCommand(
-                request.sellerId(),
+                sellerId,
                 request.policyName(),
                 request.defaultDeliveryCost(),
                 request.freeShippingThreshold(),
@@ -33,11 +33,12 @@ public class ShippingPolicyAdminV2ApiMapper {
                 request.displayOrder());
     }
 
-    /** 배송 정책 수정 요청 → 수정 커맨드 변환 */
+    /** 배송 정책 수정 요청 → 수정 커맨드 변환 (PathVariable sellerId 사용) */
     public UpdateShippingPolicyCommand toUpdateCommand(
-            Long shippingPolicyId, UpdateShippingPolicyV2ApiRequest request) {
+            Long shippingPolicyId, Long sellerId, UpdateShippingPolicyV2ApiRequest request) {
         return new UpdateShippingPolicyCommand(
                 shippingPolicyId,
+                sellerId,
                 request.policyName(),
                 request.defaultDeliveryCost(),
                 request.freeShippingThreshold(),

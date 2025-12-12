@@ -7,6 +7,7 @@ import com.ryuqq.setof.application.refundpolicy.manager.query.RefundPolicyReadMa
 import com.ryuqq.setof.application.refundpolicy.port.in.query.GetRefundPoliciesUseCase;
 import com.ryuqq.setof.application.refundpolicy.port.in.query.GetRefundPolicyUseCase;
 import com.ryuqq.setof.domain.refundpolicy.aggregate.RefundPolicy;
+import com.ryuqq.setof.domain.refundpolicy.exception.RefundPolicyNotOwnerException;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +40,18 @@ public class RefundPolicyQueryService implements GetRefundPolicyUseCase, GetRefu
     @Override
     public RefundPolicyResponse execute(Long refundPolicyId) {
         RefundPolicy refundPolicy = refundPolicyReadManager.findById(refundPolicyId);
+        return refundPolicyAssembler.toResponse(refundPolicy);
+    }
+
+    @Override
+    public RefundPolicyResponse execute(Long refundPolicyId, Long sellerId) {
+        RefundPolicy refundPolicy = refundPolicyReadManager.findById(refundPolicyId);
+
+        // 소유권 검증: 요청한 sellerId와 정책의 sellerId가 일치하는지 확인
+        if (!refundPolicy.getSellerId().equals(sellerId)) {
+            throw new RefundPolicyNotOwnerException(refundPolicyId, sellerId);
+        }
+
         return refundPolicyAssembler.toResponse(refundPolicy);
     }
 

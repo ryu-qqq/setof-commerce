@@ -20,10 +20,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class RefundPolicyAdminV2ApiMapper {
 
-    /** 환불 정책 등록 요청 → 등록 커맨드 변환 */
-    public RegisterRefundPolicyCommand toRegisterCommand(RegisterRefundPolicyV2ApiRequest request) {
+    /** 환불 정책 등록 요청 → 등록 커맨드 변환 (PathVariable sellerId 사용) */
+    public RegisterRefundPolicyCommand toRegisterCommand(
+            Long sellerId, RegisterRefundPolicyV2ApiRequest request) {
         return new RegisterRefundPolicyCommand(
-                request.sellerId(),
+                sellerId,
                 request.policyName(),
                 request.returnAddressLine1(),
                 request.returnAddressLine2(),
@@ -35,11 +36,12 @@ public class RefundPolicyAdminV2ApiMapper {
                 request.displayOrder());
     }
 
-    /** 환불 정책 수정 요청 → 수정 커맨드 변환 */
+    /** 환불 정책 수정 요청 → 수정 커맨드 변환 (PathVariable sellerId 사용) */
     public UpdateRefundPolicyCommand toUpdateCommand(
-            Long refundPolicyId, UpdateRefundPolicyV2ApiRequest request) {
+            Long refundPolicyId, Long sellerId, UpdateRefundPolicyV2ApiRequest request) {
         return new UpdateRefundPolicyCommand(
                 refundPolicyId,
+                sellerId,
                 request.policyName(),
                 request.returnAddressLine1(),
                 request.returnAddressLine2(),

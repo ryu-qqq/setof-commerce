@@ -17,4 +17,15 @@ public interface GetShippingPolicyUseCase {
      * @return 배송 정책 응답
      */
     ShippingPolicyResponse execute(Long shippingPolicyId);
+
+    /**
+     * 배송 정책 단건 조회 (소유권 검증 포함)
+     *
+     * @param shippingPolicyId 배송 정책 ID
+     * @param sellerId 셀러 ID (소유권 검증용)
+     * @return 배송 정책 응답
+     * @throws com.ryuqq.setof.domain.shippingpolicy.exception.ShippingPolicyNotOwnerException 소유권
+     *     불일치 시
+     */
+    ShippingPolicyResponse execute(Long shippingPolicyId, Long sellerId);
 }

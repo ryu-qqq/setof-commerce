@@ -127,7 +127,9 @@ public class RefundPolicyAdminV2Controller {
             @Parameter(description = "셀러 ID") @PathVariable Long sellerId,
             @Parameter(description = "환불 정책 ID") @PathVariable Long refundPolicyId) {
 
-        RefundPolicyResponse response = getRefundPolicyUseCase.execute(refundPolicyId);
+        // UseCase에서 소유권 검증 수행
+        RefundPolicyResponse response = getRefundPolicyUseCase.execute(refundPolicyId, sellerId);
+
         RefundPolicyV2ApiResponse apiResponse = RefundPolicyV2ApiResponse.from(response);
 
         return ResponseEntity.ok(ApiResponse.ofSuccess(apiResponse));
@@ -149,7 +151,7 @@ public class RefundPolicyAdminV2Controller {
             @Parameter(description = "셀러 ID") @PathVariable Long sellerId,
             @Valid @RequestBody RegisterRefundPolicyV2ApiRequest request) {
 
-        RegisterRefundPolicyCommand command = mapper.toRegisterCommand(request);
+        RegisterRefundPolicyCommand command = mapper.toRegisterCommand(sellerId, request);
         Long refundPolicyId = registerRefundPolicyUseCase.execute(command);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -177,7 +179,8 @@ public class RefundPolicyAdminV2Controller {
             @Parameter(description = "환불 정책 ID") @PathVariable Long refundPolicyId,
             @Valid @RequestBody UpdateRefundPolicyV2ApiRequest request) {
 
-        UpdateRefundPolicyCommand command = mapper.toUpdateCommand(refundPolicyId, request);
+        UpdateRefundPolicyCommand command =
+                mapper.toUpdateCommand(refundPolicyId, sellerId, request);
         updateRefundPolicyUseCase.execute(command);
 
         return ResponseEntity.ok(ApiResponse.ofSuccess());

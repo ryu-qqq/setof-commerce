@@ -9,7 +9,8 @@ import jakarta.validation.constraints.Size;
 /**
  * 환불 정책 등록 API 요청 DTO
  *
- * @param sellerId 셀러 ID
+ * <p>sellerId는 URL PathVariable로 전달됩니다.
+ *
  * @param policyName 정책명
  * @param returnAddressLine1 반품 주소 1
  * @param returnAddressLine2 반품 주소 2
@@ -24,9 +25,6 @@ import jakarta.validation.constraints.Size;
  */
 @Schema(description = "환불 정책 등록 요청")
 public record RegisterRefundPolicyV2ApiRequest(
-        @Schema(description = "셀러 ID", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-                @NotNull(message = "셀러 ID는 필수입니다")
-                Long sellerId,
         @Schema(
                         description = "정책명",
                         example = "기본 환불 정책",
