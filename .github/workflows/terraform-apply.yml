@@ -8,6 +8,10 @@ on:
         description: 'Web API Docker image tag (e.g., web-api-1-abc1234)'
         required: false
         type: string
+      web-api-admin-image-tag:
+        description: 'Web API Admin Docker image tag (e.g., web-api-admin-1-abc1234)'
+        required: false
+        type: string
     secrets:
       AWS_ROLE_ARN:
         required: true
@@ -39,6 +43,9 @@ jobs:
           - name: ecs-web-api
             dir: terraform/ecs-web-api
             order: 3
+          - name: ecs-web-api-admin
+            dir: terraform/ecs-web-api-admin
+            order: 4
 
     steps:
       - name: Checkout code
@@ -83,6 +90,10 @@ jobs:
                 echo "  → Importing setof-commerce-web-api-prod ECR repository..."
                 terraform import -input=false 'module.ecr_web_api.aws_ecr_repository.this[0]' setof-commerce-web-api-prod || echo "  ⚠️  Import failed or already in state"
               fi
+              if aws ecr describe-repositories --repository-names setof-commerce-web-api-admin-prod --region ap-northeast-2 >/dev/null 2>&1; then
+                echo "  → Importing setof-commerce-web-api-admin-prod ECR repository..."
+                terraform import -input=false 'module.ecr_web_api_admin.aws_ecr_repository.this[0]' setof-commerce-web-api-admin-prod || echo "  ⚠️  Import failed or already in state"
+              fi
             fi
 
             # ECS Cluster 모듈
@@ -123,6 +134,25 @@ jobs:
               fi
             fi
 
+            # ECS Web API Admin 모듈
+            if [ "${{ matrix.module.name }}" == "ecs-web-api-admin" ]; then
+              echo "📦 ECS Web API Admin 리소스 Import 중..."
+
+              # ALB
+              ALB_ARN=$(aws elbv2 describe-load-balancers --names setof-commerce-admin-alb-prod --region ap-northeast-2 --query 'LoadBalancers[0].LoadBalancerArn' --output text 2>/dev/null || echo "")
+              if [ -n "$ALB_ARN" ] && [ "$ALB_ARN" != "None" ]; then
+                echo "  → Importing ALB: $ALB_ARN"
+                terraform import -input=false aws_lb.web_api_admin "$ALB_ARN" || echo "  ⚠️  Import failed or already in state"
+              fi
+
+              # Target Group
+              TG_ARN=$(aws elbv2 describe-target-groups --names setof-commerce-admin-tg-prod --region ap-northeast-2 --query 'TargetGroups[0].TargetGroupArn' --output text 2>/dev/null || echo "")
+              if [ -n "$TG_ARN" ] && [ "$TG_ARN" != "None" ]; then
+                echo "  → Importing Target Group: $TG_ARN"
+                terraform import -input=false aws_lb_target_group.web_api_admin "$TG_ARN" || echo "  ⚠️  Import failed or already in state"
+              fi
+            fi
+
             echo "✅ Import 완료! Plan 재실행..."
             terraform plan -out=tfplan
           else
@@ -142,6 +172,9 @@ jobs:
           if [ "${{ matrix.module.name }}" == "ecs-web-api" ] && [ -n "${{ inputs.web-api-image-tag }}" ]; then
             echo "📦 Using Web API image tag: ${{ inputs.web-api-image-tag }}"
             EXTRA_VARS="-var=image_tag=${{ inputs.web-api-image-tag }}"
+          elif [ "${{ matrix.module.name }}" == "ecs-web-api-admin" ] && [ -n "${{ inputs.web-api-admin-image-tag }}" ]; then
+            echo "📦 Using Web API Admin image tag: ${{ inputs.web-api-admin-image-tag }}"
+            EXTRA_VARS="-var=image_tag=${{ inputs.web-api-admin-image-tag }}"
           else
             echo "ℹ️  No image tag provided for ${{ matrix.module.name }}, using default from provider.tf"
           fi
@@ -189,8 +222,11 @@ jobs:
           echo "- ✅ ECS Cluster" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ ElastiCache (Redis)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ ECS Web API" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ ECS Web API Admin" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Application URL**: https://commerce.set-of.com" >> $GITHUB_STEP_SUMMARY
+          echo "**Application URLs**:" >> $GITHUB_STEP_SUMMARY
+          echo "- Web API: https://commerce.set-of.com" >> $GITHUB_STEP_SUMMARY
+          echo "- Admin API: https://admin.set-of.com" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Next Steps**:" >> $GITHUB_STEP_SUMMARY
           echo "1. Verify infrastructure in AWS Console" >> $GITHUB_STEP_SUMMARY

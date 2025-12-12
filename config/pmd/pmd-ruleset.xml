@@ -103,6 +103,13 @@
     <!-- God Class 방지 (LCOM 기반) -->
     <rule ref="category/java/design.xml/GodClass">
         <priority>2</priority>
+        <properties>
+            <!-- DDD Aggregate Root는 비즈니스 로직이 집중되므로 예외 처리 -->
+            <property name="violationSuppressXPath"
+                      value="//ClassDeclaration[
+                             ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.aggregate')]
+                             ]"/>
+        </properties>
     </rule>
 
     <!-- ========================================

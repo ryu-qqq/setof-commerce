@@ -1,9 +1,9 @@
 // ========================================
-// Bootstrap: Web API Application
+// Bootstrap: Web API Admin Application
 // ========================================
-// Runnable Spring Boot application
+// Runnable Spring Boot application for Admin APIs
 // Wires all adapters and beans together
-// Main application entry point
+// Main application entry point for Admin
 // NO Lombok allowed
 // ========================================
 
@@ -80,20 +80,25 @@ dependencies {
     // TestFixtures from all modules (for CommonTestingRulesTest)
     testImplementation testFixtures(project(':domain'))
     testImplementation testFixtures(project(':application'))
-    testImplementation testFixtures(project(':adapter-in:rest-api'))
+    testImplementation testFixtures(project(':adapter-in:rest-api-admin'))
     testImplementation testFixtures(project(':adapter-out:persistence-mysql'))
 }
 
 // ========================================
 // Spring Boot Configuration
 // ========================================
-// Note: bootJar is disabled until Application class is created
 tasks.bootJar {
-    enabled = false
-}
+    archiveFileName = "${project.rootProject.name}-web-api-admin.jar"
 
-tasks.jar {
-    enabled = true
+    manifest {
+        attributes(
+            'Implementation-Title': "${project.rootProject.name}-admin",
+            'Implementation-Version': project.version,
+            'Built-By': System.getProperty('user.name'),
+            'Built-JDK': System.getProperty('java.version'),
+            'Build-Timestamp': Instant.now().toString()
+        )
+    }
 }
 
 // ========================================
@@ -129,4 +134,18 @@ tasks.bootRun {
         '-Xmx1024m',
         '-XX:+UseG1GC'
     ]
+}
+
+// ========================================
+// REST Docs Configuration
+// ========================================
+// rest-api-admin 모듈에서 생성된 문서를 static 리소스로 복사
+tasks.register('copyRestDocs', Copy) {
+    dependsOn ':adapter-in:rest-api-admin:asciidoctor'
+    from "${project(':adapter-in:rest-api-admin').buildDir}/docs/asciidoc"
+    into "${sourceSets.main.output.resourcesDir}/static/docs"
+}
+
+tasks.processResources {
+    dependsOn copyRestDocs
 }

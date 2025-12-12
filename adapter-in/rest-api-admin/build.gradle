@@ -10,6 +10,18 @@
 plugins {
     id 'java-library'
     id 'java-test-fixtures'
+    id 'org.asciidoctor.jvm.convert' version '3.3.2'
+}
+
+// ========================================
+// REST Docs Configuration
+// ========================================
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
+
+configurations {
+    asciidoctorExt
 }
 
 // ========================================
@@ -48,6 +60,11 @@ dependencies {
     implementation libs.springdoc.openapi
 
     // ========================================
+    // REST Docs asciidoctor extension
+    // ========================================
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor:3.0.1'
+
+    // ========================================
     // Test Dependencies
     // ========================================
     testImplementation libs.spring.boot.starter.test
@@ -56,6 +73,18 @@ dependencies {
     testImplementation libs.spring.restdocs.mockmvc
     testImplementation libs.archunit.junit5
     testImplementation testFixtures(project(":domain"))
+
+    // ========================================
+    // TestContainers (API 통합 테스트용)
+    // ========================================
+    testImplementation libs.bundles.testcontainers
+    testImplementation libs.mysql.connector
+    testImplementation libs.spring.boot.starter.jdbc
+
+    // ========================================
+    // Persistence Layer (API 통합 테스트용 - DB 연동)
+    // ========================================
+    testImplementation project(':adapter-out:persistence-mysql')
 
     // ========================================
     // Test Fixtures Dependencies

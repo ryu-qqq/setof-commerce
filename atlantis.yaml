@@ -56,3 +56,11 @@ projects:
     autoplan:
       when_modified: ["*.tf", "*.tfvars", "../*.tf"]
       enabled: true
+
+  # ECS Service for web-api-admin (ALB + Auto Scaling)
+  - name: setof-commerce-ecs-web-api-admin-prod
+    dir: terraform/ecs-web-api-admin
+    workspace: default
+    autoplan:
+      when_modified: ["*.tf", "*.tfvars", "../*.tf"]
+      enabled: true

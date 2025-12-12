@@ -41,7 +41,7 @@ public class MemberApiMapper {
     public RegisterMemberCommand toRegisterCommand(RegisterMemberApiRequest request) {
         List<ConsentItem> consents = new ArrayList<>();
         consents.add(new ConsentItem("PRIVACY", request.privacyConsent()));
-        consents.add(new ConsentItem("SERVICE_TERMS", request.serviceTermsConsent()));
+        consents.add(new ConsentItem("SERVICE", request.serviceTermsConsent()));
         consents.add(new ConsentItem("MARKETING", request.adConsent()));
 
         return new RegisterMemberCommand(
