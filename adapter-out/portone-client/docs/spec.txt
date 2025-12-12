@@ -1,0 +1,139 @@
+API secret 를 사용한 토큰 발급
+API secret 를 통해 API 인증에 사용할 토큰을 가져옵니다.
+
+POST /login/api-secret
+{
+  "apiSecret": "your-api-secret",
+}
+
+
+Response
+200 Ok
+성공 응답으로 토큰을 반환합니다.
+
+accessToken: string
+인증에 사용하는 엑세스 토큰
+30분의 유효기간을 가지고 있습니다.
+
+refreshToken: string
+토큰 재발급 및 유효기간 연장을 위해 사용하는 리프레시 토큰
+하루의 유효기간을 가지고 있으며, 리프레시 토큰을 통해 유효기간이 연장된 새로운 엑세스 토큰을 발급받을 수 있습니다. 동일한 유저가 로그인 또는 토큰 재발급을 진행할 때마다 기존에 발급된 리프레시 토큰은 즉시 만료되므로 API 사용에 유의해주세요.
+
+400 Error
+* `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+
+type: string
+Union Tag
+이 필드의 값에 따라 실제 타입이 결정됩니다
+
+message?: string
+InvalidRequestError
+type이(가) "INVALID_REQUEST"일 때의 고유 필드
+
+허가되지 않은 값, 올바르지 않은 형식의 요청 등이 모두 해당됩니다.
+
+401 Error
+* `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
+
+type: string
+Union Tag
+이 필드의 값에 따라 실제 타입이 결정됩니다
+
+message?: string
+UnauthorizedError
+type이(가) "UNAUTHORIZED"일 때의 고유 필드
+
+인증 정보가 올바르지 않은 경우
+
+
+
+
+
+
+예금주 조회
+GET /platform/bank-accounts/{bank}/{accountNumber}/holder
+
+bank: Bank
+은행
+은행
+
+accountNumber: string
+'-'를 제외한 계좌 번호
+'-'를 제외한 계좌 번호
+
+
+response
+
+200 Ok
+성공 응답으로 조회된 예금주 명이 반환됩니다.
+
+holderName: string
+계좌 예금주 이름
+accountVerificationId: string
+계좌 검증 아이디
+400 Error
+* `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우 * `PlatformNotSupportedBankError`: 지원하지 않는 은행인 경우
+
+type: string
+Union Tag
+이 필드의 값에 따라 실제 타입이 결정됩니다
+
+message?: string
+InvalidRequestError
+type이(가) "INVALID_REQUEST"일 때의 고유 필드
+
+허가되지 않은 값, 올바르지 않은 형식의 요청 등이 모두 해당됩니다.
+
+PlatformNotSupportedBankError
+type이(가) "PLATFORM_NOT_SUPPORTED_BANK"일 때의 고유 필드
+
+지원하지 않는 은행인 경우
+
+401 Error
+* `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
+
+type: string
+Union Tag
+이 필드의 값에 따라 실제 타입이 결정됩니다
+
+message?: string
+UnauthorizedError
+type이(가) "UNAUTHORIZED"일 때의 고유 필드
+
+인증 정보가 올바르지 않은 경우
+
+403 Error
+* `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우 * `ForbiddenError`: 요청이 거절된 경우
+
+type: string
+Union Tag
+이 필드의 값에 따라 실제 타입이 결정됩니다
+
+message?: string
+ForbiddenError
+type이(가) "FORBIDDEN"일 때의 고유 필드
+
+요청이 거절된 경우
+
+PlatformNotEnabledError
+type이(가) "PLATFORM_NOT_ENABLED"일 때의 고유 필드
+
+플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+
+503 Error
+* `PlatformExternalApiTemporarilyFailedError`: 외부 api의 일시적인 오류 * `PlatformExternalApiFailedError`: 외부 api 오류
+
+type: string
+Union Tag
+이 필드의 값에 따라 실제 타입이 결정됩니다
+
+message?: string
+PlatformExternalApiFailedError
+type이(가) "PLATFORM_EXTERNAL_API_FAILED"일 때의 고유 필드
+
+외부 api 오류
+
+PlatformExternalApiTemporarilyFailedError
+type이(가) "PLATFORM_EXTERNAL_API_TEMPORARILY_FAILED"일 때의 고유 필드
+
+외부 api의 일시적인 오류

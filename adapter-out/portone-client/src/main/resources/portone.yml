@@ -1,0 +1,61 @@
+# ===============================================
+# PortOne Client Configuration
+# ===============================================
+# 포트원(PortOne) API 연동 설정
+# - 계좌 실명 검증
+# - 결제 연동 (향후 확장)
+#
+# @since 1.0.0
+# ===============================================
+
+# ===============================================
+# PortOne Configuration
+# ===============================================
+portone:
+  api-url: https://api.iamport.kr
+  api-key: ${PORTONE_API_KEY:}
+  api-secret: ${PORTONE_API_SECRET:}
+  enabled: false  # 기본값: 비활성화 (실제 운영 환경에서 true로 설정)
+
+# ===============================================
+# Profile-Specific Configurations
+# ===============================================
+---
+# Local 환경 (API 비활성화)
+spring:
+  config:
+    activate:
+      on-profile: local
+
+portone:
+  enabled: false
+
+---
+# Development 환경
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+portone:
+  enabled: false
+
+---
+# Staging 환경
+spring:
+  config:
+    activate:
+      on-profile: staging
+
+portone:
+  enabled: true
+
+---
+# Production 환경
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+portone:
+  enabled: true

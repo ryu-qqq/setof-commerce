@@ -39,6 +39,17 @@ spring:
       adjust-dates-to-context-time-zone: false
     date-format: yyyy-MM-dd'T'HH:mm:ss
 
+# =============================================================================
+# JWT Configuration (Security Module)
+# =============================================================================
+security:
+  jwt:
+    # 테스트용 256-bit secret key (32바이트 이상)
+    secret: test-jwt-secret-key-for-integration-testing-at-least-256-bits
+    access-token-expiration: 3600  # 1시간 (초)
+    refresh-token-expiration: 604800  # 7일 (초)
+    issuer: setof-commerce-test
+
 # 로깅 설정
 logging:
   level:

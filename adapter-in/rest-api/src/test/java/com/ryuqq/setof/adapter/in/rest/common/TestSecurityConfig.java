@@ -5,15 +5,18 @@ import com.ryuqq.setof.adapter.in.rest.auth.component.SecurityContextAuthenticat
 import com.ryuqq.setof.adapter.in.rest.auth.component.TokenCookieWriter;
 import com.ryuqq.setof.adapter.in.rest.auth.config.SecurityProperties;
 import com.ryuqq.setof.adapter.in.rest.auth.filter.JwtAuthenticationFilter;
+import com.ryuqq.setof.adapter.in.rest.auth.paths.ApiV2Paths;
 import com.ryuqq.setof.application.auth.port.out.client.TokenProviderPort;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -50,7 +53,19 @@ public class TestSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .authorizeHttpRequests(
+                        auth ->
+                                auth
+                                        // 인증 필수 엔드포인트
+                                        .requestMatchers(ApiV2Paths.Members.ME)
+                                        .authenticated()
+                                        // 나머지는 허용
+                                        .anyRequest()
+                                        .permitAll())
+                .exceptionHandling(
+                        ex ->
+                                ex.authenticationEntryPoint(
+                                        new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .addFilterBefore(
                         testJwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();

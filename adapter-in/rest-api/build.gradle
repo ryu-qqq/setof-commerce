@@ -80,6 +80,8 @@ dependencies {
 
     // Persistence Layer (API 통합 테스트용 - DB 연동)
     testImplementation project(':adapter-out:persistence-mysql')
+    // Security Layer (API 통합 테스트용 - JWT, Password Encoder)
+    testImplementation project(':adapter-out:security')
 
     // ========================================
     // Test Fixtures Dependencies

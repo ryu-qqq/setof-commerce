@@ -85,3 +85,9 @@ local-dev/test-files/
 # ========================================
 **/bin/
 
+terraform/
+# Terraform files
+terraform/
+.terraform/
+*.tfstate*
+
