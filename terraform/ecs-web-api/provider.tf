@@ -1,6 +1,9 @@
 # ========================================
 # Terraform Provider Configuration
 # ========================================
+# Service Discovery Only (No ALB)
+# Access via: web-api.connectly.local:8080
+# ========================================
 
 terraform {
   required_version = ">= 1.0"
@@ -76,7 +79,7 @@ variable "web_api_desired_count" {
 variable "image_tag" {
   description = "Docker image tag to deploy. Auto-set by GitHub Actions. Format: {component}-{build-number}-{git-sha}"
   type        = string
-  default     = "web-api-1-initial"  # Fallback only - GitHub Actions will override this
+  default     = "web-api-1-initial" # Fallback only - GitHub Actions will override this
 
   validation {
     condition     = can(regex("^web-api-[0-9]+-[a-zA-Z0-9]+$", var.image_tag))
@@ -95,17 +98,8 @@ data "aws_ssm_parameter" "private_subnets" {
   name = "/shared/network/private-subnets"
 }
 
-data "aws_ssm_parameter" "public_subnets" {
-  name = "/shared/network/public-subnets"
-}
-
-data "aws_ssm_parameter" "certificate_arn" {
-  name = "/shared/network/certificate-arn"
-}
-
-data "aws_ssm_parameter" "route53_zone_id" {
-  name = "/shared/network/route53-zone-id"
-}
+# Note: public_subnets, certificate_arn, route53_zone_id removed
+# This service uses Service Discovery only (no ALB)
 
 # ========================================
 # RDS Configuration (MySQL)
@@ -148,10 +142,7 @@ data "aws_ssm_parameter" "redis_port" {
 locals {
   vpc_id          = data.aws_ssm_parameter.vpc_id.value
   private_subnets = split(",", data.aws_ssm_parameter.private_subnets.value)
-  public_subnets  = split(",", data.aws_ssm_parameter.public_subnets.value)
-  certificate_arn = data.aws_ssm_parameter.certificate_arn.value
-  route53_zone_id = data.aws_ssm_parameter.route53_zone_id.value
-  fqdn            = "commerce.set-of.com"
+  # public_subnets, certificate_arn, route53_zone_id removed (no ALB)
 
   # RDS Configuration (MySQL)
   rds_credentials = jsondecode(data.aws_secretsmanager_secret_version.rds.secret_string)
@@ -165,6 +156,6 @@ locals {
   redis_port = tonumber(data.aws_ssm_parameter.redis_port.value)
 
   # AMP Configuration
-  amp_workspace_arn     = data.aws_ssm_parameter.amp_workspace_arn.value
-  amp_remote_write_url  = data.aws_ssm_parameter.amp_remote_write_url.value
+  amp_workspace_arn    = data.aws_ssm_parameter.amp_workspace_arn.value
+  amp_remote_write_url = data.aws_ssm_parameter.amp_remote_write_url.value
 }

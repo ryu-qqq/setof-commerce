@@ -24,6 +24,7 @@ include 'adapter-out:portone-client'
 // ========================================
 include 'bootstrap:bootstrap-web-api'
 include 'bootstrap:bootstrap-web-api-admin'
+include 'bootstrap:bootstrap-legacy-web-api'
 // ========================================
 // Project Structure
 // ========================================
@@ -39,3 +40,4 @@ project(':adapter-out:portone-client').projectDir = file('adapter-out/portone-cl
 
 project(':bootstrap:bootstrap-web-api').projectDir = file('bootstrap/bootstrap-web-api')
 project(':bootstrap:bootstrap-web-api-admin').projectDir = file('bootstrap/bootstrap-web-api-admin')
+project(':bootstrap:bootstrap-legacy-web-api').projectDir = file('bootstrap/bootstrap-legacy-web-api')

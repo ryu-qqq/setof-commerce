@@ -64,3 +64,12 @@ projects:
     autoplan:
       when_modified: ["*.tf", "*.tfvars", "../*.tf"]
       enabled: true
+
+  # ECS Service for legacy-api (ALB + Auto Scaling)
+  # Strangler Fig Pattern: Legacy server migration
+  - name: setof-commerce-ecs-web-api-legacy-prod
+    dir: terraform/ecs-web-api-legacy
+    workspace: default
+    autoplan:
+      when_modified: ["*.tf", "*.tfvars", "../*.tf"]
+      enabled: true

@@ -1,0 +1,63 @@
+package com.setof.connectly.module.display.dto.query.tab;
+
+import com.querydsl.core.annotations.QueryProjection;
+import com.setof.connectly.module.common.enums.Yn;
+import com.setof.connectly.module.display.dto.query.ComponentQuery;
+import com.setof.connectly.module.display.enums.component.ComponentType;
+import com.setof.connectly.module.display.enums.component.OrderType;
+import com.setof.connectly.module.display.enums.tab.TabMovingType;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class TabComponentQueryDto implements ComponentQuery {
+    private long componentId;
+    private long tabComponentId;
+    private long tabId;
+    private String tabName;
+    private Yn stickyYn;
+    private TabMovingType tabMovingType;
+    private int displayOrder;
+    private OrderType orderType;
+
+    @QueryProjection
+    public TabComponentQueryDto(
+            long componentId,
+            long tabComponentId,
+            long tabId,
+            String tabName,
+            Yn stickyYn,
+            TabMovingType tabMovingType,
+            int displayOrder,
+            OrderType orderType) {
+        this.componentId = componentId;
+        this.tabComponentId = tabComponentId;
+        this.tabId = tabId;
+        this.tabName = tabName;
+        this.stickyYn = stickyYn;
+        this.tabMovingType = tabMovingType;
+        this.displayOrder = displayOrder;
+        this.orderType = orderType;
+    }
+
+    @Override
+    public int hashCode() {
+        return String.valueOf(this.componentId + this.tabComponentId + this.tabId).hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof TabComponentQueryDto) {
+            TabComponentQueryDto p = (TabComponentQueryDto) obj;
+            return this.hashCode() == p.hashCode();
+        }
+        return false;
+    }
+
+    @Override
+    public ComponentType getComponentType() {
+        return ComponentType.TAB;
+    }
+}

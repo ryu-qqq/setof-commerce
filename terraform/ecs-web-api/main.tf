@@ -1,9 +1,14 @@
 # ========================================
 # ECS Service: web-api
 # ========================================
-# REST API server with ALB and Auto Scaling
+# REST API server with Service Discovery (Cloud Map)
 # Using Infrastructure modules
-# Domain: commerce.set-of.com
+# Access: Internal VPC only via Service Discovery
+# FQDN: web-api.connectly.local:8080
+# ========================================
+# Strangler Fig Pattern:
+# - External traffic: commerce.set-of.com → ecs-web-api-legacy
+# - Internal traffic: web-api.connectly.local → ecs-web-api (this)
 # ========================================
 
 # ========================================
@@ -36,6 +41,18 @@ data "aws_ecs_cluster" "main" {
 }
 
 data "aws_caller_identity" "current" {}
+
+# ========================================
+# Service Discovery Namespace (from shared infrastructure)
+# ========================================
+data "aws_ssm_parameter" "service_discovery_namespace_id" {
+  name = "/shared/service-discovery/namespace-id"
+}
+
+# VPC data source for internal communication
+data "aws_vpc" "main" {
+  id = local.vpc_id
+}
 
 # ========================================
 # KMS Key for CloudWatch Logs Encryption
@@ -112,59 +129,27 @@ module "web_api_logs" {
 }
 
 # ========================================
-# Security Groups
+# Security Group (VPC Internal Only)
 # ========================================
-resource "aws_security_group" "alb" {
-  name        = "${var.project_name}-alb-sg-${var.environment}"
-  description = "Security group for ALB"
-  vpc_id      = local.vpc_id
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "HTTPS from anywhere"
-  }
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "HTTP for redirect"
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = merge(local.common_tags, {
-    Name      = "${var.project_name}-alb-sg-${var.environment}"
-    Lifecycle = "production"
-    ManagedBy = "terraform"
-  })
-}
-
+# No ALB - Access only via Service Discovery (Cloud Map)
+# Internal services connect via: web-api.connectly.local:8080
+# ========================================
 module "ecs_security_group" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/security-group?ref=main"
 
   name        = "${var.project_name}-web-api-sg-${var.environment}"
-  description = "Security group for web-api ECS tasks"
+  description = "Security group for web-api ECS tasks - VPC internal only"
   vpc_id      = local.vpc_id
 
   type = "custom"
 
   custom_ingress_rules = [
     {
-      from_port                 = 8080
-      to_port                   = 8080
-      protocol                  = "tcp"
-      source_security_group_id  = aws_security_group.alb.id
-      description               = "From ALB only"
+      from_port   = 8080
+      to_port     = 8080
+      protocol    = "tcp"
+      cidr_block  = data.aws_vpc.main.cidr_block
+      description = "Service Discovery - internal VPC communication"
     }
   ]
 
@@ -175,94 +160,6 @@ module "ecs_security_group" {
   cost_center  = local.common_tags.cost_center
   project      = local.common_tags.project
   data_class   = local.common_tags.data_class
-}
-
-# ========================================
-# Application Load Balancer
-# ========================================
-resource "aws_lb" "web_api" {
-  name               = "${var.project_name}-alb-${var.environment}"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb.id]
-  subnets            = local.public_subnets
-
-  enable_deletion_protection = false
-
-  tags = merge(local.common_tags, {
-    Name      = "${var.project_name}-alb-${var.environment}"
-    Lifecycle = "production"
-    ManagedBy = "terraform"
-  })
-}
-
-# Target Group
-resource "aws_lb_target_group" "web_api" {
-  name        = "${var.project_name}-web-api-tg-${var.environment}"
-  port        = 8080
-  protocol    = "HTTP"
-  vpc_id      = local.vpc_id
-  target_type = "ip"
-
-  health_check {
-    enabled             = true
-    healthy_threshold   = 2
-    unhealthy_threshold = 3
-    timeout             = 5
-    interval            = 30
-    path                = "/actuator/health"
-    matcher             = "200"
-  }
-
-  tags = merge(local.common_tags, {
-    Name = "${var.project_name}-web-api-tg-${var.environment}"
-  })
-}
-
-# HTTPS Listener
-resource "aws_lb_listener" "https" {
-  load_balancer_arn = aws_lb.web_api.arn
-  port              = "443"
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-  certificate_arn   = local.certificate_arn
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.web_api.arn
-  }
-}
-
-# HTTP to HTTPS Redirect
-resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.web_api.arn
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    type = "redirect"
-
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
-  }
-}
-
-# ========================================
-# Route53 DNS Record
-# ========================================
-resource "aws_route53_record" "web_api" {
-  zone_id = local.route53_zone_id
-  name    = local.fqdn
-  type    = "A"
-
-  alias {
-    name                   = aws_lb.web_api.dns_name
-    zone_id                = aws_lb.web_api.zone_id
-    evaluate_target_health = true
-  }
 }
 
 # ========================================
@@ -411,7 +308,7 @@ module "web_api_task_role" {
             Action = [
               "s3:GetObject"
             ]
-            Resource = "arn:aws:s3:::connectly-prod/otel-config/*"
+            Resource = "arn:aws:s3:::prod-connectly/otel-config/*"
           }
         ]
       })
@@ -442,11 +339,15 @@ module "adot_sidecar" {
   app_port                  = 8080
   cluster_name              = data.aws_ecs_cluster.main.cluster_name
   environment               = var.environment
-  config_version            = "20251210"  # Cache busting for OTEL config
+  config_bucket             = "prod-connectly"
+  config_version            = "20251215" # Cache busting for OTEL config
 }
 
 # ========================================
 # ECS Service (using Infrastructure module)
+# ========================================
+# No ALB - Service Discovery only
+# Access via: http://web-api.connectly.local:8080
 # ========================================
 module "ecs_service" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecs-service?ref=main"
@@ -470,15 +371,8 @@ module "ecs_service" {
   security_group_ids = [module.ecs_security_group.security_group_id]
   assign_public_ip   = false
 
-  # Load Balancer Configuration
-  load_balancer_config = {
-    target_group_arn = aws_lb_target_group.web_api.arn
-    container_name   = "web-api"
-    container_port   = 8080
-  }
-
-  # Health Check Grace Period (Spring Boot startup: ~109s)
-  health_check_grace_period_seconds = 180
+  # No Load Balancer - Service Discovery only access
+  # load_balancer_config removed (Strangler Fig Pattern)
 
   # Container Environment Variables
   container_environment = [
@@ -497,11 +391,11 @@ module "ecs_service" {
   ]
 
   # Health Check
-  health_check_command       = ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
-  health_check_interval      = 30
-  health_check_timeout       = 5
-  health_check_retries       = 3
-  health_check_start_period  = 120
+  health_check_command      = ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
+  health_check_interval     = 30
+  health_check_timeout      = 5
+  health_check_retries      = 3
+  health_check_start_period = 120
 
   # Logging
   log_configuration = {
@@ -529,6 +423,11 @@ module "ecs_service" {
   # Deployment Configuration
   deployment_circuit_breaker_enable   = true
   deployment_circuit_breaker_rollback = true
+
+  # Service Discovery Configuration (Cloud Map)
+  enable_service_discovery         = true
+  service_discovery_namespace_id   = data.aws_ssm_parameter.service_discovery_namespace_id.value
+  service_discovery_namespace_name = "connectly.local"
 
   # Tagging
   environment  = local.common_tags.environment

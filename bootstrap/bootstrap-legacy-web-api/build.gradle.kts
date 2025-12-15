@@ -1,0 +1,126 @@
+plugins {
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
+    id("java")
+}
+
+group = "com.setof"
+version = "0.1.0-SNAPSHOT"
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
+}
+
+val queryDslVersion = "5.0.0"
+
+repositories {
+    mavenCentral()
+    maven { url = uri("https://repo.spring.io/milestone") }
+    maven { url = uri("https://repo.spring.io/snapshot") }
+    maven { url = uri("https://jitpack.io") }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2023.0.2")
+    }
+}
+
+dependencies {
+    // Spring Boot Starters
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+    // Hibernate
+    implementation("org.hibernate:hibernate-core:6.2.7.Final")
+
+    // Feign
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+
+    // QueryDSL
+    implementation("com.querydsl:querydsl-sql:$queryDslVersion")
+    implementation("com.querydsl:querydsl-jpa:$queryDslVersion:jakarta")
+    annotationProcessor("com.querydsl:querydsl-apt:$queryDslVersion:jakarta")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+
+    // JWT
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
+    // Lombok
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+    testCompileOnly("org.projectlombok:lombok")
+    testAnnotationProcessor("org.projectlombok:lombok")
+
+    // MySQL
+    runtimeOnly("com.mysql:mysql-connector-j")
+
+    // AWS S3
+    implementation("software.amazon.awssdk:s3:2.25.26")
+
+    // IBM ICU
+    implementation("com.ibm.icu:icu4j:51.1")
+
+    // Jsoup
+    implementation("org.jsoup:jsoup:1.15.4")
+    implementation("io.micrometer:micrometer-core")
+
+    // PortOne (iamport)
+    implementation("com.github.iamport:iamport-rest-client-java:0.2.21")
+
+    // Logback
+    implementation("ch.qos.logback:logback-classic:1.4.12")
+    implementation("net.logstash.logback:logstash-logback-encoder:6.6")
+
+    // Slack
+    implementation("com.slack.api:bolt:1.28.0")
+
+    // Prometheus
+    implementation("io.micrometer:micrometer-registry-prometheus")
+
+    // Test
+    testImplementation("com.h2database:h2")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
+// QueryDSL generated sources
+val querydslDir = layout.buildDirectory.dir("generated/querydsl")
+
+tasks.withType<JavaCompile> {
+    options.generatedSourceOutputDirectory.set(querydslDir)
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir(querydslDir)
+        }
+    }
+}
+
+tasks.named("clean") {
+    doLast {
+        delete(querydslDir)
+    }
+}

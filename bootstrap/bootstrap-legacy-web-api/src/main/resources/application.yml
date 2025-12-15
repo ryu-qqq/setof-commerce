@@ -1,0 +1,11 @@
+# ============================================================
+# Legacy Web API Application Configuration
+# ============================================================
+# Strangler Fig Pattern: 기존 레거시 서버를 ECS 인프라로 이관
+# ============================================================
+
+spring:
+  application:
+    name: legacy-api
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}

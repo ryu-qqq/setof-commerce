@@ -28,13 +28,13 @@ output "task_definition_arn" {
 }
 
 output "fqdn" {
-  description = "Fully qualified domain name"
-  value       = local.fqdn
+  description = "Service Discovery FQDN (Cloud Map)"
+  value       = "web-api.connectly.local"
 }
 
 output "url" {
-  description = "Application URL"
-  value       = "https://${local.fqdn}"
+  description = "Internal Service URL (via Gateway/Service Discovery)"
+  value       = "http://web-api.connectly.local:8080"
 }
 
 output "log_group_name" {

@@ -91,3 +91,8 @@ terraform/
 .terraform/
 *.tfstate*
 
+
+# Local config files with secrets
+**/application-local.yml
+**/application-local.yaml
+
