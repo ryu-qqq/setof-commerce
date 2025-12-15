@@ -108,7 +108,8 @@ class ShippingPolicyAdminV2ControllerTest extends ApiIntegrationTestSupport {
                             true,
                             1);
 
-            given(getShippingPolicyUseCase.execute(shippingPolicyId)).willReturn(policyResponse);
+            given(getShippingPolicyUseCase.execute(shippingPolicyId, sellerId))
+                    .willReturn(policyResponse);
 
             // When
             ResponseEntity<ApiResponse<ShippingPolicyV2ApiResponse>> response =
@@ -124,7 +125,7 @@ class ShippingPolicyAdminV2ControllerTest extends ApiIntegrationTestSupport {
             assertThat(response.getBody().data().shippingPolicyId()).isEqualTo(shippingPolicyId);
             assertThat(response.getBody().data().policyName()).isEqualTo("기본 배송 정책");
 
-            verify(getShippingPolicyUseCase).execute(shippingPolicyId);
+            verify(getShippingPolicyUseCase).execute(shippingPolicyId, sellerId);
         }
     }
 

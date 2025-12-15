@@ -1,5 +1,6 @@
 package com.ryuqq.setof.application.refundaccount.port.in.command;
 
+import com.ryuqq.setof.application.refundaccount.dto.command.RegisterRefundAccountByBankNameCommand;
 import com.ryuqq.setof.application.refundaccount.dto.command.RegisterRefundAccountCommand;
 import com.ryuqq.setof.application.refundaccount.dto.response.RefundAccountResponse;
 
@@ -28,4 +29,16 @@ public interface RegisterRefundAccountUseCase {
      * @return 등록된 환불계좌 정보
      */
     RefundAccountResponse execute(RegisterRefundAccountCommand command);
+
+    /**
+     * 환불계좌 등록 실행 (은행 이름 기반)
+     *
+     * <p>V1 레거시 API 지원을 위한 메서드입니다. bankName으로 은행을 조회하여 등록합니다.
+     *
+     * @param command 환불계좌 등록 커맨드 (은행 이름 기반)
+     * @return 등록된 환불계좌 정보
+     * @deprecated V2 API에서는 bankId 기반 execute 사용 권장
+     */
+    @Deprecated
+    RefundAccountResponse execute(RegisterRefundAccountByBankNameCommand command);
 }

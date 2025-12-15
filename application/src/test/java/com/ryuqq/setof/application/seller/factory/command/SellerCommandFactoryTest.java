@@ -124,7 +124,7 @@ class SellerCommandFactoryTest {
                 "서울시 강남구",
                 null,
                 "06234",
-                null,
+                "cs@example.com", // 도메인 규칙: 이메일/휴대폰/유선전화 중 최소 1개 필수
                 null,
                 null);
     }

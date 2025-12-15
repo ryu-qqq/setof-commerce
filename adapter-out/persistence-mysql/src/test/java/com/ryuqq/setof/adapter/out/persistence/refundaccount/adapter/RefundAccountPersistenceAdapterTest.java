@@ -109,7 +109,7 @@ class RefundAccountPersistenceAdapterTest extends RepositoryTestSupport {
         @DisplayName("성공 - 삭제된 환불계좌를 저장한다 (soft delete)")
         void persist_deletedRefundAccount_savesSoftDeleted() {
             // Given
-            RefundAccount deletedAccount = RefundAccountFixture.createDeleted(null);
+            RefundAccount deletedAccount = RefundAccountFixture.createDeletedNew();
 
             // When
             RefundAccountId savedId = refundAccountPersistenceAdapter.persist(deletedAccount);
@@ -128,8 +128,8 @@ class RefundAccountPersistenceAdapterTest extends RepositoryTestSupport {
             UUID otherMemberId = UUID.randomUUID();
             Long otherBankId = 2L;
             RefundAccount customAccount =
-                    RefundAccountFixture.createCustom(
-                            null, otherMemberId, otherBankId, "9999888877776666", "김철수", true);
+                    RefundAccountFixture.createCustomNew(
+                            otherMemberId, otherBankId, "9999888877776666", "김철수", true);
 
             // When
             RefundAccountId savedId = refundAccountPersistenceAdapter.persist(customAccount);

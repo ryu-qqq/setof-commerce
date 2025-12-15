@@ -68,7 +68,23 @@ public final class ShippingAddressFixture {
     }
 
     /**
-     * 기본 배송지가 아닌 배송지 생성
+     * 기본 배송지가 아닌 배송지 생성 (신규)
+     *
+     * @return ShippingAddress 인스턴스 (기본 아님, ID 없음)
+     */
+    public static ShippingAddress createNonDefaultNew() {
+        return ShippingAddress.forNew(
+                DEFAULT_MEMBER_ID,
+                AddressName.of("회사"),
+                ReceiverInfo.of("홍길동", "01012345678"),
+                DeliveryAddress.of("서울시 서초구 서초대로 456", null, "A동 501호", "06789"),
+                null,
+                false,
+                FIXED_CLOCK);
+    }
+
+    /**
+     * 기본 배송지가 아닌 배송지 생성 (기존 ID 포함)
      *
      * @param id 배송지 ID
      * @return ShippingAddress 인스턴스 (기본 아님)
@@ -88,7 +104,26 @@ public final class ShippingAddressFixture {
     }
 
     /**
-     * 삭제된 배송지 생성
+     * 삭제된 배송지 생성 (신규)
+     *
+     * @return ShippingAddress 인스턴스 (삭제됨, ID 없음)
+     */
+    public static ShippingAddress createDeletedNew() {
+        ShippingAddress address =
+                ShippingAddress.forNew(
+                        DEFAULT_MEMBER_ID,
+                        AddressName.of("이전 집"),
+                        ReceiverInfo.of("홍길동", "01012345678"),
+                        DeliveryAddress.of("서울시 마포구 마포대로 789", null, "203호", "04001"),
+                        null,
+                        false,
+                        FIXED_CLOCK);
+        address.delete(FIXED_CLOCK);
+        return address;
+    }
+
+    /**
+     * 삭제된 배송지 생성 (기존 ID 포함)
      *
      * @param id 배송지 ID
      * @return ShippingAddress 인스턴스 (삭제됨)

@@ -95,7 +95,7 @@ class ShippingAddressPersistenceAdapterTest extends RepositoryTestSupport {
         @DisplayName("성공 - 기본 배송지가 아닌 배송지를 저장한다")
         void persist_nonDefaultShippingAddress_saves() {
             // Given
-            ShippingAddress nonDefaultAddress = ShippingAddressFixture.createNonDefault(null);
+            ShippingAddress nonDefaultAddress = ShippingAddressFixture.createNonDefaultNew();
 
             // When
             ShippingAddressId savedId =
@@ -113,7 +113,7 @@ class ShippingAddressPersistenceAdapterTest extends RepositoryTestSupport {
         @DisplayName("성공 - 삭제된 배송지를 저장한다 (soft delete)")
         void persist_deletedShippingAddress_savesSoftDeleted() {
             // Given
-            ShippingAddress deletedAddress = ShippingAddressFixture.createDeleted(null);
+            ShippingAddress deletedAddress = ShippingAddressFixture.createDeletedNew();
 
             // When
             ShippingAddressId savedId = shippingAddressPersistenceAdapter.persist(deletedAddress);

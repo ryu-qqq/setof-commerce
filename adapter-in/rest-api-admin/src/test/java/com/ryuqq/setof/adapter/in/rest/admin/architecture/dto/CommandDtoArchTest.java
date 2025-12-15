@@ -233,10 +233,12 @@ class CommandDtoArchTest {
                         .and()
                         .resideOutsideOfPackage("..v1..") // 레거시 V1 DTO 제외
                         .and()
+                        .resideOutsideOfPackage("..dto.query..") // Query DTO 제외
+                        .and()
                         .haveSimpleNameNotContaining("V1") // V1 접미사 클래스 제외
                         .should()
                         .resideInAPackage("..dto.command..")
-                        .because("Command DTO는 dto.command 패키지에 위치해야 합니다 (V1 DTO 제외)");
+                        .because("Command DTO는 dto.command 패키지에 위치해야 합니다 (V1 DTO, Query DTO 제외)");
 
         rule.allowEmptyShould(true).check(classes);
     }

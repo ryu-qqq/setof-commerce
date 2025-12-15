@@ -8,8 +8,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  * Repository 통합 테스트 지원 추상 클래스
@@ -19,7 +17,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * <p>제공 기능:
  *
  * <ul>
- *   <li>TestContainers MySQL 자동 설정
+ *   <li>TestContainers MySQL 자동 설정 (싱글턴 패턴)
  *   <li>EntityManager 자동 주입
  *   <li>트랜잭션 자동 롤백
  *   <li>테스트 유틸리티 메서드
@@ -56,24 +54,30 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  */
 @SpringBootTest(classes = com.ryuqq.setof.adapter.out.persistence.TestPersistenceApplication.class)
 @ActiveProfiles("test")
-@Testcontainers
 @Transactional
 public abstract class RepositoryTestSupport {
 
     /**
-     * MySQL TestContainer
+     * MySQL TestContainer (싱글턴 패턴)
      *
-     * <p>모든 테스트에서 공유되는 단일 컨테이너입니다. 테스트 클래스 간 재사용하여 시작 시간을 최소화합니다.
+     * <p>모든 테스트에서 공유되는 단일 컨테이너입니다. static 블록에서 수동으로 시작하여 JVM 레벨에서 싱글턴으로 관리됩니다. 이 방식은 테스트 클래스 간 컨테이너
+     * 재시작으로 인한 연결 문제를 방지합니다.
+     *
+     * <p>TestContainers Ryuk 컨테이너가 JVM 종료 시 자동으로 정리합니다.
      */
-    @Container
-    static MySQLContainer<?> mysql =
-            new MySQLContainer<>("mysql:8.0")
-                    .withDatabaseName("test")
-                    .withUsername("test")
-                    .withPassword("test")
-                    .withCommand(
-                            "--character-set-server=utf8mb4",
-                            "--collation-server=utf8mb4_unicode_ci");
+    static MySQLContainer<?> mysql;
+
+    static {
+        mysql =
+                new MySQLContainer<>("mysql:8.0")
+                        .withDatabaseName("test")
+                        .withUsername("test")
+                        .withPassword("test")
+                        .withCommand(
+                                "--character-set-server=utf8mb4",
+                                "--collation-server=utf8mb4_unicode_ci");
+        mysql.start();
+    }
 
     /**
      * EntityManager - JPA 영속성 컨텍스트 관리

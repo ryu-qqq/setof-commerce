@@ -140,6 +140,22 @@ public final class ApiV2Paths {
         private Brands() {}
     }
 
+    /** Product 도메인 경로 (상품 조회) */
+    public static final class Products {
+        public static final String BASE = API_V2 + "/products";
+
+        // ===== 상대 경로 (Controller용) =====
+        public static final String ID_PATH = "/{productGroupId}";
+        public static final String FULL_PATH = "/{productGroupId}/full";
+
+        // ===== 전체 경로 (SecurityPaths용) =====
+        public static final String LIST = BASE;
+        public static final String DETAIL = BASE + ID_PATH;
+        public static final String FULL = BASE + FULL_PATH;
+
+        private Products() {}
+    }
+
     /** Category 도메인 경로 */
     public static final class Categories {
         public static final String BASE = API_V2 + "/categories";

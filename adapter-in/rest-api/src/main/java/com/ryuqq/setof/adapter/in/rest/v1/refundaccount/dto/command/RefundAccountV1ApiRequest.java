@@ -1,4 +1,4 @@
-package com.ryuqq.setof.adapter.in.rest.v1.user.dto.command;
+package com.ryuqq.setof.adapter.in.rest.v1.refundaccount.dto.command;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

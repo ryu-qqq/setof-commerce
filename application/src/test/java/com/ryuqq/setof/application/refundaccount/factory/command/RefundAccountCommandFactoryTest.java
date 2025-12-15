@@ -5,8 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.ryuqq.setof.application.refundaccount.dto.command.RegisterRefundAccountByBankNameCommand;
 import com.ryuqq.setof.application.refundaccount.dto.command.RegisterRefundAccountCommand;
+import com.ryuqq.setof.application.refundaccount.dto.command.UpdateRefundAccountByBankNameCommand;
 import com.ryuqq.setof.application.refundaccount.dto.command.UpdateRefundAccountCommand;
+import com.ryuqq.setof.domain.bank.BankFixture;
+import com.ryuqq.setof.domain.bank.aggregate.Bank;
 import com.ryuqq.setof.domain.common.util.ClockHolder;
 import com.ryuqq.setof.domain.refundaccount.RefundAccountFixture;
 import com.ryuqq.setof.domain.refundaccount.aggregate.RefundAccount;
@@ -116,6 +120,105 @@ class RefundAccountCommandFactoryTest {
 
             // When
             factory.applyUpdateVerified(refundAccount, command);
+
+            // Then
+            assertEquals(3L, refundAccount.getBankId());
+            assertEquals("1111222233334444", refundAccount.getAccountNumberValue());
+            assertEquals("이철수", refundAccount.getAccountHolderNameValue());
+            assertTrue(refundAccount.isVerified());
+        }
+    }
+
+    @Nested
+    @DisplayName("createVerifiedByBankName")
+    class CreateVerifiedByBankNameTest {
+
+        @Test
+        @DisplayName("RegisterRefundAccountByBankNameCommand로 검증 완료 RefundAccount 생성 성공")
+        void shouldCreateVerifiedRefundAccountFromBankNameCommand() {
+            // Given
+            UUID memberId = UUID.fromString("01936ddc-8d37-7c6e-8ad6-18c76adc9dfa");
+            RegisterRefundAccountByBankNameCommand command =
+                    RegisterRefundAccountByBankNameCommand.of(
+                            memberId, "KB국민은행", "1234567890123", "홍길동");
+            Bank bank = BankFixture.createWithId(1L);
+
+            // When
+            RefundAccount result = factory.createVerifiedByBankName(command, bank);
+
+            // Then
+            assertNotNull(result);
+            assertNull(result.getIdValue());
+            assertEquals(memberId, result.getMemberId());
+            assertEquals(1L, result.getBankId());
+            assertEquals("1234567890123", result.getAccountNumberValue());
+            assertEquals("홍길동", result.getAccountHolderNameValue());
+            assertTrue(result.isVerified());
+            assertNotNull(result.getVerifiedAt());
+        }
+
+        @Test
+        @DisplayName("다른 은행으로 생성 성공")
+        void shouldCreateRefundAccountWithDifferentBank() {
+            // Given
+            UUID memberId = UUID.fromString("11111111-1111-1111-1111-111111111111");
+            RegisterRefundAccountByBankNameCommand command =
+                    RegisterRefundAccountByBankNameCommand.of(
+                            memberId, "신한은행", "9876543210", "김철수");
+            Bank bank = BankFixture.createCustom(5L, "088", "신한은행", 2, true);
+
+            // When
+            RefundAccount result = factory.createVerifiedByBankName(command, bank);
+
+            // Then
+            assertNotNull(result);
+            assertEquals(memberId, result.getMemberId());
+            assertEquals(5L, result.getBankId());
+            assertEquals("9876543210", result.getAccountNumberValue());
+            assertEquals("김철수", result.getAccountHolderNameValue());
+        }
+    }
+
+    @Nested
+    @DisplayName("applyUpdateVerifiedByBankName")
+    class ApplyUpdateVerifiedByBankNameTest {
+
+        @Test
+        @DisplayName("UpdateRefundAccountByBankNameCommand로 RefundAccount 수정 성공")
+        void shouldApplyUpdateToRefundAccountByBankName() {
+            // Given
+            RefundAccount refundAccount = RefundAccountFixture.createUnverifiedWithId(1L);
+            UUID memberId = refundAccount.getMemberId();
+            UpdateRefundAccountByBankNameCommand command =
+                    UpdateRefundAccountByBankNameCommand.of(
+                            memberId, 1L, "신한은행", "5555666677778888", "박영희");
+            Bank bank = BankFixture.createCustom(2L, "088", "신한은행", 2, true);
+
+            // When
+            factory.applyUpdateVerifiedByBankName(refundAccount, command, bank);
+
+            // Then
+            assertEquals(2L, refundAccount.getBankId());
+            assertEquals("5555666677778888", refundAccount.getAccountNumberValue());
+            assertEquals("박영희", refundAccount.getAccountHolderNameValue());
+            assertTrue(refundAccount.isVerified());
+        }
+
+        @Test
+        @DisplayName("기존 검증 완료 상태에서도 수정 성공")
+        void shouldUpdateAlreadyVerifiedRefundAccountByBankName() {
+            // Given
+            RefundAccount refundAccount = RefundAccountFixture.createWithId(1L);
+            assertTrue(refundAccount.isVerified());
+            UUID memberId = refundAccount.getMemberId();
+
+            UpdateRefundAccountByBankNameCommand command =
+                    UpdateRefundAccountByBankNameCommand.of(
+                            memberId, 1L, "우리은행", "1111222233334444", "이철수");
+            Bank bank = BankFixture.createCustom(3L, "020", "우리은행", 3, true);
+
+            // When
+            factory.applyUpdateVerifiedByBankName(refundAccount, command, bank);
 
             // Then
             assertEquals(3L, refundAccount.getBankId());

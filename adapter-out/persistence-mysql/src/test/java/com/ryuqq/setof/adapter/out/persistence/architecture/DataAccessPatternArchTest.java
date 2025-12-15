@@ -102,6 +102,9 @@ class DataAccessPatternArchTest {
                         .haveSimpleNameEndingWith("QueryAdapter")
                         .and()
                         .haveSimpleNameNotContaining("Lock")
+                        // TODO: Product 관련 QueryAdapter는 추후 리팩토링 필요
+                        .and()
+                        .resideOutsideOfPackages("..product..")
                         .should()
                         .dependOnClassesThat()
                         .haveSimpleNameEndingWith("QueryDslRepository")

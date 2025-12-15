@@ -188,6 +188,97 @@ public final class ApiV2Paths {
     }
 
     // =====================================================
+    // ProductGroup 도메인
+    // =====================================================
+
+    /** ProductGroup 도메인 경로 */
+    public static final class ProductGroups {
+        public static final String BASE = API_V2_ADMIN + "/product-groups";
+
+        // ===== 상대 경로 (Controller용) =====
+        public static final String ID_PATH = "/{productGroupId}";
+        public static final String STATUS_PATH = "/{productGroupId}/status";
+
+        // ===== 전체 경로 (SecurityPaths용) =====
+        public static final String LIST = BASE;
+        public static final String DETAIL = BASE + ID_PATH;
+        public static final String REGISTER = BASE;
+        public static final String UPDATE = BASE + ID_PATH;
+        public static final String UPDATE_STATUS = BASE + STATUS_PATH;
+
+        private ProductGroups() {}
+    }
+
+    // =====================================================
+    // ProductStock 도메인
+    // =====================================================
+
+    /** ProductStock 도메인 경로 */
+    public static final class ProductStocks {
+        // 단일 상품 재고 기본 경로
+        public static final String BASE = Products.BASE;
+
+        // ===== 상대 경로 (Controller용) =====
+        public static final String SINGLE_STOCK_PATH = "/{productId}/stock";
+        public static final String GROUP_STOCKS_PATH = "/groups/{productGroupId}/stocks";
+
+        // ===== 전체 경로 (SecurityPaths용) =====
+        public static final String SINGLE_STOCK = BASE + SINGLE_STOCK_PATH;
+        public static final String GROUP_STOCKS = BASE + GROUP_STOCKS_PATH;
+
+        private ProductStocks() {}
+    }
+
+    // =====================================================
+    // ProductDescription 도메인 (상품그룹 하위 리소스)
+    // =====================================================
+
+    /** ProductDescription 도메인 경로 */
+    public static final class ProductDescriptions {
+        public static final String BASE = ProductGroups.BASE + "/{productGroupId}/description";
+
+        // ===== 전체 경로 (SecurityPaths용) =====
+        public static final String GET = BASE;
+        public static final String UPDATE = BASE;
+
+        private ProductDescriptions() {}
+    }
+
+    // =====================================================
+    // ProductImage 도메인 (상품그룹 하위 리소스)
+    // =====================================================
+
+    /** ProductImage 도메인 경로 */
+    public static final class ProductImages {
+        public static final String BASE = ProductGroups.BASE + "/{productGroupId}/images";
+
+        // ===== 상대 경로 (Controller용) =====
+        public static final String ID_PATH = "/{imageId}";
+
+        // ===== 전체 경로 (SecurityPaths용) =====
+        public static final String LIST = BASE;
+        public static final String UPDATE = BASE + ID_PATH;
+        public static final String DELETE = BASE + ID_PATH;
+
+        private ProductImages() {}
+    }
+
+    // =====================================================
+    // ProductNotice 도메인 (상품그룹 하위 리소스)
+    // =====================================================
+
+    /** ProductNotice 도메인 경로 */
+    public static final class ProductNotices {
+        public static final String BASE = ProductGroups.BASE + "/{productGroupId}/notice";
+
+        // ===== 전체 경로 (SecurityPaths용) =====
+        public static final String GET = BASE;
+        public static final String UPDATE = BASE;
+
+        private ProductNotices() {}
+    }
+
+    // =====================================================
     // Health Check
     // =====================================================
 

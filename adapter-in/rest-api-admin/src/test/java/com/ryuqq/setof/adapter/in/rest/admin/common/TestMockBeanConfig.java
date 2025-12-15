@@ -1,5 +1,19 @@
 package com.ryuqq.setof.adapter.in.rest.admin.common;
 
+import com.ryuqq.setof.application.product.port.in.command.RegisterFullProductUseCase;
+import com.ryuqq.setof.application.product.port.in.command.UpdateFullProductUseCase;
+import com.ryuqq.setof.application.product.port.in.command.UpdateProductGroupStatusUseCase;
+import com.ryuqq.setof.application.product.port.in.query.GetProductGroupUseCase;
+import com.ryuqq.setof.application.product.port.in.query.GetProductGroupsUseCase;
+import com.ryuqq.setof.application.productdescription.port.in.command.UpdateProductDescriptionUseCase;
+import com.ryuqq.setof.application.productdescription.port.in.query.GetProductDescriptionUseCase;
+import com.ryuqq.setof.application.productimage.port.in.command.DeleteProductImageUseCase;
+import com.ryuqq.setof.application.productimage.port.in.command.UpdateProductImageUseCase;
+import com.ryuqq.setof.application.productimage.port.in.query.GetProductImageUseCase;
+import com.ryuqq.setof.application.productnotice.port.in.command.UpdateProductNoticeUseCase;
+import com.ryuqq.setof.application.productnotice.port.in.query.GetProductNoticeUseCase;
+import com.ryuqq.setof.application.productstock.port.in.command.SetStockUseCase;
+import com.ryuqq.setof.application.productstock.port.in.query.GetProductStockUseCase;
 import com.ryuqq.setof.application.refundpolicy.port.in.command.DeleteRefundPolicyUseCase;
 import com.ryuqq.setof.application.refundpolicy.port.in.command.RegisterRefundPolicyUseCase;
 import com.ryuqq.setof.application.refundpolicy.port.in.command.SetDefaultRefundPolicyUseCase;
@@ -97,4 +111,42 @@ public class TestMockBeanConfig {
     @MockBean private SetDefaultRefundPolicyUseCase setDefaultRefundPolicyUseCase;
 
     @MockBean private DeleteRefundPolicyUseCase deleteRefundPolicyUseCase;
+
+    // ===== ProductStock UseCase Mocks =====
+
+    @MockBean private GetProductStockUseCase getProductStockUseCase;
+
+    @MockBean private SetStockUseCase setStockUseCase;
+
+    // ===== ProductGroup UseCase Mocks =====
+
+    @MockBean private GetProductGroupUseCase getProductGroupUseCase;
+
+    @MockBean private GetProductGroupsUseCase getProductGroupsUseCase;
+
+    @MockBean private RegisterFullProductUseCase registerFullProductUseCase;
+
+    @MockBean private UpdateFullProductUseCase updateFullProductUseCase;
+
+    @MockBean private UpdateProductGroupStatusUseCase updateProductGroupStatusUseCase;
+
+    // ===== ProductDescription UseCase Mocks =====
+
+    @MockBean private GetProductDescriptionUseCase getProductDescriptionUseCase;
+
+    @MockBean private UpdateProductDescriptionUseCase updateProductDescriptionUseCase;
+
+    // ===== ProductImage UseCase Mocks =====
+
+    @MockBean private GetProductImageUseCase getProductImageUseCase;
+
+    @MockBean private UpdateProductImageUseCase updateProductImageUseCase;
+
+    @MockBean private DeleteProductImageUseCase deleteProductImageUseCase;
+
+    // ===== ProductNotice UseCase Mocks =====
+
+    @MockBean private GetProductNoticeUseCase getProductNoticeUseCase;
+
+    @MockBean private UpdateProductNoticeUseCase updateProductNoticeUseCase;
 }

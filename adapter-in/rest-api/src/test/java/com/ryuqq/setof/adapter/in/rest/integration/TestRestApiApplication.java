@@ -30,6 +30,11 @@ import org.springframework.context.annotation.FilterType;
             "com.ryuqq.setof.application.member",
             "com.ryuqq.setof.application.auth",
             "com.ryuqq.setof.application.common",
+            "com.ryuqq.setof.application.product",
+            "com.ryuqq.setof.application.productimage",
+            "com.ryuqq.setof.application.productdescription",
+            "com.ryuqq.setof.application.productnotice",
+            "com.ryuqq.setof.application.productstock",
             // REST API - V2 Controllers
             "com.ryuqq.setof.adapter.in.rest.v2.brand.controller",
             "com.ryuqq.setof.adapter.in.rest.v2.brand.mapper",
@@ -39,6 +44,7 @@ import org.springframework.context.annotation.FilterType;
             "com.ryuqq.setof.adapter.in.rest.v2.shippingaddress",
             "com.ryuqq.setof.adapter.in.rest.v2.refundaccount",
             "com.ryuqq.setof.adapter.in.rest.v2.member",
+            "com.ryuqq.setof.adapter.in.rest.v2.product",
             "com.ryuqq.setof.adapter.in.rest.common",
             // REST API - Auth (controller, dto, mapper, filter, handler, etc.)
             "com.ryuqq.setof.adapter.in.rest.auth.controller",
@@ -61,6 +67,11 @@ import org.springframework.context.annotation.FilterType;
             "com.ryuqq.setof.adapter.out.persistence.member",
             "com.ryuqq.setof.adapter.out.persistence.refreshtoken",
             "com.ryuqq.setof.adapter.out.persistence.config",
+            "com.ryuqq.setof.adapter.out.persistence.product",
+            "com.ryuqq.setof.adapter.out.persistence.productimage",
+            "com.ryuqq.setof.adapter.out.persistence.productdescription",
+            "com.ryuqq.setof.adapter.out.persistence.productnotice",
+            "com.ryuqq.setof.adapter.out.persistence.productstock",
             // Security (Password Encoder, JWT, Config)
             "com.ryuqq.setof.adapter.out.security",
             "com.ryuqq.setof.adapter.out.security.config"

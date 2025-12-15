@@ -118,7 +118,8 @@ class RefundPolicyAdminV2ControllerTest extends ApiIntegrationTestSupport {
                             true,
                             1);
 
-            given(getRefundPolicyUseCase.execute(refundPolicyId)).willReturn(policyResponse);
+            given(getRefundPolicyUseCase.execute(refundPolicyId, sellerId))
+                    .willReturn(policyResponse);
 
             // When
             ResponseEntity<ApiResponse<RefundPolicyV2ApiResponse>> response =
@@ -134,7 +135,7 @@ class RefundPolicyAdminV2ControllerTest extends ApiIntegrationTestSupport {
             assertThat(response.getBody().data().refundPolicyId()).isEqualTo(refundPolicyId);
             assertThat(response.getBody().data().policyName()).isEqualTo("기본 환불 정책");
 
-            verify(getRefundPolicyUseCase).execute(refundPolicyId);
+            verify(getRefundPolicyUseCase).execute(refundPolicyId, sellerId);
         }
     }
 

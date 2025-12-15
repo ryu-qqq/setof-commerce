@@ -3,6 +3,7 @@ package com.ryuqq.setof.application.bank.port.out.query;
 import com.ryuqq.setof.domain.bank.aggregate.Bank;
 import com.ryuqq.setof.domain.bank.vo.BankCode;
 import com.ryuqq.setof.domain.bank.vo.BankId;
+import com.ryuqq.setof.domain.bank.vo.BankName;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +32,16 @@ public interface BankQueryPort {
      * @return Bank Domain (Optional)
      */
     Optional<Bank> findByBankCode(BankCode bankCode);
+
+    /**
+     * 은행 이름으로 Bank 단건 조회
+     *
+     * <p>V1 레거시 API 지원을 위한 메서드입니다.
+     *
+     * @param bankName 은행 이름 (Value Object)
+     * @return Bank Domain (Optional)
+     */
+    Optional<Bank> findByBankName(BankName bankName);
 
     /**
      * 활성화된 모든 은행 목록 조회

@@ -7,6 +7,7 @@ import com.ryuqq.setof.adapter.out.persistence.common.RepositoryTestSupport;
 import com.ryuqq.setof.domain.bank.aggregate.Bank;
 import com.ryuqq.setof.domain.bank.vo.BankCode;
 import com.ryuqq.setof.domain.bank.vo.BankId;
+import com.ryuqq.setof.domain.bank.vo.BankName;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -199,6 +200,51 @@ class BankQueryAdapterTest extends RepositoryTestSupport {
 
             // Then
             assertThat(result).isFalse();
+        }
+    }
+
+    @Nested
+    @DisplayName("findByBankName 메서드")
+    class FindByBankName {
+
+        @BeforeEach
+        void setUp() {
+            persistAndFlush(BankJpaEntity.of(null, "004", "KB국민은행", true, 1, NOW, NOW));
+            persistAndFlush(BankJpaEntity.of(null, "088", "신한은행", true, 2, NOW, NOW));
+        }
+
+        @Test
+        @DisplayName("성공 - 은행 이름으로 Bank 도메인을 조회한다")
+        void findByBankName_existingName_returnsBankDomain() {
+            // When
+            Optional<Bank> result = bankQueryAdapter.findByBankName(BankName.of("KB국민은행"));
+
+            // Then
+            assertThat(result).isPresent();
+            assertThat(result.get().getBankCodeValue()).isEqualTo("004");
+            assertThat(result.get().getBankNameValue()).isEqualTo("KB국민은행");
+        }
+
+        @Test
+        @DisplayName("성공 - 다른 은행 이름으로 조회")
+        void findByBankName_anotherExistingName_returnsBankDomain() {
+            // When
+            Optional<Bank> result = bankQueryAdapter.findByBankName(BankName.of("신한은행"));
+
+            // Then
+            assertThat(result).isPresent();
+            assertThat(result.get().getBankCodeValue()).isEqualTo("088");
+            assertThat(result.get().getBankNameValue()).isEqualTo("신한은행");
+        }
+
+        @Test
+        @DisplayName("성공 - 존재하지 않는 은행 이름으로 조회 시 빈 Optional 반환")
+        void findByBankName_nonExistingName_returnsEmpty() {
+            // When
+            Optional<Bank> result = bankQueryAdapter.findByBankName(BankName.of("존재하지않는은행"));
+
+            // Then
+            assertThat(result).isEmpty();
         }
     }
 }

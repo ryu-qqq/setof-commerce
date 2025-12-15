@@ -225,7 +225,7 @@ class RefundPolicyAdminV2ControllerDocsTest extends RestDocsTestSupport {
                         true,
                         1);
 
-        given(getRefundPolicyUseCase.execute(refundPolicyId)).willReturn(response);
+        given(getRefundPolicyUseCase.execute(refundPolicyId, sellerId)).willReturn(response);
 
         // When & Then
         mockMvc.perform(get(BASE_URL + "/{refundPolicyId}", sellerId, refundPolicyId))

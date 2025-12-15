@@ -1,4 +1,4 @@
-package com.ryuqq.setof.adapter.in.rest.v1.user.dto.response;
+package com.ryuqq.setof.adapter.in.rest.v1.refundaccount.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

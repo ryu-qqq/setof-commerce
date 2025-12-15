@@ -83,7 +83,7 @@ class AssemblerArchTest {
                             .and()
                             .haveSimpleNameNotEndingWith("Test") // 테스트 클래스 제외
                             .and()
-                            .haveSimpleNameNotContaining("$") // 내부 클래스 제외
+                            .areTopLevelClasses() // 내부/익명 클래스 제외
                             .and()
                             .areNotInterfaces()
                             .and()

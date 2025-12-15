@@ -200,7 +200,7 @@ class ShippingPolicyAdminV2ControllerDocsTest extends RestDocsTestSupport {
                         true,
                         1);
 
-        given(getShippingPolicyUseCase.execute(shippingPolicyId)).willReturn(response);
+        given(getShippingPolicyUseCase.execute(shippingPolicyId, sellerId)).willReturn(response);
 
         // When & Then
         mockMvc.perform(get(BASE_URL + "/{shippingPolicyId}", sellerId, shippingPolicyId))

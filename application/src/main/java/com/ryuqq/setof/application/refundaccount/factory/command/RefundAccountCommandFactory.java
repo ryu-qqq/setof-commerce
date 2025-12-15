@@ -1,7 +1,10 @@
 package com.ryuqq.setof.application.refundaccount.factory.command;
 
+import com.ryuqq.setof.application.refundaccount.dto.command.RegisterRefundAccountByBankNameCommand;
 import com.ryuqq.setof.application.refundaccount.dto.command.RegisterRefundAccountCommand;
+import com.ryuqq.setof.application.refundaccount.dto.command.UpdateRefundAccountByBankNameCommand;
 import com.ryuqq.setof.application.refundaccount.dto.command.UpdateRefundAccountCommand;
+import com.ryuqq.setof.domain.bank.aggregate.Bank;
 import com.ryuqq.setof.domain.common.util.ClockHolder;
 import com.ryuqq.setof.domain.refundaccount.aggregate.RefundAccount;
 import com.ryuqq.setof.domain.refundaccount.vo.AccountHolderName;
@@ -63,6 +66,47 @@ public class RefundAccountCommandFactory {
             RefundAccount refundAccount, UpdateRefundAccountCommand command) {
         refundAccount.updateVerified(
                 command.bankId(),
+                AccountNumber.of(command.accountNumber()),
+                AccountHolderName.of(command.accountHolderName()),
+                clockHolder.getClock());
+    }
+
+    /**
+     * 신규 환불계좌 생성 (검증 완료, 은행 이름 기반)
+     *
+     * <p>V1 레거시 API 지원을 위한 메서드입니다. bankName으로 조회한 Bank 객체에서 bankId를 추출하여 생성합니다.
+     *
+     * @param command 환불계좌 등록 커맨드 (은행 이름 기반)
+     * @param bank 조회된 은행 도메인 객체
+     * @return 생성된 RefundAccount (저장 전, ID 없음)
+     * @deprecated V2 API에서는 bankId 기반 createVerified 사용 권장
+     */
+    @Deprecated
+    public RefundAccount createVerifiedByBankName(
+            RegisterRefundAccountByBankNameCommand command, Bank bank) {
+        return RefundAccount.forNewVerified(
+                command.memberId(),
+                bank.getId().value(),
+                AccountNumber.of(command.accountNumber()),
+                AccountHolderName.of(command.accountHolderName()),
+                clockHolder.getClock());
+    }
+
+    /**
+     * 기존 환불계좌 수정 적용 (검증 완료, 은행 이름 기반)
+     *
+     * <p>V1 레거시 API 지원을 위한 메서드입니다. bankName으로 조회한 Bank 객체에서 bankId를 추출하여 수정합니다.
+     *
+     * @param refundAccount 수정할 환불계좌 도메인 객체
+     * @param command 수정 커맨드 (은행 이름 기반)
+     * @param bank 조회된 은행 도메인 객체
+     * @deprecated V2 API에서는 bankId 기반 applyUpdateVerified 사용 권장
+     */
+    @Deprecated
+    public void applyUpdateVerifiedByBankName(
+            RefundAccount refundAccount, UpdateRefundAccountByBankNameCommand command, Bank bank) {
+        refundAccount.updateVerified(
+                bank.getId().value(),
                 AccountNumber.of(command.accountNumber()),
                 AccountHolderName.of(command.accountHolderName()),
                 clockHolder.getClock());

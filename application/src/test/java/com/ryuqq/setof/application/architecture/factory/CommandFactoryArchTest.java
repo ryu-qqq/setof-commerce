@@ -135,6 +135,7 @@ class CommandFactoryArchTest {
         void commandFactory_MethodsShouldStartWithCreate() {
             assumeTrue(hasCommandFactoryClasses, "CommandFactory 클래스가 없어 테스트를 스킵합니다");
 
+            // 헬퍼 메서드 제외: now() (시간 생성), to*() (내부 변환)
             ArchRule rule =
                     methods()
                             .that()
@@ -144,6 +145,8 @@ class CommandFactoryArchTest {
                             .arePublic()
                             .and()
                             .doNotHaveFullName(".*<init>.*")
+                            .and()
+                            .haveNameNotMatching("now|to.*") // 헬퍼 메서드 제외
                             .should()
                             .haveNameMatching("create.*|apply.*")
                             .because(

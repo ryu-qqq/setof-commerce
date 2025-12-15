@@ -66,6 +66,19 @@ public class BankQueryDslRepository {
     }
 
     /**
+     * 은행 이름으로 Bank 단건 조회
+     *
+     * <p>V1 레거시 API 지원을 위한 메서드입니다.
+     *
+     * @param bankName 은행 이름
+     * @return BankJpaEntity (Optional)
+     */
+    public Optional<BankJpaEntity> findByBankName(String bankName) {
+        return Optional.ofNullable(
+                queryFactory.selectFrom(qBank).where(qBank.bankName.eq(bankName)).fetchOne());
+    }
+
+    /**
      * 활성화된 모든 Bank 목록 조회
      *
      * @return BankJpaEntity 목록 (displayOrder 순)
