@@ -37,8 +37,8 @@ module "ecr_web_api" {
   lifecycle_tag_prefixes     = ["v", "prod", "latest"]
   untagged_image_expiry_days = 7
 
-  # SSM Parameter for cross-stack reference
-  create_ssm_parameter = true
+  # SSM Parameter 비활성화 (Atlantis IAM 권한 제한)
+  create_ssm_parameter = false
 
   # Required Tags (governance compliance)
   environment  = local.common_tags.environment
@@ -66,8 +66,8 @@ module "ecr_web_api_admin" {
   lifecycle_tag_prefixes     = ["v", "prod", "latest"]
   untagged_image_expiry_days = 7
 
-  # SSM Parameter for cross-stack reference
-  create_ssm_parameter = true
+  # SSM Parameter 비활성화 (Atlantis IAM 권한 제한)
+  create_ssm_parameter = false
 
   # Required Tags (governance compliance)
   environment  = local.common_tags.environment
@@ -96,8 +96,8 @@ module "ecr_legacy_api" {
   lifecycle_tag_prefixes     = ["v", "prod", "latest"]
   untagged_image_expiry_days = 7
 
-  # SSM Parameter for cross-stack reference
-  create_ssm_parameter = true
+  # SSM Parameter 비활성화 (Atlantis IAM 권한 제한)
+  create_ssm_parameter = false
 
   # Required Tags (governance compliance)
   environment  = local.common_tags.environment
