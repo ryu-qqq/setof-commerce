@@ -21,9 +21,24 @@ import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.response.CreateProdu
 import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.response.ProductFetchV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.response.ProductGroupDetailV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.response.ProductGroupFetchV1ApiResponse;
+import com.ryuqq.setof.adapter.in.rest.admin.v1.product.mapper.ProductAdminV1ApiMapper;
+import com.ryuqq.setof.application.product.dto.command.DeleteProductGroupCommand;
+import com.ryuqq.setof.application.product.dto.command.RegisterFullProductCommand;
+import com.ryuqq.setof.application.product.dto.command.UpdateProductGroupCommand;
+import com.ryuqq.setof.application.product.dto.query.ProductGroupSearchQuery;
+import com.ryuqq.setof.application.product.dto.response.FullProductResponse;
+import com.ryuqq.setof.application.product.dto.response.ProductGroupSummaryResponse;
+import com.ryuqq.setof.application.product.port.in.command.DeleteProductGroupUseCase;
+import com.ryuqq.setof.application.product.port.in.command.RegisterFullProductUseCase;
+import com.ryuqq.setof.application.product.port.in.command.UpdateProductGroupUseCase;
+import com.ryuqq.setof.application.product.port.in.query.GetFullProductUseCase;
+import com.ryuqq.setof.application.product.port.in.query.GetProductGroupsUseCase;
+import com.ryuqq.setof.application.productstock.dto.command.SetStockCommand;
+import com.ryuqq.setof.application.productstock.port.in.command.SetStockUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +53,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -56,22 +72,65 @@ import org.springframework.web.bind.annotation.RestController;
 @Deprecated
 public class ProductV1Controller {
 
+    private final GetFullProductUseCase getFullProductUseCase;
+    private final GetProductGroupsUseCase getProductGroupsUseCase;
+    private final RegisterFullProductUseCase registerFullProductUseCase;
+    private final DeleteProductGroupUseCase deleteProductGroupUseCase;
+    private final UpdateProductGroupUseCase updateProductGroupUseCase;
+    private final SetStockUseCase setStockUseCase;
+    private final ProductAdminV1ApiMapper mapper;
+
+    public ProductV1Controller(
+            GetFullProductUseCase getFullProductUseCase,
+            GetProductGroupsUseCase getProductGroupsUseCase,
+            RegisterFullProductUseCase registerFullProductUseCase,
+            DeleteProductGroupUseCase deleteProductGroupUseCase,
+            UpdateProductGroupUseCase updateProductGroupUseCase,
+            SetStockUseCase setStockUseCase,
+            ProductAdminV1ApiMapper mapper) {
+        this.getFullProductUseCase = getFullProductUseCase;
+        this.getProductGroupsUseCase = getProductGroupsUseCase;
+        this.registerFullProductUseCase = registerFullProductUseCase;
+        this.deleteProductGroupUseCase = deleteProductGroupUseCase;
+        this.updateProductGroupUseCase = updateProductGroupUseCase;
+        this.setStockUseCase = setStockUseCase;
+        this.mapper = mapper;
+    }
+
     @Deprecated
     @Operation(summary = "[Legacy] 상품 그룹 조회", description = "특정 상품 그룹을 조회합니다.")
     @GetMapping("/product/group/{productGroupId}")
     public ResponseEntity<ApiResponse<ProductGroupFetchV1ApiResponse>> fetchProductGroup(
             @PathVariable long productGroupId) {
-
-        throw new UnsupportedOperationException("상품 그룹 조회 기능은 아직 지원되지 않습니다.");
+        FullProductResponse response = getFullProductUseCase.getFullProduct(productGroupId);
+        ProductGroupFetchV1ApiResponse v1Response = mapper.toFetchResponse(response);
+        return ResponseEntity.ok(ApiResponse.ofSuccess(v1Response));
     }
 
     @Deprecated
     @Operation(summary = "[Legacy] 상품 그룹 목록 조회", description = "상품 그룹 목록을 조회합니다.")
     @GetMapping("/products/group")
     public ResponseEntity<ApiResponse<PageApiResponse<ProductGroupDetailV1ApiResponse>>>
-            fetchProductGroups(@ModelAttribute @Validated ProductGroupFilterV1ApiRequest filter) {
+            fetchProductGroups(
+                    @ModelAttribute @Validated ProductGroupFilterV1ApiRequest filter,
+                    @RequestParam(defaultValue = "0") int page,
+                    @RequestParam(defaultValue = "20") int size) {
+        ProductGroupSearchQuery query = mapper.toQuery(filter, page, size);
+        List<ProductGroupSummaryResponse> responses = getProductGroupsUseCase.execute(query);
+        long totalElements = getProductGroupsUseCase.count(query);
+        List<ProductGroupDetailV1ApiResponse> v1Responses = mapper.toDetailResponses(responses);
 
-        throw new UnsupportedOperationException("상품 그룹 목록 조회 기능은 아직 지원되지 않습니다.");
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        PageApiResponse<ProductGroupDetailV1ApiResponse> pageResponse =
+                new PageApiResponse<>(
+                        v1Responses,
+                        page,
+                        size,
+                        totalElements,
+                        totalPages,
+                        page == 0,
+                        page >= totalPages - 1);
+        return ResponseEntity.ok(ApiResponse.ofSuccess(pageResponse));
     }
 
     @Deprecated
@@ -81,7 +140,14 @@ public class ProductV1Controller {
             @RequestHeader(value = "X-Product-Id", required = false) String externalProductId,
             @Valid @RequestBody CreateProductGroupV1ApiRequest createProductGroup) {
 
-        throw new UnsupportedOperationException("상품 등록 기능은 아직 지원되지 않습니다.");
+        RegisterFullProductCommand command = mapper.toRegisterCommand(createProductGroup);
+        Long productGroupId = registerFullProductUseCase.registerFullProduct(command);
+        return ResponseEntity.ok(
+                ApiResponse.ofSuccess(
+                        new CreateProductGroupV1ApiResponse(
+                                productGroupId,
+                                createProductGroup.sellerId(),
+                                Collections.emptySet())));
     }
 
     @Deprecated
@@ -91,7 +157,12 @@ public class ProductV1Controller {
             @RequestHeader(value = "X-Product-Id", required = false) String externalProductId,
             @Valid @RequestBody List<CreateProductGroupV1ApiRequest> createProductGroups) {
 
-        throw new UnsupportedOperationException("상품 목록 등록 기능은 아직 지원되지 않습니다.");
+        List<Long> productGroupIds =
+                createProductGroups.stream()
+                        .map(mapper::toRegisterCommand)
+                        .map(registerFullProductUseCase::registerFullProduct)
+                        .toList();
+        return ResponseEntity.ok(ApiResponse.ofSuccess(productGroupIds));
     }
 
     @Deprecated
@@ -188,9 +259,13 @@ public class ProductV1Controller {
     @PutMapping("/product/group/{productGroupId}")
     public ResponseEntity<ApiResponse<Long>> updateProductGroup(
             @PathVariable long productGroupId,
+            @RequestHeader(value = "X-Seller-Id", required = false) Long sellerId,
             @RequestBody UpdateProductGroupV1ApiRequest updateProductGroup) {
 
-        throw new UnsupportedOperationException("상품 그룹 수정 기능은 아직 지원되지 않습니다.");
+        UpdateProductGroupCommand command =
+                mapper.toUpdateProductGroupCommand(productGroupId, sellerId, updateProductGroup);
+        updateProductGroupUseCase.execute(command);
+        return ResponseEntity.ok(ApiResponse.ofSuccess(productGroupId));
     }
 
     @Deprecated
@@ -226,9 +301,20 @@ public class ProductV1Controller {
     @Operation(summary = "[Legacy] 상품 그룹 삭제", description = "상품 그룹을 삭제합니다.")
     @DeleteMapping("/product/groups")
     public ResponseEntity<ApiResponse<List<Long>>> deleteProductGroup(
+            @RequestHeader(value = "X-Seller-Id", required = false) Long sellerId,
             @RequestBody DeleteProductGroupV1ApiRequest deleteProductGroup) {
 
-        throw new UnsupportedOperationException("상품 그룹 삭제 기능은 아직 지원되지 않습니다.");
+        List<Long> deletedIds =
+                deleteProductGroup.productGroupIds().stream()
+                        .map(
+                                id -> {
+                                    DeleteProductGroupCommand command =
+                                            mapper.toDeleteCommand(id, sellerId);
+                                    deleteProductGroupUseCase.execute(command);
+                                    return id;
+                                })
+                        .toList();
+        return ResponseEntity.ok(ApiResponse.ofSuccess(deletedIds));
     }
 
     @Deprecated
@@ -238,7 +324,9 @@ public class ProductV1Controller {
             @PathVariable long productId,
             @Valid @RequestBody UpdateProductStockV1ApiRequest updateProductStock) {
 
-        throw new UnsupportedOperationException("개별 상품 재고 수정 기능은 아직 지원되지 않습니다.");
+        SetStockCommand command = mapper.toSetStockCommand(updateProductStock);
+        setStockUseCase.execute(command);
+        return ResponseEntity.ok(ApiResponse.ofSuccess(Collections.emptySet()));
     }
 
     @Deprecated
@@ -248,6 +336,11 @@ public class ProductV1Controller {
             @PathVariable long productGroupId,
             @Valid @RequestBody List<UpdateProductStockV1ApiRequest> updateProductStocks) {
 
-        throw new UnsupportedOperationException("상품 그룹 재고 수정 기능은 아직 지원되지 않습니다.");
+        updateProductStocks.forEach(
+                request -> {
+                    SetStockCommand command = mapper.toSetStockCommand(request);
+                    setStockUseCase.execute(command);
+                });
+        return ResponseEntity.ok(ApiResponse.ofSuccess(Collections.emptySet()));
     }
 }

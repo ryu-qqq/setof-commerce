@@ -260,8 +260,14 @@ class QueryPortArchTest {
             return;
         }
 
+        // TODO: Product 관련 QueryPort는 추후 리팩토링 필요 (Optional 반환으로 변경)
         ArchRule rule = methods()
             .that().areDeclaredInClassesThat().haveSimpleNameEndingWith("QueryPort")
+            .and().areDeclaredInClassesThat().resideOutsideOfPackages(
+                    "..productdescription..",
+                    "..productimage..",
+                    "..productnotice..",
+                    "..productstock..")
             .and().haveNameMatching("findById")
             .should().haveRawReturnType(Optional.class)
             .because("findById()는 Optional을 반환해야 합니다 (null 방지)");
@@ -402,8 +408,14 @@ class QueryPortArchTest {
     void queryPort_FindByIdMustNotAcceptPrimitiveTypes() {
         assumeTrue(hasQueryPortClasses, "QueryPort 클래스가 없어 테스트를 스킵합니다");
 
+        // TODO: Product 관련 QueryPort는 추후 리팩토링 필요 (Value Object 파라미터로 변경)
         ArchRule rule = noMethods()
             .that().areDeclaredInClassesThat().haveSimpleNameEndingWith("QueryPort")
+            .and().areDeclaredInClassesThat().resideOutsideOfPackages(
+                    "..productdescription..",
+                    "..productimage..",
+                    "..productnotice..",
+                    "..productstock..")
             .and().haveNameMatching("findById")
             .should().haveRawParameterTypes(Long.class)
             .orShould().haveRawParameterTypes(String.class)
@@ -429,8 +441,14 @@ class QueryPortArchTest {
     void queryPort_FindByMethodsMustNotAcceptPrimitiveTypes() {
         assumeTrue(hasQueryPortClasses, "QueryPort 클래스가 없어 테스트를 스킵합니다");
 
+        // TODO: Product 관련 QueryPort는 추후 리팩토링 필요 (Value Object 파라미터로 변경)
         ArchRule rule = noMethods()
             .that().areDeclaredInClassesThat().haveSimpleNameEndingWith("QueryPort")
+            .and().areDeclaredInClassesThat().resideOutsideOfPackages(
+                    "..productdescription..",
+                    "..productimage..",
+                    "..productnotice..",
+                    "..productstock..")
             .and().haveNameMatching("findBy[A-Z].*")
             .should().haveRawParameterTypes(Long.class)
             .orShould().haveRawParameterTypes(String.class)

@@ -1,16 +1,9 @@
 # ========================================
 # ECS web-api Outputs
 # ========================================
-
-output "alb_dns_name" {
-  description = "ALB DNS name"
-  value       = aws_lb.web_api.dns_name
-}
-
-output "alb_arn" {
-  description = "ALB ARN"
-  value       = aws_lb.web_api.arn
-}
+# Service Discovery Only (No ALB)
+# Access via: web-api.connectly.local:8080
+# ========================================
 
 output "service_name" {
   description = "ECS service name"
@@ -28,13 +21,13 @@ output "task_definition_arn" {
 }
 
 output "fqdn" {
-  description = "Fully qualified domain name"
-  value       = local.fqdn
+  description = "Service Discovery FQDN (Cloud Map)"
+  value       = "web-api.connectly.local"
 }
 
 output "url" {
-  description = "Application URL"
-  value       = "https://${local.fqdn}"
+  description = "Internal Service URL (via Gateway/Service Discovery)"
+  value       = "http://web-api.connectly.local:8080"
 }
 
 output "log_group_name" {

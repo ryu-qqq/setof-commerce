@@ -107,12 +107,16 @@ class DtoRecordArchTest {
         void command_MustHaveCorrectSuffix() {
             assumeTrue(hasCommandClasses, "Command 클래스가 없어 테스트를 스킵합니다");
 
+            // 내부 DTO (중첩 데이터 구조)는 제외: *Dto suffix
+            // 예: ProductImageCommandDto, DescriptionImageDto, NoticeItemDto 등
             ArchRule rule =
                     classes()
                             .that()
                             .resideInAPackage("..dto.command..")
                             .and()
                             .areNotMemberClasses()
+                            .and()
+                            .haveSimpleNameNotEndingWith("Dto") // 내부 DTO 제외
                             .should()
                             .haveSimpleNameEndingWith("Command")
                             .because("Command DTO는 'Command' 접미사를 사용해야 합니다");
@@ -345,6 +349,8 @@ class DtoRecordArchTest {
         void dto_MustNotHaveBusinessMethods() {
             assumeTrue(hasDtoClasses, "DTO 클래스가 없어 테스트를 스킵합니다");
 
+            // 비즈니스 메서드 패턴 (timestamp 필드 updatedAt, createdAt 제외)
+            // update로 시작하고 다음 문자가 대문자인 경우만 매칭 (updatedAt 제외)
             ArchRule rule =
                     noMethods()
                             .that()
@@ -352,10 +358,12 @@ class DtoRecordArchTest {
                             .resideInAPackage("..dto..")
                             .and()
                             .arePublic()
+                            .and()
+                            .haveNameNotMatching(".*At$") // timestamp 필드 제외 (updatedAt, createdAt)
                             .should()
                             .haveNameMatching(
                                     "validate.*|place.*|confirm.*|cancel.*|"
-                                        + "approve.*|reject.*|modify.*|change.*|update.*|delete.*|save.*|persist.*")
+                                        + "approve.*|reject.*|modify.*|change.*|update[A-Z].*|delete.*|save.*|persist.*")
                             .because("DTO는 비즈니스 로직을 가질 수 없습니다 (데이터 전달만)");
 
             rule.check(classes);

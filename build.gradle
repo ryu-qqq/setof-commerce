@@ -23,14 +23,27 @@ allprojects {
 }
 
 // ========================================
+// Legacy Module Exclusion List
+// ========================================
+def legacyModules = [
+    'bootstrap-legacy-web-api'
+]
+
+// ========================================
 // Subproject Configuration
 // ========================================
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'checkstyle'
-    apply plugin: 'com.github.spotbugs'
-    apply plugin: 'pmd'
-    apply plugin: 'com.diffplug.spotless'
+
+    // Legacy 모듈은 정적 분석 도구에서 제외
+    def isLegacyModule = legacyModules.any { project.name.contains(it) }
+
+    if (!isLegacyModule) {
+        apply plugin: 'checkstyle'
+        apply plugin: 'com.github.spotbugs'
+        apply plugin: 'pmd'
+        apply plugin: 'com.diffplug.spotless'
+    }
 
     java {
         sourceCompatibility = JavaVersion.VERSION_21
@@ -77,80 +90,85 @@ subprojects {
     }
 
     // ========================================
-    // Checkstyle Configuration
+    // Static Analysis Configuration (Legacy 모듈 제외)
     // ========================================
-    checkstyle {
-        toolVersion = rootProject.libs.versions.checkstyle.get()
-        configFile = rootProject.file('config/checkstyle/checkstyle.xml')
-        ignoreFailures = false
-        maxWarnings = 0
-    }
-
-    // Checkstyle: 테스트 코드는 경고 허용 (ArchUnit fluent API 등)
-    tasks.matching { it.name == 'checkstyleTest' || it.name == 'checkstyleTestFixtures' }.configureEach {
-        maxWarnings = Integer.MAX_VALUE
-    }
-
-    // ========================================
-    // SpotBugs Configuration
-    // ========================================
-    spotbugs {
-        toolVersion = rootProject.libs.versions.spotbugs.get()
-        effort = 'max'
-        reportLevel = 'low'
-        excludeFilter = rootProject.file('config/spotbugs/spotbugs-exclude.xml')
-    }
-
-    // SpotBugs: 테스트 코드 제외
-    tasks.matching { it.name == 'spotbugsTest' || it.name == 'spotbugsTestFixtures' }.configureEach {
-        enabled = false
-    }
-
-    // ========================================
-    // PMD Configuration
-    // ========================================
-    pmd {
-        toolVersion = rootProject.libs.versions.pmd.get()
-        consoleOutput = true
-        ruleSetFiles = files(rootProject.file('config/pmd/pmd-ruleset.xml'))
-        ruleSets = [] // Use only custom ruleset
-        ignoreFailures = false
-    }
-
-    tasks.withType(Pmd) {
-        reports {
-            xml.required = true
-            html.required = true
-        }
-    }
-
-    // PMD: 테스트 코드 제외 (ArchUnit fluent API가 DemeterStrict 규칙에 걸림)
-    tasks.matching { it.name == 'pmdTest' || it.name == 'pmdTestFixtures' }.configureEach {
-        enabled = false
-    }
-
-    // ========================================
-    // Spotless Configuration
-    // ========================================
-    spotless {
-        java {
-            // Google Java Format (AOSP style - 4 spaces)
-            // Version managed in libs.versions.toml
-            // Note: Google Java Format includes import ordering and removes unused imports
-            googleJavaFormat(rootProject.libs.versions.googleJavaFormat.get()).aosp().reflowLongStrings()
-
-            // Target files
-            target 'src/*/java/**/*.java'
-            targetExclude '**/generated/**', '**/Q*.java'
-
-            // Ensure newline at end of file (matches Checkstyle's NewlineAtEndOfFile)
-            endWithNewline()
+    if (!isLegacyModule) {
+        // ========================================
+        // Checkstyle Configuration
+        // ========================================
+        checkstyle {
+            toolVersion = rootProject.libs.versions.checkstyle.get()
+            configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+            ignoreFailures = false
+            maxWarnings = 0
         }
 
-        format 'misc', {
-            target '*.md', '.gitignore', '.gitattributes', '*.yaml', '*.yml'
-            trimTrailingWhitespace()
-            endWithNewline()
+        // Checkstyle: 테스트 코드는 경고 허용 (ArchUnit fluent API 등)
+        tasks.matching { it.name == 'checkstyleTest' || it.name == 'checkstyleTestFixtures' }.configureEach {
+            maxWarnings = Integer.MAX_VALUE
+        }
+
+        // ========================================
+        // SpotBugs Configuration
+        // ========================================
+        spotbugs {
+            toolVersion = rootProject.libs.versions.spotbugs.get()
+            effort = 'max'
+            reportLevel = 'low'
+            excludeFilter = rootProject.file('config/spotbugs/spotbugs-exclude.xml')
+        }
+
+        // SpotBugs: 테스트 코드 제외
+        tasks.matching { it.name == 'spotbugsTest' || it.name == 'spotbugsTestFixtures' }.configureEach {
+            enabled = false
+        }
+
+        // ========================================
+        // PMD Configuration
+        // ========================================
+        pmd {
+            toolVersion = rootProject.libs.versions.pmd.get()
+            consoleOutput = true
+            ruleSetFiles = files(rootProject.file('config/pmd/pmd-ruleset.xml'))
+            ruleSets = [] // Use only custom ruleset
+            ignoreFailures = false
+        }
+
+        tasks.withType(Pmd) {
+            reports {
+                xml.required = true
+                html.required = true
+            }
+        }
+
+        // PMD: 테스트 코드 제외 (ArchUnit fluent API가 DemeterStrict 규칙에 걸림)
+        tasks.matching { it.name == 'pmdTest' || it.name == 'pmdTestFixtures' }.configureEach {
+            enabled = false
+        }
+
+        // ========================================
+        // Spotless Configuration
+        // ========================================
+        spotless {
+            java {
+                // Google Java Format (AOSP style - 4 spaces)
+                // Version managed in libs.versions.toml
+                // Note: Google Java Format includes import ordering and removes unused imports
+                googleJavaFormat(rootProject.libs.versions.googleJavaFormat.get()).aosp().reflowLongStrings()
+
+                // Target files
+                target 'src/*/java/**/*.java'
+                targetExclude '**/generated/**', '**/Q*.java'
+
+                // Ensure newline at end of file (matches Checkstyle's NewlineAtEndOfFile)
+                endWithNewline()
+            }
+
+            format 'misc', {
+                target '*.md', '.gitignore', '.gitattributes', '*.yaml', '*.yml'
+                trimTrailingWhitespace()
+                endWithNewline()
+            }
         }
     }
 
@@ -217,34 +235,38 @@ subprojects {
     }
 
     tasks.named('build') {
-        dependsOn 'spotlessCheck'
+        if (!isLegacyModule) {
+            dependsOn 'spotlessCheck'
+        }
         dependsOn 'jacocoTestCoverageVerification'
     }
 
     // ========================================
-    // Lombok 금지 검증
+    // Lombok 금지 검증 (Legacy 모듈 제외)
     // ========================================
-    tasks.register('checkNoLombok') {
-        doLast {
-            def lombokFound = configurations.collect { config ->
-                config.dependencies.findAll { dep ->
-                    dep.group == 'org.projectlombok' && dep.name == 'lombok'
-                }
-            }.flatten()
+    if (!isLegacyModule) {
+        tasks.register('checkNoLombok') {
+            doLast {
+                def lombokFound = configurations.collect { config ->
+                    config.dependencies.findAll { dep ->
+                        dep.group == 'org.projectlombok' && dep.name == 'lombok'
+                    }
+                }.flatten()
 
-            if (!lombokFound.isEmpty()) {
-                throw new GradleException("""
+                if (!lombokFound.isEmpty()) {
+                    throw new GradleException("""
 ❌ LOMBOK DETECTED: Lombok is strictly prohibited in this project.
 Found in: ${project.name}
 
 Policy: All modules must use pure Java without Lombok.
 """)
+                }
             }
         }
-    }
 
-    tasks.named('build') {
-        dependsOn 'checkNoLombok'
+        tasks.named('build') {
+            dependsOn 'checkNoLombok'
+        }
     }
 
     // ========================================
@@ -260,10 +282,12 @@ Policy: All modules must use pure Java without Lombok.
     }
 
     // ========================================
-    // Spotless 자동 적용 (컴파일 전)
+    // Spotless 자동 적용 (컴파일 전) - Legacy 모듈 제외
     // ========================================
-    tasks.withType(JavaCompile).configureEach {
-        dependsOn 'spotlessApply'
+    if (!isLegacyModule) {
+        tasks.withType(JavaCompile).configureEach {
+            dependsOn 'spotlessApply'
+        }
     }
 }
 

@@ -140,6 +140,22 @@ public final class ApiV2Paths {
         private Brands() {}
     }
 
+    /** Product 도메인 경로 (상품 조회) */
+    public static final class Products {
+        public static final String BASE = API_V2 + "/products";
+
+        // ===== 상대 경로 (Controller용) =====
+        public static final String ID_PATH = "/{productGroupId}";
+        public static final String FULL_PATH = "/{productGroupId}/full";
+
+        // ===== 전체 경로 (SecurityPaths용) =====
+        public static final String LIST = BASE;
+        public static final String DETAIL = BASE + ID_PATH;
+        public static final String FULL = BASE + FULL_PATH;
+
+        private Products() {}
+    }
+
     /** Category 도메인 경로 */
     public static final class Categories {
         public static final String BASE = API_V2 + "/categories";
@@ -156,5 +172,50 @@ public final class ApiV2Paths {
         public static final String PATH = BASE + PATH_PATH;
 
         private Categories() {}
+    }
+
+    // ==================== Admin API 경로 ====================
+    // Admin Seller API는 rest-api-admin 모듈로 이동됨
+
+    public static final String API_V2_ADMIN = API_V2 + "/admin";
+
+    /** Admin ShippingPolicy 도메인 경로 (셀러의 배송 정책) */
+    public static final class AdminShippingPolicies {
+        public static final String BASE = API_V2_ADMIN + "/sellers/{sellerId}/shipping-policies";
+
+        // ===== 상대 경로 (Controller용) =====
+        public static final String ID_PATH = "/{shippingPolicyId}";
+        public static final String DEFAULT_PATH = "/{shippingPolicyId}/default";
+        public static final String DELETE_PATH = "/{shippingPolicyId}/delete";
+
+        // ===== 전체 경로 (SecurityPaths용) =====
+        public static final String LIST = BASE;
+        public static final String REGISTER = BASE;
+        public static final String DETAIL = BASE + ID_PATH;
+        public static final String UPDATE = BASE + ID_PATH;
+        public static final String SET_DEFAULT = BASE + DEFAULT_PATH;
+        public static final String DELETE = BASE + DELETE_PATH;
+
+        private AdminShippingPolicies() {}
+    }
+
+    /** Admin RefundPolicy 도메인 경로 (셀러의 환불 정책) */
+    public static final class AdminRefundPolicies {
+        public static final String BASE = API_V2_ADMIN + "/sellers/{sellerId}/refund-policies";
+
+        // ===== 상대 경로 (Controller용) =====
+        public static final String ID_PATH = "/{refundPolicyId}";
+        public static final String DEFAULT_PATH = "/{refundPolicyId}/default";
+        public static final String DELETE_PATH = "/{refundPolicyId}/delete";
+
+        // ===== 전체 경로 (SecurityPaths용) =====
+        public static final String LIST = BASE;
+        public static final String REGISTER = BASE;
+        public static final String DETAIL = BASE + ID_PATH;
+        public static final String UPDATE = BASE + ID_PATH;
+        public static final String SET_DEFAULT = BASE + DEFAULT_PATH;
+        public static final String DELETE = BASE + DELETE_PATH;
+
+        private AdminRefundPolicies() {}
     }
 }

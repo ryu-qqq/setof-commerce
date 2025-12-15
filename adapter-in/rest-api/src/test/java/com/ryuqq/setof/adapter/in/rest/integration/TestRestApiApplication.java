@@ -27,7 +27,14 @@ import org.springframework.context.annotation.FilterType;
             "com.ryuqq.setof.application.bank",
             "com.ryuqq.setof.application.shippingaddress",
             "com.ryuqq.setof.application.refundaccount",
+            "com.ryuqq.setof.application.member",
+            "com.ryuqq.setof.application.auth",
             "com.ryuqq.setof.application.common",
+            "com.ryuqq.setof.application.product",
+            "com.ryuqq.setof.application.productimage",
+            "com.ryuqq.setof.application.productdescription",
+            "com.ryuqq.setof.application.productnotice",
+            "com.ryuqq.setof.application.productstock",
             // REST API - V2 Controllers
             "com.ryuqq.setof.adapter.in.rest.v2.brand.controller",
             "com.ryuqq.setof.adapter.in.rest.v2.brand.mapper",
@@ -36,20 +43,47 @@ import org.springframework.context.annotation.FilterType;
             "com.ryuqq.setof.adapter.in.rest.v2.bank",
             "com.ryuqq.setof.adapter.in.rest.v2.shippingaddress",
             "com.ryuqq.setof.adapter.in.rest.v2.refundaccount",
+            "com.ryuqq.setof.adapter.in.rest.v2.member",
+            "com.ryuqq.setof.adapter.in.rest.v2.product",
             "com.ryuqq.setof.adapter.in.rest.common",
-            // REST API - Auth components (for JwtAuthenticationFilter)
+            // REST API - Auth (controller, dto, mapper, filter, handler, etc.)
+            "com.ryuqq.setof.adapter.in.rest.auth.controller",
+            "com.ryuqq.setof.adapter.in.rest.auth.dto",
+            "com.ryuqq.setof.adapter.in.rest.auth.mapper",
+            "com.ryuqq.setof.adapter.in.rest.auth.filter",
+            "com.ryuqq.setof.adapter.in.rest.auth.handler",
             "com.ryuqq.setof.adapter.in.rest.auth.component",
             "com.ryuqq.setof.adapter.in.rest.auth.security",
+            "com.ryuqq.setof.adapter.in.rest.auth.utils",
+            "com.ryuqq.setof.adapter.in.rest.auth.repository",
+            // Test Stub Adapters
+            "com.ryuqq.setof.adapter.in.rest.integration.stub",
             // Persistence
             "com.ryuqq.setof.adapter.out.persistence.brand",
             "com.ryuqq.setof.adapter.out.persistence.category",
             "com.ryuqq.setof.adapter.out.persistence.bank",
             "com.ryuqq.setof.adapter.out.persistence.shippingaddress",
             "com.ryuqq.setof.adapter.out.persistence.refundaccount",
-            "com.ryuqq.setof.adapter.out.persistence.config"
+            "com.ryuqq.setof.adapter.out.persistence.member",
+            "com.ryuqq.setof.adapter.out.persistence.refreshtoken",
+            "com.ryuqq.setof.adapter.out.persistence.config",
+            "com.ryuqq.setof.adapter.out.persistence.product",
+            "com.ryuqq.setof.adapter.out.persistence.productimage",
+            "com.ryuqq.setof.adapter.out.persistence.productdescription",
+            "com.ryuqq.setof.adapter.out.persistence.productnotice",
+            "com.ryuqq.setof.adapter.out.persistence.productstock",
+            // Security (Password Encoder, JWT, Config)
+            "com.ryuqq.setof.adapter.out.security",
+            "com.ryuqq.setof.adapter.out.security.config"
         },
         excludeFilters = {
-            @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*SecurityConfig.*"),
-            @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*OAuth.*")
+            // rest-api auth config의 SecurityConfig만 제외 (TestSecurityConfig로 대체)
+            // SecurityAdapterConfig는 포함해야 함 (JwtProperties 활성화용)
+            @ComponentScan.Filter(
+                    type = FilterType.REGEX,
+                    pattern = ".*\\.rest\\.auth\\.config\\.SecurityConfig"),
+            @ComponentScan.Filter(
+                    type = FilterType.REGEX,
+                    pattern = ".*OAuth2.*") // OAuth2 클라이언트 빈만 제외 (KakaoOAuth* 비즈니스 로직은 포함)
         })
 public class TestRestApiApplication {}

@@ -98,7 +98,24 @@ public final class RefundAccountFixture {
     }
 
     /**
-     * 삭제된 환불계좌 생성
+     * 삭제된 환불계좌 생성 (신규)
+     *
+     * @return RefundAccount 인스턴스 (삭제됨, ID 없음)
+     */
+    public static RefundAccount createDeletedNew() {
+        RefundAccount account =
+                RefundAccount.forNewVerified(
+                        DEFAULT_MEMBER_ID,
+                        DEFAULT_BANK_ID,
+                        AccountNumber.of("1234567890123"),
+                        AccountHolderName.of("홍길동"),
+                        FIXED_CLOCK);
+        account.delete(FIXED_CLOCK);
+        return account;
+    }
+
+    /**
+     * 삭제된 환불계좌 생성 (기존 ID 포함)
      *
      * @param id 환불계좌 ID
      * @return RefundAccount 인스턴스 (삭제됨)
@@ -137,7 +154,40 @@ public final class RefundAccountFixture {
     }
 
     /**
-     * 커스텀 환불계좌 생성
+     * 커스텀 환불계좌 생성 (신규)
+     *
+     * @param memberId 회원 ID
+     * @param bankId 은행 ID
+     * @param accountNumber 계좌번호
+     * @param accountHolderName 예금주명
+     * @param verified 검증 완료 여부
+     * @return RefundAccount 인스턴스 (ID 없음)
+     */
+    public static RefundAccount createCustomNew(
+            UUID memberId,
+            Long bankId,
+            String accountNumber,
+            String accountHolderName,
+            boolean verified) {
+        if (verified) {
+            return RefundAccount.forNewVerified(
+                    memberId,
+                    bankId,
+                    AccountNumber.of(accountNumber),
+                    AccountHolderName.of(accountHolderName),
+                    FIXED_CLOCK);
+        } else {
+            return RefundAccount.forNew(
+                    memberId,
+                    bankId,
+                    AccountNumber.of(accountNumber),
+                    AccountHolderName.of(accountHolderName),
+                    FIXED_CLOCK);
+        }
+    }
+
+    /**
+     * 커스텀 환불계좌 생성 (기존 ID 포함)
      *
      * @param id 환불계좌 ID
      * @param memberId 회원 ID

@@ -16,6 +16,7 @@ import com.ryuqq.setof.domain.bank.aggregate.Bank;
 import com.ryuqq.setof.domain.bank.exception.BankNotFoundException;
 import com.ryuqq.setof.domain.bank.vo.BankCode;
 import com.ryuqq.setof.domain.bank.vo.BankId;
+import com.ryuqq.setof.domain.bank.vo.BankName;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -247,6 +248,41 @@ class BankReadManagerTest {
 
             // Then
             assertFalse(result);
+        }
+    }
+
+    @Nested
+    @DisplayName("findByBankName")
+    class FindByBankNameTest {
+
+        @Test
+        @DisplayName("은행 이름으로 조회 성공")
+        void shouldReturnBankWhenFoundByName() {
+            // Given
+            String bankName = "KB국민은행";
+            Bank bank = BankFixture.create();
+
+            when(bankQueryPort.findByBankName(any(BankName.class))).thenReturn(Optional.of(bank));
+
+            // When
+            Bank result = bankReadManager.findByBankName(bankName);
+
+            // Then
+            assertNotNull(result);
+            verify(bankQueryPort, times(1)).findByBankName(any(BankName.class));
+        }
+
+        @Test
+        @DisplayName("은행 이름으로 조회 실패 시 예외 발생")
+        void shouldThrowExceptionWhenNameNotFound() {
+            // Given
+            String bankName = "존재하지않는은행";
+
+            when(bankQueryPort.findByBankName(any(BankName.class))).thenReturn(Optional.empty());
+
+            // When & Then
+            assertThrows(
+                    BankNotFoundException.class, () -> bankReadManager.findByBankName(bankName));
         }
     }
 }

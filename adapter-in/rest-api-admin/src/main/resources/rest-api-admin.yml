@@ -1,0 +1,111 @@
+# ===============================================
+# REST API Admin Adapter Configuration
+# ===============================================
+# REST API Admin 어댑터 전용 설정
+# 애플리케이션 런타임 설정은 bootstrap/bootstrap-admin-api/application.yml 참조
+#
+# 설정 범위:
+# - Security: Admin 인증 (Basic Auth, API Key 등)
+# - OpenAPI: Swagger UI, API Docs
+# - Error: RFC 7807 Problem Details
+#
+# @since 1.0.0
+# ===============================================
+
+# ===============================================
+# Error Response Configuration (RFC 7807)
+# ===============================================
+# @see com.ryuqq.adapter.in.rest.admin.common.controller.GlobalExceptionHandler
+api:
+  error:
+    # 에러 타입 문서 베이스 URL
+    # 프로덕션: https://admin-api.example.com/problems
+    # 개발: about:blank (기본값)
+    base-url: about:blank
+
+    # about:blank 사용 여부 (true: 문서 URL 무시, false: base-url 사용)
+    use-about-blank: true
+
+# ===============================================
+# Security Configuration
+# ===============================================
+# Admin API는 별도의 인증 방식 사용
+security:
+  # 공개 엔드포인트 (인증 없이 접근 가능)
+  public-endpoints:
+    # Health Check (ALB, K8s 등 인프라 헬스체크용)
+    - pattern: /actuator/health
+    - pattern: /actuator/health/**
+    # Prometheus Metrics (ADOT/AMP 메트릭 수집용)
+    - pattern: /actuator/prometheus
+    # API 문서
+    - pattern: /docs
+    - pattern: /docs/**
+    - pattern: /v3/api-docs/**
+    - pattern: /swagger-ui/**
+    - pattern: /swagger-ui.html
+
+  # Admin API Key 설정 (프로덕션에서 반드시 환경변수로 변경)
+  admin:
+    api-key: ${ADMIN_API_KEY:admin-api-key-must-be-changed-in-production}
+
+# ===============================================
+# API Documentation (Springdoc OpenAPI)
+# ===============================================
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    # Deep Linking 지원
+    display-request-duration: true
+    # Try it out 기본 활성화
+    try-it-out-enabled: true
+
+  # 스캔 대상 패키지
+  packages-to-scan:
+    - com.ryuqq.setof.adapter.in.rest.admin
+
+  # 기본 Content-Type
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+  # Cache 비활성화 (개발 환경)
+  cache:
+    disabled: true
+
+# ===============================================
+# Profile-Specific Configurations
+# ===============================================
+---
+# Production 환경
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+springdoc:
+  # 프로덕션에서 Swagger UI 비활성화
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
+---
+# Staging 환경
+spring:
+  config:
+    activate:
+      on-profile: staging
+
+springdoc:
+  # Staging에서는 Swagger UI 활성화 (내부 테스트용)
+  swagger-ui:
+    enabled: true
+  api-docs:
+    enabled: true

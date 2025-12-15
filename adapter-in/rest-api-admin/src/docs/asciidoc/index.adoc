@@ -1,0 +1,96 @@
+= SetOf Commerce Admin API Documentation
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+:sectnums:
+
+[[overview]]
+== Overview
+
+SetOf Commerce Admin REST API 문서입니다.
+
+=== Base URL
+
+[cols="1,3"]
+|===
+| Environment | URL
+
+| Development
+| `http://localhost:8080`
+
+| Production
+| `https://admin-api.setof.com`
+|===
+
+=== HTTP Status Codes
+
+[cols="1,3"]
+|===
+| Status Code | Description
+
+| `200 OK`
+| 요청 성공
+
+| `201 Created`
+| 리소스 생성 성공
+
+| `400 Bad Request`
+| 잘못된 요청 (유효성 검사 실패)
+
+| `401 Unauthorized`
+| 인증 필요
+
+| `403 Forbidden`
+| 권한 없음
+
+| `404 Not Found`
+| 리소스를 찾을 수 없음
+
+| `500 Internal Server Error`
+| 서버 오류
+|===
+
+=== Common Response Format
+
+모든 API 응답은 다음 형식을 따릅니다:
+
+[source,json]
+----
+{
+  "success": true,
+  "data": { ... },
+  "error": null,
+  "timestamp": "2025-10-23T10:30:00",
+  "requestId": "req-123456"
+}
+----
+
+에러 응답:
+
+[source,json]
+----
+{
+  "success": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "에러 메시지"
+  },
+  "timestamp": "2025-10-23T10:30:00",
+  "requestId": "req-123456"
+}
+----
+
+[[api-v2]]
+== API V2
+
+관리자 전용 API입니다.
+
+include::v2/seller/seller.adoc[]
+
+include::v2/shippingpolicy/shippingpolicy.adoc[]
+
+include::v2/refundpolicy/refundpolicy.adoc[]

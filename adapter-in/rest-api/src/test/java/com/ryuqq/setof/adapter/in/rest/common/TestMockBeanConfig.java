@@ -4,11 +4,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.ryuqq.setof.application.auth.dto.response.TokenPairResponse;
 import com.ryuqq.setof.application.auth.port.out.client.TokenProviderPort;
 import com.ryuqq.setof.application.refundaccount.port.out.client.AccountVerificationPort;
 import com.ryuqq.setof.domain.common.util.ClockHolder;
 import java.time.Clock;
 import java.time.ZoneId;
+import java.util.UUID;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
@@ -59,6 +61,16 @@ public class TestMockBeanConfig {
 
         when(mockPort.isAccessTokenExpired(anyString())).thenReturn(false);
         when(mockPort.validateRefreshToken(anyString())).thenReturn(false);
+
+        // 토큰 생성 - 회원가입 시 사용
+        when(mockPort.generateTokenPair(anyString()))
+                .thenAnswer(
+                        invocation -> {
+                            String memberId = invocation.getArgument(0);
+                            String accessToken = TEST_TOKEN_PREFIX + memberId;
+                            String refreshToken = "REFRESH_" + UUID.randomUUID();
+                            return TokenPairResponse.of(accessToken, 3600L, refreshToken, 604800L);
+                        });
 
         return mockPort;
     }

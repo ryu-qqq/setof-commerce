@@ -165,6 +165,10 @@ public class MemberController {
     public ResponseEntity<ApiResponse<MemberApiResponse>> getCurrentMember(
             @AuthenticationPrincipal MemberPrincipal principal) {
 
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         GetCurrentMemberQuery query =
                 memberApiMapper.toGetCurrentMemberQuery(principal.getMemberId());
         MemberDetailResponse memberDetail = getCurrentMemberUseCase.execute(query);
@@ -207,6 +211,10 @@ public class MemberController {
             @AuthenticationPrincipal MemberPrincipal principal,
             @Valid @RequestBody WithdrawApiRequest request,
             HttpServletResponse response) {
+
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         WithdrawMemberCommand command =
                 memberApiMapper.toWithdrawCommand(principal.getMemberId(), request);
@@ -280,6 +288,10 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> linkKakao(
             @AuthenticationPrincipal MemberPrincipal principal,
             @Valid @RequestBody KakaoLinkApiRequest request) {
+
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         IntegrateKakaoCommand command =
                 memberApiMapper.toIntegrateKakaoCommand(principal.getMemberId(), request);

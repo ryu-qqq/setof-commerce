@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import com.ryuqq.setof.application.bank.manager.query.BankReadManager;
 import com.ryuqq.setof.application.refundaccount.assembler.RefundAccountAssembler;
+import com.ryuqq.setof.application.refundaccount.dto.command.UpdateRefundAccountByBankNameCommand;
 import com.ryuqq.setof.application.refundaccount.dto.command.UpdateRefundAccountCommand;
 import com.ryuqq.setof.application.refundaccount.dto.response.RefundAccountResponse;
 import com.ryuqq.setof.application.refundaccount.factory.command.RefundAccountCommandFactory;
@@ -161,6 +162,113 @@ class UpdateRefundAccountServiceTest {
                 UUID memberId, Long refundAccountId, Long bankId) {
             return UpdateRefundAccountCommand.of(
                     memberId, refundAccountId, bankId, "9876543210987", "김철수");
+        }
+    }
+
+    @Nested
+    @DisplayName("execute (ByBankName)")
+    class ExecuteByBankNameTest {
+
+        @Test
+        @DisplayName("은행 이름 기반 환불계좌 수정 성공")
+        void shouldUpdateRefundAccountByBankName() {
+            // Given
+            UUID memberId = RefundAccountFixture.DEFAULT_MEMBER_ID;
+            Long refundAccountId = 1L;
+            String bankName = "신한은행";
+            UpdateRefundAccountByBankNameCommand command =
+                    createByBankNameCommand(memberId, refundAccountId, bankName);
+            RefundAccount refundAccount = RefundAccountFixture.createWithId(refundAccountId);
+            Bank bank = BankFixture.createCustom(2L, "088", "신한은행", 2, true);
+
+            when(refundAccountReadManager.findById(refundAccountId)).thenReturn(refundAccount);
+            when(bankReadManager.findByBankName(bankName)).thenReturn(bank);
+            when(accountVerificationPort.verifyAccount(anyString(), anyString(), anyString()))
+                    .thenReturn(true);
+
+            // When
+            RefundAccountResponse result = updateRefundAccountService.execute(command);
+
+            // Then
+            assertNotNull(result);
+            verify(bankReadManager, times(1)).findByBankName(bankName);
+            verify(refundAccountCommandFactory, times(1))
+                    .applyUpdateVerifiedByBankName(eq(refundAccount), eq(command), eq(bank));
+            verify(refundAccountPersistenceManager, times(1)).persist(refundAccount);
+        }
+
+        @Test
+        @DisplayName("소유권 검증 실패 시 예외 발생")
+        void shouldThrowExceptionWhenOwnershipValidationFailsByBankName() {
+            // Given
+            UUID otherMemberId = UUID.randomUUID();
+            Long refundAccountId = 1L;
+            UpdateRefundAccountByBankNameCommand command =
+                    createByBankNameCommand(otherMemberId, refundAccountId, "신한은행");
+            RefundAccount refundAccount = RefundAccountFixture.createWithId(refundAccountId);
+
+            when(refundAccountReadManager.findById(refundAccountId)).thenReturn(refundAccount);
+
+            // When & Then
+            assertThrows(
+                    RefundAccountNotOwnerException.class,
+                    () -> updateRefundAccountService.execute(command));
+            verify(refundAccountPersistenceManager, never()).persist(any());
+        }
+
+        @Test
+        @DisplayName("계좌 검증 실패 시 예외 발생")
+        void shouldThrowExceptionWhenVerificationFailsByBankName() {
+            // Given
+            UUID memberId = RefundAccountFixture.DEFAULT_MEMBER_ID;
+            Long refundAccountId = 1L;
+            String bankName = "신한은행";
+            UpdateRefundAccountByBankNameCommand command =
+                    createByBankNameCommand(memberId, refundAccountId, bankName);
+            RefundAccount refundAccount = RefundAccountFixture.createWithId(refundAccountId);
+            Bank bank = BankFixture.createCustom(2L, "088", "신한은행", 2, true);
+
+            when(refundAccountReadManager.findById(refundAccountId)).thenReturn(refundAccount);
+            when(bankReadManager.findByBankName(bankName)).thenReturn(bank);
+            when(accountVerificationPort.verifyAccount(anyString(), anyString(), anyString()))
+                    .thenReturn(false);
+
+            // When & Then
+            assertThrows(
+                    AccountVerificationFailedException.class,
+                    () -> updateRefundAccountService.execute(command));
+            verify(refundAccountPersistenceManager, never()).persist(any());
+        }
+
+        @Test
+        @DisplayName("수정된 정보가 응답에 포함")
+        void shouldContainUpdatedInfoInResponseByBankName() {
+            // Given
+            UUID memberId = RefundAccountFixture.DEFAULT_MEMBER_ID;
+            Long refundAccountId = 1L;
+            String bankName = "신한은행";
+            UpdateRefundAccountByBankNameCommand command =
+                    createByBankNameCommand(memberId, refundAccountId, bankName);
+            RefundAccount refundAccount = RefundAccountFixture.createWithId(refundAccountId);
+            Bank bank = BankFixture.createCustom(2L, "088", "신한은행", 2, true);
+
+            when(refundAccountReadManager.findById(refundAccountId)).thenReturn(refundAccount);
+            when(bankReadManager.findByBankName(bankName)).thenReturn(bank);
+            when(accountVerificationPort.verifyAccount(anyString(), anyString(), anyString()))
+                    .thenReturn(true);
+
+            // When
+            RefundAccountResponse result = updateRefundAccountService.execute(command);
+
+            // Then
+            assertEquals(refundAccount.getIdValue(), result.id());
+            assertEquals(bank.getBankNameValue(), result.bankName());
+        }
+
+        private UpdateRefundAccountByBankNameCommand createByBankNameCommand(
+                UUID memberId, Long refundAccountId, String bankName) {
+            return UpdateRefundAccountByBankNameCommand.of(
+                    memberId, refundAccountId, bankName, "9876543210987", "김철수");
         }
     }
 }

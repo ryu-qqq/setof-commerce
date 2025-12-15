@@ -1,0 +1,175 @@
+# ============================================================
+# Legacy Web API 운영 환경 설정
+# ============================================================
+# Strangler Fig Pattern: 기존 레거시 서버를 ECS 인프라로 이관
+# 점진적으로 새 아키텍처로 마이그레이션 진행 예정
+#
+# 환경변수 주입 방식:
+# - DB_PASSWORD, KAKAO_CLIENT_SECRET, JWT_SECRET,
+#   PORTONE_SECRET, SLACK_TOKEN → AWS Secrets Manager
+# - 나머지 → ECS Task Definition 환경변수
+# ============================================================
+
+server:
+  port: 8088
+  error:
+    include-exception: false
+    include-message: always
+    include-stacktrace: ON_PARAM
+    whitelabel:
+      enabled: true
+
+spring:
+  # ============================================================
+  # DataSource
+  # ============================================================
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/luxurydb?useSSL=true&useUnicode=true&serverTimezone=Asia/Seoul&allowMultiQueries=true
+    username: ${DB_USERNAME:admin}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: legacy-hikari-pool
+      maximum-pool-size: 30
+      minimum-idle: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
+
+  # ============================================================
+  # JPA Configuration
+  # ============================================================
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+    show-sql: false
+    open-in-view: false
+
+  # ============================================================
+  # Redis
+  # ============================================================
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 32
+          max-idle: 16
+          min-idle: 8
+          max-wait: 3000ms
+
+  # ============================================================
+  # OAuth2 Configuration
+  # ============================================================
+  security:
+    oauth2.client:
+      registration:
+        kakao:
+          clientId: ${KAKAO_CLIENT_ID}
+          clientSecret: ${KAKAO_CLIENT_SECRET}
+          clientAuthenticationMethod: post
+          authorizationGrantType: authorization_code
+          redirectUri: "https://server.set-of.net/login/oauth2/code/kakao"
+          scope:
+            - profile_nickname
+            - account_email
+            - gender
+            - name
+            - birthday
+            - birthyear
+            - phone_number
+          clientName: Kakao
+      provider:
+        kakao:
+          authorizationUri: https://kauth.kakao.com/oauth/authorize
+          tokenUri: https://kauth.kakao.com/oauth/token
+          userInfoUri: https://kapi.kakao.com/v2/user/me
+          userNameAttribute: id
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+# ============================================================
+# JWT Configuration
+# ============================================================
+token:
+  secret: ${JWT_SECRET}
+  ACCESS_TOKEN_EXPIRE_TIME: 1800000
+  REFRESH_TOKEN_EXPIRE_TIME: 10800000
+
+# ============================================================
+# AWS Configuration
+# ============================================================
+aws:
+  accessKey: ${AWS_ACCESS_KEY}
+  secretKey: ${AWS_SECRET_KEY}
+  region: ap-northeast-2
+  bucket: set-of.net
+  assetUrl: d3fej89xf1vai5.cloudfront.net
+  tempBucket: temp-set-of.net
+  tempUrl: s3.ap-northeast-2.amazonaws.com/temp-set-of.net
+
+# ============================================================
+# Logging (JSON Structured for CloudWatch)
+# ============================================================
+logging:
+  level:
+    root: INFO
+    com.setof.connectly: INFO
+    com.setof.connectly.auth.filter.CustomLoggingFilter: INFO
+    org.hibernate.SQL: WARN
+    org.springframework: WARN
+
+# ============================================================
+# PortOne (iamport)
+# ============================================================
+Import:
+  import-restApi: ${PORTONE_API_KEY}
+  import-restApiSecret: ${PORTONE_API_SECRET}
+  import-url: 'https://api.iamport.kr'
+
+# ============================================================
+# Front Domains
+# ============================================================
+front:
+  path: '.set-of.com'
+  web-domain: 'https://www.set-of.com'
+  stage-domain: 'https://stage.set-of.com'
+  s3-domain: 'https://cdn.set-of.com'
+
+# ============================================================
+# Slack Notification
+# ============================================================
+slack:
+  token: ${SLACK_TOKEN}
+  channel:
+    monitor: '#1_order_complete_notification'
+    monitor2: '#1_qna_issue_notification'
+    monitor3: '#1_error_notification'
+
+# ============================================================
+# Actuator (Prometheus Metrics)
+# ============================================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      environment: ${spring.profiles.active:prod}

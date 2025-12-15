@@ -6,6 +6,7 @@ import com.ryuqq.setof.application.bank.port.out.query.BankQueryPort;
 import com.ryuqq.setof.domain.bank.aggregate.Bank;
 import com.ryuqq.setof.domain.bank.vo.BankCode;
 import com.ryuqq.setof.domain.bank.vo.BankId;
+import com.ryuqq.setof.domain.bank.vo.BankName;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
@@ -67,6 +68,21 @@ public class BankQueryAdapter implements BankQueryPort {
     public Optional<Bank> findByBankCode(BankCode bankCode) {
         return queryDslRepository
                 .findByBankCode(bankCode.value())
+                .map(bankJpaEntityMapper::toDomain);
+    }
+
+    /**
+     * 은행 이름으로 Bank 조회
+     *
+     * <p>V1 레거시 API 지원을 위한 메서드입니다.
+     *
+     * @param bankName 은행 이름 (Value Object)
+     * @return Bank Domain (Optional)
+     */
+    @Override
+    public Optional<Bank> findByBankName(BankName bankName) {
+        return queryDslRepository
+                .findByBankName(bankName.value())
                 .map(bankJpaEntityMapper::toDomain);
     }
 

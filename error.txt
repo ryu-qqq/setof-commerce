@@ -1,0 +1,58 @@
+Command DTO ArchUnit Tests (Zero-Tolerance) > [필수] Command DTO는 올바른 패키지에 위치해야 한다 FAILED
+    java.lang.AssertionError at CommandDtoArchTest.java:241
+
+> Task :domain:jacocoTestReport
+> Task :application:test
+> Task :adapter-in:rest-api:test
+[ant:jacocoReport] Rule violated for bundle domain: instructions covered ratio is 0.77, but expected minimum is 0.90
+
+> Task :domain:jacocoTestCoverageVerification FAILED
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+
+> Task :adapter-in:rest-api-admin:test
+
+RefundPolicyAdminV2Controller REST Docs > GET /api/v2/admin/sellers/{sellerId}/refund-policies/{refundPolicyId} - 환불 정책 상세 조회 API 문서 FAILED
+    java.lang.AssertionError at RefundPolicyAdminV2ControllerDocsTest.java:232
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+
+
+> Task :application:test
+
+SellerAssembler > toDomain > 선택 필드가 없는 Command를 Domain으로 변환 FAILED
+    com.ryuqq.setof.domain.seller.exception.InvalidCustomerServiceInfoException at SellerAssemblerTest.java:81
+
+SellerCommandFactory > create > 선택 필드가 없는 Command로 Seller 생성 성공 FAILED
+    com.ryuqq.setof.domain.seller.exception.InvalidCustomerServiceInfoException at SellerCommandFactoryTest.java:89
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+93 actionable tasks: 13 executed, 80 up-to-date
+> A failure occurred while executing org.gradle.internal.jacoco.JacocoCoverageAction
+   > Rule violated for bundle domain: instructions covered ratio is 0.77, but expected minimum is 0.90
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+2: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task ':application:test'.
+> There were failing tests. See the report at: file:///home/runner/work/setof-commerce/setof-commerce/application/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to get full insights.
+==============================================================================
+
+3: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task ':adapter-in:rest-api-admin:test'.
+> There were failing tests. See the report at: file:///home/runner/work/setof-commerce/setof-commerce/adapter-in/rest-api-admin/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to get full insights.
+==============================================================================

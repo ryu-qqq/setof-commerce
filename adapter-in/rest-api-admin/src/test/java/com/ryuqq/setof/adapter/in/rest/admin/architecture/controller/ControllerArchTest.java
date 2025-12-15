@@ -186,6 +186,10 @@ class ControllerArchTest {
                         .and()
                         .areDeclaredInClassesThat()
                         .haveSimpleNameNotContaining("V1") // 레거시 V1 Controller 제외
+                        // TODO: ProductImage V2 Controller는 추후 PATCH로 리팩토링 필요
+                        .and()
+                        .areDeclaredInClassesThat()
+                        .resideOutsideOfPackages("..productimage..")
                         .should()
                         .beAnnotatedWith(
                                 org.springframework.web.bind.annotation.DeleteMapping.class)

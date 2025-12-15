@@ -2,6 +2,7 @@ package com.ryuqq.setof.application.refundaccount.service.command;
 
 import com.ryuqq.setof.application.bank.manager.query.BankReadManager;
 import com.ryuqq.setof.application.refundaccount.assembler.RefundAccountAssembler;
+import com.ryuqq.setof.application.refundaccount.dto.command.UpdateRefundAccountByBankNameCommand;
 import com.ryuqq.setof.application.refundaccount.dto.command.UpdateRefundAccountCommand;
 import com.ryuqq.setof.application.refundaccount.dto.response.RefundAccountResponse;
 import com.ryuqq.setof.application.refundaccount.factory.command.RefundAccountCommandFactory;
@@ -74,6 +75,46 @@ public class UpdateRefundAccountService implements UpdateRefundAccountUseCase {
     }
 
     private void verifyAccount(Bank bank, UpdateRefundAccountCommand command) {
+        boolean verified =
+                accountVerificationPort.verifyAccount(
+                        bank.getBankCodeValue(),
+                        command.accountNumber(),
+                        command.accountHolderName());
+
+        if (!verified) {
+            throw new AccountVerificationFailedException(
+                    bank.getBankCodeValue(), command.accountNumber());
+        }
+    }
+
+    /**
+     * 환불계좌 수정 실행 (은행 이름 기반)
+     *
+     * <p>V1 레거시 API 지원을 위한 메서드입니다. bankName으로 은행을 조회하여 수정합니다.
+     *
+     * @param command 환불계좌 수정 커맨드 (은행 이름 기반)
+     * @return 수정된 환불계좌 정보
+     */
+    @Override
+    @Deprecated
+    @Transactional
+    public RefundAccountResponse execute(UpdateRefundAccountByBankNameCommand command) {
+        RefundAccount refundAccount = refundAccountReadManager.findById(command.refundAccountId());
+
+        refundAccount.validateOwnership(command.memberId());
+
+        Bank bank = bankReadManager.findByBankName(command.bankName());
+
+        verifyAccountByBankName(bank, command);
+
+        refundAccountCommandFactory.applyUpdateVerifiedByBankName(refundAccount, command, bank);
+
+        refundAccountPersistenceManager.persist(refundAccount);
+
+        return refundAccountAssembler.toResponse(refundAccount, bank);
+    }
+
+    private void verifyAccountByBankName(Bank bank, UpdateRefundAccountByBankNameCommand command) {
         boolean verified =
                 accountVerificationPort.verifyAccount(
                         bank.getBankCodeValue(),

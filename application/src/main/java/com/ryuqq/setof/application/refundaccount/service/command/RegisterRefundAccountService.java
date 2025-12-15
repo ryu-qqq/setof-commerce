@@ -2,20 +2,19 @@ package com.ryuqq.setof.application.refundaccount.service.command;
 
 import com.ryuqq.setof.application.bank.manager.query.BankReadManager;
 import com.ryuqq.setof.application.refundaccount.assembler.RefundAccountAssembler;
+import com.ryuqq.setof.application.refundaccount.component.RefundAccountValidator;
+import com.ryuqq.setof.application.refundaccount.dto.command.RegisterRefundAccountByBankNameCommand;
 import com.ryuqq.setof.application.refundaccount.dto.command.RegisterRefundAccountCommand;
 import com.ryuqq.setof.application.refundaccount.dto.response.RefundAccountResponse;
 import com.ryuqq.setof.application.refundaccount.factory.command.RefundAccountCommandFactory;
 import com.ryuqq.setof.application.refundaccount.manager.command.RefundAccountPersistenceManager;
 import com.ryuqq.setof.application.refundaccount.manager.query.RefundAccountReadManager;
 import com.ryuqq.setof.application.refundaccount.port.in.command.RegisterRefundAccountUseCase;
-import com.ryuqq.setof.application.refundaccount.port.out.client.AccountVerificationPort;
 import com.ryuqq.setof.domain.bank.aggregate.Bank;
 import com.ryuqq.setof.domain.refundaccount.aggregate.RefundAccount;
-import com.ryuqq.setof.domain.refundaccount.exception.AccountVerificationFailedException;
 import com.ryuqq.setof.domain.refundaccount.exception.RefundAccountAlreadyExistsException;
 import com.ryuqq.setof.domain.refundaccount.vo.RefundAccountId;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Register RefundAccount Service
@@ -41,7 +40,7 @@ public class RegisterRefundAccountService implements RegisterRefundAccountUseCas
     private final RefundAccountCommandFactory refundAccountCommandFactory;
     private final RefundAccountAssembler refundAccountAssembler;
     private final BankReadManager bankReadManager;
-    private final AccountVerificationPort accountVerificationPort;
+    private final RefundAccountValidator refundAccountValidator;
 
     public RegisterRefundAccountService(
             RefundAccountReadManager refundAccountReadManager,
@@ -49,17 +48,16 @@ public class RegisterRefundAccountService implements RegisterRefundAccountUseCas
             RefundAccountCommandFactory refundAccountCommandFactory,
             RefundAccountAssembler refundAccountAssembler,
             BankReadManager bankReadManager,
-            AccountVerificationPort accountVerificationPort) {
+            RefundAccountValidator refundAccountValidator) {
         this.refundAccountReadManager = refundAccountReadManager;
         this.refundAccountPersistenceManager = refundAccountPersistenceManager;
         this.refundAccountCommandFactory = refundAccountCommandFactory;
         this.refundAccountAssembler = refundAccountAssembler;
         this.bankReadManager = bankReadManager;
-        this.accountVerificationPort = accountVerificationPort;
+        this.refundAccountValidator = refundAccountValidator;
     }
 
     @Override
-    @Transactional
     public RefundAccountResponse execute(RegisterRefundAccountCommand command) {
         validateNoExistingAccount(command);
 
@@ -81,15 +79,45 @@ public class RegisterRefundAccountService implements RegisterRefundAccountUseCas
     }
 
     private void verifyAccount(Bank bank, RegisterRefundAccountCommand command) {
-        boolean verified =
-                accountVerificationPort.verifyAccount(
-                        bank.getBankCodeValue(),
-                        command.accountNumber(),
-                        command.accountHolderName());
+        refundAccountValidator.validateAccount(
+                bank.getBankCodeValue(), command.accountNumber(), command.accountHolderName());
+    }
 
-        if (!verified) {
-            throw new AccountVerificationFailedException(
-                    bank.getBankCodeValue(), command.accountNumber());
+    /**
+     * 환불계좌 등록 실행 (은행 이름 기반)
+     *
+     * <p>V1 레거시 API 지원을 위한 메서드입니다. bankName으로 은행을 조회하여 등록합니다.
+     *
+     * @param command 환불계좌 등록 커맨드 (은행 이름 기반)
+     * @return 등록된 환불계좌 정보
+     */
+    @Override
+    @Deprecated
+    public RefundAccountResponse execute(RegisterRefundAccountByBankNameCommand command) {
+        validateNoExistingAccountByBankName(command);
+
+        Bank bank = bankReadManager.findByBankName(command.bankName());
+
+        verifyAccountByBankName(bank, command);
+
+        RefundAccount refundAccount =
+                refundAccountCommandFactory.createVerifiedByBankName(command, bank);
+        RefundAccountId savedId = refundAccountPersistenceManager.persist(refundAccount);
+
+        RefundAccount savedAccount = refundAccountReadManager.findById(savedId.value());
+        return refundAccountAssembler.toResponse(savedAccount, bank);
+    }
+
+    private void validateNoExistingAccountByBankName(
+            RegisterRefundAccountByBankNameCommand command) {
+        if (refundAccountReadManager.existsByMemberId(command.memberId())) {
+            throw new RefundAccountAlreadyExistsException(command.memberId());
         }
+    }
+
+    private void verifyAccountByBankName(
+            Bank bank, RegisterRefundAccountByBankNameCommand command) {
+        refundAccountValidator.validateAccount(
+                bank.getBankCodeValue(), command.accountNumber(), command.accountHolderName());
     }
 }

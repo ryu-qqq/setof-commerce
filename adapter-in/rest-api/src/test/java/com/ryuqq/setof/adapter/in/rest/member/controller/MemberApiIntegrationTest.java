@@ -65,7 +65,7 @@ class MemberApiIntegrationTest extends ApiIntegrationTestSupport {
                             "Password1!",
                             "신규회원",
                             LocalDate.of(1990, 5, 15),
-                            "MALE",
+                            "M",
                             true,
                             true,
                             false);
@@ -121,7 +121,7 @@ class MemberApiIntegrationTest extends ApiIntegrationTestSupport {
                             "Password1!",
                             "중복회원",
                             LocalDate.of(1990, 5, 15),
-                            "MALE",
+                            "M",
                             true,
                             true,
                             false);
@@ -274,9 +274,9 @@ class MemberApiIntegrationTest extends ApiIntegrationTestSupport {
                             "01088889999",
                             "scenario@example.com",
                             "Password1!",
-                            "시나리오테스트",
+                            "테스터",
                             LocalDate.of(1988, 3, 20),
-                            "FEMALE",
+                            "W",
                             true,
                             true,
                             true);

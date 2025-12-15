@@ -1,0 +1,112 @@
+Request
+Body
+apiSecret: string
+
+{
+  "apiSecret": "9NnYOXc65TE8jg0dGXSqDaopcJ3K6d26s3IR9ehnbklTbsH6boUQG14MPP5FEiK7Bj0qbvD72k6t8qHv",
+}
+
+
+
+발급받은 API secret
+Response
+200 Ok
+성공 응답으로 토큰을 반환합니다.
+
+accessToken: string
+인증에 사용하는 엑세스 토큰
+30분의 유효기간을 가지고 있습니다.
+
+refreshToken: string
+토큰 재발급 및 유효기간 연장을 위해 사용하는 리프레시 토큰
+하루의 유효기간을 가지고 있으며, 리프레시 토큰을 통해 유효기간이 연장된 새로운 엑세스 토큰을 발급받을 수 있습니다. 동일한 유저가 로그인 또는 토큰 재발급을 진행할 때마다 기존에 발급된 리프레시 토큰은 즉시 만료되므로 API 사용에 유의해주세요.
+
+{
+  "accessToken": "eyJraWQiOiI2YmZhMWMzYy02N2JjLTQ2N2YtYjdlYy01ODc4M2YwYjc3MWMiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ1c2VyX2lkIjoidXNlci1kYzExYTY3NS0wMzRlLTRjNWUtYTllMy1hZmM2OTU1OWRhZDQiLCJpc3MiOiJJQU1QT1JUIiwiZXhwIjoxNzY1NjA0NjUxLCJjdXN0b21fcGF5bG9hZCI6eyJtZXJjaGFudF9pZCI6Im1lcmNoYW50LWE0MWU1YTg2LTBiMDgtNDRmZS05MWU1LWQwMzVhMzViNmRiNyIsInN0b3JlX2lkIjoic3RvcmUtN2Q1ZGNhOGItMzBjMi00NGIzLTgxODktMzgwMGI0ZWFlOTE5In0sIm1lcmNoYW50X3NlcnZpY2UiOnsiaW5jbHVkZV9wZXJtaXNzaW9ucyI6dHJ1ZSwibWVyY2hhbnRfaWQiOiJtZXJjaGFudC1hNDFlNWE4Ni0wYjA4LTQ0ZmUtOTFlNS1kMDM1YTM1YjZkYjciLCJzdG9yZV9pZCI6InN0b3JlLTdkNWRjYThiLTMwYzItNDRiMy04MTg5LTM4MDBiNGVhZTkxOSIsImJlbG9uZ190byI6Ik1FUkNIQU5UIiwicGVybWlzc2lvbnMiOlsiVFhfUkVBRCIsIlRYX1VQREFURSIsIlJFQ09OX1JFQUQiLCJSRUNPTl9VUERBVEUiLCJQTEFURk9STV9TRVRUTEVNRU5UX1BPTElDWV9SRUFEIiwiUExBVEZPUk1fU0VUVExFTUVOVF9QT0xJQ1lfV1JJVEUiLCJQTEFURk9STV9QQVJUTkVSX1JFQUQiLCJQTEFURk9STV9QQVJUTkVSX1dSSVRFIiwiUExBVEZPUk1fVFJBTlNGRVJfUkVBRCIsIlBMQVRGT1JNX1RSQU5TRkVSX1dSSVRFIiwiUExBVEZPUk1fUEFSVE5FUl9TRVRUTEVNRU5UX1JFQUQiLCJQTEFURk9STV9QQVJUTkVSX1NFVFRMRU1FTlRfV1JJVEUiLCJQTEFURk9STV9QQVlPVVRfUkVBRCIsIlBMQVRGT1JNX0JVTEtfUEFZT1VUX1JFQUQiLCJQTEFURk9STV9FWENFTF9ET1dOTE9BRCJdLCJ3aGl0ZWxpc3QiOltdfSwiaWF0IjoxNzY1NjAyODUxfQ.3bs-QMNe8lLE1o_UCFwlcwY9qgP5vjbKRXO7Y8zzwElR9fEIgce0kL2dzXqyJz692MsUHezi68jEfWpDaRMXMA",
+  "refreshToken": "eyJraWQiOiI2YmZhMWMzYy02N2JjLTQ2N2YtYjdlYy01ODc4M2YwYjc3MWMiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzYWx0IjoiMzUxYjhmYmQtZDhjMy00NGI3LWEyMjUtNGJmMmJiYjczM2I1IiwidXNlcl9pZCI6InVzZXItZGMxMWE2NzUtMDM0ZS00YzVlLWE5ZTMtYWZjNjk1NTlkYWQ0IiwiaXNzIjoiSUFNUE9SVCIsImV4cCI6MTc2NTY4OTI1MSwiaWF0IjoxNzY1NjAyODUxfQ.L8y0iC1ZwSliekZGb_sp_B19f3NXdQJYnIkp_hwsyyituFuKfGsmX0bBwiAc1Rm8a-gTHH89OncPub4KvRBDnA"
+}
+
+
+
+400 Error
+* `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+
+type: string
+Union Tag
+이 필드의 값에 따라 실제 타입이 결정됩니다
+
+message?: string
+InvalidRequestError
+type이(가) "INVALID_REQUEST"일 때의 고유 필드
+
+허가되지 않은 값, 올바르지 않은 형식의 요청 등이 모두 해당됩니다.
+
+401 Error
+* `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
+
+type: string
+Union Tag
+이 필드의 값에 따라 실제 타입이 결정됩니다
+
+message?: string
+UnauthorizedError
+type이(가) "UNAUTHORIZED"일 때의 고유 필드
+
+인증 정보가 올바르지 않은 경우
+
+
+토큰 갱신
+리프레시 토큰을 사용해 유효기간이 연장된 새로운 토큰을 재발급합니다.
+
+
+Request
+Body
+refreshToken: string
+
+{
+  "refreshToken": "previous-refresh-token",
+}
+
+
+리프레시 토큰
+Response
+200 Ok
+accessToken: string
+인증에 사용하는 엑세스 토큰
+30분의 유효기간을 가지고 있습니다.
+
+refreshToken: string
+토큰 재발급 및 유효기간 연장을 위해 사용하는 리프레시 토큰
+하루의 유효기간을 가지고 있으며, 리프레시 토큰을 통해 유효기간이 연장된 새로운 엑세스 토큰을 발급받을 수 있습니다. 동일한 유저가 로그인 또는 토큰 재발급을 진행할 때마다 기존에 발급된 리프레시 토큰은 즉시 만료되므로 API 사용에 유의해주세요.
+
+{
+  "accessToken": "new-access-token",
+  "refreshToken": "new-refresh-token"
+}
+
+
+400 Error
+* `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+
+type: string
+Union Tag
+이 필드의 값에 따라 실제 타입이 결정됩니다
+
+message?: string
+InvalidRequestError
+type이(가) "INVALID_REQUEST"일 때의 고유 필드
+
+허가되지 않은 값, 올바르지 않은 형식의 요청 등이 모두 해당됩니다.
+
+401 Error
+* `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
+
+type: string
+Union Tag
+이 필드의 값에 따라 실제 타입이 결정됩니다
+
+message?: string
+UnauthorizedError
+type이(가) "UNAUTHORIZED"일 때의 고유 필드
+
+인증 정보가 올바르지 않은 경우

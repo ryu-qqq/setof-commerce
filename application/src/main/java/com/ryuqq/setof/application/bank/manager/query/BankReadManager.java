@@ -5,6 +5,7 @@ import com.ryuqq.setof.domain.bank.aggregate.Bank;
 import com.ryuqq.setof.domain.bank.exception.BankNotFoundException;
 import com.ryuqq.setof.domain.bank.vo.BankCode;
 import com.ryuqq.setof.domain.bank.vo.BankId;
+import com.ryuqq.setof.domain.bank.vo.BankName;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
@@ -67,6 +68,23 @@ public class BankReadManager {
         return bankQueryPort
                 .findByBankCode(code)
                 .orElseThrow(() -> new BankNotFoundException(bankCode));
+    }
+
+    /**
+     * 은행 이름으로 조회 (필수)
+     *
+     * <p>V1 레거시 API 지원을 위한 메서드입니다.
+     *
+     * @param bankName 은행 이름
+     * @return 조회된 Bank
+     * @throws BankNotFoundException Bank를 찾을 수 없는 경우
+     */
+    @Transactional(readOnly = true)
+    public Bank findByBankName(String bankName) {
+        BankName name = BankName.of(bankName);
+        return bankQueryPort
+                .findByBankName(name)
+                .orElseThrow(() -> new BankNotFoundException(bankName));
     }
 
     /**

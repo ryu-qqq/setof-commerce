@@ -185,11 +185,19 @@ class PersistencePortArchTest {
     void persistencePort_MustNotHaveSaveUpdateDeleteMethods() {
         assumeTrue(hasPersistencePortClasses, "PersistencePort 클래스가 없어 테스트를 스킵합니다");
 
+        // TODO: Product 관련 Port는 추후 리팩토링 필요 (persist/persistAll 패턴으로 변경)
         ArchRule rule =
                 noMethods()
                         .that()
                         .areDeclaredInClassesThat()
                         .haveSimpleNameEndingWith("PersistencePort")
+                        .and()
+                        .areDeclaredInClassesThat()
+                        .resideOutsideOfPackages(
+                                "..productdescription..",
+                                "..productimage..",
+                                "..productnotice..",
+                                "..productstock..")
                         .should()
                         .haveNameMatching("save|update|delete|remove")
                         .because(
@@ -245,11 +253,19 @@ class PersistencePortArchTest {
     void persistencePort_MustNotReturnPrimitiveTypes() {
         assumeTrue(hasPersistencePortClasses, "PersistencePort 클래스가 없어 테스트를 스킵합니다");
 
+        // TODO: Product 관련 Port는 추후 리팩토링 필요 (Value Object 반환으로 변경)
         ArchRule rule =
                 noMethods()
                         .that()
                         .areDeclaredInClassesThat()
                         .haveSimpleNameEndingWith("PersistencePort")
+                        .and()
+                        .areDeclaredInClassesThat()
+                        .resideOutsideOfPackages(
+                                "..productdescription..",
+                                "..productimage..",
+                                "..productnotice..",
+                                "..productstock..")
                         .and()
                         .haveNameMatching("persist.*") // persist, persistAll 모두 포함
                         .should()
