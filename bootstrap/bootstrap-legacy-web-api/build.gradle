@@ -84,10 +84,9 @@ dependencies {
     // PortOne (iamport)
     implementation 'com.github.iamport:iamport-rest-client-java:0.2.21'
 
-    // Logback + Janino
-    implementation 'ch.qos.logback:logback-classic:1.4.12'
-    implementation 'net.logstash.logback:logstash-logback-encoder:6.6'
-    implementation 'org.codehaus.janino:janino:3.1.10'
+    // Logback + Janino (Spring Boot managed logback version)
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
+    implementation 'org.codehaus.janino:janino:3.1.12'
 
     // Slack
     implementation 'com.slack.api:bolt:1.28.0'
