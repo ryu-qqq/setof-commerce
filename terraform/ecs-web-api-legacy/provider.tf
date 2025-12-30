@@ -78,7 +78,7 @@ variable "legacy_api_desired_count" {
 variable "image_tag" {
   description = "Docker image tag to deploy. Auto-set by GitHub Actions. Format: {component}-{build-number}-{git-sha}"
   type        = string
-  default     = "legacy-api-1-initial"  # Fallback only - GitHub Actions will override this
+  default     = "legacy-api-1-initial" # Fallback only - GitHub Actions will override this
 
   validation {
     condition     = can(regex("^legacy-api-[0-9]+-[a-zA-Z0-9]+$", var.image_tag))
@@ -162,13 +162,14 @@ locals {
   public_subnets  = split(",", data.aws_ssm_parameter.public_subnets.value)
   certificate_arn = data.aws_ssm_parameter.certificate_arn.value
   route53_zone_id = data.aws_ssm_parameter.route53_zone_id.value
-  fqdn            = "commerce.set-of.com"  # Legacy server takes main domain (Strangler Fig)
+  fqdn            = "commerce.set-of.com" # Legacy server takes main domain (Strangler Fig)
 
   # RDS Configuration (MySQL - luxurydb schema)
+  # Using RDS Proxy for connection pooling and failover resilience
   rds_credentials = jsondecode(data.aws_secretsmanager_secret_version.rds.secret_string)
-  rds_host        = "prod-shared-mysql.cfacertspqbw.ap-northeast-2.rds.amazonaws.com"
+  rds_host        = "prod-shared-mysql-proxy.proxy-cfacertspqbw.ap-northeast-2.rds.amazonaws.com"
   rds_port        = "3306"
-  rds_dbname      = "luxurydb"  # Legacy uses luxurydb schema
+  rds_dbname      = "luxurydb" # Legacy uses luxurydb schema
   rds_username    = local.rds_credentials.username
 
   # Redis Configuration
