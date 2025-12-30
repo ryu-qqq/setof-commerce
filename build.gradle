@@ -173,72 +173,72 @@ subprojects {
     }
 
     // ========================================
-    // JaCoCo Coverage Configuration
+    // JaCoCo Coverage Configuration (Legacy 모듈 제외)
     // ========================================
-    apply plugin: 'jacoco'
+    if (!isLegacyModule) {
+        apply plugin: 'jacoco'
 
-    jacoco {
-        toolVersion = rootProject.libs.versions.jacoco.get()
-    }
-
-    tasks.named('jacocoTestReport') {
-        dependsOn 'test'
-
-        reports {
-            xml.required = true
-            html.required = true
+        jacoco {
+            toolVersion = rootProject.libs.versions.jacoco.get()
         }
-    }
 
-    // ========================================
-    // JaCoCo Coverage Verification
-    // Temporarily relaxed for classes without tests
-    // ========================================
-    tasks.named('jacocoTestCoverageVerification') {
-        dependsOn 'jacocoTestReport'
+        tasks.named('jacocoTestReport') {
+            dependsOn 'test'
 
-        violationRules {
-            rule {
-                enabled = true
-
-                limit {
-                    // 일시적으로 전역 최소값 낮춤 - 테스트 작성 후 원래 값으로 복원
-                    // domain: 0.90, application: 0.80, adapter: 0.70
-                    minimum = 0.0
-                }
-            }
-
-            rule {
-                enabled = true
-                element = 'CLASS'
-
-                limit {
-                    counter = 'LINE'
-                    value = 'COVEREDRATIO'
-                    // 일시적으로 최소값 낮춤 - 테스트 작성 후 0.50으로 복원
-                    minimum = 0.0
-                }
-
-                excludes = [
-                    '*.config.*',
-                    '*.Application',
-                    '*.Q*', // QueryDSL generated classes
-                    // 아직 테스트 미작성 클래스 제외 (일시적)
-                    '*.auth.*',
-                    '*.member.*',
-                    '*.common.controller.*',
-                    '*.common.filter.*',
-                    '*.storage.mysql.member.*'
-                ]
+            reports {
+                xml.required = true
+                html.required = true
             }
         }
-    }
 
-    tasks.named('build') {
-        if (!isLegacyModule) {
+        // ========================================
+        // JaCoCo Coverage Verification
+        // Temporarily relaxed for classes without tests
+        // ========================================
+        tasks.named('jacocoTestCoverageVerification') {
+            dependsOn 'jacocoTestReport'
+
+            violationRules {
+                rule {
+                    enabled = true
+
+                    limit {
+                        // 일시적으로 전역 최소값 낮춤 - 테스트 작성 후 원래 값으로 복원
+                        // domain: 0.90, application: 0.80, adapter: 0.70
+                        minimum = 0.0
+                    }
+                }
+
+                rule {
+                    enabled = true
+                    element = 'CLASS'
+
+                    limit {
+                        counter = 'LINE'
+                        value = 'COVEREDRATIO'
+                        // 일시적으로 최소값 낮춤 - 테스트 작성 후 0.50으로 복원
+                        minimum = 0.0
+                    }
+
+                    excludes = [
+                        '*.config.*',
+                        '*.Application',
+                        '*.Q*', // QueryDSL generated classes
+                        // 아직 테스트 미작성 클래스 제외 (일시적)
+                        '*.auth.*',
+                        '*.member.*',
+                        '*.common.controller.*',
+                        '*.common.filter.*',
+                        '*.storage.mysql.member.*'
+                    ]
+                }
+            }
+        }
+
+        tasks.named('build') {
             dependsOn 'spotlessCheck'
+            dependsOn 'jacocoTestCoverageVerification'
         }
-        dependsOn 'jacocoTestCoverageVerification'
     }
 
     // ========================================
