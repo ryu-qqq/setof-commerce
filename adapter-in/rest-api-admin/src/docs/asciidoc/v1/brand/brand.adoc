@@ -1,0 +1,59 @@
+=== Brand Admin API (Legacy V1)
+
+[WARNING]
+====
+이 API는 레거시 호환을 위해 유지됩니다. 신규 개발 시 V2 API 사용을 권장합니다.
+
+- V2 엔드포인트: `/api/v2/admin/brands`
+====
+
+==== 권한
+
+[cols="1,2"]
+|===
+| 권한 레벨 | 설명
+
+| 🔐 **orgAdminOrHigher**
+| 조직 관리자 이상 권한 필요
+|===
+
+==== V1 vs V2 차이점
+
+[cols="1,2,2"]
+|===
+| 항목 | V1 (Legacy) | V2 (권장)
+
+| 경로
+| `/api/v1/brands`
+| `/api/v2/admin/brands`
+
+| 페이징
+| ✅ 지원
+| ✅ 지원
+
+| 응답 래퍼
+| V1ApiResponse
+| ApiResponse
+|===
+
+==== 브랜드 목록 조회
+
+`GET /api/v1/brands`
+
+검색 조건에 맞는 브랜드 목록을 페이징하여 조회합니다.
+
+===== Request
+
+include::{snippets}/v1/admin-brand-list/http-request.adoc[]
+
+===== Query Parameters
+
+include::{snippets}/v1/admin-brand-list/query-parameters.adoc[]
+
+===== Response
+
+include::{snippets}/v1/admin-brand-list/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/v1/admin-brand-list/response-fields.adoc[]

@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPathPattern": "/api/oms/sync-history/[0-9]+/retry"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "success": true,
+      "message": "재처리 요청이 접수되었습니다.",
+      "data": {
+        "historyId": 1001,
+        "newJobId": "SYNC-20251217-RETRY-001",
+        "status": "RETRY_PENDING"
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    }
+  }
+}

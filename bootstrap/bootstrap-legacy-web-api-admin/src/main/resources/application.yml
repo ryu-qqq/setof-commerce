@@ -1,0 +1,11 @@
+# ============================================================
+# Legacy Admin API Application Configuration
+# ============================================================
+# Strangler Fig Pattern: Partner Admin 서버를 ECS 인프라로 이관
+# ============================================================
+
+spring:
+  application:
+    name: legacy-admin-api
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}

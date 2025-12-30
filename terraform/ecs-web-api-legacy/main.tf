@@ -314,7 +314,7 @@ module "legacy_api_task_execution_role" {
   ]
 
   enable_secrets_manager_policy = true
-  secrets_manager_secret_arns   = [
+  secrets_manager_secret_arns = [
     data.aws_secretsmanager_secret.rds.arn,
     data.aws_secretsmanager_secret.legacy.arn
   ]

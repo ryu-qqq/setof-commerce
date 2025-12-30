@@ -1,0 +1,140 @@
+=== Cart API (Legacy V1)
+
+[WARNING]
+====
+**Deprecated API**: V2 API 사용을 권장합니다.
+
+- V2 엔드포인트: `/api/v2/carts`
+- V1은 하위 호환성을 위해 유지됩니다.
+====
+
+==== 권한
+
+[cols="1,2"]
+|===
+| 권한 레벨 | 설명
+
+| 🔒 **Authenticated**
+| JWT 인증 필요
+|===
+
+==== V1 vs V2 차이점
+
+[cols="1,2,2"]
+|===
+| 항목 | V1 (Legacy) | V2 (권장)
+
+| 페이징
+| SliceApiResponse (항상 hasNext=false)
+| 전체 목록 반환
+
+| 응답 형식
+| SliceApiResponse
+| CartResponse
+
+| 인증
+| JWT Token (memberId)
+| JWT Token (memberId)
+
+| 응답 래퍼
+| V1ApiResponse
+| ApiResponse
+
+| 상품 정보
+| Enriched (상세 정보 포함)
+| 기본 정보만 포함
+|===
+
+==== 장바구니 개수 조회
+
+===== Request
+
+include::{snippets}/v1/cart-count/http-request.adoc[]
+
+===== Response
+
+include::{snippets}/v1/cart-count/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/v1/cart-count/response-fields.adoc[]
+
+==== 장바구니 목록 조회
+
+===== Request
+
+include::{snippets}/v1/cart-list/http-request.adoc[]
+
+===== Query Parameters
+
+include::{snippets}/v1/cart-list/query-parameters.adoc[]
+
+===== Response
+
+include::{snippets}/v1/cart-list/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/v1/cart-list/response-fields.adoc[]
+
+==== 장바구니 추가
+
+===== Request
+
+include::{snippets}/v1/cart-create/http-request.adoc[]
+
+===== Request Fields
+
+include::{snippets}/v1/cart-create/request-fields.adoc[]
+
+===== Response
+
+include::{snippets}/v1/cart-create/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/v1/cart-create/response-fields.adoc[]
+
+==== 장바구니 수정
+
+===== Request
+
+include::{snippets}/v1/cart-update/http-request.adoc[]
+
+===== Path Parameters
+
+include::{snippets}/v1/cart-update/path-parameters.adoc[]
+
+===== Request Fields
+
+include::{snippets}/v1/cart-update/request-fields.adoc[]
+
+===== Response
+
+include::{snippets}/v1/cart-update/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/v1/cart-update/response-fields.adoc[]
+
+==== 장바구니 삭제
+
+===== Request
+
+include::{snippets}/v1/cart-delete/http-request.adoc[]
+
+===== Path Parameters
+
+include::{snippets}/v1/cart-delete/path-parameters.adoc[]
+
+===== Query Parameters
+
+include::{snippets}/v1/cart-delete/query-parameters.adoc[]
+
+===== Response
+
+include::{snippets}/v1/cart-delete/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/v1/cart-delete/response-fields.adoc[]

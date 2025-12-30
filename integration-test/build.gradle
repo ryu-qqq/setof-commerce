@@ -1,0 +1,116 @@
+// ========================================
+// Integration Test Module
+// ========================================
+// Separate module for integration testing
+// Uses H2 in MySQL compatibility mode
+// NO Lombok allowed
+// ========================================
+
+plugins {
+    id 'java'
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+// Disable bootJar - this is a test-only module
+tasks.bootJar {
+    enabled = false
+}
+
+tasks.jar {
+    enabled = true
+}
+
+dependencies {
+    // ========================================
+    // Core Modules
+    // ========================================
+    testImplementation project(':domain')
+    testImplementation project(':application')
+
+    // ========================================
+    // Bootstrap (Application Entry Point)
+    // ========================================
+    testImplementation project(':bootstrap:bootstrap-web-api')
+    testImplementation project(':bootstrap:bootstrap-web-api-admin')
+
+    // ========================================
+    // Adapters
+    // ========================================
+    // Inbound
+    testImplementation project(':adapter-in:rest-api')
+    testImplementation project(':adapter-in:rest-api-admin')
+
+    // Outbound
+    testImplementation project(':adapter-out:persistence-mysql')
+    testImplementation project(':adapter-out:persistence-redis')
+    testImplementation project(':adapter-out:security')
+    testImplementation project(':adapter-out:portone-client')
+
+    // ========================================
+    // TestFixtures from all modules
+    // ========================================
+    testImplementation testFixtures(project(':domain'))
+    testImplementation testFixtures(project(':application'))
+    testImplementation testFixtures(project(':adapter-in:rest-api'))
+    testImplementation testFixtures(project(':adapter-in:rest-api-admin'))
+    testImplementation testFixtures(project(':adapter-out:persistence-mysql'))
+
+    // ========================================
+    // Spring Boot Starters
+    // ========================================
+    testImplementation libs.spring.boot.starter.web
+    testImplementation libs.spring.boot.starter.data.jpa
+    testImplementation libs.spring.boot.starter.validation
+    testImplementation libs.spring.boot.starter.security
+    testImplementation libs.spring.boot.starter.test
+
+    // ========================================
+    // Database - H2 for Integration Test
+    // ========================================
+    testRuntimeOnly libs.h2
+
+    // ========================================
+    // Testing Libraries
+    // ========================================
+    testImplementation libs.junit.jupiter
+    testImplementation libs.assertj.core
+    testImplementation libs.mockito.core
+    testImplementation libs.mockito.junit
+    testImplementation libs.spring.security.test
+    testImplementation libs.rest.assured
+    testImplementation libs.wiremock.standalone
+
+    // ========================================
+    // Jackson for JSON processing
+    // ========================================
+    testImplementation libs.jackson.databind
+    testImplementation libs.jackson.datatype.jsr310
+}
+
+// ========================================
+// Test Configuration
+// ========================================
+tasks.test {
+    useJUnitPlatform()
+
+    // Use test profile
+    systemProperty 'spring.profiles.active', 'test'
+
+    // Test logging configuration
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        showExceptions true
+        showCauses true
+        showStackTraces true
+    }
+
+    // Parallel execution disabled for integration tests
+    maxParallelForks = 1
+
+    // Report generation
+    reports {
+        html.required = true
+        junitXml.required = true
+    }
+}

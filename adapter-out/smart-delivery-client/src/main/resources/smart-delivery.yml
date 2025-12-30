@@ -1,0 +1,10 @@
+# ========================================
+# Smart Delivery (스마트택배) API Configuration
+# ========================================
+# API 문서: https://info.sweettracker.co.kr/apiguide
+# ========================================
+
+smart-delivery:
+  api-url: https://info.sweettracker.co.kr
+  api-key: ${SMART_DELIVERY_API_KEY:}
+  enabled: false
