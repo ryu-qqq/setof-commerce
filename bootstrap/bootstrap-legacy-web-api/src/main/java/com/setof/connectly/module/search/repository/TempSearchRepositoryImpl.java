@@ -7,6 +7,8 @@ import static com.setof.connectly.module.review.entity.QProductRatingStats.produ
 import static com.setof.connectly.module.search.entity.QProductScore.productScore;
 
 import com.querydsl.core.group.GroupBy;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.setof.connectly.module.common.enums.Yn;
 import com.setof.connectly.module.product.dto.ProductGroupThumbnail;
@@ -42,9 +44,7 @@ public class TempSearchRepositoryImpl implements SearchRepository {
                 .on(productRatingStats.id.eq(productGroup.id))
                 .leftJoin(productScore)
                 .on(productScore.id.eq(productGroup.id))
-                .where(
-                        productGroup.productGroupDetails.productGroupName.like(
-                                "%" + searchFilter.getSearchWord() + "%"))
+                .where(fullTextSearch(searchFilter.getSearchWord()))
                 .orderBy(productScore.score.coalesce(0.0).desc())
                 .limit(size)
                 .transform(
@@ -82,12 +82,24 @@ public class TempSearchRepositoryImpl implements SearchRepository {
                         .on(productRatingStats.id.eq(productGroup.id))
                         .leftJoin(productScore)
                         .on(productScore.id.eq(productGroup.id))
-                        .where(
-                                productGroup.productGroupDetails.productGroupName.like(
-                                        "%" + filter.getSearchWord() + "%"))
+                        .where(fullTextSearch(filter.getSearchWord()))
                         .orderBy(productScore.score.coalesce(0.0).desc())
                         .fetchOne();
 
         return l != null ? l : 0;
+    }
+
+    /**
+     * MySQL ngram FULLTEXT 인덱스를 사용한 검색 인덱스: ALTER TABLE product_group ADD FULLTEXT INDEX
+     * ft_product_group_name (product_group_name) WITH PARSER ngram;
+     */
+    private BooleanExpression fullTextSearch(String searchWord) {
+        if (searchWord == null || searchWord.isBlank()) {
+            return null;
+        }
+        // MySQL MATCH ... AGAINST with ngram parser (IN BOOLEAN MODE for better control)
+        return Expressions.booleanTemplate(
+                "MATCH({0}) AGAINST({1} IN BOOLEAN MODE)",
+                productGroup.productGroupDetails.productGroupName, "+" + searchWord + "*");
     }
 }

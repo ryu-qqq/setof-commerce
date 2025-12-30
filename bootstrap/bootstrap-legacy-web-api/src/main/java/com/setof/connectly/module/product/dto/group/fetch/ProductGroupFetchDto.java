@@ -125,4 +125,50 @@ public class ProductGroupFetchDto implements DiscountOffer {
 
     @Override
     public void setShareRatio(double shareRatio) {}
+
+    /** 분리된 쿼리 결과를 조합하기 위한 생성자 (쿼리 최적화용) */
+    public ProductGroupFetchDto(
+            long productGroupId,
+            String productGroupName,
+            long sellerId,
+            String sellerName,
+            BrandDto brand,
+            long categoryId,
+            String path,
+            Price price,
+            OptionType optionType,
+            ClothesDetailDto clothesDetail,
+            ProductStatus productStatus,
+            DeliveryNotice deliveryNotice,
+            RefundNoticeDto refundNotice,
+            ProductReviewDto productReview,
+            String detailDescription,
+            ProductNoticeDto productNotices) {
+        this.productGroupId = productGroupId;
+        this.productGroupName = productGroupName;
+        this.sellerId = sellerId;
+        this.sellerName = sellerName;
+        this.brand = brand;
+        this.categoryId = categoryId;
+        this.path = path;
+        this.price = price;
+        this.optionType = optionType;
+        this.clothesDetail = clothesDetail;
+        this.productStatus = productStatus;
+        this.deliveryNotice = deliveryNotice;
+        this.refundNotice = refundNotice;
+        this.productReview = productReview;
+        this.detailDescription = detailDescription;
+        this.productNotices = productNotices;
+        this.products = new HashSet<>();
+        this.productImages = new HashSet<>();
+    }
+
+    public void setProducts(Set<ProductFetchDto> products) {
+        this.products = products;
+    }
+
+    public void setProductImages(Set<ProductImageDto> productImages) {
+        this.productImages = productImages;
+    }
 }
