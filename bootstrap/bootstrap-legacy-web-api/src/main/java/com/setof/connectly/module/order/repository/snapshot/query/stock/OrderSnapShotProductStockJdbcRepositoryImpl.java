@@ -22,9 +22,9 @@ public class OrderSnapShotProductStockJdbcRepositoryImpl
     @Override
     public void saveAll(Set<OrderSnapShotProductStock> orderSnapShotProductStocks) {
         String sql =
-                "INSERT INTO ORDER_SNAPSHOT_PRODUCT_STOCK (ORDER_ID, PRODUCT_STOCK_ID, PRODUCT_ID,"
-                    + " STOCK_QUANTITY, DELETE_YN, INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE,"
-                    + " UPDATE_DATE) VALUES (:orderId, :productStockId, :productId, :stockQuantity,"
+                "INSERT INTO order_snapshot_product_stock (order_id, product_stock_id, product_id,"
+                    + " stock_quantity, delete_yn, insert_operator, update_operator, insert_date,"
+                    + " update_date) VALUES (:orderId, :productStockId, :productId, :stockQuantity,"
                     + " :deleteYn, :insertOperator, :updateOperator, :insertDate, :updateDate)";
 
         List<SqlParameterSource> parameters = new ArrayList<>();

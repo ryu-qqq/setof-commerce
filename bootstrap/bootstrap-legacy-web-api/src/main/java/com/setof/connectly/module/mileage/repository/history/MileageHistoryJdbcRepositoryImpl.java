@@ -19,9 +19,9 @@ public class MileageHistoryJdbcRepositoryImpl implements MileageHistoryJdbcRepos
     @Override
     public void saveAll(List<MileageHistory> mileageHistories) {
         String sql =
-                "INSERT INTO MILEAGE_HISTORY (USER_ID, MILEAGE_ID, CHANGE_AMOUNT, REASON,"
-                        + " ISSUE_TYPE, TARGET_ID, INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE,"
-                        + " UPDATE_DATE) VALUES (:userId, :mileageId, :changeAmount, :reason,"
+                "INSERT INTO mileage_history (user_id, mileage_id, change_amount, reason,"
+                        + " issue_type, target_id, insert_operator, update_operator, insert_date,"
+                        + " update_date) VALUES (:userId, :mileageId, :changeAmount, :reason,"
                         + " :issueType, :targetId, :insertOperator, :updateOperator, :insertDate,"
                         + " :updateDate)";
 

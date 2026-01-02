@@ -16,10 +16,10 @@ public class ProductJdbcRepositoryImpl implements ProductJdbcRepository {
     public void updateProductGroupSoldOutStatus(List<Long> productGroupIds) {
 
         String updateSql =
-                "UPDATE PRODUCT_GROUP pg SET pg.SOLD_OUT_YN = 'Y', pg.UPDATE_DATE ="
-                    + " CURRENT_TIMESTAMP WHERE pg.PRODUCT_GROUP_ID IN (:productGroupIds) AND NOT"
-                    + " EXISTS (SELECT 1 FROM PRODUCT p WHERE p.PRODUCT_GROUP_ID ="
-                    + " pg.PRODUCT_GROUP_ID AND p.SOLD_OUT_YN = 'N' AND p.DELETE_YN = 'N')";
+                "UPDATE product_group pg SET pg.sold_out_yn = 'Y', pg.update_date ="
+                    + " CURRENT_TIMESTAMP WHERE pg.product_group_id IN (:productGroupIds) AND NOT"
+                    + " EXISTS (SELECT 1 FROM product p WHERE p.product_group_id ="
+                    + " pg.product_group_id AND p.sold_out_yn = 'N' AND p.delete_yn = 'N')";
 
         Map<String, Object> params = new HashMap<>();
         params.put("productGroupIds", productGroupIds);
@@ -29,10 +29,10 @@ public class ProductJdbcRepositoryImpl implements ProductJdbcRepository {
     @Override
     public void updateProductGroupAvailableStatus(List<Long> productGroupIds) {
         String updateSql =
-                "UPDATE PRODUCT_GROUP pg SET pg.SOLD_OUT_YN = 'N', pg.UPDATE_DATE ="
-                        + " CURRENT_TIMESTAMP WHERE pg.PRODUCT_GROUP_ID IN (:productGroupIds) AND"
-                        + " EXISTS (SELECT 1 FROM PRODUCT p WHERE p.PRODUCT_GROUP_ID ="
-                        + " pg.PRODUCT_GROUP_ID AND p.SOLD_OUT_YN = 'N' AND p.DELETE_YN = 'N')";
+                "UPDATE product_group pg SET pg.sold_out_yn = 'N', pg.update_date ="
+                        + " CURRENT_TIMESTAMP WHERE pg.product_group_id IN (:productGroupIds) AND"
+                        + " EXISTS (SELECT 1 FROM product p WHERE p.product_group_id ="
+                        + " pg.product_group_id AND p.sold_out_yn = 'N' AND p.delete_yn = 'N')";
 
         Map<String, Object> params = new HashMap<>();
         params.put("productGroupIds", productGroupIds);

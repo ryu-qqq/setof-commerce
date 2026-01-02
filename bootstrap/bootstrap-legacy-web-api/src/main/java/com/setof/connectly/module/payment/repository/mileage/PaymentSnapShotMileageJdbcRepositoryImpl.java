@@ -22,9 +22,9 @@ public class PaymentSnapShotMileageJdbcRepositoryImpl
     @Override
     public void saveAll(List<PaymentSnapShotMileage> paymentSnapShotMileages) {
         String sql =
-                "INSERT INTO PAYMENT_SNAPSHOT_MILEAGE (PAYMENT_ID, USER_ID, USED_MILEAGE_AMOUNT,"
-                    + " MILEAGE_BALANCE, DELETE_YN, INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE,"
-                    + " UPDATE_DATE) VALUES (:paymentId, :userId, :usedMileageAmount,"
+                "INSERT INTO payment_snapshot_mileage (payment_id, user_id, used_mileage_amount,"
+                    + " MILEAGE_BALANCE, delete_yn, insert_operator, update_operator, insert_date,"
+                    + " update_date) VALUES (:paymentId, :userId, :usedMileageAmount,"
                     + " :mileageBalance, :deleteYn, :insertOperator, :updateOperator, :insertDate,"
                     + " :updateDate)";
 

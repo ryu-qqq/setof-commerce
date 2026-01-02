@@ -22,7 +22,7 @@ public class QnaImageJdbcRepositoryImpl implements QnaImageJdbcRepository{
 
     @Override
     public void saveAll(List<QnaImage> qnaImages) {
-        String sql = "INSERT INTO QNA_IMAGE (QNA_ISSUE_TYPE, QNA_ID, QNA_ANSWER_ID, IMAGE_URL, DISPLAY_ORDER,  INSERT_OPERATOR, UPDATE_OPERATOR) " +
+        String sql = "INSERT INTO qna_image (QNA_issue_type, qna_id, qna_answer_id, image_url, display_order,  insert_operator, update_operator) " +
                 "VALUES (:qnaIssueType, :qnaId, :qnaAnswerId, :imageUrl, :displayOrder, :insertOperator, :updateOperator)";
 
         List<MapSqlParameterSource> batchValues = new ArrayList<>(qnaImages.size());
@@ -43,12 +43,12 @@ public class QnaImageJdbcRepositoryImpl implements QnaImageJdbcRepository{
 
     @Override
     public void updateAll(List<QnaImage> qnaImages) {
-        String sql = "UPDATE QNA_IMAGE " +
-                "SET IMAGE_URL = :imageUrl, " +
-                "DISPLAY_ORDER = :displayOrder," +
-                "UPDATE_OPERATOR = :updateOperator," +
-                "UPDATE_DATE = :updateDate " +
-                "WHERE QNA_IMAGE_ID = :qnaImage";
+        String sql = "UPDATE qna_image " +
+                "SET image_url = :imageUrl, " +
+                "display_order = :displayOrder," +
+                "update_operator = :updateOperator," +
+                "update_date = :updateDate " +
+                "WHERE qna_image_id = :qnaImage";
 
         List<MapSqlParameterSource> batchValues = new ArrayList<>(qnaImages.size());
         for (QnaImage qnaImage : qnaImages) {
@@ -67,7 +67,7 @@ public class QnaImageJdbcRepositoryImpl implements QnaImageJdbcRepository{
     @Override
     public void deleteAll(List<Long> qnaImageIds) {
 
-        String sql = "UPDATE QNA_IMAGE SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE QNA_IMAGE_ID IN (:ids)";
+        String sql = "UPDATE qna_image SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE qna_image_id IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", qnaImageIds);

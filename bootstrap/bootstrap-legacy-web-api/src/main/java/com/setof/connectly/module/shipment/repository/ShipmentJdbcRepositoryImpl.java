@@ -18,9 +18,9 @@ public class ShipmentJdbcRepositoryImpl implements ShipmentJdbcRepository {
     @Override
     public void saveAll(List<Shipment> shipments) {
         String sql =
-                "INSERT INTO SHIPMENT (ORDER_ID, PAYMENT_SNAPSHOT_SHIPPING_ADDRESS_ID, SENDER_NAME,"
-                        + " SENDER_EMAIL, SENDER_PHONE_NUMBER, DELIVERY_STATUS, COMPANY_CODE,"
-                        + " INSERT_OPERATOR, UPDATE_OPERATOR) VALUES (:orderId,"
+                "INSERT INTO shipment (order_id, payment_snapshot_shipping_address_id, sender_name,"
+                        + " SENDER_EMAIL, SENDER_PHONE_NUMBER, DELIVERY_status, COMPANY_CODE,"
+                        + " insert_operator, update_operator) VALUES (:orderId,"
                         + " :paymentSnapShotShippingAddressId, :senderName, :senderEmail,"
                         + " :senderPhoneNumner, :deliveryStatus, :companyCode, :insertOperator,"
                         + " :updateOperator)";

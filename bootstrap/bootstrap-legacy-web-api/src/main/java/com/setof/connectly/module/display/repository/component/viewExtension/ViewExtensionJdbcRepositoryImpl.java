@@ -22,8 +22,8 @@ public class ViewExtensionJdbcRepositoryImpl implements ViewExtensionJdbcReposit
     public void deleteAll(List<Long> viewExtensionIds) {
 
         String sql =
-                "UPDATE VIEW_EXTENSION SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator,"
-                        + " UPDATE_DATE = :updateDate WHERE VIEW_EXTENSION_ID IN (:ids)";
+                "UPDATE view_extension SET delete_yn = 'Y', update_operator = :updateOperator,"
+                        + " update_date = :updateDate WHERE view_extension_ID IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", viewExtensionIds);
@@ -37,17 +37,17 @@ public class ViewExtensionJdbcRepositoryImpl implements ViewExtensionJdbcReposit
     public void updateAll(List<ViewExtension> viewExtensions) {
 
         String sql =
-                "UPDATE VIEW_EXTENSION SET "
-                        + "VIEW_EXTENSION_TYPE = :viewExtensionType, "
+                "UPDATE view_extension SET "
+                        + "view_extension_TYPE = :viewExtensionType, "
                         + "LINK_URL = :linkUrl, "
-                        + "BUTTON_NAME = :buttonName, "
-                        + "PRODUCT_COUNT_PER_CLICK = :productCountPerClick, "
+                        + "BUTTON_name = :buttonName, "
+                        + "product_COUNT_PER_CLICK = :productCountPerClick, "
                         + "MAX_CLICK_COUNT = :maxClickCount, "
                         + "AFTER_MAX_ACTION_TYPE = :afterMaxActionType, "
                         + "AFTER_MAX_ACTION_LINK_URL = :afterMaxActionLinkUrl,"
-                        + "UPDATE_OPERATOR = :updateOperator,"
-                        + "UPDATE_DATE = :updateDate "
-                        + "WHERE VIEW_EXTENSION_ID = :viewExtensionId";
+                        + "update_operator = :updateOperator,"
+                        + "update_date = :updateDate "
+                        + "WHERE view_extension_ID = :viewExtensionId";
 
         List<Map<String, Object>> batchValues = new ArrayList<>(viewExtensions.size());
         for (ViewExtension viewExtension : viewExtensions) {

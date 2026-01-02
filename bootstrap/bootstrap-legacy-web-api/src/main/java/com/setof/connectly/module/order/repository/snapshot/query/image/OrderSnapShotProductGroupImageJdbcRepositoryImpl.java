@@ -23,9 +23,9 @@ public class OrderSnapShotProductGroupImageJdbcRepositoryImpl
     @Override
     public void saveAll(Set<OrderSnapShotProductGroupImage> orderSnapShotProductGroupImages) {
         String sql =
-                "INSERT INTO ORDER_SNAPSHOT_PRODUCT_GROUP_IMAGE (ORDER_ID, PRODUCT_GROUP_ID,"
-                        + " PRODUCT_GROUP_IMAGE_TYPE, IMAGE_URL, DELETE_YN, INSERT_OPERATOR,"
-                        + " UPDATE_OPERATOR, INSERT_DATE, UPDATE_DATE) VALUES (:orderId,"
+                "INSERT INTO order_snapshot_product_group_image (order_id, product_group_id,"
+                        + " product_group_IMAGE_TYPE, image_url, delete_yn, insert_operator,"
+                        + " update_operator, insert_date, update_date) VALUES (:orderId,"
                         + " :productGroupId, :productGroupImageType, :imageUrl, :deleteYn,"
                         + " :insertOperator, :updateOperator, :insertDate, :updateDate)";
 

@@ -19,8 +19,8 @@ public class OrderSnapShotMileageDetailJdbcRepositoryImpl
     @Override
     public void saveAll(List<OrderSnapShotMileageDetail> orderSnapShotMileageDetails) {
         String sql =
-                "INSERT INTO ORDER_SNAPSHOT_MILEAGE_DETAIL (ORDER_SNAPSHOT_MILEAGE_ID, MILEAGE_ID,"
-                        + " USED_AMOUNT, MILEAGE_BALANCE, INSERT_OPERATOR, UPDATE_OPERATOR) VALUES"
+                "INSERT INTO order_snapshot_mileage_detail (ORDER_SNAPSHOT_mileage_id, mileage_id,"
+                        + " USED_AMOUNT, MILEAGE_BALANCE, insert_operator, update_operator) VALUES"
                         + " (:orderSnapShotMileageDetail, :mileageId, :usedAmount, :mileageBalance,"
                         + " :insertOperator, :updateOperator)";
 

@@ -18,8 +18,8 @@ public class MileageTransactionJdbcRepositoryImpl implements MileageTransactionJ
     @Override
     public void saveAll(List<MileageTransaction> mileageTransactions) {
         String sql =
-                "INSERT INTO MILEAGE_TRANSACTION (USER_ID, MILEAGE_ID, ISSUE_TYPE, TARGET_ID,"
-                    + " EXPECTED_MILEAGE_AMOUNT, STATUS, INSERT_OPERATOR, UPDATE_OPERATOR) VALUES"
+                "INSERT INTO mileage_transaction (user_id, mileage_id, issue_type, target_id,"
+                    + " EXPECTED_MILEAGE_AMOUNT, status, insert_operator, update_operator) VALUES"
                     + " (:userId, :mileageId, :issueType, :targetId, :expectedMileageAmount,"
                     + " :status, :insertOperator, :updateOperator)";
 

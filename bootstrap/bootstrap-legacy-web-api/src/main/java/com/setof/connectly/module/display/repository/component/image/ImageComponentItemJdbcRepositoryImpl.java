@@ -21,8 +21,8 @@ public class ImageComponentItemJdbcRepositoryImpl implements ImageComponentItemJ
     @Override
     public void saveAll(List<ImageComponentItem> imageComponentItems) {
         String sql =
-                "INSERT INTO IMAGE_COMPONENT_ITEM (IMAGE_COMPONENT_ID, IMAGE_URL, DISPLAY_ORDER,"
-                        + " LINK_URL, INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE, UPDATE_DATE)"
+                "INSERT INTO IMAGE_component_ITEM (IMAGE_component_ID, image_url, display_order,"
+                        + " LINK_URL, insert_operator, update_operator, insert_date, update_date)"
                         + " VALUES (:imageComponentId, :imageUrl, :displayOrder, :linkUrl,"
                         + " :insertOperator, :updateOperator, :insertDate, :updateDate)";
 
@@ -55,8 +55,8 @@ public class ImageComponentItemJdbcRepositoryImpl implements ImageComponentItemJ
     public void deleteAll(List<Long> imageComponentIds) {
 
         String sql =
-                "UPDATE IMAGE_COMPONENT_ITEM SET DELETE_YN = 'Y', UPDATE_OPERATOR ="
-                        + " :updateOperator, UPDATE_DATE = :updateDate WHERE IMAGE_COMPONENT_ID IN"
+                "UPDATE IMAGE_component_ITEM SET delete_yn = 'Y', update_operator ="
+                        + " :updateOperator, update_date = :updateDate WHERE IMAGE_component_ID IN"
                         + " (:ids))";
 
         Map<String, Object> params = new HashMap<>();
@@ -70,13 +70,13 @@ public class ImageComponentItemJdbcRepositoryImpl implements ImageComponentItemJ
     public void updateAll(List<ImageComponentItem> imageComponentItems) {
 
         String sql =
-                "UPDATE COMPONENT "
-                        + "SET IMAGE_URL = :imageUrl, "
-                        + "DISPLAY_ORDER = :displayOrder, "
+                "UPDATE component "
+                        + "SET image_url = :imageUrl, "
+                        + "display_order = :displayOrder, "
                         + "LINK_URL = :linkUrl,"
-                        + "UPDATE_OPERATOR = :updateOperator,"
-                        + "UPDATE_DATE = :updateDate "
-                        + "WHERE IMAGE_COMPONENT_ID = :imageComponentId";
+                        + "update_operator = :updateOperator,"
+                        + "update_date = :updateDate "
+                        + "WHERE IMAGE_component_ID = :imageComponentId";
 
         List<Map<String, Object>> batchValues = new ArrayList<>(imageComponentItems.size());
         for (ImageComponentItem imageComponentItem : imageComponentItems) {

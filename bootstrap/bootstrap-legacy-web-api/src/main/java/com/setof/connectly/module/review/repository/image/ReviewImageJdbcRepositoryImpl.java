@@ -18,8 +18,8 @@ public class ReviewImageJdbcRepositoryImpl implements ReviewImageJdbcRepository 
     @Override
     public void saveAll(List<ReviewImage> reviewImages) {
         String sql =
-                "INSERT INTO REVIEW_IMAGE (REVIEW_ID, REVIEW_IMAGE_TYPE, IMAGE_URL,"
-                        + " INSERT_OPERATOR, UPDATE_OPERATOR) VALUES (:reviewId, :reviewImageType,"
+                "INSERT INTO review_image (review_id, review_image_type, image_url,"
+                        + " insert_operator, update_operator) VALUES (:reviewId, :reviewImageType,"
                         + " :imageUrl, :insertOperator, :updateOperator)";
 
         List<MapSqlParameterSource> batchValues = new ArrayList<>(reviewImages.size());

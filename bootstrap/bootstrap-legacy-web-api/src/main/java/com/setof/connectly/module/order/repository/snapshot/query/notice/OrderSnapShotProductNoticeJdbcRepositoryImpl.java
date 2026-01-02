@@ -23,10 +23,10 @@ public class OrderSnapShotProductNoticeJdbcRepositoryImpl
     @Override
     public void saveAll(Set<OrderSnapShotProductNotice> orderSnapShotProductNotices) {
         String sql =
-                "INSERT INTO ORDER_SNAPSHOT_PRODUCT_NOTICE (ORDER_ID, PRODUCT_GROUP_ID, MATERIAL,"
+                "INSERT INTO order_snapshot_product_notice (order_id, product_group_id, material,"
                     + " COLOR, SIZE, MAKER, ORIGIN, WASHING_METHOD, YEAR_MONTH_DAY,"
-                    + " ASSURANCE_STANDARD, AS_PHONE, DELETE_YN, INSERT_OPERATOR, UPDATE_OPERATOR,"
-                    + " INSERT_DATE, UPDATE_DATE) VALUES (:orderId, :productGroupId, :material,"
+                    + " ASSURANCE_STANDARD, AS_PHONE, delete_yn, insert_operator, update_operator,"
+                    + " insert_date, update_date) VALUES (:orderId, :productGroupId, :material,"
                     + " :color, :size, :maker, :origin, :washingMethod, :yearMonthDay,"
                     + " :assuranceStandard, :asPhone, :deleteYn, :insertOperator, :updateOperator,"
                     + " :insertDate, :updateDate)";

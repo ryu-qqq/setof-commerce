@@ -19,8 +19,8 @@ public class MessageQueueJdbcRepositoryImpl implements MessageQueueJdbcRepositor
     @Override
     public void saveAll(Set<MessageQueueContext> messageQueues) {
         String sql =
-                "INSERT INTO MESSAGE_QUEUE (TEMPLATE_CODE, PARAMETERS, STATUS, INSERT_OPERATOR,"
-                        + " UPDATE_OPERATOR) VALUES (:templateCode, :parameters, :status,"
+                "INSERT INTO message_queue (template_code, parameters, status, insert_operator,"
+                        + " update_operator) VALUES (:templateCode, :parameters, :status,"
                         + " :insertOperator, :updateOperator)";
 
         List<MapSqlParameterSource> batchValues = new ArrayList<>(messageQueues.size());

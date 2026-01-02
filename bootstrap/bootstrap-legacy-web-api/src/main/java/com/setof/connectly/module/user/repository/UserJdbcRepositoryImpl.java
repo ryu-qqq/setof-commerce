@@ -17,9 +17,9 @@ public class UserJdbcRepositoryImpl implements UserJdbcRepository {
     public void updateUser(long userId, OAuth2UserInfo oAuth2User) {
 
         String sql =
-                "UPDATE USERS SET SOCIAL_LOGIN_TYPE = :socialLoginType, SOCIAL_PK_ID = :socialPkId,"
-                    + " GENDER = :gender, DATE_OF_BIRTH = :dateOfBirth, UPDATE_DATE = :updateDate"
-                    + " WHERE USER_ID = :userId";
+                "UPDATE users SET social_login_type = :socialLoginType, social_pk_id = :socialPkId,"
+                    + " GENDER = :gender, DATE_OF_BIRTH = :dateOfBirth, update_date = :updateDate"
+                    + " WHERE user_id = :userId";
 
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);

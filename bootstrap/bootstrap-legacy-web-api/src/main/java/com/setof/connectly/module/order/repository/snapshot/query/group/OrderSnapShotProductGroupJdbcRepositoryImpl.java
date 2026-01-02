@@ -22,12 +22,12 @@ public class OrderSnapShotProductGroupJdbcRepositoryImpl
     @Override
     public void saveAll(Set<OrderSnapShotProductGroup> orderSnapShotProductGroups) {
         String sql =
-                "INSERT INTO ORDER_SNAPSHOT_PRODUCT_GROUP (ORDER_ID, PRODUCT_GROUP_ID,"
-                    + " PRODUCT_GROUP_NAME, SELLER_ID, BRAND_ID, CATEGORY_ID, OPTION_TYPE,"
+                "INSERT INTO order_snapshot_product_group (order_id, product_group_id,"
+                    + " product_group_name, SELLER_ID, BRAND_ID, CATEGORY_ID, OPTION_TYPE,"
                     + " REGULAR_PRICE, CURRENT_PRICE, SALE_PRICE, DIRECT_DISCOUNT_RATE,"
-                    + " DIRECT_DISCOUNT_PRICE, DISCOUNT_RATE, SOLD_OUT_YN, DISPLAY_YN,"
-                    + " PRODUCT_CONDITION, ORIGIN, MANAGEMENT_TYPE, COMMISSION_RATE, SHARE_RATIO,"
-                    + " DELETE_YN, INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE, UPDATE_DATE)"
+                    + " DIRECT_DISCOUNT_PRICE, DISCOUNT_RATE, sold_out_yn, DISPLAY_YN,"
+                    + " product_CONDITION, ORIGIN, MANAGEMENT_TYPE, COMMISSION_RATE, SHARE_RATIO,"
+                    + " delete_yn, insert_operator, update_operator, insert_date, update_date)"
                     + " VALUES (:orderId, :productGroupId, :productGroupName, :sellerId, :brandId,"
                     + " :categoryId, :optionType, :regularPrice, :currentPrice, :salePrice,"
                     + " :directDiscountRate, :directDiscountPrice, :discountRate, :soldOutYn,"

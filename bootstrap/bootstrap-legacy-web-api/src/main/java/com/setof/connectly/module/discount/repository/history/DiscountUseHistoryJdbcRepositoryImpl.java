@@ -20,9 +20,9 @@ public class DiscountUseHistoryJdbcRepositoryImpl implements DiscountUseHistoryJ
     @Override
     public void saveAll(List<DiscountUseHistory> discountUseHistories) {
         String sql =
-                "INSERT INTO DISCOUNT_USE_HISTORY (DISCOUNT_POLICY_ID, USER_ID, NAME, ORDER_ID,"
-                    + " PAYMENT_ID, PRODUCT_GROUP_ID, USE_DATE, DELETE_YN, INSERT_OPERATOR,"
-                    + " UPDATE_OPERATOR, INSERT_DATE, UPDATE_DATE) VALUES (:discountPolicyId,"
+                "INSERT INTO discount_use_history (discount_policy_id, user_id, name, order_id,"
+                    + " payment_id, product_group_id, USE_DATE, delete_yn, insert_operator,"
+                    + " update_operator, insert_date, update_date) VALUES (:discountPolicyId,"
                     + " :userId, :name, :orderId, :paymentId, :productGroupId, :useDate, :deleteYn,"
                     + " :insertOperator, :updateOperator, :insertDate, :updateDate)";
 

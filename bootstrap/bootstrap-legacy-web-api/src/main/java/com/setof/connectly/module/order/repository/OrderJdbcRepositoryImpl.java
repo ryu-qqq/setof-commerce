@@ -19,8 +19,8 @@ public class OrderJdbcRepositoryImpl implements OrderJdbcRepository {
     public void updateOrderStatus(long paymentId, OrderStatus orderStatus) {
 
         String sql =
-                "UPDATE ORDERS SET ORDER_STATUS = :orderStatus, UPDATE_OPERATOR = :updateOperator,"
-                        + " UPDATE_DATE = :updateDate WHERE PAYMENT_ID = :id";
+                "UPDATE orders SET order_status = :orderStatus, update_operator = :updateOperator,"
+                        + " update_date = :updateDate WHERE payment_id = :id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", paymentId);

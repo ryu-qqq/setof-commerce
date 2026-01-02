@@ -16,8 +16,8 @@ public class UserMileageJdbcRepositoryImpl implements UserMileageJdbcRepository 
     @Override
     public void updateUsingMileage(double currentUsingMileageAmount, long userId) {
         String sql =
-                "UPDATE USER_MILEAGE SET CURRENT_MILEAGE = :currentMileage, UPDATE_DATE = "
-                    + " :updateDate, UPDATE_OPERATOR = :updateOperator WHERE USER_ID = :userId ";
+                "UPDATE user_mileage SET current_mileage = :currentMileage, update_date = "
+                    + " :updateDate, update_operator = :updateOperator WHERE user_id = :userId ";
 
         Map<String, Object> params = new HashMap<>();
         params.put("currentMileage", currentUsingMileageAmount);
@@ -30,8 +30,8 @@ public class UserMileageJdbcRepositoryImpl implements UserMileageJdbcRepository 
     @Override
     public void updateRefundMileage(double totalRefundMileage, long userId) {
         String sql =
-                "UPDATE USER_MILEAGE SET CURRENT_MILEAGE = CURRENT_MILEAGE + :totalRefundMileage,"
-                    + " UPDATE_DATE =  :updateDate, UPDATE_OPERATOR = :updateOperator WHERE USER_ID"
+                "UPDATE user_mileage SET current_mileage = current_mileage + :totalRefundMileage,"
+                    + " update_date =  :updateDate, update_operator = :updateOperator WHERE user_id"
                     + " = :userId ";
 
         Map<String, Object> params = new HashMap<>();

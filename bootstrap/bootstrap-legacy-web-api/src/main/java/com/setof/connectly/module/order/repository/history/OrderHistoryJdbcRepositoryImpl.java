@@ -21,9 +21,9 @@ public class OrderHistoryJdbcRepositoryImpl implements OrderHistoryJdbcRepositor
     @Override
     public void saveAll(List<OrderHistory> orderHistories) {
         String sql =
-                "INSERT INTO ORDERS_HISTORY (ORDER_ID, CHANGE_REASON, CHANGE_DETAIL_REASON,"
-                        + " ORDER_STATUS, DELETE_YN, INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE,"
-                        + " UPDATE_DATE) VALUES (:orderId, :changeReason, :changeDetailReason,"
+                "INSERT INTO orders_history (order_id, change_reason, change_detail_reason,"
+                        + " order_status, delete_yn, insert_operator, update_operator, insert_date,"
+                        + " update_date) VALUES (:orderId, :changeReason, :changeDetailReason,"
                         + " :orderStatus, :deleteYn, :insertOperator, :updateOperator, :insertDate,"
                         + " :updateDate)";
 

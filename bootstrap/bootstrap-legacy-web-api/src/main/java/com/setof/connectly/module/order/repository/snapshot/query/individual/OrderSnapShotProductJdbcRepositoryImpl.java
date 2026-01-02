@@ -21,9 +21,9 @@ public class OrderSnapShotProductJdbcRepositoryImpl implements OrderSnapShotProd
     @Override
     public void saveAll(Set<OrderSnapShotProduct> orderSnapShotProducts) {
         String sql =
-                "INSERT INTO ORDER_SNAPSHOT_PRODUCT (ORDER_ID, PRODUCT_ID, PRODUCT_GROUP_ID,"
-                    + " SOLD_OUT_YN, DISPLAY_YN, DELETE_YN, INSERT_OPERATOR, UPDATE_OPERATOR,"
-                    + " INSERT_DATE, UPDATE_DATE) VALUES (:orderId, :productId, :productGroupId,"
+                "INSERT INTO order_snapshot_product (order_id, product_id, product_group_id,"
+                    + " sold_out_yn, DISPLAY_YN, delete_yn, insert_operator, update_operator,"
+                    + " insert_date, update_date) VALUES (:orderId, :productId, :productGroupId,"
                     + " :soldOutYn, :displayYn, :deleteYn, :insertOperator, :updateOperator,"
                     + " :insertDate, :updateDate)";
 

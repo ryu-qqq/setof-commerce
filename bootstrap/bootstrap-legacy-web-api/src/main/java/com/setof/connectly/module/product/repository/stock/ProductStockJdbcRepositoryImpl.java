@@ -18,10 +18,10 @@ public class ProductStockJdbcRepositoryImpl implements ProductStockJdbcRepositor
 
     public void subtractStocks(List<StockDto> stocks) {
         String sql =
-                "UPDATE PRODUCT_STOCK "
-                        + "SET STOCK_QUANTITY = STOCK_QUANTITY - :stockQuantity, "
-                        + "UPDATE_DATE = :updateDate "
-                        + "WHERE PRODUCT_ID = :productId";
+                "UPDATE product_stock "
+                        + "SET stock_quantity = stock_quantity - :stockQuantity, "
+                        + "update_date = :updateDate "
+                        + "WHERE product_id = :productId";
 
         List<MapSqlParameterSource> batchValues = new ArrayList<>(stocks.size());
         for (StockDto stock : stocks) {
@@ -38,10 +38,10 @@ public class ProductStockJdbcRepositoryImpl implements ProductStockJdbcRepositor
 
     public void addStocks(List<StockDto> stocks) {
         String sql =
-                "UPDATE PRODUCT_STOCK "
-                        + "SET STOCK_QUANTITY = STOCK_QUANTITY + :stockQuantity, "
-                        + "UPDATE_DATE = :updateDate "
-                        + "WHERE PRODUCT_ID = :productId";
+                "UPDATE product_stock "
+                        + "SET stock_quantity = stock_quantity + :stockQuantity, "
+                        + "update_date = :updateDate "
+                        + "WHERE product_id = :productId";
 
         List<MapSqlParameterSource> batchValues = new ArrayList<>(stocks.size());
         for (StockDto stock : stocks) {
@@ -59,9 +59,9 @@ public class ProductStockJdbcRepositoryImpl implements ProductStockJdbcRepositor
 
     private void updateProductSoldOutStatus(List<StockDto> stocks) {
         String updateProductSoldOutSql =
-                "UPDATE PRODUCT p SET p.SOLD_OUT_YN = CASE WHEN (SELECT ps.STOCK_QUANTITY FROM"
-                    + " PRODUCT_STOCK ps WHERE ps.PRODUCT_ID = p.PRODUCT_ID) > 0 THEN 'N' ELSE 'Y'"
-                    + " END, p.UPDATE_DATE = CURRENT_TIMESTAMP WHERE p.PRODUCT_ID IN (:productIds)";
+                "UPDATE product p SET p.sold_out_yn = CASE WHEN (SELECT ps.stock_quantity FROM"
+                    + " product_stock ps WHERE ps.product_id = p.product_id) > 0 THEN 'N' ELSE 'Y'"
+                    + " END, p.update_date = CURRENT_TIMESTAMP WHERE p.product_id IN (:productIds)";
 
         List<Long> productIds =
                 stocks.stream().map(StockDto::getProductId).collect(Collectors.toList());

@@ -17,7 +17,7 @@ public class ImageComponentJdbcRepositoryImpl implements ImageComponentJdbcRepos
     public void deleteAll(List<Long> imageComponentIds) {
 
         String sql =
-                "UPDATE IMAGE_COMPONENT SET DELETE_YN = 'Y' WHERE IMAGE_COMPONENT_ID IN (:ids)";
+                "UPDATE IMAGE_component SET delete_yn = 'Y' WHERE IMAGE_component_ID IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", imageComponentIds);

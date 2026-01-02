@@ -22,9 +22,9 @@ public class StockReservationJdbcRepositoryImpl implements StockReservationJdbcR
     @Override
     public void saveAll(List<StockReservation> stockReservationList) {
         String sql =
-                "INSERT INTO STOCK_RESERVATION (PRODUCT_ID, USER_ID, PAYMENT_ID, ORDER_ID,"
-                    + " STOCK_QUANTITY, RESERVED_AT, RESERVATION_STATUS, DELETE_YN,"
-                    + " INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE, UPDATE_DATE) VALUES"
+                "INSERT INTO stock_reservation (product_id, user_id, payment_id, order_id,"
+                    + " stock_quantity, RESERVED_AT, reservation_status, delete_yn,"
+                    + " insert_operator, update_operator, insert_date, update_date) VALUES"
                     + " (:productId, :userId, :paymentId, :orderId, :stockQuantity, :reservedAt,"
                     + " :reservationStatus, :deleteYn, :insertOperator, :updateOperator,"
                     + " :insertDate, :updateDate)";
@@ -61,8 +61,8 @@ public class StockReservationJdbcRepositoryImpl implements StockReservationJdbcR
     @Override
     public void purchasedAll(long paymentId) {
         String sql =
-                "UPDATE STOCK_RESERVATION SET RESERVATION_STATUS = 'PURCHASED', UPDATE_DATE = :date"
-                        + "  WHERE PAYMENT_ID = :id";
+                "UPDATE stock_reservation SET reservation_status = 'purchased', update_date = :date"
+                        + "  WHERE payment_id = :id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", paymentId);
@@ -74,8 +74,8 @@ public class StockReservationJdbcRepositoryImpl implements StockReservationJdbcR
     @Override
     public void failedAll(long paymentId) {
         String sql =
-                "UPDATE STOCK_RESERVATION SET RESERVATION_STATUS = 'FAILED', UPDATE_DATE = :date "
-                        + " WHERE PAYMENT_ID = :id";
+                "UPDATE stock_reservation SET reservation_status = 'FAILED', update_date = :date "
+                        + " WHERE payment_id = :id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", paymentId);
@@ -87,8 +87,8 @@ public class StockReservationJdbcRepositoryImpl implements StockReservationJdbcR
     @Override
     public void failed(long orderId) {
         String sql =
-                "UPDATE STOCK_RESERVATION SET RESERVATION_STATUS = 'FAILED', UPDATE_DATE = :date "
-                        + " WHERE ORDER_ID = :id";
+                "UPDATE stock_reservation SET reservation_status = 'FAILED', update_date = :date "
+                        + " WHERE order_id = :id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", orderId);

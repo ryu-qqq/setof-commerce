@@ -23,9 +23,9 @@ public class OrderSnapShotOptionDetailJdbcRepositoryImpl
     @Override
     public void saveAll(Set<OrderSnapShotOptionDetail> orderSnapShotOptionDetails) {
         String sql =
-                "INSERT INTO ORDER_SNAPSHOT_OPTION_DETAIL (ORDER_ID, OPTION_DETAIL_ID,"
-                    + " OPTION_GROUP_ID, OPTION_VALUE, DELETE_YN, INSERT_OPERATOR, UPDATE_OPERATOR,"
-                    + " INSERT_DATE, UPDATE_DATE) VALUES (:orderId, :optionDetailId,"
+                "INSERT INTO order_snapshot_option_detail (order_id, option_detail_id,"
+                    + " option_group_id, OPTION_VALUE, delete_yn, insert_operator, update_operator,"
+                    + " insert_date, update_date) VALUES (:orderId, :optionDetailId,"
                     + " :optionGroupId, :optionValue, :deleteYn, :insertOperator, :updateOperator,"
                     + " :insertDate, :updateDate)";
 

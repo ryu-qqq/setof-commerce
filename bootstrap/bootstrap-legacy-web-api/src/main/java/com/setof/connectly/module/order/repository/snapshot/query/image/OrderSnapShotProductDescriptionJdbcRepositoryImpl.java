@@ -24,9 +24,9 @@ public class OrderSnapShotProductDescriptionJdbcRepositoryImpl
             Set<OrderSnapShotProductGroupDetailDescription>
                     orderSnapShotProductGroupDetailDescriptions) {
         String sql =
-                "INSERT INTO ORDER_SNAPSHOT_PRODUCT_GROUP_DETAIL_DESCRIPTION (ORDER_ID,"
-                    + " PRODUCT_GROUP_ID, PRODUCT_GROUP_IMAGE_TYPE, IMAGE_URL, DELETE_YN,"
-                    + " INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE, UPDATE_DATE) VALUES"
+                "INSERT INTO order_snapshot_product_group_detail_description (order_id,"
+                    + " product_group_id, product_group_IMAGE_TYPE, image_url, delete_yn,"
+                    + " insert_operator, update_operator, insert_date, update_date) VALUES"
                     + " (:orderId, :productGroupId, :productGroupImageType, :imageUrl, :deleteYn,"
                     + " :insertOperator, :updateOperator, :insertDate, :updateDate)";
 
