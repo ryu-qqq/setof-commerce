@@ -20,7 +20,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "OPTION_GROUP")
+@Table(name = "option_group")
 @Entity
 public class OptionGroup extends BaseEntity {
 

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "PRODUCT_RATING_STATS")
+@Table(name = "product_rating_stats")
 @Entity
 public class ProductRatingStats extends BaseEntity {
 

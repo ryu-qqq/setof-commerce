@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "ORDERS_HISTORY")
+@Table(name = "orders_history")
 @Entity
 public class OrderHistory extends BaseEntity {
 

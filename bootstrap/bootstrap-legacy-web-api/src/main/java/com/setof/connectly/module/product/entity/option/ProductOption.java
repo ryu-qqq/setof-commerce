@@ -17,7 +17,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "PRODUCT_OPTION")
+@Table(name = "product_option")
 @Entity
 public class ProductOption extends BaseEntity {
 

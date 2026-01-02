@@ -18,7 +18,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "EVENT_PRODUCT")
+@Table(name = "event_product")
 @Entity
 public class EventProduct extends BaseEntity {
 

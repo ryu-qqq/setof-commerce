@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "VBANK_ACCOUNT")
+@Table(name = "vbank_account")
 @Entity
 public class VBankAccount extends BaseEntity {
 

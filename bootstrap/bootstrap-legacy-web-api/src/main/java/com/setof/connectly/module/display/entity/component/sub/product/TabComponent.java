@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "TAB_COMPONENT")
+@Table(name = "tab_component")
 @Entity
 public class TabComponent extends BaseEntity {
 

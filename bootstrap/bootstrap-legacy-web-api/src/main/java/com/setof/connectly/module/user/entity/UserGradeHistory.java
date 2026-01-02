@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "USER_GRADE_HISTORY")
+@Table(name = "user_grade_history")
 @Entity
 public class UserGradeHistory extends BaseEntity {
 

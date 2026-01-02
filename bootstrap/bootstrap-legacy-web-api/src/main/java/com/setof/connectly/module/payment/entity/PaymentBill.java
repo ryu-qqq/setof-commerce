@@ -24,7 +24,7 @@ import org.springframework.util.StringUtils;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "PAYMENT_BILL")
+@Table(name = "payment_bill")
 @Entity
 public class PaymentBill extends BaseEntity {
 

@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "DISCOUNT_TARGET")
+@Table(name = "discount_target")
 @Entity
 public class DiscountTarget extends BaseEntity {
 

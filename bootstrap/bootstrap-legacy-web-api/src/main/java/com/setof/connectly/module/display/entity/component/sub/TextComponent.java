@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "TEXT_COMPONENT")
+@Table(name = "text_component")
 @Entity
 public class TextComponent extends BaseEntity {
 

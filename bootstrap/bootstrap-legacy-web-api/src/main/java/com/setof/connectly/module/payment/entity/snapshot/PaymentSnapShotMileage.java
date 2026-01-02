@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "PAYMENT_SNAPSHOT_MILEAGE")
+@Table(name = "payment_snapshot_mileage")
 @Entity
 public class PaymentSnapShotMileage extends BaseEntity {
 

@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "ORDER_SNAPSHOT_PRODUCT_GROUP")
+@Table(name = "order_snapshot_product_group")
 @Entity
 public class OrderSnapShotProductGroup extends BaseEntity implements OrderSnapShot, DiscountOffer {
 

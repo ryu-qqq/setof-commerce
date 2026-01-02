@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "OPTION_DETAIL")
+@Table(name = "option_detail")
 @Entity
 public class OptionDetail extends BaseEntity {
 

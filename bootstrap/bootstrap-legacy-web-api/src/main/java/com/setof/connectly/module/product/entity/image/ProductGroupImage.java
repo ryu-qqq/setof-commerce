@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "PRODUCT_GROUP_IMAGE")
+@Table(name = "product_group_image")
 @Entity
 public class ProductGroupImage extends BaseEntity {
     @Id

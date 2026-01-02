@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "USER_FAVORITE")
+@Table(name = "user_favorite")
 @Entity
 public class UserFavorite extends BaseEntity {
 

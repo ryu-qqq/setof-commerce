@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "PAYMENT_SNAPSHOT_REFUND_ACCOUNT")
+@Table(name = "payment_snapshot_refund_account")
 @Entity
 public class PaymentSnapShotRefundAccount extends BaseEntity {
 

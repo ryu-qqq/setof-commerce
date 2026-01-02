@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
-@Table(name = "PRODUCT_GROUP")
+@Table(name = "product_group")
 @Entity
 public class ProductGroup extends BaseEntity {
     @Id

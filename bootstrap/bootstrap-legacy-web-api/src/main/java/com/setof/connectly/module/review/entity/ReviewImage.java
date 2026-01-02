@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "REVIEW_IMAGE")
+@Table(name = "review_image")
 @Entity
 public class ReviewImage extends BaseEntity {
 

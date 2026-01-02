@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "PAYMENT_SNAPSHOT_SHIPPING_ADDRESS")
+@Table(name = "payment_snapshot_shipping_address")
 @Entity
 public class PaymentSnapShotShippingAddress extends BaseEntity {
 

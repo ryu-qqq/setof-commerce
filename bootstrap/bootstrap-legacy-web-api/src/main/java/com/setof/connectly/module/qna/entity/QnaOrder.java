@@ -18,7 +18,7 @@ import com.setof.connectly.module.common.BaseEntity;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "QNA_ORDER")
+@Table(name = "qna_order")
 @Entity
 public class QnaOrder extends BaseEntity {
 

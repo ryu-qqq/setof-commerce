@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "EVENT")
+@Table(name = "event")
 @Entity
 public class Event extends BaseEntity {
 

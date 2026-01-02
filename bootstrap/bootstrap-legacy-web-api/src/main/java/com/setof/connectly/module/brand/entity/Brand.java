@@ -10,7 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-@Table(name = "BRAND")
+@Table(name = "brand")
 @Entity
 public class Brand extends BaseEntity {
 

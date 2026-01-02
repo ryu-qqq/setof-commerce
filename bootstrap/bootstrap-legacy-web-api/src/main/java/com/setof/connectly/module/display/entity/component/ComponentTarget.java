@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "COMPONENT_TARGET")
+@Table(name = "component_target")
 @Entity
 public class ComponentTarget extends BaseEntity {
     @Id

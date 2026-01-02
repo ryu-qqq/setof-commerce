@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "Banner")
+@Table(name = "banner")
 @Entity
 public class Banner extends BaseEntity {
 

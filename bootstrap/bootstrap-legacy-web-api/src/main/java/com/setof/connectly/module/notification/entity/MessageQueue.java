@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "MESSAGE_QUEUE")
+@Table(name = "message_queue")
 @Entity
 public class MessageQueue extends BaseEntity {
 

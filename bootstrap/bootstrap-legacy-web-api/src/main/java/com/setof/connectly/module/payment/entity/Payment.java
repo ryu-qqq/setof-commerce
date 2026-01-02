@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "PAYMENT")
+@Table(name = "payment")
 @Entity
 public class Payment extends BaseEntity {
 

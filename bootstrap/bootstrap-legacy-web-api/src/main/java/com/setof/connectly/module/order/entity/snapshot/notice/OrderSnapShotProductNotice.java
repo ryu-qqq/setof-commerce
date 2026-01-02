@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "ORDER_SNAPSHOT_PRODUCT_NOTICE")
+@Table(name = "order_snapshot_product_notice")
 @Entity
 public class OrderSnapShotProductNotice extends BaseEntity implements OrderSnapShot {
 

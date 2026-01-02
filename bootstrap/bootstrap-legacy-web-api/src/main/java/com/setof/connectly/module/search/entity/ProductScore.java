@@ -16,7 +16,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "PRODUCT_SCORE")
+@Table(name = "product_score")
 @Entity
 public class ProductScore extends BaseEntity {
 

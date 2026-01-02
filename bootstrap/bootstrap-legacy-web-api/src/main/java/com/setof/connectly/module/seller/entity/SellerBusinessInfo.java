@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "SELLER_BUSINESS_INFO")
+@Table(name = "seller_business_info")
 @Entity
 public class SellerBusinessInfo extends BaseEntity {
 

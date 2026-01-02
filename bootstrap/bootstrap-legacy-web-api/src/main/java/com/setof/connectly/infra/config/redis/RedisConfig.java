@@ -3,7 +3,6 @@ package com.setof.connectly.infra.config.redis;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,9 +13,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.cache.CacheKeyPrefix;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.PatternTopic;
@@ -34,22 +33,24 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Profile({"prod", "dev"})
 public class RedisConfig {
 
-    @Value("${spring.redis.cluster.nodes}")
-    private List<String> clusterNodes;
+    @Value("${spring.data.redis.host}")
+    private String redisHost;
 
-    @Value("${spring.redis.password}")
+    @Value("${spring.data.redis.port}")
+    private int redisPort;
+
+    @Value("${spring.data.redis.password:}")
     private String redisPassword;
 
     private final ObjectMapper objectMapper;
 
     @Bean
     public RedisConnectionFactory connectionFactory() {
-        RedisClusterConfiguration redisClusterConfiguration =
-                new RedisClusterConfiguration(clusterNodes);
+        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration(redisHost, redisPort);
         if (redisPassword != null && !redisPassword.isEmpty()) {
-            redisClusterConfiguration.setPassword(RedisPassword.of(redisPassword));
+            redisConfig.setPassword(RedisPassword.of(redisPassword));
         }
-        return new LettuceConnectionFactory(redisClusterConfiguration);
+        return new LettuceConnectionFactory(redisConfig);
     }
 
     @Bean

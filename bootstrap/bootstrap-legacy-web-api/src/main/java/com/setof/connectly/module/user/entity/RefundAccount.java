@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "REFUND_ACCOUNT")
+@Table(name = "refund_account")
 @Entity
 public class RefundAccount extends BaseEntity {
 

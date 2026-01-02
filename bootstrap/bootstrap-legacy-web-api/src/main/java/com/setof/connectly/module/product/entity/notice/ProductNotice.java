@@ -20,7 +20,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "PRODUCT_NOTICE")
+@Table(name = "product_notice")
 @Entity
 public class ProductNotice extends BaseEntity {
 

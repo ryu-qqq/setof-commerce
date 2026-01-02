@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "BANNER_ITEM")
+@Table(name = "banner_item")
 @Entity
 public class BannerItem extends BaseEntity {
 

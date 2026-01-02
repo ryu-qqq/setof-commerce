@@ -11,7 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-@Table(name = "CART")
+@Table(name = "cart")
 @Entity
 public class Cart extends BaseEntity {
     @Id

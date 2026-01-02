@@ -21,7 +21,7 @@ import com.setof.connectly.module.qna.enums.QnaIssueType;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "QNA_IMAGE")
+@Table(name = "qna_image")
 @Entity
 public class QnaImage extends BaseEntity {
 

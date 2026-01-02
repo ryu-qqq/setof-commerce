@@ -13,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "COMMON_CODE")
+@Table(name = "common_code")
 @Entity
 public class CommonCode extends BaseEntity {
 

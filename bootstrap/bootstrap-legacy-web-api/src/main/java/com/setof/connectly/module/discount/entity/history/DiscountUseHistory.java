@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "DISCOUNT_USE_HISTORY")
+@Table(name = "discount_use_history")
 @Entity
 public class DiscountUseHistory extends BaseEntity {
 

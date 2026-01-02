@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "BRAND_COMPONENT_ITEM")
+@Table(name = "brand_component_item")
 @Entity
 public class BrandComponentItem extends BaseEntity {
 

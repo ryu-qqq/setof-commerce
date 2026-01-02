@@ -17,7 +17,7 @@ import com.setof.connectly.module.common.BaseEntity;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "QNA_PRODUCT")
+@Table(name = "qna_product")
 @Entity
 public class QnaProduct extends BaseEntity {
 

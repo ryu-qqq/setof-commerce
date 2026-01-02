@@ -25,7 +25,7 @@ import com.setof.connectly.module.qna.enums.QnaType;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "QNA")
+@Table(name = "qna")
 @Entity
 public class Qna extends BaseEntity {
 

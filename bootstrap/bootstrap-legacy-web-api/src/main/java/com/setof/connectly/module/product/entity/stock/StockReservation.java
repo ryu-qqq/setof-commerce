@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "STOCK_RESERVATION")
+@Table(name = "stock_reservation")
 @Entity
 public class StockReservation extends BaseEntity {
 

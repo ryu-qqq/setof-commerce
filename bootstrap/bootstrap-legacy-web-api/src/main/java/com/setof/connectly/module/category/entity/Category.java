@@ -15,7 +15,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
-@Table(name = "CATEGORY")
+@Table(name = "category")
 @Entity
 public class Category extends BaseEntity {
 

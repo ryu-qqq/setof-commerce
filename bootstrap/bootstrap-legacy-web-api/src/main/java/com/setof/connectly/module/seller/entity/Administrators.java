@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "ADMINISTRATORS")
+@Table(name = "administrators")
 @Entity
 public class Administrators extends BaseEntity {
 

@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "VIEW_EXTENSION")
+@Table(name = "view_extension")
 @Entity
 public class ViewExtension extends BaseEntity {
 

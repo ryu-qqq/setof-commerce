@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "MILEAGE_HISTORY")
+@Table(name = "mileage_history")
 @Entity
 public class MileageHistory extends BaseEntity {
 

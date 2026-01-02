@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "IMAGE_COMPONENT")
+@Table(name = "image_component")
 @Entity
 public class ImageComponent extends BaseEntity {
 
