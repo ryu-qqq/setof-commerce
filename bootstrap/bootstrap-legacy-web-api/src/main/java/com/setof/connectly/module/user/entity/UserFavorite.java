@@ -19,7 +19,7 @@ public class UserFavorite extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "FAVORITE_ID")
+    @Column(name = "favorite_id")
     private long id;
 
     private long userId;

@@ -18,12 +18,12 @@ import lombok.NoArgsConstructor;
 public class ProductStatus {
 
     @NotNull(message = "soldOutYn 필수입니다")
-    @Column(name = "SOLD_OUT_YN")
+    @Column(name = "sold_out_yn")
     @Enumerated(EnumType.STRING)
     private Yn soldOutYn;
 
     @NotNull(message = "displayYn 필수입니다")
-    @Column(name = "DISPLAY_YN")
+    @Column(name = "display_yn")
     @Enumerated(EnumType.STRING)
     private Yn displayYn;
 

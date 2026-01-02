@@ -26,7 +26,7 @@ public class Faq extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "FAQ_ID")
+    @Column(name = "faq_id")
     private long id;
 
     @Enumerated(EnumType.STRING)

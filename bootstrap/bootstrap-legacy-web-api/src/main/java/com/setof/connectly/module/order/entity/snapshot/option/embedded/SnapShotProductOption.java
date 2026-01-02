@@ -12,18 +12,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class SnapShotProductOption {
-    @Column(name = "PRODUCT_OPTION_ID")
+    @Column(name = "product_option_id")
     private long productOptionId;
 
-    @Column(name = "PRODUCT_ID")
+    @Column(name = "product_id")
     private long productId;
 
-    @Column(name = "OPTION_GROUP_ID")
+    @Column(name = "option_group_id")
     private long optionGroupId;
 
-    @Column(name = "OPTION_DETAIL_ID")
+    @Column(name = "option_detail_id")
     private long optionDetailId;
 
-    @Column(name = "ADDITIONAL_PRICE")
+    @Column(name = "additional_price")
     private long additionalPrice;
 }

@@ -15,22 +15,22 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class Price {
-    @Column(name = "REGULAR_PRICE")
+    @Column(name = "regular_price")
     private long regularPrice;
 
-    @Column(name = "CURRENT_PRICE")
+    @Column(name = "current_price")
     private long currentPrice;
 
-    @Column(name = "SALE_PRICE")
+    @Column(name = "sale_price")
     private long salePrice;
 
-    @Column(name = "DIRECT_DISCOUNT_RATE")
+    @Column(name = "direct_discount_rate")
     private int directDiscountRate;
 
-    @Column(name = "DIRECT_DISCOUNT_PRICE")
+    @Column(name = "direct_discount_price")
     private long directDiscountPrice;
 
-    @Column(name = "DISCOUNT_RATE")
+    @Column(name = "discount_rate")
     private int discountRate;
 
     @Builder

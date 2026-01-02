@@ -31,71 +31,71 @@ public class DiscountDetails {
 
     @NotBlank(message = "instantDiscountPolicyName 필수입니다")
     @Size(min = 1, max = 25, message = "정책 이름은 1~25자 사이여야 합니다.")
-    @Column(name = "DISCOUNT_POLICY_NAME")
+    @Column(name = "discount_policy_name")
     private String discountPolicyName;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "discountType은 필수입니다.")
-    @Column(name = "DISCOUNT_TYPE")
+    @Column(name = "discount_type")
     private DiscountType discountType;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "publisherType은 필수입니다.")
-    @Column(name = "PUBLISHER_TYPE")
+    @Column(name = "publisher_type")
     private PublisherType publisherType;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "issueType은 필수입니다.")
-    @Column(name = "ISSUE_TYPE")
+    @Column(name = "issue_type")
     private IssueType issueType;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "discountLimitYn은 필수입니다.")
-    @Column(name = "DISCOUNT_LIMIT_YN")
+    @Column(name = "discount_limit_yn")
     private Yn discountLimitYn;
 
     @Max(value = 1000000, message = "최대값 1000000을 넘을 수 없습니다.")
     @Min(value = 0, message = "최소 0 이상이여야 합니다.")
-    @Column(name = "MAX_DISCOUNT_PRICE")
+    @Column(name = "max_discount_price")
     public long maxDiscountPrice;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "shareYn은 필수입니다.")
-    @Column(name = "SHARE_YN")
+    @Column(name = "share_yn")
     private Yn shareYn;
 
     @Max(value = 100, message = "최대값 100을 넘을 수 없습니다.")
     @Min(value = 0, message = "최소 0 이상이여야 합니다.")
-    @Column(name = "SHARE_RATIO")
+    @Column(name = "share_ratio")
     private double shareRatio;
 
     @Max(value = 100, message = "최대값 100을 넘을 수 없습니다.")
     @Min(value = 0, message = "최소 0 이상이여야 합니다.")
-    @Column(name = "DISCOUNT_RATIO")
+    @Column(name = "discount_ratio")
     private double discountRatio;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull(message = "policyStartDate은 필수입니다.")
-    @Column(name = "POLICY_START_DATE")
+    @Column(name = "policy_start_date")
     private LocalDateTime policyStartDate;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull(message = "policyEndDate은 필수입니다.")
-    @Column(name = "POLICY_END_DATE")
+    @Column(name = "policy_end_date")
     private LocalDateTime policyEndDate;
 
     @Length(max = 50, message = "memo 50자를 넘어갈 수 없습니다.")
-    @Column(name = "MEMO")
+    @Column(name = "memo")
     private String memo;
 
     @Max(value = 100, message = "최대값 100을 넘을 수 없습니다.")
     @Min(value = 0, message = "최소 0 이상이여야 합니다.")
-    @Column(name = "PRIORITY")
+    @Column(name = "priority")
     private int priority;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "activeYn은 필수입니다.")
-    @Column(name = "ACTIVE_YN")
+    @Column(name = "active_yn")
     private Yn activeYn;
 
     public void setActiveYn(Yn activeYn) {

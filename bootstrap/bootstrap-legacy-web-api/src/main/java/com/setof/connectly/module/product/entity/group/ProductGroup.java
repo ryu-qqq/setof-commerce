@@ -36,7 +36,7 @@ import lombok.NoArgsConstructor;
 public class ProductGroup extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long id;
 
     @Embedded private ProductGroupDetails productGroupDetails;

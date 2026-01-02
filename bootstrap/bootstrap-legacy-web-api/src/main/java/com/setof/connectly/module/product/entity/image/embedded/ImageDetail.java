@@ -14,10 +14,10 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class ImageDetail {
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "PRODUCT_GROUP_IMAGE_TYPE")
+    @Column(name = "product_group_image_type")
     private ProductGroupImageType productGroupImageType;
 
-    @Column(name = "IMAGE_URL")
+    @Column(name = "image_url")
     private String imageUrl;
 
     public ImageDetail(ProductGroupImageType productGroupImageType, String imageUrl) {

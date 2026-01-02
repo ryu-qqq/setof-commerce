@@ -17,31 +17,31 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Embeddable
 public class NoticeDetail {
-    @Column(name = "MATERIAL")
+    @Column(name = "material")
     private String material;
 
-    @Column(name = "COLOR")
+    @Column(name = "color")
     private String color;
 
-    @Column(name = "SIZE")
+    @Column(name = "size")
     private String size;
 
-    @Column(name = "MAKER")
+    @Column(name = "maker")
     private String maker;
 
-    @Column(name = "ORIGIN")
+    @Column(name = "origin")
     @Enumerated(EnumType.STRING)
     private Origin origin;
 
-    @Column(name = "WASHING_METHOD")
+    @Column(name = "washing_method")
     private String washingMethod;
 
-    @Column(name = "YEAR_MONTH_DAY")
+    @Column(name = "year_month_day")
     private String yearMonth;
 
-    @Column(name = "ASSURANCE_STANDARD")
+    @Column(name = "assurance_standard")
     private String assuranceStandard;
 
-    @Column(name = "AS_PHONE")
+    @Column(name = "as_phone")
     private String asPhone;
 }

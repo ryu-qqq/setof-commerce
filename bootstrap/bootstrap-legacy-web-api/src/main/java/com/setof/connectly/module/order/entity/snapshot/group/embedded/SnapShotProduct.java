@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class SnapShotProduct {
-    @Column(name = "PRODUCT_ID")
+    @Column(name = "product_id")
     private long productId;
 
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long productGroupId;
 
     @Embedded private ProductStatus productStatus;

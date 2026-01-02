@@ -24,7 +24,7 @@ public class Content extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CONTENT_ID")
+    @Column(name = "content_id")
     private long id;
 
     @Embedded private DisplayPeriod displayPeriod;

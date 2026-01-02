@@ -25,15 +25,15 @@ import lombok.NoArgsConstructor;
 public class ProductStock extends BaseEntity {
 
     @Id
-    @Column(name = "PRODUCT_ID")
+    @Column(name = "product_id")
     private long id;
 
-    @Column(name = "STOCK_QUANTITY")
+    @Column(name = "stock_quantity")
     private int stockQuantity;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "PRODUCT_ID")
+    @JoinColumn(name = "product_id")
     private Product product;
 
     public void setProduct(Product product) {

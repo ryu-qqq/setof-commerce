@@ -24,26 +24,26 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SnapShotProductGroup {
 
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long productGroupId;
 
-    @Column(name = "PRODUCT_GROUP_NAME")
+    @Column(name = "product_group_name")
     private String productGroupName;
 
-    @Column(name = "SELLER_ID")
+    @Column(name = "seller_id")
     private long sellerId;
 
-    @Column(name = "BRAND_ID")
+    @Column(name = "brand_id")
     private long brandId;
 
-    @Column(name = "CATEGORY_ID")
+    @Column(name = "category_id")
     private long categoryId;
 
-    @Column(name = "OPTION_TYPE")
+    @Column(name = "option_type")
     @Enumerated(value = EnumType.STRING)
     private OptionType optionType;
 
-    @Column(name = "MANAGEMENT_TYPE")
+    @Column(name = "management_type")
     @Enumerated(value = EnumType.STRING)
     private ManagementType managementType;
 
@@ -53,10 +53,10 @@ public class SnapShotProductGroup {
 
     @Embedded private ClothesDetail clothesDetailInfo;
 
-    @Column(name = "COMMISSION_RATE")
+    @Column(name = "commission_rate")
     private double commissionRate;
 
-    @Column(name = "SHARE_RATIO")
+    @Column(name = "share_ratio")
     private double shareRatio;
 
     public SnapShotProductGroup(

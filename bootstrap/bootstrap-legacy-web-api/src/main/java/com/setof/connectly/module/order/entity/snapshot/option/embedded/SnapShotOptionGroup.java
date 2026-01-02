@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SnapShotOptionGroup {
 
-    @Column(name = "OPTION_GROUP_ID")
+    @Column(name = "option_group_id")
     private long optionGroupId;
 
-    @Column(name = "OPTION_NAME")
+    @Column(name = "option_name")
     @Enumerated(EnumType.STRING)
     private OptionName optionName;
 }

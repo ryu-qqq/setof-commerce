@@ -23,7 +23,7 @@ public class ProductComponent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PRODUCT_COMPONENT_ID")
+    @Column(name = "product_component_id")
     private long id;
 
     @OneToOne(fetch = FetchType.LAZY)

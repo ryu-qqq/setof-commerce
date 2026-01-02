@@ -26,14 +26,14 @@ public class ProductNotice extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long id;
 
     @Embedded private NoticeDetail noticeDetail;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "PRODUCT_GROUP_ID")
+    @JoinColumn(name = "product_group_id")
     private ProductGroup productGroup;
 
     public void setProductGroup(ProductGroup productGroup) {

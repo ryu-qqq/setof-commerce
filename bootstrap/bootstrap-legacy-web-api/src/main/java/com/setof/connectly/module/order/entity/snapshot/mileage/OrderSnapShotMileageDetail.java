@@ -23,18 +23,18 @@ public class OrderSnapShotMileageDetail extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ORDER_SNAPSHOT_MILEAGE_DETAIL_ID")
+    @Column(name = "order_snapshot_mileage_detail_id")
     private long id;
 
-    @Column(name = "ORDER_SNAPSHOT_MILEAGE_ID")
+    @Column(name = "order_snapshot_mileage_id")
     private long orderSnapShotMileageId;
 
-    @Column(name = "MILEAGE_ID")
+    @Column(name = "mileage_id")
     private long mileageId;
 
-    @Column(name = "USED_AMOUNT")
+    @Column(name = "used_amount")
     private double usedAmount;
 
-    @Column(name = "MILEAGE_BALANCE")
+    @Column(name = "mileage_balance")
     private double mileageBalance;
 }

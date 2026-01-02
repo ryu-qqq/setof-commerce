@@ -24,22 +24,22 @@ public class VBankAccount extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "VBANK_ACCOUNT_ID")
+    @Column(name = "vbank_account_id")
     private long id;
 
     private long paymentId;
     private long userId;
 
-    @Column(name = "VBANK_NAME")
+    @Column(name = "vbank_name")
     private String vBankName;
 
-    @Column(name = "VBANK_NUMBER")
+    @Column(name = "vbank_number")
     private String vBankNumber;
 
-    @Column(name = "VBANK_HOLDER")
+    @Column(name = "vbank_holder")
     private String vBankHolder;
 
-    @Column(name = "VBANK_DUE_DATE")
+    @Column(name = "vbank_due_date")
     private LocalDateTime vBankDueDate;
 
     private long paymentAmount;

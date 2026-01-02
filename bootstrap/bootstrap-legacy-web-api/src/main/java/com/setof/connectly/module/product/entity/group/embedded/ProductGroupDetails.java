@@ -19,19 +19,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductGroupDetails {
-    @Column(name = "PRODUCT_GROUP_NAME")
+    @Column(name = "product_group_name")
     private String productGroupName;
 
-    @Column(name = "SELLER_ID")
+    @Column(name = "seller_id")
     private long sellerId;
 
-    @Column(name = "BRAND_ID")
+    @Column(name = "brand_id")
     private long brandId;
 
-    @Column(name = "CATEGORY_ID")
+    @Column(name = "category_id")
     private long categoryId;
 
-    @Column(name = "OPTION_TYPE")
+    @Column(name = "option_type")
     @Enumerated(value = EnumType.STRING)
     private OptionType optionType;
 

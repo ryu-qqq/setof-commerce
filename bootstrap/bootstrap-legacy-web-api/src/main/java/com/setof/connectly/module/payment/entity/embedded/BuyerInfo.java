@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class BuyerInfo {
 
-    @Column(name = "BUYER_NAME")
+    @Column(name = "buyer_name")
     private String buyerName;
 
-    @Column(name = "BUYER_EMAIL")
+    @Column(name = "buyer_email")
     private String buyerEmail;
 
-    @Column(name = "BUYER_PHONE_NUMBER")
+    @Column(name = "buyer_phone_number")
     private String buyerPhoneNumber;
 }

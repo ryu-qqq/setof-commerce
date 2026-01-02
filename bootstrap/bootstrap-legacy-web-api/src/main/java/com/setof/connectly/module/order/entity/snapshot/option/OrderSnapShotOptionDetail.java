@@ -26,10 +26,10 @@ import lombok.NoArgsConstructor;
 public class OrderSnapShotOptionDetail extends BaseEntity implements OrderSnapShot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ORDER_SNAPSHOT_OPTION_DETAIL_ID")
+    @Column(name = "order_snapshot_option_detail_id")
     private long id;
 
-    @Column(name = "ORDER_ID")
+    @Column(name = "order_id")
     private long orderId;
 
     @Embedded private SnapShotOptionDetail snapShotOptionDetail;

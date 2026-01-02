@@ -27,27 +27,27 @@ import lombok.NoArgsConstructor;
 public class MileageTransaction extends BaseEntity {
 
     @Id
-    @Column(name = "MILEAGE_TRANSACTION_ID")
+    @Column(name = "mileage_transaction_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "MILEAGE_ID")
+    @Column(name = "mileage_id")
     private Long mileageId;
 
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long userId;
 
-    @Column(name = "ISSUE_TYPE")
+    @Column(name = "issue_type")
     @Enumerated(EnumType.STRING)
     private MileageIssueType issueType;
 
-    @Column(name = "TARGET_ID")
+    @Column(name = "target_id")
     private long targetId;
 
-    @Column(name = "EXPECTED_MILEAGE_AMOUNT")
+    @Column(name = "expected_mileage_amount")
     private double expectedMileageAmount;
 
-    @Column(name = "STATUS")
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private MileageStatus status;
 

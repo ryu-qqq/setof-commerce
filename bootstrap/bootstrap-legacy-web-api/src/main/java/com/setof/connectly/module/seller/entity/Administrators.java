@@ -22,7 +22,7 @@ public class Administrators extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ADMIN_ID")
+    @Column(name = "admin_id")
     private long id;
 
     private String passwordHash;

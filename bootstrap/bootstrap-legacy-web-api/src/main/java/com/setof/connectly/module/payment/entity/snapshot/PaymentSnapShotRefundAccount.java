@@ -20,22 +20,22 @@ public class PaymentSnapShotRefundAccount extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PAYMENT_SNAPSHOT_REFUND_ACCOUNT_ID")
+    @Column(name = "payment_snapshot_refund_account_id")
     private long id;
 
-    @Column(name = "PAYMENT_ID")
+    @Column(name = "payment_id")
     private long paymentId;
 
-    @Column(name = "REFUND_ACCOUNT_ID")
+    @Column(name = "refund_account_id")
     private long refundAccountId;
 
-    @Column(name = "BANK_NAME")
+    @Column(name = "bank_name")
     private String bankName;
 
-    @Column(name = "ACCOUNT_NUMBER")
+    @Column(name = "account_number")
     private String accountNumber;
 
-    @Column(name = "ACCOUNT_HOLDER_NAME")
+    @Column(name = "account_holder_name")
     private String accountHolderName;
 
     public PaymentSnapShotRefundAccount(long paymentId, RefundAccountInfo refundAccountInfo) {

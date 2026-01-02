@@ -27,21 +27,21 @@ public class QnaImage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "QNA_IMAGE_ID")
+    @Column(name = "qna_image_id")
     private long id;
     @Enumerated(EnumType.STRING)
     private QnaIssueType qnaIssueType;
 
-    @Column(name = "QNA_ID")
+    @Column(name = "qna_id")
     private long qnaId;
 
-    @Column(name = "QNA_ANSWER_ID")
+    @Column(name = "qna_answer_id")
     private Long qnaAnswerId;
 
-    @Column(name = "IMAGE_URL")
+    @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "DISPLAY_ORDER")
+    @Column(name = "display_order")
     private int displayOrder;
 
 

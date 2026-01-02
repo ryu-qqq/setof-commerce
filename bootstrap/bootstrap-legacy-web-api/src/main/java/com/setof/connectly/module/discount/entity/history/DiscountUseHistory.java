@@ -24,27 +24,27 @@ public class DiscountUseHistory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "DISCOUNT_USE_HISTORY")
+    @Column(name = "discount_use_history")
     private long id;
 
-    @Column(name = "DISCOUNT_POLICY_ID")
+    @Column(name = "discount_policy_id")
     private long discountPolicyId;
 
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long userId;
 
-    @Column(name = "NAME")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "ORDER_ID")
+    @Column(name = "order_id")
     private long orderId;
 
-    @Column(name = "PAYMENT_ID")
+    @Column(name = "payment_id")
     private long paymentId;
 
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long productGroupId;
 
-    @Column(name = "USE_DATE")
+    @Column(name = "use_date")
     private LocalDateTime useDate;
 }

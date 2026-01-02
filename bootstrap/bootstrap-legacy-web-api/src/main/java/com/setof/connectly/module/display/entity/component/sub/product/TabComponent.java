@@ -27,7 +27,7 @@ public class TabComponent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "TAB_COMPONENT_ID")
+    @Column(name = "tab_component_id")
     private long id;
 
     @Enumerated(EnumType.STRING)
@@ -40,6 +40,6 @@ public class TabComponent extends BaseEntity {
     @JoinColumn(name = "COMPONENT_ID", referencedColumnName = "COMPONENT_ID")
     private Component component;
 
-    @Column(name = "DISPLAY_ORDER")
+    @Column(name = "display_order")
     private int displayOrder;
 }

@@ -24,13 +24,13 @@ public class QnaOrder extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "QNA_ORDER_ID")
+    @Column(name = "qna_order_id")
     private long id;
 
-    @Column(name = "QNA_ID")
+    @Column(name = "qna_id")
     private long qnaId;
 
-    @Column(name = "ORDER_ID")
+    @Column(name = "order_id")
     private long orderId;
 
 }

@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class ProductRatingStats extends BaseEntity {
 
     @Id
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long id;
 
     private double averageRating;

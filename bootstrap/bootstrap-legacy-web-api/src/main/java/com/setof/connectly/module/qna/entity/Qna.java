@@ -31,7 +31,7 @@ public class Qna extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "QNA_ID")
+    @Column(name = "qna_id")
     private long id;
     private QnaContents qnaContents;
     @Enumerated(EnumType.STRING)

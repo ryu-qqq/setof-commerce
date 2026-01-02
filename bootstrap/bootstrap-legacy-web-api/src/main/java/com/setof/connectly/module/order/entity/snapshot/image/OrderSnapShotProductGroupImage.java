@@ -27,10 +27,10 @@ public class OrderSnapShotProductGroupImage extends BaseEntity implements OrderS
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ORDER_SNAPSHOT_PRODUCT_GROUP_IMAGE_ID")
+    @Column(name = "order_snapshot_product_group_image_id")
     private long id;
 
-    @Column(name = "ORDER_ID")
+    @Column(name = "order_id")
     private long orderId;
 
     @Embedded private SnapShotProductGroupImage snapShotProductGroupImage;

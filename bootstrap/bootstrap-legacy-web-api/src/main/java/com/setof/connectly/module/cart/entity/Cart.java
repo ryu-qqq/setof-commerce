@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 public class Cart extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CART_ID")
+    @Column(name = "cart_id")
     private long id;
 
     private long userId;

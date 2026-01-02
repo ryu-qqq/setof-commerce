@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Entity
 public class ProductDelivery extends BaseEntity {
     @Id
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long id;
 
     @Embedded private DeliveryNotice deliveryNotice;
@@ -35,7 +35,7 @@ public class ProductDelivery extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "PRODUCT_GROUP_ID")
+    @JoinColumn(name = "product_group_id")
     private ProductGroup productGroup;
 
     public void setProductGroup(ProductGroup productGroup) {

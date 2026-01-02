@@ -18,13 +18,13 @@ import lombok.NoArgsConstructor;
 @Entity
 public class UserGrade extends BaseEntity {
     @Id
-    @Column(name = "USER_GRADE_ID")
+    @Column(name = "user_grade_id")
     private long id;
 
-    @Column(name = "GRADE_NAME")
+    @Column(name = "grade_name")
     @Enumerated(EnumType.STRING)
     private UserGradeEnum gradeName;
 
-    @Column(name = "MILEAGE_RATE")
+    @Column(name = "mileage_rate")
     private double mileageRate;
 }

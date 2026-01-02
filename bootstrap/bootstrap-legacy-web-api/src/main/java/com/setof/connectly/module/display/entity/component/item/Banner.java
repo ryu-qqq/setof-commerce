@@ -25,10 +25,10 @@ public class Banner extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "BANNER_ID")
+    @Column(name = "banner_id")
     private long id;
 
-    @Column(name = "TITLE")
+    @Column(name = "title")
     private String title;
 
     private String imageUrl;

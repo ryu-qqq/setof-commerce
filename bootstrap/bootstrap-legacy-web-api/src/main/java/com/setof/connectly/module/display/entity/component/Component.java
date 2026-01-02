@@ -28,25 +28,25 @@ import lombok.NoArgsConstructor;
 public class Component extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "COMPONENT_ID")
+    @Column(name = "component_id")
     private long id;
 
     private long contentId;
 
-    @Column(name = "COMPONENT_NAME")
+    @Column(name = "component_name")
     private String componentName;
 
     @Embedded private ComponentDetails componentDetails;
 
-    @Column(name = "EXPOSED_PRODUCTS")
+    @Column(name = "exposed_products")
     private int exposedProducts;
 
     @Embedded private DisplayPeriod displayPeriod;
 
-    @Column(name = "DISPLAY_ORDER")
+    @Column(name = "display_order")
     private int displayOrder;
 
-    @Column(name = "DISPLAY_YN")
+    @Column(name = "display_yn")
     @Enumerated(EnumType.STRING)
     private Yn displayYn;
 

@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class SnapShotOptionDetail {
-    @Column(name = "OPTION_DETAIL_ID")
+    @Column(name = "option_detail_id")
     private long optionDetailId;
 
-    @Column(name = "OPTION_GROUP_ID")
+    @Column(name = "option_group_id")
     private long optionGroupId;
 
-    @Column(name = "OPTION_VALUE")
+    @Column(name = "option_value")
     private String optionValue;
 }

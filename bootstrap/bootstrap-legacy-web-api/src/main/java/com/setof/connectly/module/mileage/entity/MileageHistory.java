@@ -27,25 +27,25 @@ public class MileageHistory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MILEAGE_HISTORY_ID")
+    @Column(name = "mileage_history_id")
     private long id;
 
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long userId;
 
-    @Column(name = "MILEAGE_ID")
+    @Column(name = "mileage_id")
     private long mileageId;
 
-    @Column(name = "CHANGE_AMOUNT")
+    @Column(name = "change_amount")
     private double changeAmount;
 
-    @Column(name = "REASON")
+    @Column(name = "reason")
     @Enumerated(value = EnumType.STRING)
     private Reason reason;
 
-    @Column(name = "ISSUE_TYPE")
+    @Column(name = "issue_type")
     private MileageIssueType issueType;
 
-    @Column(name = "TARGET_ID")
+    @Column(name = "target_id")
     private long targetId;
 }

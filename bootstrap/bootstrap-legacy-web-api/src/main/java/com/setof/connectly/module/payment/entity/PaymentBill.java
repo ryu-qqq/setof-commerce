@@ -30,43 +30,43 @@ public class PaymentBill extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PAYMENT_BILL_ID")
+    @Column(name = "payment_bill_id")
     private long id;
 
-    @Column(name = "PAYMENT_ID")
+    @Column(name = "payment_id")
     private long paymentId;
 
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long userId;
 
-    @Column(name = "PAYMENT_METHOD_ID")
+    @Column(name = "payment_method_id")
     private long paymentMethodId;
 
-    @Column(name = "PAYMENT_AMOUNT")
+    @Column(name = "payment_amount")
     private long paymentAmount;
 
-    @Column(name = "USED_MILEAGE_AMOUNT")
+    @Column(name = "used_mileage_amount")
     private double usedMileageAmount;
 
     @Embedded private BuyerInfo buyerInfo;
 
-    @Column(name = "PAYMENT_AGENCY_ID")
+    @Column(name = "payment_agency_id")
     private String paymentAgencyId;
 
-    @Column(name = "PAYMENT_UNIQUE_ID")
+    @Column(name = "payment_unique_id")
     private String paymentUniqueId;
 
-    @Column(name = "RECEIPT_URL")
+    @Column(name = "receipt_url")
     private String receiptUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "PAYMENT_CHANNEL")
+    @Column(name = "payment_channel")
     private PaymentChannel paymentChannel;
 
-    @Column(name = "CARD_NAME")
+    @Column(name = "card_name")
     private String cardName;
 
-    @Column(name = "CARD_NUMBER")
+    @Column(name = "card_number")
     private String cardNumber;
 
     public void processWebHook(PgProviderTransDto pgProviderTransDto) {

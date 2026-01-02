@@ -27,10 +27,10 @@ public class OrderSnapShotProductNotice extends BaseEntity implements OrderSnapS
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ORDER_SNAPSHOT_PRODUCT_NOTICE_ID")
+    @Column(name = "order_snapshot_product_notice_id")
     private long id;
 
-    @Column(name = "ORDER_ID")
+    @Column(name = "order_id")
     private long orderId;
 
     @Embedded private SnapShotNotice snapShotNotice;

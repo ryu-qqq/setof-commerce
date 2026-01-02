@@ -26,16 +26,16 @@ public class ReviewImage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "REVIEW_IMAGE_ID")
+    @Column(name = "review_image_id")
     private long id;
 
-    @Column(name = "REVIEW_ID")
+    @Column(name = "review_id")
     private long reviewId;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "REVIEW_IMAGE_TYPE")
+    @Column(name = "review_image_type")
     private ProductGroupImageType reviewImageType;
 
-    @Column(name = "IMAGE_URL")
+    @Column(name = "image_url")
     private String imageUrl;
 }

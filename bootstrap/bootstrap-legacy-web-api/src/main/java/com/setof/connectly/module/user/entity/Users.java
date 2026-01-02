@@ -33,55 +33,55 @@ public class Users extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long id;
 
-    @Column(name = "SOCIAL_PK_ID")
+    @Column(name = "social_pk_id")
     private String socialPkId;
 
-    @Column(name = "USER_GRADE_ID")
+    @Column(name = "user_grade_id")
     private long userGradeId;
 
-    @Column(name = "PHONE_NUMBER")
+    @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "SOCIAL_LOGIN_TYPE")
+    @Column(name = "social_login_type")
     @Enumerated(value = EnumType.STRING)
     private SocialLoginType socialLoginType;
 
-    @Column(name = "EMAIL")
+    @Column(name = "email")
     private String email;
 
-    @Column(name = "PASSWORD_HASH")
+    @Column(name = "password_hash")
     private String passwordHash;
 
-    @Column(name = "NAME")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "DATE_OF_BIRTH")
+    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Column(name = "GENDER")
+    @Column(name = "gender")
     @Enumerated(value = EnumType.STRING)
     private Gender gender;
 
-    @Column(name = "PRIVACY_CONSENT")
+    @Column(name = "privacy_consent")
     @Enumerated(value = EnumType.STRING)
     private Yn privacyConsent;
 
-    @Column(name = "SERVICE_TERMS_CONSENT")
+    @Column(name = "service_terms_consent")
     @Enumerated(value = EnumType.STRING)
     private Yn serviceTermsConsent;
 
-    @Column(name = "AD_CONSENT")
+    @Column(name = "ad_consent")
     @Enumerated(value = EnumType.STRING)
     private Yn adConsent;
 
-    @Column(name = "WITHDRAWAL_YN")
+    @Column(name = "withdrawal_yn")
     @Enumerated(value = EnumType.STRING)
     private Yn withdrawalYn;
 
-    @Column(name = "WITHDRAWAL_REASON")
+    @Column(name = "withdrawal_reason")
     @Enumerated(value = EnumType.STRING)
     private WithdrawalReason withdrawalReason;
 

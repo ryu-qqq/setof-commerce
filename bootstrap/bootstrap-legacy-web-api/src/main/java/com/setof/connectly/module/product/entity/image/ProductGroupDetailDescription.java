@@ -27,14 +27,14 @@ import lombok.NoArgsConstructor;
 public class ProductGroupDetailDescription extends BaseEntity {
 
     @Id
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long id;
 
     @Embedded private ImageDetail imageDetail;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "PRODUCT_GROUP_ID")
+    @JoinColumn(name = "product_group_id")
     private ProductGroup productGroup;
 
     public void setProductGroup(ProductGroup productGroup) {

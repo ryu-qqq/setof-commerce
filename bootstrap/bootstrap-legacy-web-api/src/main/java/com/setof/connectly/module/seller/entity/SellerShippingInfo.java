@@ -27,7 +27,7 @@ public class SellerShippingInfo extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "SELLER_ID")
+    @Column(name = "seller_id")
     private long id;
 
     private String returnAddressLine1;
@@ -36,7 +36,7 @@ public class SellerShippingInfo extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "SELLER_ID")
+    @JoinColumn(name = "seller_id")
     private Seller seller;
 
     public void setSeller(Seller seller) {

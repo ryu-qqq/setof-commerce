@@ -18,19 +18,19 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class EventDetail {
 
-    @Column(name = "MEMO")
+    @Column(name = "memo")
     private String memo;
 
     @Embedded private DisplayPeriod displayPeriod;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "ACTIVE_YN")
+    @Column(name = "active_yn")
     private Yn activeYn;
 
-    @Column(name = "IMAGE_URL")
+    @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "LINK_URL")
+    @Column(name = "link_url")
     private String linkUrl;
 
     public void setDisplayPeriod(DisplayPeriod displayPeriod) {

@@ -27,28 +27,28 @@ public class Mileage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MILEAGE_ID")
+    @Column(name = "mileage_id")
     private long id;
 
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long userId;
 
-    @Column(name = "MILEAGE_AMOUNT")
+    @Column(name = "mileage_amount")
     private double mileageAmount;
 
-    @Column(name = "USED_MILEAGE_AMOUNT")
+    @Column(name = "used_mileage_amount")
     private double usedMileageAmount;
 
-    @Column(name = "ISSUED_DATE")
+    @Column(name = "issued_date")
     private LocalDateTime issuedDate;
 
-    @Column(name = "EXPIRATION_DATE")
+    @Column(name = "expiration_date")
     private LocalDateTime expirationDate;
 
-    @Column(name = "ACTIVE_YN")
+    @Column(name = "active_yn")
     @Enumerated(EnumType.STRING)
     private Yn activeYn;
 
-    @Column(name = "TITLE")
+    @Column(name = "title")
     private String title;
 }

@@ -19,17 +19,17 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class RefundNotice {
 
-    @Column(name = "RETURN_METHOD_DOMESTIC")
+    @Column(name = "return_method_domestic")
     @Enumerated(EnumType.STRING)
     private ReturnMethod returnMethodDomestic;
 
-    @Column(name = "RETURN_COURIER_DOMESTIC")
+    @Column(name = "return_courier_domestic")
     @Enumerated(EnumType.STRING)
     private ShipmentCompanyCode returnCourierDomestic;
 
-    @Column(name = "RETURN_CHARGE_DOMESTIC")
+    @Column(name = "return_charge_domestic")
     private int returnChargeDomestic;
 
-    @Column(name = "RETURN_EXCHANGE_AREA_DOMESTIC")
+    @Column(name = "return_exchange_area_domestic")
     private String returnExchangeAreaDomestic;
 }

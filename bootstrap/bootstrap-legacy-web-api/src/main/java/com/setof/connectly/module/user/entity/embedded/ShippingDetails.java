@@ -24,35 +24,35 @@ public class ShippingDetails {
 
     @Length(max = 10, message = "수취인 성함은 10자 이내 입니다.")
     @NotNull(message = "수취인 성함은 필수입니다")
-    @Column(name = "RECEIVER_NAME")
+    @Column(name = "receiver_name")
     private String receiverName;
 
     @Length(max = 30, message = "배송지 명은  30자 이내 입니다.")
     @NotNull(message = "배송지 명은 필수입니다")
-    @Column(name = "SHIPPING_ADDRESS_NAME")
+    @Column(name = "shipping_address_name")
     private String shippingAddressName;
 
     @Length(max = 100, message = "상세 주소는 100자 이내 입니다.")
     @NotNull(message = "상세 주소는 필수입니다")
-    @Column(name = "ADDRESS_LINE1")
+    @Column(name = "address_line1")
     private String addressLine1;
 
     @Length(max = 100, message = "상세 주소는 100자 이내 입니다.")
     @NotNull(message = "상세 주소는 필수입니다")
-    @Column(name = "ADDRESS_LINE2")
+    @Column(name = "address_line2")
     private String addressLine2;
 
     @Length(max = 10, message = "우편번호는 10자 이내 입니다.")
     @NotNull(message = "우편번호는 필수입니다")
-    @Column(name = "ZIP_CODE")
+    @Column(name = "zip_code")
     private String zipCode;
 
-    @Column(name = "COUNTRY")
+    @Column(name = "country")
     @Enumerated(EnumType.STRING)
     private Origin country;
 
     @Length(max = 100, message = "배송 요청 사항은 150자 이내 입니다.")
-    @Column(name = "DELIVERY_REQUEST")
+    @Column(name = "delivery_request")
     private String deliveryRequest;
 
     @Pattern(regexp = "010[0-9]{8}", message = "유효하지 않은 전화번호 형식입니다.")

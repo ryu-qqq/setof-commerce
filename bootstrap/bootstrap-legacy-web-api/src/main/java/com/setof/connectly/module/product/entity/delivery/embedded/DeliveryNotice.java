@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Embeddable
 public class DeliveryNotice {
-    @Column(name = "DELIVERY_AREA")
+    @Column(name = "delivery_area")
     private String deliveryArea;
 
-    @Column(name = "DELIVERY_FEE")
+    @Column(name = "delivery_fee")
     private long deliveryFee;
 
-    @Column(name = "DELIVERY_PERIOD_AVERAGE")
+    @Column(name = "delivery_period_average")
     private int deliveryPeriodAverage;
 }

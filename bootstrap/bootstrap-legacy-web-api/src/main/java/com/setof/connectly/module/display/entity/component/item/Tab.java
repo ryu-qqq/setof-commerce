@@ -19,7 +19,7 @@ public class Tab extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "TAB_ID")
+    @Column(name = "tab_id")
     private long id;
 
     private String tabName;

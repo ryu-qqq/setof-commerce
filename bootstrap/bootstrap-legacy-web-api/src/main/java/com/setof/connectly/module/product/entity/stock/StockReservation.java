@@ -27,28 +27,28 @@ public class StockReservation extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "STOCK_RESERVATION_ID")
+    @Column(name = "stock_reservation_id")
     private long id;
 
-    @Column(name = "PRODUCT_ID")
+    @Column(name = "product_id")
     private long productId;
 
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long userId;
 
-    @Column(name = "PAYMENT_ID")
+    @Column(name = "payment_id")
     private long paymentId;
 
-    @Column(name = "ORDER_ID")
+    @Column(name = "order_id")
     private long orderId;
 
-    @Column(name = "STOCK_QUANTITY")
+    @Column(name = "stock_quantity")
     private int stockQuantity;
 
-    @Column(name = "RESERVED_AT")
+    @Column(name = "reserved_at")
     private LocalDateTime reservedAt;
 
-    @Column(name = "RESERVATION_STATUS")
+    @Column(name = "reservation_status")
     @Enumerated(EnumType.STRING)
     private ReservationStatus reservationStatus;
 }

@@ -26,19 +26,19 @@ public class OrderHistory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ORDER_HISTORY_ID")
+    @Column(name = "order_history_id")
     private long id;
 
-    @Column(name = "ORDER_ID")
+    @Column(name = "order_id")
     private long orderId;
 
-    @Column(name = "CHANGE_REASON")
+    @Column(name = "change_reason")
     private String changeReason;
 
-    @Column(name = "CHANGE_DETAIL_REASON")
+    @Column(name = "change_detail_reason")
     private String changeDetailReason;
 
-    @Column(name = "ORDER_STATUS")
+    @Column(name = "order_status")
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 

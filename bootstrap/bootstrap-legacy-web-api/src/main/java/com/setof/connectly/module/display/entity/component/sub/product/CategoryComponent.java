@@ -23,7 +23,7 @@ public class CategoryComponent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CATEGORY_COMPONENT_ID")
+    @Column(name = "category_component_id")
     private long id;
 
     private long categoryId;

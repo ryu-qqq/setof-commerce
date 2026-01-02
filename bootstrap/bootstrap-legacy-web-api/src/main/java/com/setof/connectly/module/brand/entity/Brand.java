@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
 public class Brand extends BaseEntity {
 
     @Id
-    @Column(name = "BRAND_ID")
+    @Column(name = "brand_id")
     private long id;
 
     private String brandName;

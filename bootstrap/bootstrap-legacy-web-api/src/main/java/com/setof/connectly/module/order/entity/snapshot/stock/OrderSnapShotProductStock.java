@@ -24,19 +24,19 @@ import lombok.NoArgsConstructor;
 public class OrderSnapShotProductStock extends BaseEntity implements OrderSnapShot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ORDER_SNAPSHOT_PRODUCT_STOCK_ID")
+    @Column(name = "order_snapshot_product_stock_id")
     private long id;
 
-    @Column(name = "ORDER_ID")
+    @Column(name = "order_id")
     private long orderId;
 
-    @Column(name = "PRODUCT_STOCK_ID")
+    @Column(name = "product_stock_id")
     private long productStockId;
 
-    @Column(name = "PRODUCT_ID")
+    @Column(name = "product_id")
     private long productId;
 
-    @Column(name = "STOCK_QUANTITY")
+    @Column(name = "stock_quantity")
     private int stockQuantity;
 
     @Override

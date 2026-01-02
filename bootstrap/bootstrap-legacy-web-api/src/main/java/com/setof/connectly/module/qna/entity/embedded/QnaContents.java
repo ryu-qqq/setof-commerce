@@ -15,11 +15,11 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 public class QnaContents {
 
-    @Column(name = "TITLE")
+    @Column(name = "title")
     @Length(max = 100, message = "질문/답변 제목은 100자를 넘길 수 없습니다.")
     private String title;
 
-    @Column(name = "CONTENT")
+    @Column(name = "content")
     @Length(max = 500, message = "질문/답변 내용은 500자를 넘길 수 없습니다.")
     private String content;
 

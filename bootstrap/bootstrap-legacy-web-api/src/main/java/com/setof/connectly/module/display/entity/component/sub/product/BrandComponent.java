@@ -23,7 +23,7 @@ public class BrandComponent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "BRAND_COMPONENT_ID")
+    @Column(name = "brand_component_id")
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -23,7 +23,7 @@ public class DiscountPolicy extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "DISCOUNT_POLICY_ID")
+    @Column(name = "discount_policy_id")
     private long id;
 
     @Embedded private DiscountDetails discountDetails;

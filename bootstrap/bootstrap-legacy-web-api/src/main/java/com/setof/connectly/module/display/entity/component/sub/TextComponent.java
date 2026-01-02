@@ -19,7 +19,7 @@ public class TextComponent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "TEXT_COMPONENT_ID")
+    @Column(name = "text_component_id")
     private long id;
 
     private String content;

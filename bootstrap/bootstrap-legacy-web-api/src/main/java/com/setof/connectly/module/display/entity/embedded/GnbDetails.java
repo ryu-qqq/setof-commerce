@@ -17,18 +17,18 @@ import lombok.NoArgsConstructor;
 @Getter
 @Embeddable
 public class GnbDetails {
-    @Column(name = "TITLE")
+    @Column(name = "title")
     private String title;
 
-    @Column(name = "LINK_URL")
+    @Column(name = "link_url")
     private String linkUrl;
 
-    @Column(name = "DISPLAY_ORDER")
+    @Column(name = "display_order")
     private int displayOrder;
 
     @Embedded private DisplayPeriod displayPeriod;
 
-    @Column(name = "DISPLAY_YN")
+    @Column(name = "display_yn")
     @Enumerated(EnumType.STRING)
     private Yn displayYn;
 

@@ -24,10 +24,10 @@ import lombok.NoArgsConstructor;
 public class UserMileage extends BaseEntity {
 
     @Id
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long id;
 
-    @Column(name = "CURRENT_MILEAGE")
+    @Column(name = "current_mileage")
     private double currentMileage;
 
     public UserMileage(double currentMileage) {
@@ -36,7 +36,7 @@ public class UserMileage extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "user_id")
     private Users users;
 
     public void setUsers(Users users) {

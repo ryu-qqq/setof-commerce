@@ -24,22 +24,22 @@ public class Review extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "REVIEW_ID")
+    @Column(name = "review_id")
     private long id;
 
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long productGroupId;
 
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long userId;
 
-    @Column(name = "ORDER_ID")
+    @Column(name = "order_id")
     private long orderId;
 
-    @Column(name = "RATING")
+    @Column(name = "rating")
     private double rating;
 
-    @Column(name = "CONTENT")
+    @Column(name = "content")
     private String content;
 
     public void delete() {

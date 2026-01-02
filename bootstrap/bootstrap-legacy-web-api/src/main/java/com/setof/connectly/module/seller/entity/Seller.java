@@ -30,7 +30,7 @@ public class Seller extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "SELLER_ID")
+    @Column(name = "seller_id")
     private long id;
 
     private String sellerName;

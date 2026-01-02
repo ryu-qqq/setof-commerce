@@ -31,16 +31,16 @@ public class QnaAnswer extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "QNA_ANSWER_ID")
+    @Column(name = "qna_answer_id")
     private long id;
 
-    @Column(name = "QNA_ID")
+    @Column(name = "qna_id")
     private long qnaId;
 
-    @Column(name = "QNA_PARENT_ID")
+    @Column(name = "qna_parent_id")
     private Long qnaParentId;
 
-    @Column(name = "QNA_WRITER_TYPE")
+    @Column(name = "qna_writer_type")
     @Enumerated(EnumType.STRING)
     private QnaWriterType qnaWriterType;
 

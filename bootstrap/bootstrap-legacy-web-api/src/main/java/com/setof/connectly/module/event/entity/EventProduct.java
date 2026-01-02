@@ -24,31 +24,31 @@ public class EventProduct extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "EVENT_PRODUCT_ID")
+    @Column(name = "event_product_id")
     private long id;
 
-    @Column(name = "EVENT_ID")
+    @Column(name = "event_id")
     private long eventId;
 
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long productGroupId;
 
-    @Column(name = "LIMIT_YN")
+    @Column(name = "limit_yn")
     @Enumerated(EnumType.STRING)
     private Yn limitYn;
 
-    @Column(name = "LIMIT_QTY")
+    @Column(name = "limit_qty")
     private int limitQty;
 
-    @Column(name = "EVENT_PAY_TYPE")
+    @Column(name = "event_pay_type")
     @Enumerated(EnumType.STRING)
     private EventPayType eventPayType;
 
-    @Column(name = "EVENT_PRODUCT_TYPE")
+    @Column(name = "event_product_type")
     @Enumerated(EnumType.STRING)
     private EventProductType eventProductType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "REWARDS_MILEAGE")
+    @Column(name = "rewards_mileage")
     private Yn rewardsMileage;
 }

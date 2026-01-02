@@ -19,7 +19,7 @@ public class ImageComponentItem extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IMAGE_COMPONENT_ITEM_ID")
+    @Column(name = "image_component_item_id")
     private long id;
 
     private String imageUrl;

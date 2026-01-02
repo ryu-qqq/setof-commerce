@@ -23,18 +23,18 @@ public class PaymentSnapShotMileage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PAYMENT_SNAPSHOT_MILEAGE_ID")
+    @Column(name = "payment_snapshot_mileage_id")
     private long id;
 
-    @Column(name = "PAYMENT_ID")
+    @Column(name = "payment_id")
     private long paymentId;
 
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long userId;
 
-    @Column(name = "USED_MILEAGE_AMOUNT")
+    @Column(name = "used_mileage_amount")
     private double usedMileageAmount;
 
-    @Column(name = "MILEAGE_BALANCE")
+    @Column(name = "mileage_balance")
     private double mileageBalance;
 }

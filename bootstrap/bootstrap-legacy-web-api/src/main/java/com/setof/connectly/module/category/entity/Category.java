@@ -20,29 +20,29 @@ import lombok.*;
 public class Category extends BaseEntity {
 
     @Id
-    @Column(name = "CATEGORY_ID")
+    @Column(name = "category_id")
     private long id;
 
-    @Column(name = "CATEGORY_NAME")
+    @Column(name = "category_name")
     private String categoryName;
 
-    @Column(name = "CATEGORY_DEPTH")
+    @Column(name = "category_depth")
     private int categoryDepth;
 
-    @Column(name = "PARENT_CATEGORY_ID")
+    @Column(name = "parent_category_id")
     private long parentCategoryId;
 
-    @Column(name = "DISPLAY_NAME")
+    @Column(name = "display_name")
     private String displayName;
 
-    @Column(name = "DISPLAY_YN")
+    @Column(name = "display_yn")
     @Enumerated(EnumType.STRING)
     private Yn displayYn;
 
-    @Column(name = "TARGET_GROUP")
+    @Column(name = "target_group")
     @Enumerated(EnumType.STRING)
     private TargetGroup targetGroup;
 
-    @Column(name = "PATH")
+    @Column(name = "path")
     private String path;
 }

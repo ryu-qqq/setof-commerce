@@ -23,13 +23,13 @@ public class QnaProduct extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "QNA_PRODUCT_ID")
+    @Column(name = "qna_product_id")
     private long id;
 
-    @Column(name = "QNA_ID")
+    @Column(name = "qna_id")
     private long qnaId;
 
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long productGroupId;
 
 

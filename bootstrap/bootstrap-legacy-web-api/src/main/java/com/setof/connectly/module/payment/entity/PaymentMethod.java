@@ -20,17 +20,17 @@ import lombok.NoArgsConstructor;
 public class PaymentMethod extends BaseEntity {
 
     @Id
-    @Column(name = "PAYMENT_METHOD_ID")
+    @Column(name = "payment_method_id")
     private long id;
 
-    @Column(name = "PAYMENT_METHOD")
+    @Column(name = "payment_method")
     @Enumerated(EnumType.STRING)
     private PaymentMethodEnum paymentMethodEnum;
 
-    @Column(name = "PAYMENT_METHOD_MERCHANT_KEY")
+    @Column(name = "payment_method_merchant_key")
     private String paymentMethodMerchantKey;
 
-    @Column(name = "DISPLAY_YN")
+    @Column(name = "display_yn")
     @Enumerated(EnumType.STRING)
     private Yn displayYn;
 }

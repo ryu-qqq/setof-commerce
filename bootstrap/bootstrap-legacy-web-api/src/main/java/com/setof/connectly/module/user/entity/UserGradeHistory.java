@@ -16,12 +16,12 @@ import lombok.NoArgsConstructor;
 public class UserGradeHistory extends BaseEntity {
 
     @Id
-    @Column(name = "USER_GRADE_HISTORY_ID")
+    @Column(name = "user_grade_history_id")
     private long id;
 
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long userId;
 
-    @Column(name = "GRADE_ID")
+    @Column(name = "grade_id")
     private long gradeId;
 }

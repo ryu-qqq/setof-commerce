@@ -24,18 +24,18 @@ public class RefundAccount extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "REFUND_ACCOUNT_ID")
+    @Column(name = "refund_account_id")
     private long id;
 
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long userId;
 
     private String bankName;
 
-    @Column(name = "ACCOUNT_NUMBER")
+    @Column(name = "account_number")
     private String accountNumber;
 
-    @Column(name = "ACCOUNT_HOLDER_NAME")
+    @Column(name = "account_holder_name")
     private String accountHolderName;
 
     public void update(CreateRefundAccount createRefundAccount) {
