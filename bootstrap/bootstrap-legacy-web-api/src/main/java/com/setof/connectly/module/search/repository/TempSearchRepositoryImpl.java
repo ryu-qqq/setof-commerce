@@ -99,9 +99,10 @@ public class TempSearchRepositoryImpl implements SearchRepository {
         }
         // MySQL MATCH ... AGAINST with ngram parser (IN BOOLEAN MODE for better control)
         // Hibernate 6 커스텀 함수 사용 (MatchAgainstFunctionContributor에서 등록)
+        // function() 래퍼를 사용하여 Hibernate 6 HQL 파서와 호환되도록 함
         return Expressions.numberTemplate(
                         Double.class,
-                        "match_against({0}, {1})",
+                        "function('match_against', {0}, {1})",
                         productGroup.productGroupDetails.productGroupName,
                         "+" + searchWord + "*")
                 .gt(0);

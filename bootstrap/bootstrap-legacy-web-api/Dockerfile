@@ -22,7 +22,7 @@ COPY build.gradle .
 COPY gradle/libs.versions.toml gradle/
 
 # 레거시 모듈 build.gradle 복사
-COPY bootstrap/bootstrap-legacy-web-api/build.gradle.kts bootstrap/bootstrap-legacy-web-api/
+COPY bootstrap/bootstrap-legacy-web-api/build.gradle bootstrap/bootstrap-legacy-web-api/
 
 # 의존성 캐시 레이어 (소스 변경 시 재활용)
 RUN chmod +x gradlew && ./gradlew dependencies --no-daemon || true
