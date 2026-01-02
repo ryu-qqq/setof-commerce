@@ -17,13 +17,13 @@ import com.connectly.partnerAdmin.module.external.enums.MappingStatus;
 
 
 @Getter
-@Table(name = "CRAWL_PRODUCT")
+@Table(name = "crawl_product")
 @Entity
 public class CrawlProduct extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CRAWL_PRODUCT_ID")
+    @Column(name = "crawl_product_id")
     private Long id;
 
     private Long productGroupId;

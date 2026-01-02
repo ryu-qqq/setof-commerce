@@ -10,13 +10,13 @@ import lombok.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "BRAND")
+@Table(name = "brand")
 @Entity
 public class Brand extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "BRAND_ID")
+    @Column(name = "brand_id")
     private long id;
 
     @Column(name = "BRAND_NAME", nullable = false, length = 50)

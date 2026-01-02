@@ -12,15 +12,15 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "ADMIN_AUTH_GROUP")
+@Table(name = "admin_auth_group")
 @Entity
 public class AdminAuthGroup extends BaseEntity {
 
     @Id
-    @Column(name = "ADMIN_ID")
+    @Column(name = "admin_id")
     private long id;
 
-    @Column(name = "AUTH_GROUP_ID")
+    @Column(name = "auth_group_id")
     private long authGroupId;
 
     public AdminAuthGroup(long id, RoleType roleType){

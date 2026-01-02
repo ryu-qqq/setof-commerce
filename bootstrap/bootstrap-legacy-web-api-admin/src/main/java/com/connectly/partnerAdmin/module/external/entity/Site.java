@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "SITE")
+@Table(name = "site")
 @Getter
 @Entity
 public class Site extends BaseEntity {
 
     @Id
-    @Column(name = "SITE_ID")
+    @Column(name = "site_id")
     private long id;
     @Column(name = "SITE_NAME", nullable = false, length = 20)
     private String siteName;

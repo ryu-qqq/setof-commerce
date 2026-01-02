@@ -10,13 +10,13 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "DISCOUNT_USE_HISTORY")
+@Table(name = "discount_use_history")
 @Entity
 public class DiscountUseHistory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "DISCOUNT_USE_HISTORY_ID")
+    @Column(name = "discount_use_history_id")
     private long id;
     private long discountPolicyId;
     private long userId;

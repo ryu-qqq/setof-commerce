@@ -13,21 +13,21 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "ORDER_SNAPSHOT_MILEAGE")
+@Table(name = "order_snapshot_mileage")
 @Entity
 public class OrderSnapShotMileage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ORDER_SNAPSHOT_MILEAGE_ID")
+    @Column(name = "order_snapshot_mileage_id")
     private long id;
 
-    @Column(name = "PAYMENT_ID")
+    @Column(name = "payment_id")
     private long paymentId;
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ORDER_ID")
+    @JoinColumn(name = "order_id")
     private Order order;
 
     @OneToMany(mappedBy = "orderSnapShotMileage", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

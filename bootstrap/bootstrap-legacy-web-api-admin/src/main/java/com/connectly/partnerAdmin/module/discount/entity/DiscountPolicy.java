@@ -17,13 +17,13 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-@Table(name = "DISCOUNT_POLICY")
+@Table(name = "discount_policy")
 @Entity
 public class DiscountPolicy extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "DISCOUNT_POLICY_ID")
+    @Column(name = "discount_policy_id")
     private long id;
 
     @Embedded

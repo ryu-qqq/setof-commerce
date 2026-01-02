@@ -11,20 +11,20 @@ import jakarta.persistence.*;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "PRODUCT_SCORE")
+@Table(name = "product_score")
 @Entity
 public class ProductScore extends BaseEntity {
 
     @Id
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long id;
 
-    @Column(name = "SCORE")
+    @Column(name = "score")
     private double score;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "PRODUCT_GROUP_ID")
+    @JoinColumn(name = "product_group_id")
     private ProductGroup productGroup;
 
     public ProductScore(double score) {

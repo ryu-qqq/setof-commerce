@@ -12,13 +12,13 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "PAYMENT_SNAPSHOT_SHIPPING_ADDRESS")
+@Table(name = "payment_snapshot_shipping_address")
 @Entity
 public class PaymentSnapShotShippingAddress extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PAYMENT_SNAPSHOT_SHIPPING_ADDRESS_ID")
+    @Column(name = "payment_snapshot_shipping_address_id")
     private long id;
 
     @Embedded
@@ -26,7 +26,7 @@ public class PaymentSnapShotShippingAddress extends BaseEntity {
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PAYMENT_ID")
+    @JoinColumn(name = "payment_id")
     private Payment payment;
 
     public PaymentSnapShotShippingAddress(ShippingDetails shippingDetails) {

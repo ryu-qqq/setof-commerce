@@ -12,39 +12,39 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "SETTLEMENT")
+@Table(name = "settlement")
 @Entity
 public class Settlement extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "SETTLEMENT_ID")
+    @Column(name = "settlement_id")
     private long id;
 
-    @Column(name = "SELLER_COMMISSION_RATE")
+    @Column(name = "seller_commission_rate")
     private double sellerCommissionRate;
 
     
-    @Column(name = "DIRECT_DISCOUNT_PRICE")
+    @Column(name = "direct_discount_price")
     private BigDecimal directDiscountPrice;
 
     
-    @Column(name = "USE_MILEAGE_AMOUNT")
+    @Column(name = "use_mileage_amount")
     private BigDecimal useMileageAmount;
 
-    @Column(name = "DIRECT_DISCOUNT_SELLER_BURDEN_RATIO")
+    @Column(name = "direct_discount_seller_burden_ratio")
     private double directDiscountSellerBurdenRatio;
 
-    @Column(name = "MILEAGE_SELLER_BURDEN_RATIO")
+    @Column(name = "mileage_seller_burden_ratio")
     private double mileageSellerBurdenRatio;
 
     @Setter
-    @Column(name = "EXPECTED_SETTLEMENT_DATE")
+    @Column(name = "expected_settlement_date")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expectedSettlementDate;
 
     @Setter
-    @Column(name = "SETTLEMENT_DATE")
+    @Column(name = "settlement_date")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime settlementDate;
 

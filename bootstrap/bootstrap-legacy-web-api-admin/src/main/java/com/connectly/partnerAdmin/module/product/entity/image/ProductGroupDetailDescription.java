@@ -15,16 +15,16 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Entity
-@Table(name = "PRODUCT_GROUP_DETAIL_DESCRIPTION")
+@Table(name = "product_group_detail_description")
 public class ProductGroupDetailDescription extends BaseEntity {
 
     @Id
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "PRODUCT_GROUP_ID")
+    @JoinColumn(name = "product_group_id")
     private ProductGroup productGroup;
 
     @Setter

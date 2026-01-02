@@ -13,13 +13,13 @@ import jakarta.persistence.*;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "PRODUCT_NOTICE")
+@Table(name = "product_notice")
 @Entity
 public class ProductNotice extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long id;
 
     @Setter
@@ -28,7 +28,7 @@ public class ProductNotice extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "PRODUCT_GROUP_ID")
+    @JoinColumn(name = "product_group_id")
     private ProductGroup productGroup;
 
     public void setProductGroup(ProductGroup productGroup) {

@@ -5,15 +5,7 @@
   },
   "response": {
     "status": 200,
-    "jsonBody": {
-      "success": true,
-      "message": "재처리 요청이 접수되었습니다.",
-      "data": {
-        "historyId": 1001,
-        "newJobId": "SYNC-20251217-RETRY-001",
-        "status": "RETRY_PENDING"
-      }
-    },
+    "bodyFileName": "responses/sync-history-retry.json",
     "headers": {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*"

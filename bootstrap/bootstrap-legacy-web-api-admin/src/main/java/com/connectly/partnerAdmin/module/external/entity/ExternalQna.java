@@ -8,22 +8,22 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
-@Table(name = "EXTERNAL_QNA")
+@Table(name = "external_qna")
 @Entity
 public class ExternalQna extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "EXTERNAL_PRODUCT_ID")
+    @Column(name = "external_product_id")
     private long id;
 
-    @Column(name = "SITE_ID")
+    @Column(name = "site_id")
     private long siteId;
 
-    @Column(name = "QNA_ID")
+    @Column(name = "qna_id")
     private long qnaId;
 
-    @Column(name = "EXTERNAL_IDX")
+    @Column(name = "external_idx")
     private long externalIdx;
 
 }

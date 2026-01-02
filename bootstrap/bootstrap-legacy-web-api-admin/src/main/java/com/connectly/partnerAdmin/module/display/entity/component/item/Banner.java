@@ -14,24 +14,24 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "BANNER")
+@Table(name = "banner")
 @Entity
 public class Banner extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "BANNER_ID")
+    @Column(name = "banner_id")
     private long id;
-    @Column(name = "TITLE")
+    @Column(name = "title")
     private String title;
 
-    @Column(name = "BANNER_TYPE")
+    @Column(name = "banner_type")
     @Enumerated(EnumType.STRING)
     private BannerType bannerType;
     @Embedded
     private DisplayPeriod displayPeriod;
 
-    @Column(name = "DISPLAY_YN")
+    @Column(name = "display_yn")
     @Enumerated(EnumType.STRING)
     private Yn displayYn;
 

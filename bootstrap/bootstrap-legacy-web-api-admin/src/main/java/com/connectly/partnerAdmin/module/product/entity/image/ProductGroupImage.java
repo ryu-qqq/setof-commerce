@@ -14,12 +14,12 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "PRODUCT_GROUP_IMAGE")
+@Table(name = "product_group_image")
 @Entity
 public class ProductGroupImage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PRODUCT_GROUP_IMAGE_ID")
+    @Column(name = "product_group_image_id")
     private long id;
 
     @Embedded

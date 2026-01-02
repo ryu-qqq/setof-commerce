@@ -26,17 +26,17 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-@Table(name = "OPTION_GROUP")
+@Table(name = "option_group")
 @Entity
 public class OptionGroup extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "OPTION_GROUP_ID")
+    @Column(name = "option_group_id")
     private long id;
 
     @Setter
-    @Column(name = "OPTION_NAME")
+    @Column(name = "option_name")
     @Enumerated(EnumType.STRING)
     private OptionName optionName;
 

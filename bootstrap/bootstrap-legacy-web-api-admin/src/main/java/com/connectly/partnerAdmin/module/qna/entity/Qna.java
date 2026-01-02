@@ -18,13 +18,13 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "QNA")
+@Table(name = "qna")
 @Entity
 public class Qna extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "QNA_ID")
+    @Column(name = "qna_id")
     private long id;
 
     private QnaContents qnaContents;
@@ -41,10 +41,10 @@ public class Qna extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private QnaDetailType qnaDetailType;
 
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long userId;
 
-    @Column(name = "SELLER_ID")
+    @Column(name = "seller_id")
     private long sellerId;
 
     @Enumerated(EnumType.STRING)

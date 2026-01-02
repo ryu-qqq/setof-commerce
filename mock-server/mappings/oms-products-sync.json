@@ -5,15 +5,7 @@
   },
   "response": {
     "status": 200,
-    "jsonBody": {
-      "success": true,
-      "message": "상품 연동이 시작되었습니다.",
-      "data": {
-        "jobId": "SYNC-20251217-001",
-        "requestedCount": 1,
-        "status": "PROCESSING"
-      }
-    },
+    "bodyFileName": "responses/products-sync.json",
     "headers": {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*"

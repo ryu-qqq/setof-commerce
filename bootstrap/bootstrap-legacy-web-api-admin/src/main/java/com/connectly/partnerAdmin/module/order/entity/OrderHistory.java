@@ -27,13 +27,13 @@ import com.connectly.partnerAdmin.module.order.enums.OrderStatus;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "ORDERS_HISTORY")
+@Table(name = "orders_history")
 @Entity
 public class OrderHistory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ORDER_HISTORY_ID")
+    @Column(name = "order_history_id")
     private long id;
 
     @Column(name = "CHANGE_REASON", length = 200, nullable = true)
@@ -42,7 +42,7 @@ public class OrderHistory extends BaseEntity {
     @Column(name = "CHANGE_DETAIL_REASON", length = 500, nullable = true)
     private String changeDetailReason;
 
-    @Column(name = "ORDER_STATUS")
+    @Column(name = "order_status")
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 

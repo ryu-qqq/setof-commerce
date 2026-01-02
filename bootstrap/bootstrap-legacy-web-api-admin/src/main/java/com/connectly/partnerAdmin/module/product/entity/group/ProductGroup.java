@@ -41,12 +41,12 @@ import com.connectly.partnerAdmin.module.product.enums.option.OptionType;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
-@Table(name = "PRODUCT_GROUP")
+@Table(name = "product_group")
 @Entity
 public class ProductGroup extends BaseEntity {
 
     @Id
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 

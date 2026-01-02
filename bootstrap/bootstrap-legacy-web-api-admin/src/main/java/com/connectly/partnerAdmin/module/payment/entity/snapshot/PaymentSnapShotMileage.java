@@ -15,22 +15,22 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "PAYMENT_SNAPSHOT_MILEAGE")
+@Table(name = "payment_snapshot_mileage")
 @Entity
 public class PaymentSnapShotMileage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PAYMENT_SNAPSHOT_MILEAGE_ID")
+    @Column(name = "payment_snapshot_mileage_id")
     private long id;
 
     
-    @Column(name = "USED_MILEAGE_AMOUNT")
+    @Column(name = "used_mileage_amount")
     private BigDecimal usedMileageAmount;
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PAYMENT_ID")
+    @JoinColumn(name = "payment_id")
     private Payment payment;
 
 }

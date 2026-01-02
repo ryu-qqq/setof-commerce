@@ -13,34 +13,34 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "BANNER_ITEM")
+@Table(name = "banner_item")
 @Entity
 public class BannerItem extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "BANNER_ITEM_ID")
+    @Column(name = "banner_item_id")
     private long id;
 
-    @Column(name = "TITLE")
+    @Column(name = "title")
     private String title;
 
-    @Column(name = "IMAGE_URL")
+    @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "LINK_URL")
+    @Column(name = "link_url")
     private String linkUrl;
     @Embedded
     private DisplayPeriod displayPeriod;
 
-    @Column(name = "DISPLAY_ORDER")
+    @Column(name = "display_order")
     private int displayOrder;
 
-    @Column(name = "DISPLAY_YN")
+    @Column(name = "display_yn")
     @Enumerated(EnumType.STRING)
     private Yn displayYn;
 
-    @Column(name = "BANNER_ID")
+    @Column(name = "banner_id")
     private long bannerId;
 
     @Embedded

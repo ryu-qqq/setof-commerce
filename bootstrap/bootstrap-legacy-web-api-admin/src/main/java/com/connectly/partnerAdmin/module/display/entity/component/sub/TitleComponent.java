@@ -12,13 +12,13 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "TITLE_COMPONENT")
+@Table(name = "title_component")
 @Entity
 public class TitleComponent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "TITLE_COMPONENT_ID")
+    @Column(name = "title_component_id")
     private long id;
 
     @Embedded

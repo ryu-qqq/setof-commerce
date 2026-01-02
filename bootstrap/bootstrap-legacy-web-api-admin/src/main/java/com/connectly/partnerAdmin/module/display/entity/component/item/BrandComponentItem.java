@@ -10,21 +10,21 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "BRAND_COMPONENT_ITEM")
+@Table(name = "brand_component_item")
 @Entity
 public class BrandComponentItem extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "BRAND_COMPONENT_ITEM_ID")
+    @Column(name = "brand_component_item_id")
     private long id;
 
-    @Column(name = "BRAND_ID")
+    @Column(name = "brand_id")
     private long brandId;
 
-    @Column(name = "CATEGORY_ID")
+    @Column(name = "category_id")
     private Long categoryId;
 
-    @Column(name = "BRAND_COMPONENT_ID")
+    @Column(name = "brand_component_id")
     private long brandComponentId;
 }

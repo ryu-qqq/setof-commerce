@@ -14,30 +14,30 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "PRODUCT_OPTION")
+@Table(name = "product_option")
 @Entity
 public class ProductOption extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PRODUCT_OPTION_ID")
+    @Column(name = "product_option_id")
     private long id;
 
-    @Column(name = "ADDITIONAL_PRICE")
+    @Column(name = "additional_price")
     private BigDecimal additionalPrice;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "PRODUCT_ID")
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "OPTION_GROUP_ID")
+    @JoinColumn(name = "option_group_id")
     private OptionGroup optionGroup;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "OPTION_DETAIL_ID")
+    @JoinColumn(name = "option_detail_id")
     private OptionDetail optionDetail;
 
 

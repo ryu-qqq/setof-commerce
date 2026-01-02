@@ -11,25 +11,25 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Builder
-@Table(name = "IMAGE_COMPONENT_ITEM")
+@Table(name = "image_component_item")
 @Entity
 public class ImageComponentItem extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IMAGE_COMPONENT_ITEM_ID")
+    @Column(name = "image_component_item_id")
     private long id;
 
-    @Column(name = "IMAGE_URL")
+    @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "DISPLAY_ORDER")
+    @Column(name = "display_order")
     private int displayOrder;
 
-    @Column(name = "LINK_URL")
+    @Column(name = "link_url")
     private String linkUrl;
 
-    @Column(name = "IMAGE_COMPONENT_ID")
+    @Column(name = "image_component_id")
     private long imageComponentId;
 
     @Embedded

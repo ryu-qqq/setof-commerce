@@ -16,18 +16,18 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Entity
-@Table(name = "PAYMENT")
+@Table(name = "payment")
 public class Payment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PAYMENT_ID")
+    @Column(name = "payment_id")
     private long id;
 
     @Embedded
     private PaymentDetails paymentDetails;
 
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long userId;
 
     @OneToOne(mappedBy = "payment", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)

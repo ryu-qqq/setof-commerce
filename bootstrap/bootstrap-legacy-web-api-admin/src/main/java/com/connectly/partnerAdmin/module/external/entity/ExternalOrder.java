@@ -9,28 +9,28 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
-@Table(name = "EXTERNAL_ORDER")
+@Table(name = "external_order")
 @Entity
 public class ExternalOrder extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "EXTERNAL_ORDER_ID")
+    @Column(name = "external_order_id")
     private long id;
 
-    @Column(name = "SITE_ID")
+    @Column(name = "site_id")
     private long siteId;
 
-    @Column(name = "PAYMENT_ID")
+    @Column(name = "payment_id")
     private long paymentId;
 
-    @Column(name = "ORDER_ID")
+    @Column(name = "order_id")
     private long orderId;
 
-    @Column(name = "EXTERNAL_IDX")
+    @Column(name = "external_idx")
     private long externalIdx;
 
-    @Column(name = "EXTERNAL_ORDER_PK_ID")
+    @Column(name = "external_order_pk_id")
     private String externalOrderPkId;
 
 }

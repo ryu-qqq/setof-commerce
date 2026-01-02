@@ -15,41 +15,41 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-@Table(name = "SHIPMENT")
+@Table(name = "shipment")
 public class Shipment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "SHIPMENT_ID")
+    @Column(name = "shipment_id")
     private long id;
 
-    @Column(name = "SHIPMENT_TYPE")
+    @Column(name = "shipment_type")
     @Enumerated(EnumType.STRING)
     private ShipmentType shipmentType;
 
-    @Column(name = "DELIVERY_STATUS")
+    @Column(name = "delivery_status")
     @Enumerated(EnumType.STRING)
     private DeliveryStatus deliveryStatus;
 
-    @Column(name = "SENDER_NAME")
+    @Column(name = "sender_name")
     private String senderName;
 
-    @Column(name = "SENDER_EMAIL")
+    @Column(name = "sender_email")
     private String senderEmail;
 
-    @Column(name = "SENDER_PHONE_NUMBER")
+    @Column(name = "sender_phone_number")
     private String senderPhoneNumber;
 
-    @Column(name = "PAYMENT_SNAPSHOT_SHIPPING_ADDRESS_ID")
+    @Column(name = "payment_snapshot_shipping_address_id")
     private long paymentSnapShotShippingAddressId;
-    @Column(name = "INVOICE_NO")
+    @Column(name = "invoice_no")
     private String invoiceNo;
 
-    @Column(name = "COMPANY_CODE")
+    @Column(name = "company_code")
     @Enumerated(EnumType.STRING)
     private ShipmentCompanyCode companyCode;
 
-    @Column(name = "DELIVERY_DATE")
+    @Column(name = "delivery_date")
     private LocalDateTime deliveryDate;
 
     @OneToOne(fetch = FetchType.LAZY)

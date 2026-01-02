@@ -13,13 +13,13 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "ORDER_SNAPSHOT_PRODUCT_DELIVERY")
+@Table(name = "order_snapshot_product_delivery")
 @Entity
 public class OrderSnapShotProductDelivery extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ORDER_SNAPSHOT_PRODUCT_DELIVERY_ID")
+    @Column(name = "order_snapshot_product_delivery_id")
     private long id;
 
     @Embedded
@@ -27,7 +27,7 @@ public class OrderSnapShotProductDelivery extends BaseEntity {
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ORDER_ID")
+    @JoinColumn(name = "order_id")
     private Order order;
 
 

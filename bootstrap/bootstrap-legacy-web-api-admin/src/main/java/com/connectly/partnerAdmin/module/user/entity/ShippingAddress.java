@@ -15,13 +15,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-@Table(name = "SHIPPING_ADDRESS")
+@Table(name = "shipping_address")
 @Entity
 public class ShippingAddress extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "SHIPPING_ADDRESS_ID")
+    @Column(name = "shipping_address_id")
     private long id;
 
     @Embedded
@@ -31,7 +31,7 @@ public class ShippingAddress extends BaseEntity {
     private Yn defaultYn;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "user_id")
     private Users users;
 
     public void setUsers(Users users) {

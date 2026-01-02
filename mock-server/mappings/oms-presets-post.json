@@ -5,14 +5,7 @@
   },
   "response": {
     "status": 201,
-    "jsonBody": {
-      "success": true,
-      "message": "프리셋이 성공적으로 등록되었습니다.",
-      "data": {
-        "id": 1005,
-        "createdAt": "2025-12-17"
-      }
-    },
+    "bodyFileName": "responses/presets-create.json",
     "headers": {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*"

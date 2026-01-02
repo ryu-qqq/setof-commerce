@@ -13,13 +13,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
-@Table(name = "VIEW_EXTENSION")
+@Table(name = "view_extension")
 @Entity
 public class ViewExtension extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "VIEW_EXTENSION_ID")
+    @Column(name = "view_extension_id")
     private long id;
     @Embedded
     private ViewExtensionDetails viewExtensionDetails;

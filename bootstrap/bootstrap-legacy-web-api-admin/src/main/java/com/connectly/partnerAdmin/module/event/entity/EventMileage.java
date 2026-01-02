@@ -12,29 +12,29 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "EVENT_MILEAGE")
+@Table(name = "event_mileage")
 @Entity
 public class EventMileage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "EVENT_MILEAGE_ID")
+    @Column(name = "event_mileage_id")
     private long id;
 
-    @Column(name = "EVENT_ID")
+    @Column(name = "event_id")
     private long eventId;
 
-    @Column(name = "MILEAGE_TYPE")
+    @Column(name = "mileage_type")
     @Enumerated(EnumType.STRING)
     private MileageIssueType mileageType;
 
-    @Column(name = "MILEAGE_RATE")
+    @Column(name = "mileage_rate")
     private double mileageRate;
 
-    @Column(name = "MILEAGE_AMOUNT")
+    @Column(name = "mileage_amount")
     private double mileageAmount;
 
-    @Column(name = "EXPIRATION_DATE")
+    @Column(name = "expiration_date")
     private int expirationDate;
 
 }

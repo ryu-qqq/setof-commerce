@@ -23,17 +23,17 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
-@Table(name = "OPTION_DETAIL")
+@Table(name = "option_detail")
 @Entity
 public class OptionDetail extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "OPTION_DETAIL_ID")
+    @Column(name = "option_detail_id")
     private long id;
 
     @Setter
-    @Column(name = "OPTION_VALUE")
+    @Column(name = "option_value")
     private String optionValue;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

@@ -19,16 +19,16 @@ import java.util.Optional;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "QNA_ANSWER")
+@Table(name = "qna_answer")
 @Entity
 public class QnaAnswer extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "QNA_ANSWER_ID")
+    @Column(name = "qna_answer_id")
     private long id;
 
-    @Column(name = "QNA_WRITER_TYPE")
+    @Column(name = "qna_writer_type")
     @Enumerated(EnumType.STRING)
     private QnaWriterType qnaWriterType;
 

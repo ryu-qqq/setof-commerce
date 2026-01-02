@@ -16,46 +16,46 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Getter
 @Entity
-@Table(name = "PAYMENT_BILL")
+@Table(name = "payment_bill")
 public class PaymentBill extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PAYMENT_BILL_ID")
+    @Column(name = "payment_bill_id")
     private long id;
 
-    @Column(name = "PAYMENT_AMOUNT")
+    @Column(name = "payment_amount")
     private BigDecimal paymentAmount;
 
     
-    @Column(name = "USED_MILEAGE_AMOUNT")
+    @Column(name = "used_mileage_amount")
     private BigDecimal usedMileageAmount;
 
     @Setter
     @Embedded
     private BuyerInfo buyerInfo;
 
-    @Column(name = "PAYMENT_AGENCY_ID")
+    @Column(name = "payment_agency_id")
     private String paymentAgencyId;
 
-    @Column(name = "PAYMENT_UNIQUE_ID")
+    @Column(name = "payment_unique_id")
     private String paymentUniqueId;
 
-    @Column(name = "RECEIPT_URL")
+    @Column(name = "receipt_url")
     private String receiptUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "PAYMENT_CHANNEL")
+    @Column(name = "payment_channel")
     private PaymentChannel paymentChannel;
 
-    @Column(name = "CARD_NAME")
+    @Column(name = "card_name")
     private String cardName;
 
-    @Column(name = "CARD_NUMBER")
+    @Column(name = "card_number")
     private String cardNumber;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PAYMENT_ID")
+    @JoinColumn(name = "payment_id")
     private Payment payment;
 
     @Setter
@@ -63,7 +63,7 @@ public class PaymentBill extends BaseEntity {
     @JoinColumn(name = "PAYMENT_METHOD_ID", nullable = false)
     private PaymentMethod paymentMethod;
 
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long userId;
 
 

@@ -26,26 +26,26 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
-@Table(name = "EXTERNAL_PRODUCT")
+@Table(name = "external_product")
 @Entity
 public class ExternalProduct extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "EXTERNAL_PRODUCT_ID")
+    @Column(name = "external_product_id")
     private long id;
 
-    @Column(name = "SITE_ID")
+    @Column(name = "site_id")
     private long siteId;
 
     @Setter
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long productGroupId;
 
-    @Column(name = "EXTERNAL_IDX")
+    @Column(name = "external_idx")
     private String externalIdx;
 
-    @Column(name = "MAPPING_STATUS")
+    @Column(name = "mapping_status")
     @Enumerated(EnumType.STRING)
     private MappingStatus mappingStatus;
 

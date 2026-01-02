@@ -11,21 +11,21 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "TAB")
+@Table(name = "tab")
 @Entity
 public class Tab extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "TAB_ID")
+    @Column(name = "tab_id")
     private long id;
 
-    @Column(name = "TAB_NAME")
+    @Column(name = "tab_name")
     private String tabName;
 
-    @Column(name = "DISPLAY_ORDER")
+    @Column(name = "display_order")
     private int displayOrder;
-    @Column(name = "TAB_COMPONENT_ID")
+    @Column(name = "tab_component_id")
     private long tabComponentId;
 
 

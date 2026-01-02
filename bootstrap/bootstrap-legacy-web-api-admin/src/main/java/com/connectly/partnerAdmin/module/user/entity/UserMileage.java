@@ -16,21 +16,21 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "USER_MILEAGE")
+@Table(name = "user_mileage")
 @Entity
 public class UserMileage extends BaseEntity {
     @Id
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long id;
 
     @Setter
     
-    @Column(name = "CURRENT_MILEAGE")
+    @Column(name = "current_mileage")
     private BigDecimal currentMileage;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "user_id")
     private Users users;
 
     @OneToMany(mappedBy = "userMileage", orphanRemoval = true, fetch = FetchType.LAZY)

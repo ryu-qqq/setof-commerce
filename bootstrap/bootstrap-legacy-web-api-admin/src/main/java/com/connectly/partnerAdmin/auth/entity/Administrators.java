@@ -10,13 +10,13 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "ADMINISTRATORS")
+@Table(name = "administrators")
 @Entity
 public class Administrators extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ADMIN_ID")
+    @Column(name = "admin_id")
     private long id;
 
     @Column(name = "PASSWORD_HASH", length = 60, nullable = false)
@@ -34,11 +34,11 @@ public class Administrators extends BaseEntity {
     @Column(name = "REFRESH_TOKEN", length = 256)
     private String refreshToken;
 
-    @Column(name = "SELLER_ID")
+    @Column(name = "seller_id")
     private long sellerId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "APPROVAL_STATUS")
+    @Column(name = "approval_status")
     private ApprovalStatus approvalStatus;
 
 

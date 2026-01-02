@@ -15,21 +15,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-@Table(name = "PRODUCT_STOCK")
+@Table(name = "product_stock")
 @Entity
 public class ProductStock extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PRODUCT_ID")
+    @Column(name = "product_id")
     private long id;
 
-    @Column(name = "STOCK_QUANTITY")
+    @Column(name = "stock_quantity")
     private int stockQuantity;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "PRODUCT_ID")
+    @JoinColumn(name = "product_id")
     private Product product;
 
     public ProductStock(long id, int stockQuantity) {

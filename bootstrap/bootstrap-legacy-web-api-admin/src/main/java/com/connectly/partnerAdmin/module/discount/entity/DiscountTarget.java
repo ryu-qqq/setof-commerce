@@ -15,27 +15,27 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "DISCOUNT_TARGET")
+@Table(name = "discount_target")
 @Entity
 public class DiscountTarget extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "DISCOUNT_TARGET_ID")
+    @Column(name = "discount_target_id")
     private long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "ISSUE_TYPE")
+    @Column(name = "issue_type")
     private IssueType issueType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "ACTIVE_YN")
+    @Column(name = "active_yn")
     private Yn activeYn;
 
-    @Column(name = "TARGET_ID")
+    @Column(name = "target_id")
     private long targetId;
 
-    @Column(name = "DISCOUNT_POLICY_ID")
+    @Column(name = "discount_policy_id")
     private long discountPolicyId;
 
     @OneToMany(mappedBy = "discountTarget", cascade = CascadeType.ALL, orphanRemoval = true)

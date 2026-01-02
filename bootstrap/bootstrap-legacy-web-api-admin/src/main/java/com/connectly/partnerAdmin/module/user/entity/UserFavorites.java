@@ -11,17 +11,17 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "USER_FAVORITES")
+@Table(name = "user_favorites")
 @Entity
 public class UserFavorites extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "FAVORITE_ID")
+    @Column(name = "favorite_id")
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "user_id")
     private Users users;
 
     @ManyToOne(fetch = FetchType.LAZY)

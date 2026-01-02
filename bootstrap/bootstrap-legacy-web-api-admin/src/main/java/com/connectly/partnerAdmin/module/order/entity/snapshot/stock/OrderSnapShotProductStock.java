@@ -11,26 +11,26 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "ORDER_SNAPSHOT_PRODUCT_STOCK")
+@Table(name = "order_snapshot_product_stock")
 @Entity
 public class OrderSnapShotProductStock extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ORDER_SNAPSHOT_PRODUCT_STOCK_ID")
+    @Column(name = "order_snapshot_product_stock_id")
     private long id;
 
-    @Column(name = "PRODUCT_ID")
+    @Column(name = "product_id")
     private long productId;
 
-    @Column(name = "STOCK_QUANTITY")
+    @Column(name = "stock_quantity")
     private int stockQuantity;
 
-    @Column(name = "PRODUCT_STOCK_ID")
+    @Column(name = "product_stock_id")
     private Long productStockId;
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ORDER_ID")
+    @JoinColumn(name = "order_id")
     private Order order;
 
 }

@@ -12,16 +12,16 @@ import jakarta.persistence.*;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "EVENT")
+@Table(name = "event")
 @Entity
 public class Event extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "EVENT_ID")
+    @Column(name = "event_id")
     private long id;
 
-    @Column(name = "EVENT_TYPE")
+    @Column(name = "event_type")
     @Enumerated(EnumType.STRING)
     private EventType eventType;
 

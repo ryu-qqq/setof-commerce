@@ -13,13 +13,13 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "DISCOUNT_TARGET_HISTORY")
+@Table(name = "discount_target_history")
 @Entity
 public class DiscountTargetHistory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "DISCOUNT_TARGET_HISTORY_ID")
+    @Column(name = "discount_target_history_id")
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,14 +27,14 @@ public class DiscountTargetHistory extends BaseEntity {
     private DiscountTarget discountTarget;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "ISSUE_TYPE")
+    @Column(name = "issue_type")
     private IssueType issueType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "ACTIVE_YN")
+    @Column(name = "active_yn")
     private Yn activeYn;
 
-    @Column(name = "TARGET_ID")
+    @Column(name = "target_id")
     private long targetId;
 
 

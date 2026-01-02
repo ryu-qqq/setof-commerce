@@ -5,13 +5,7 @@
   },
   "response": {
     "status": 200,
-    "jsonBody": {
-      "success": true,
-      "message": "선택한 프리셋이 삭제되었습니다.",
-      "data": {
-        "deletedCount": 1
-      }
-    },
+    "bodyFileName": "responses/presets-delete.json",
     "headers": {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*"

@@ -10,16 +10,16 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "AUTH_GROUP")
+@Table(name = "auth_group")
 @Entity
 public class AuthGroup extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "AUTH_GROUP_ID")
+    @Column(name = "auth_group_id")
     private long id;
 
-    @Column(name = "AUTH_GROUP_TYPE")
+    @Column(name = "auth_group_type")
     @Enumerated(EnumType.STRING)
     private RoleType authGroupType;
 

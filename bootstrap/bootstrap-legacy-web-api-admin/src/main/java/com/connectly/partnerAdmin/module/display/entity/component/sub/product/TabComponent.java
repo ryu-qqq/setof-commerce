@@ -11,20 +11,20 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "TAB_COMPONENT")
+@Table(name = "tab_component")
 @Entity
 public class TabComponent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "TAB_COMPONENT_ID")
+    @Column(name = "tab_component_id")
     private long id;
 
-    @Column(name = "STICKY_YN")
+    @Column(name = "sticky_yn")
     @Enumerated(EnumType.STRING)
     private Yn stickyYn;
 
-    @Column(name = "TAB_MOVING_TYPE")
+    @Column(name = "tab_moving_type")
     @Enumerated(EnumType.STRING)
     private TabMovingType tabMovingType;
 
@@ -32,7 +32,7 @@ public class TabComponent extends BaseEntity {
     @JoinColumn(name = "COMPONENT_ID", referencedColumnName = "COMPONENT_ID")
     private Component component;
 
-    @Column(name = "DISPLAY_ORDER")
+    @Column(name = "display_order")
     private int displayOrder;
 
 

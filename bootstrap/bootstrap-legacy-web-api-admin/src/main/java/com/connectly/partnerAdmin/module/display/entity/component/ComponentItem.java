@@ -10,25 +10,25 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "COMPONENT_ITEM")
+@Table(name = "component_item")
 @Entity
 public class ComponentItem extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "COMPONENT_ITEM_ID")
+    @Column(name = "component_item_id")
     private long id;
 
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long productGroupId;
 
-    @Column(name = "PRODUCT_DISPLAY_NAME")
+    @Column(name = "product_display_name")
     private String productDisplayName;
 
-    @Column(name = "PRODUCT_DISPLAY_IMAGE")
+    @Column(name = "product_display_image")
     private String productDisplayImage;
 
-    @Column(name = "DISPLAY_ORDER")
+    @Column(name = "display_order")
     private int displayOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)

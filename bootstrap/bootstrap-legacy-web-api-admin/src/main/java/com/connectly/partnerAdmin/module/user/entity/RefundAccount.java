@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "REFUND_ACCOUNT")
+@Table(name = "refund_account")
 @Entity
 public class RefundAccount extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "REFUND_ACCOUNT_ID")
+    @Column(name = "refund_account_id")
     private long id;
 
     @Column(name = "BANK_NAME", length = 30, nullable = false)

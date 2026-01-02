@@ -33,45 +33,45 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "ORDERS")
+@Table(name = "orders")
 @Entity
 public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ORDER_ID")
+    @Column(name = "order_id")
     private long id;
 
     
-    @Column(name = "ORDER_AMOUNT")
+    @Column(name = "order_amount")
     private BigDecimal orderAmount;
 
-    @Column(name = "ORDER_STATUS")
+    @Column(name = "order_status")
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
     @Setter
-    @Column(name = "PURCHASE_CONFIRMED_DATE")
+    @Column(name = "purchase_confirmed_date")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime purchaseConfirmedDate;
 
-    @Column(name = "QUANTITY")
+    @Column(name = "quantity")
     private int quantity;
 
-    @Column(name = "REVIEW_YN")
+    @Column(name = "review_yn")
     @Enumerated(EnumType.STRING)
     private Yn reviewYn;
 
-    @Column(name = "USER_ID")
+    @Column(name = "user_id")
     private long userId;
 
-    @Column(name = "SELLER_ID")
+    @Column(name = "seller_id")
     private long sellerId;
 
-    @Column(name = "PRODUCT_ID")
+    @Column(name = "product_id")
     private long productId;
 
-    @Column(name = "SETTLEMENT_DATE")
+    @Column(name = "settlement_date")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime settlementDate;
 

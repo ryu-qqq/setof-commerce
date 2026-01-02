@@ -11,16 +11,16 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "TEXT_COMPONENT")
+@Table(name = "text_component")
 @Entity
 public class TextComponent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "TEXT_COMPONENT_ID")
+    @Column(name = "text_component_id")
     private long id;
 
-    @Column(name = "CONTENT")
+    @Column(name = "content")
     private String content;
 
     @OneToOne(fetch = FetchType.LAZY)

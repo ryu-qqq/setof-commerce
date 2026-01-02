@@ -9,19 +9,19 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "PRODUCT_RATING_STATS")
+@Table(name = "product_rating_stats")
 @Entity
 public class ProductRatingStats extends BaseEntity {
 
     @Id
-    @Column(name = "PRODUCT_GROUP_ID")
+    @Column(name = "product_group_id")
     private long id;
     private double averageRating;
     private long reviewCount;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "PRODUCT_GROUP_ID")
+    @JoinColumn(name = "product_group_id")
     private ProductGroup productGroup;
 
     public ProductRatingStats(double averageRating, long reviewCount) {

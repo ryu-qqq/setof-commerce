@@ -8,7 +8,7 @@ import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "SELLER_SITE_RELATION")
+@Table(name = "seller_site_relation")
 @Getter
 @Entity
 @Builder
@@ -16,7 +16,7 @@ public class SellerSiteRelation extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "SELLER_SITE_RELATION_ID")
+    @Column(name = "seller_site_relation_id")
     private long id;
 
     @Column(name = "SELLER_ID", nullable = false)

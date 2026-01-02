@@ -12,20 +12,20 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table(name = "USER_GRADE")
+@Table(name = "user_grade")
 @Entity
 public class UserGrade extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "USER_GRADE_ID")
+    @Column(name = "user_grade_id")
     private long id;
 
-    @Column(name = "GRADE_NAME")
+    @Column(name = "grade_name")
     @Enumerated(EnumType.STRING)
     private UserGradeEnum gradeName;
 
-    @Column(name = "MILEAGE_RATE")
+    @Column(name = "mileage_rate")
     private double mileageRate;
 
     private UserGrade(long id, UserGradeEnum gradeName) {

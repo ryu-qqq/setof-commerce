@@ -13,33 +13,33 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "QNA_IMAGE")
+@Table(name = "qna_image")
 @Entity
 public class QnaImage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "QNA_IMAGE_ID")
+    @Column(name = "qna_image_id")
     private long id;
 
     @Enumerated(EnumType.STRING)
     private QnaIssueType qnaIssueType;
 
     @Setter
-    @Column(name = "IMAGE_URL")
+    @Column(name = "image_url")
     private String imageUrl;
 
     @Setter
-    @Column(name = "DISPLAY_ORDER")
+    @Column(name = "display_order")
     private int displayOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "QNA_ID")
+    @JoinColumn(name = "qna_id")
     @JsonBackReference
     private Qna qna;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "QNA_ANSWER_ID")
+    @JoinColumn(name = "qna_answer_id")
     private QnaAnswer qnaAnswer;
 
 

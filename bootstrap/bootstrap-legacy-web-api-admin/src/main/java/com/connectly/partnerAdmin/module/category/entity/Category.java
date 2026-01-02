@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "CATEGORY")
+@Table(name = "category")
 @Entity
 public class Category extends BaseEntity {
 
     @Id
-    @Column(name = "CATEGORY_ID")
+    @Column(name = "category_id")
     private long id;
 
     @Column(name = "CATEGORY_NAME", length = 50, nullable = false)

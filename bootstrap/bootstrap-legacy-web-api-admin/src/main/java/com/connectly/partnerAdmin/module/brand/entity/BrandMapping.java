@@ -11,13 +11,13 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
-@Table(name = "BRAND_MAPPING")
+@Table(name = "brand_mapping")
 @Entity
 public class BrandMapping  extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "BRAND_MAPPING_ID")
+    @Column(name = "brand_mapping_id")
     private long id;
 
     private long siteId;

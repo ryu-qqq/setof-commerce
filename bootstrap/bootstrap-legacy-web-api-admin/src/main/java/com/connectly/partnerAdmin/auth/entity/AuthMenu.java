@@ -11,16 +11,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @IdClass(AuthMenuId.class)
-@Table(name = "AUTH_MENU")
+@Table(name = "auth_menu")
 @Entity
 public class AuthMenu extends BaseEntity {
 
     @Id
-    @Column(name = "AUTH_GROUP_ID")
+    @Column(name = "auth_group_id")
     private long authGroupId;
 
     @Id
-    @Column(name = "MENU_ID")
+    @Column(name = "menu_id")
     private long menuId;
 
     @Column(name = "ACCESS_TYPE", length = 20)

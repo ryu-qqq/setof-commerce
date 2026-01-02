@@ -12,23 +12,23 @@ import jakarta.persistence.*;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "MESSAGE_QUEUE")
+@Table(name = "message_queue")
 @Entity
 public class MessageQueue extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MESSAGE_ID")
+    @Column(name = "message_id")
     private long id;
 
-    @Column(name = "TEMPLATE_CODE")
+    @Column(name = "template_code")
     @Enumerated(EnumType.STRING)
     private AlimTalkTemplateCode templateCode;
 
-    @Column(name = "PARAMETERS")
+    @Column(name = "parameters")
     private String parameters;
 
-    @Column(name = "STATUS")
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private MessageStatus status;
 

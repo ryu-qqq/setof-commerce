@@ -12,14 +12,14 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "SELLER")
+@Table(name = "seller")
 @Entity
 public class Seller extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.PRIVATE)
-    @Column(name = "SELLER_ID")
+    @Column(name = "seller_id")
     private long id;
     private String sellerName;
     private String sellerLogoUrl;

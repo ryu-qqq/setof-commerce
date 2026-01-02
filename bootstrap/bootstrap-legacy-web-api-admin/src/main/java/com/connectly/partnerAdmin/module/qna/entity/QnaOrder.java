@@ -12,13 +12,13 @@ import jakarta.persistence.*;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "QNA_ORDER")
+@Table(name = "qna_order")
 @Entity
 public class QnaOrder extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "QNA_ORDER_ID")
+    @Column(name = "qna_order_id")
     private long id;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -26,7 +26,7 @@ public class QnaOrder extends BaseEntity {
     @JsonBackReference
     private Qna qna;
 
-    @Column(name = "ORDER_ID")
+    @Column(name = "order_id")
     private long orderId;
 
 

@@ -12,19 +12,19 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "BLANK_COMPONENT")
+@Table(name = "blank_component")
 @Entity
 public class BlankComponent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "BLANK_COMPONENT_ID")
+    @Column(name = "blank_component_id")
     private long id;
 
-    @Column(name = "HEIGHT")
+    @Column(name = "height")
     private double height;
 
-    @Column(name = "LINE_YN")
+    @Column(name = "line_yn")
     @Enumerated(EnumType.STRING)
     private Yn lineYn;
 

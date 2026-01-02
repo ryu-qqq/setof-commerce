@@ -13,23 +13,23 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "COMPONENT_TARGET")
+@Table(name = "component_target")
 @Entity
 public class ComponentTarget extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "COMPONENT_TARGET_ID")
+    @Column(name = "component_target_id")
     private long id;
 
-    @Column(name = "SORT_TYPE")
+    @Column(name = "sort_type")
     @Enumerated(EnumType.STRING)
     private SortType sortType;
 
-    @Column(name = "TAB_ID")
+    @Column(name = "tab_id")
     private long tabId;
 
-    @Column(name = "COMPONENT_ID")
+    @Column(name = "component_id")
     private long componentId;
 
     @OneToMany(mappedBy = "componentTarget", cascade = CascadeType.ALL, orphanRemoval = true)

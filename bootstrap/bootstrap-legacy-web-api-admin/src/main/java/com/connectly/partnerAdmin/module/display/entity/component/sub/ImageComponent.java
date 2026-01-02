@@ -10,16 +10,16 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Builder
-@Table(name = "IMAGE_COMPONENT")
+@Table(name = "image_component")
 @Entity
 public class ImageComponent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IMAGE_COMPONENT_ID")
+    @Column(name = "image_component_id")
     private long id;
     @Enumerated(EnumType.STRING)
-    @Column(name = "IMAGE_TYPE")
+    @Column(name = "image_type")
     private ImageType imageType;
 
     @OneToOne(fetch = FetchType.LAZY)

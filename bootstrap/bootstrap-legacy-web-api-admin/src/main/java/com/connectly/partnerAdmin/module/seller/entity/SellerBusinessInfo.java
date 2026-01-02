@@ -10,12 +10,12 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @Getter
-@Table(name = "SELLER_BUSINESS_INFO")
+@Table(name = "seller_business_info")
 @Entity
 public class SellerBusinessInfo extends BaseEntity {
 
     @Id
-    @Column(name = "SELLER_ID")
+    @Column(name = "seller_id")
     private long id;
     private String registrationNumber;
     private String companyName;

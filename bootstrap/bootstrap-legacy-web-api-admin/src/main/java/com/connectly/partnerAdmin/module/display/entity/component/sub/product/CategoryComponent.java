@@ -12,16 +12,16 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "CATEGORY_COMPONENT")
+@Table(name = "category_component")
 @Entity
 public class CategoryComponent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CATEGORY_COMPONENT_ID")
+    @Column(name = "category_component_id")
     private long id;
 
-    @Column(name = "CATEGORY_ID")
+    @Column(name = "category_id")
     private long categoryId;
 
     @OneToOne(fetch = FetchType.LAZY)
