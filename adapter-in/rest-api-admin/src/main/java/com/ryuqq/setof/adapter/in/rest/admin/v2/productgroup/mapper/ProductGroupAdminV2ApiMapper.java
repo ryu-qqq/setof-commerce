@@ -99,7 +99,7 @@ public class ProductGroupAdminV2ApiMapper {
     }
 
     /**
-     * 검색 요청을 Query로 변환
+     * 검색 요청을 Query로 변환 (command 패키지)
      *
      * @param request API 요청
      * @return Application Query
@@ -113,6 +113,27 @@ public class ProductGroupAdminV2ApiMapper {
                 request.status(),
                 request.pageOrDefault(),
                 request.sizeOrDefault());
+    }
+
+    /**
+     * 검색 요청을 Query로 변환 (query 패키지 - Nested Record)
+     *
+     * @param request API 요청 (Nested Record)
+     * @return Application Query
+     */
+    public ProductGroupSearchQuery toSearchQuery(
+            com.ryuqq.setof.adapter.in.rest.admin.v2.productgroup.dto.query
+                            .ProductGroupSearchV2ApiRequest
+                    request) {
+        var filter = request.filter();
+        return new ProductGroupSearchQuery(
+                filter.sellerId(),
+                filter.categoryId(),
+                filter.brandId(),
+                filter.name(),
+                filter.status(),
+                request.pageNumber(),
+                request.pageSize());
     }
 
     // ========== Private Helper Methods ==========

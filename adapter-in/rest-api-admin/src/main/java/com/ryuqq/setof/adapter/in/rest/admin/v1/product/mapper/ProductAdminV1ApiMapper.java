@@ -1,9 +1,11 @@
 package com.ryuqq.setof.adapter.in.rest.admin.v1.product.mapper;
 
 import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.command.CreateOptionV1ApiRequest;
+import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.command.CreatePriceV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.command.CreateProductGroupV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.command.CreateProductImageV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.command.CreateProductNoticeV1ApiRequest;
+import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.command.UpdatePriceContextV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.command.UpdateProductGroupV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.command.UpdateProductStockV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.product.dto.query.ProductGroupFilterV1ApiRequest;
@@ -25,6 +27,7 @@ import com.ryuqq.setof.application.product.dto.command.ProductNoticeCommandDto;
 import com.ryuqq.setof.application.product.dto.command.ProductSkuCommandDto;
 import com.ryuqq.setof.application.product.dto.command.RegisterFullProductCommand;
 import com.ryuqq.setof.application.product.dto.command.UpdateProductGroupCommand;
+import com.ryuqq.setof.application.product.dto.command.UpdateProductPriceCommand;
 import com.ryuqq.setof.application.product.dto.query.ProductGroupSearchQuery;
 import com.ryuqq.setof.application.product.dto.response.FullProductResponse;
 import com.ryuqq.setof.application.product.dto.response.ProductGroupResponse;
@@ -443,5 +446,55 @@ public class ProductAdminV1ApiMapper {
                 null,
                 null,
                 null);
+    }
+
+    /**
+     * V1 단건 가격 수정 요청을 Application Command로 변환
+     *
+     * @param productGroupId 상품그룹 ID
+     * @param sellerId 셀러 ID
+     * @param request V1 가격 생성 요청
+     * @return UpdateProductPriceCommand
+     */
+    public UpdateProductPriceCommand toUpdatePriceCommand(
+            long productGroupId, Long sellerId, CreatePriceV1ApiRequest request) {
+        return new UpdateProductPriceCommand(
+                productGroupId, sellerId, request.regularPrice(), request.currentPrice());
+    }
+
+    /**
+     * V1 일괄 가격 수정 요청을 Application Command 목록으로 변환
+     *
+     * @param request V1 가격 일괄 수정 요청
+     * @return UpdateProductPriceCommand 목록
+     */
+    public List<UpdateProductPriceCommand> toUpdatePriceCommands(
+            UpdatePriceContextV1ApiRequest request) {
+        if (request.priceCommands() == null || request.priceCommands().isEmpty()) {
+            return Collections.emptyList();
+        }
+        return request.priceCommands().stream()
+                .map(
+                        cmd ->
+                                new UpdateProductPriceCommand(
+                                        cmd.productGroupId(),
+                                        null,
+                                        cmd.regularPrice(),
+                                        cmd.currentPrice()))
+                .toList();
+    }
+
+    /**
+     * V1 카테고리 수정 요청을 Application Command로 변환
+     *
+     * @param productGroupId 상품그룹 ID
+     * @param sellerId 셀러 ID
+     * @param categoryId 카테고리 ID
+     * @return UpdateProductGroupCommand
+     */
+    public UpdateProductGroupCommand toUpdateCategoryCommand(
+            long productGroupId, Long sellerId, Long categoryId) {
+        return new UpdateProductGroupCommand(
+                productGroupId, sellerId, categoryId, null, null, null, null, null, null);
     }
 }

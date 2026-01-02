@@ -3,7 +3,6 @@ package com.ryuqq.setof.adapter.in.rest.admin.v1.productnotice.mapper;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.productnotice.dto.command.CreateProductNoticeV1ApiRequest;
 import com.ryuqq.setof.application.productnotice.dto.command.NoticeItemDto;
 import com.ryuqq.setof.application.productnotice.dto.command.UpdateProductNoticeCommand;
-import com.ryuqq.setof.domain.productnotice.vo.ProductNoticeId;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -43,6 +42,6 @@ public class ProductNoticeAdminV1ApiMapper {
         items.add(new NoticeItemDto("assuranceStandard", request.assuranceStandard(), 8));
         items.add(new NoticeItemDto("asPhone", request.asPhone(), 9));
 
-        return new UpdateProductNoticeCommand(ProductNoticeId.of(productNoticeId), items);
+        return new UpdateProductNoticeCommand(productNoticeId, items);
     }
 }

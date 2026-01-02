@@ -12,7 +12,6 @@ import com.ryuqq.setof.application.productimage.dto.command.UpdateProductImageCo
 import com.ryuqq.setof.application.productimage.dto.response.ProductImageResponse;
 import com.ryuqq.setof.application.productimage.port.in.command.UpdateProductImageUseCase;
 import com.ryuqq.setof.application.productimage.port.in.query.GetProductImageUseCase;
-import com.ryuqq.setof.domain.product.vo.ProductGroupId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -70,7 +69,7 @@ public class ProductImageAdminV1Controller {
             @Valid @RequestBody List<CreateProductImageV1ApiRequest> createProductImages) {
 
         List<ProductImageResponse> existingImages =
-                getProductImageUseCase.getByProductGroupId(ProductGroupId.of(productGroupId));
+                getProductImageUseCase.getByProductGroupId(productGroupId);
         List<Long> existingImageIds =
                 existingImages.stream().map(ProductImageResponse::id).toList();
 
@@ -92,7 +91,7 @@ public class ProductImageAdminV1Controller {
 
         ProductDescriptionResponse existingDescription =
                 getProductDescriptionUseCase
-                        .findByProductGroupId(ProductGroupId.of(productGroupId))
+                        .findByProductGroupId(productGroupId)
                         .orElseThrow(
                                 () ->
                                         new IllegalArgumentException(

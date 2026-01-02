@@ -105,12 +105,20 @@ public final class ApiV2Paths {
 
         // ===== 상대 경로 (Controller용) =====
         public static final String ID_PATH = "/{sellerId}";
+        public static final String APPROVE_PATH = "/{sellerId}/approve";
+        public static final String REJECT_PATH = "/{sellerId}/reject";
+        public static final String SUSPEND_PATH = "/{sellerId}/suspend";
+        public static final String DELETE_PATH = "/{sellerId}/delete";
 
         // ===== 전체 경로 (SecurityPaths용) =====
         public static final String LIST = BASE;
         public static final String DETAIL = BASE + ID_PATH;
         public static final String REGISTER = BASE;
         public static final String UPDATE = BASE + ID_PATH;
+        public static final String APPROVE = BASE + APPROVE_PATH;
+        public static final String REJECT = BASE + REJECT_PATH;
+        public static final String SUSPEND = BASE + SUSPEND_PATH;
+        public static final String DELETE = BASE + DELETE_PATH;
 
         private Sellers() {}
     }
@@ -254,11 +262,12 @@ public final class ApiV2Paths {
 
         // ===== 상대 경로 (Controller용) =====
         public static final String ID_PATH = "/{imageId}";
+        public static final String DELETE_PATH = "/{imageId}/delete";
 
         // ===== 전체 경로 (SecurityPaths용) =====
         public static final String LIST = BASE;
         public static final String UPDATE = BASE + ID_PATH;
-        public static final String DELETE = BASE + ID_PATH;
+        public static final String DELETE = BASE + DELETE_PATH;
 
         private ProductImages() {}
     }

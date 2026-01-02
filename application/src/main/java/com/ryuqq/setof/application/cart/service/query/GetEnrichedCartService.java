@@ -20,7 +20,6 @@ import com.ryuqq.setof.application.productimage.port.in.query.GetProductImageUse
 import com.ryuqq.setof.application.productstock.port.out.query.ProductStockQueryPort;
 import com.ryuqq.setof.application.seller.dto.response.SellerResponse;
 import com.ryuqq.setof.application.seller.port.in.query.GetSellerUseCase;
-import com.ryuqq.setof.domain.product.vo.ProductGroupId;
 import com.ryuqq.setof.domain.productstock.aggregate.ProductStock;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -177,8 +176,7 @@ public class GetEnrichedCartService implements GetEnrichedCartUseCase {
         for (Long productGroupId : productGroupIds) {
             try {
                 List<ProductImageResponse> images =
-                        getProductImageUseCase.getByProductGroupId(
-                                ProductGroupId.of(productGroupId));
+                        getProductImageUseCase.getByProductGroupId(productGroupId);
                 images.stream()
                         .filter(img -> MAIN_IMAGE_TYPE.equals(img.imageType()))
                         .findFirst()

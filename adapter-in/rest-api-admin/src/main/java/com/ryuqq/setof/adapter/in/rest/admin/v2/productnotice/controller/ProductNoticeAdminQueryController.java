@@ -5,7 +5,6 @@ import com.ryuqq.setof.adapter.in.rest.admin.common.dto.ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.productnotice.dto.response.ProductNoticeV2ApiResponse;
 import com.ryuqq.setof.application.productnotice.dto.response.ProductNoticeResponse;
 import com.ryuqq.setof.application.productnotice.port.in.query.GetProductNoticeUseCase;
-import com.ryuqq.setof.domain.product.vo.ProductGroupId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -67,7 +66,7 @@ public class ProductNoticeAdminQueryController {
 
         ProductNoticeResponse response =
                 getProductNoticeUseCase
-                        .findByProductGroupId(ProductGroupId.of(productGroupId))
+                        .findByProductGroupId(productGroupId)
                         .orElseThrow(
                                 () ->
                                         new IllegalArgumentException(

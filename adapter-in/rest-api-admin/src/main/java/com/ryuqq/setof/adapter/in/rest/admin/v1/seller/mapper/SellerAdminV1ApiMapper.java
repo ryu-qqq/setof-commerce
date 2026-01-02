@@ -1,6 +1,5 @@
 package com.ryuqq.setof.adapter.in.rest.admin.v1.seller.mapper;
 
-import com.ryuqq.setof.adapter.in.rest.admin.auth.context.SecurityContextHolder;
 import com.ryuqq.setof.adapter.in.rest.admin.common.v1.dto.V1PageResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.seller.dto.command.SellerApprovalStatusV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.seller.dto.command.SellerInfoContextV1ApiRequest;
@@ -42,17 +41,12 @@ public class SellerAdminV1ApiMapper {
      * @return RegisterSellerCommand
      */
     public RegisterSellerCommand toRegisterCommand(SellerInfoContextV1ApiRequest request) {
-        String tenantId = SecurityContextHolder.getCurrentTenantId();
-        String organizationId = SecurityContextHolder.getCurrentOrganizationId();
-
         SellerInfoContextV1ApiRequest.SellerInfoInsertV1ApiRequest sellerInfo =
                 request.sellerInfo();
         SellerInfoContextV1ApiRequest.SellerBusinessInfoV1ApiRequest businessInfo =
                 request.sellerBusinessInfo();
 
         return new RegisterSellerCommand(
-                tenantId,
-                organizationId,
                 sellerInfo.sellerName(),
                 sellerInfo.sellerLogoUrl(),
                 sellerInfo.sellerDescription(),

@@ -4,8 +4,6 @@ import com.ryuqq.setof.adapter.in.rest.admin.v1.productimage.dto.command.CreateP
 import com.ryuqq.setof.adapter.in.rest.admin.v1.productimage.dto.command.UpdateProductDescriptionV1ApiRequest;
 import com.ryuqq.setof.application.productdescription.dto.command.UpdateProductDescriptionCommand;
 import com.ryuqq.setof.application.productimage.dto.command.UpdateProductImageCommand;
-import com.ryuqq.setof.domain.productdescription.vo.ProductDescriptionId;
-import com.ryuqq.setof.domain.productimage.vo.ProductImageId;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -32,9 +30,7 @@ public class ProductImageAdminV1ApiMapper {
             Long productDescriptionId, UpdateProductDescriptionV1ApiRequest request) {
 
         return new UpdateProductDescriptionCommand(
-                ProductDescriptionId.of(productDescriptionId),
-                request.detailDescription(),
-                Collections.emptyList());
+                productDescriptionId, request.detailDescription(), Collections.emptyList());
     }
 
     /**
@@ -62,9 +58,6 @@ public class ProductImageAdminV1ApiMapper {
             Long imageId, CreateProductImageV1ApiRequest request, int displayOrder) {
 
         return new UpdateProductImageCommand(
-                ProductImageId.of(imageId),
-                request.productImageType(),
-                request.imageUrl(),
-                displayOrder);
+                imageId, request.productImageType(), request.imageUrl(), displayOrder);
     }
 }

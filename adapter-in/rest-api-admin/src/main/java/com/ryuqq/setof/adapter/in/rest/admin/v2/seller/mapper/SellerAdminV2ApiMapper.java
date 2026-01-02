@@ -80,4 +80,11 @@ public class SellerAdminV2ApiMapper {
             String sellerName, String approvalStatus, int page, int size) {
         return new SellerSearchQuery(sellerName, approvalStatus, page, size);
     }
+
+    public SellerSearchQuery toSearchQuery(
+            com.ryuqq.setof.adapter.in.rest.admin.v2.seller.dto.query.SellerSearchV2ApiRequest
+                    request) {
+        return new SellerSearchQuery(
+                request.sellerName(), request.approvalStatus(), request.page(), request.size());
+    }
 }

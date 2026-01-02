@@ -6,7 +6,6 @@ import com.ryuqq.setof.adapter.in.rest.admin.v2.productimage.dto.response.Produc
 import com.ryuqq.setof.adapter.in.rest.admin.v2.productimage.dto.response.ProductImageV2ApiResponse;
 import com.ryuqq.setof.application.productimage.dto.response.ProductImageResponse;
 import com.ryuqq.setof.application.productimage.port.in.query.GetProductImageUseCase;
-import com.ryuqq.setof.domain.product.vo.ProductGroupId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -61,7 +60,7 @@ public class ProductImageAdminQueryController {
             @Parameter(description = "상품그룹 ID") @PathVariable Long productGroupId) {
 
         List<ProductImageResponse> responses =
-                getProductImageUseCase.getByProductGroupId(ProductGroupId.of(productGroupId));
+                getProductImageUseCase.getByProductGroupId(productGroupId);
 
         List<ProductImageV2ApiResponse> items =
                 responses.stream().map(ProductImageV2ApiResponse::from).toList();
