@@ -5,9 +5,20 @@ import static com.setof.connectly.module.category.entity.QCategory.category;
 import static com.setof.connectly.module.product.entity.group.QProductGroup.productGroup;
 
 import com.querydsl.core.group.GroupBy;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.sql.JPASQLQuery;
+import com.querydsl.sql.SQLExpressions;
+import com.querydsl.sql.SQLTemplates;
+import com.querydsl.sql.Union;
 import com.setof.connectly.module.category.dto.CategoryDisplayDto;
+import com.setof.connectly.module.category.dto.QCategoryDisplayDto;
+import com.setof.connectly.module.category.entity.Category;
+import com.setof.connectly.module.category.entity.QCategory;
 import com.setof.connectly.module.category.enums.TargetGroup;
 import com.setof.connectly.module.product.dto.cateogry.CategoryDto;
 import com.setof.connectly.module.product.dto.cateogry.ProductCategoryDto;
@@ -80,34 +91,45 @@ public class CategoryFindRepositoryImpl implements CategoryFindRepository {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<CategoryDisplayDto> fetchChildrenCategories(long categoryId) {
-        String sql = """
-            WITH RECURSIVE sub (category_id, category_name, parent_category_id, category_depth) AS (
-                SELECT c.category_id, c.category_name, c.parent_category_id, c.category_depth
-                FROM category c
-                WHERE c.category_id = :categoryId
-                UNION ALL
-                SELECT c.category_id, c.category_name, c.parent_category_id, c.category_depth
-                FROM sub
-                INNER JOIN category c ON sub.category_id = c.parent_category_id
-            )
-            SELECT sub.category_id, sub.category_name, sub.parent_category_id, sub.category_depth
-            FROM sub
-            ORDER BY sub.category_depth DESC
-            """;
+        JPASQLQuery<Category> q = new JPASQLQuery<>(em, SQLTemplates.DEFAULT);
+        QCategory c = new QCategory("c");
+        QCategory sub = new QCategory("sub");
+        EntityPathBase<QCategory> rec = new EntityPathBase<>(QCategory.class, "sub");
 
-        List<Object[]> results = em.createNativeQuery(sql)
-                .setParameter("categoryId", categoryId)
-                .getResultList();
+        JPQLQuery<Category> query1 =
+                JPAExpressions.select(
+                                Projections.fields(
+                                        Category.class,
+                                        c.id,
+                                        c.categoryName,
+                                        c.parentCategoryId,
+                                        c.categoryDepth))
+                        .from(c)
+                        .where(c.id.eq(categoryId));
 
-        return results.stream()
-                .map(row -> new CategoryDisplayDto(
-                        ((Number) row[0]).longValue(),
-                        (String) row[1],
-                        ((Number) row[2]).longValue(),
-                        ((Number) row[3]).intValue()))
-                .toList();
+        JPQLQuery<Category> query2 =
+                JPAExpressions.select(
+                                Projections.fields(
+                                        Category.class,
+                                        c.id,
+                                        c.categoryName,
+                                        c.parentCategoryId,
+                                        c.categoryDepth))
+                        .from(rec)
+                        .innerJoin(c)
+                        .on(sub.id.eq(c.parentCategoryId));
+
+        Union<Category> union = SQLExpressions.unionAll(query1, query2);
+
+        return q.withRecursive(rec, c.id, c.categoryName, c.parentCategoryId, c.categoryDepth)
+                .as(union)
+                .select(
+                        new QCategoryDisplayDto(
+                                sub.id, sub.categoryName, sub.parentCategoryId, sub.categoryDepth))
+                .from(rec)
+                .orderBy(sub.categoryDepth.desc())
+                .fetch();
     }
 
     @Override
