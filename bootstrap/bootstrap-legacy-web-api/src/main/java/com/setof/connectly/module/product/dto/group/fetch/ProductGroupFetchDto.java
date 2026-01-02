@@ -126,7 +126,9 @@ public class ProductGroupFetchDto implements DiscountOffer {
     @Override
     public void setShareRatio(double shareRatio) {}
 
-    /** 분리된 쿼리 결과를 조합하기 위한 생성자 (쿼리 최적화용) */
+    /**
+     * 분리된 쿼리 결과를 조합하기 위한 생성자 (쿼리 최적화용)
+     */
     public ProductGroupFetchDto(
             long productGroupId,
             String productGroupName,

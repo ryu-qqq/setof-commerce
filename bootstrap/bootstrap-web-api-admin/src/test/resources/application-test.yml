@@ -1,0 +1,133 @@
+# ============================================================
+# Admin Integration Test Configuration
+# ============================================================
+# H2 Database with MySQL Compatibility Mode
+# Security configured for admin testing
+# Flyway disabled (H2 schema auto-generation)
+# ============================================================
+
+server:
+  port: 0  # Random port for parallel test execution
+
+spring:
+  application:
+    name: setof-commerce-admin-integration-test
+
+  # ============================================================
+  # H2 Database Configuration (MySQL Compatibility Mode)
+  # ============================================================
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:admindb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    username: sa
+    password:
+
+  # ============================================================
+  # JPA Configuration
+  # ============================================================
+  jpa:
+    hibernate:
+      # Auto schema generation for H2
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        # H2 Dialect for MySQL Mode
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+    show-sql: true
+    open-in-view: false
+
+  # ============================================================
+  # Flyway Disabled (H2 uses JPA ddl-auto)
+  # ============================================================
+  flyway:
+    enabled: false
+
+  # ============================================================
+  # Jackson Configuration
+  # ============================================================
+  jackson:
+    date-format: yyyy-MM-dd'T'HH:mm:ss
+    time-zone: Asia/Seoul
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+      FAIL_ON_EMPTY_BEANS: false
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: false
+    default-property-inclusion: non_null
+
+  # ============================================================
+  # Security Configuration (Testing Mode)
+  # ============================================================
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: test-kakao-client-id
+            client-secret: test-kakao-client-secret
+
+# ============================================================
+# Security Properties (Admin Testing Mode)
+# ============================================================
+security:
+  service-token:
+    enabled: true
+    secret: test-service-token-secret-for-admin-integration-testing-256-bits-minimum
+
+  jwt:
+    secret: test-jwt-secret-key-for-admin-integration-testing-must-be-at-least-256-bits
+    access-token-expiration: 3600
+    refresh-token-expiration: 604800
+
+  cookie:
+    domain: localhost
+    secure: false
+    same-site: lax
+
+  cors:
+    allowed-origins:
+      - http://localhost:*
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - "*"
+    allow-credentials: true
+
+  # Admin endpoints require authentication
+  public-endpoints:
+    - pattern: /api/v2/admin/auth/login
+    - pattern: /api/v2/admin/health
+    - pattern: /actuator/**
+
+# ============================================================
+# API Documentation (Disabled for Testing)
+# ============================================================
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+# ============================================================
+# Actuator (Disabled for Testing)
+# ============================================================
+management:
+  endpoints:
+    enabled-by-default: false
+
+# ============================================================
+# Logging Configuration
+# ============================================================
+logging:
+  level:
+    root: INFO
+    com.ryuqq.setof: DEBUG
+    org.springframework.test: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE

@@ -1,0 +1,77 @@
+=== Category Admin API (Legacy V1)
+
+[WARNING]
+====
+이 API는 레거시 호환을 위해 유지됩니다. 신규 개발 시 V2 API 사용을 권장합니다.
+
+- V2 엔드포인트: `/api/v2/admin/categories`
+====
+
+==== 권한
+
+[cols="1,2"]
+|===
+| 권한 레벨 | 설명
+
+| 🔐 **orgAdminOrHigher**
+| 조직 관리자 이상 권한 필요
+|===
+
+==== V1 vs V2 차이점
+
+[cols="1,2,2"]
+|===
+| 항목 | V1 (Legacy) | V2 (권장)
+
+| 경로
+| `/api/v1/categories`
+| `/api/v2/admin/categories`
+
+| 조회 방식
+| 트리 구조
+| 플랫 + 트리 모두 지원
+
+| 응답 래퍼
+| V1ApiResponse
+| ApiResponse
+|===
+
+==== 하위 카테고리 조회
+
+`GET /api/v1/categories/{categoryId}`
+
+특정 카테고리의 모든 하위 카테고리를 조회합니다. Recursive CTE를 사용하여 모든 깊이의 하위 카테고리를 한 번에 조회합니다.
+
+===== Request
+
+include::{snippets}/v1/admin-category-children/http-request.adoc[]
+
+===== Path Parameters
+
+include::{snippets}/v1/admin-category-children/path-parameters.adoc[]
+
+===== Response
+
+include::{snippets}/v1/admin-category-children/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/v1/admin-category-children/response-fields.adoc[]
+
+==== 전체 카테고리 트리 조회
+
+`GET /api/v1/categories`
+
+전체 카테고리를 트리 구조로 조회합니다.
+
+===== Request
+
+include::{snippets}/v1/admin-category-tree/http-request.adoc[]
+
+===== Response
+
+include::{snippets}/v1/admin-category-tree/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/v1/admin-category-tree/response-fields.adoc[]

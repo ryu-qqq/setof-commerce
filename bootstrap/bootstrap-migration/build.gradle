@@ -1,0 +1,88 @@
+// ========================================
+// Bootstrap: Migration Application
+// ========================================
+// 레거시 DB에서 신규 DB로 데이터 마이그레이션
+// Bounded Context 별 마이그레이션 서비스 제공
+// Strangler Fig 패턴 지원
+// NO Lombok allowed
+// ========================================
+
+import java.time.Instant
+
+plugins {
+    id 'java'
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+dependencies {
+    // ========================================
+    // Core Modules
+    // ========================================
+    implementation project(':domain')
+    implementation project(':application')
+
+    // ========================================
+    // Adapters (신규 DB 접근용)
+    // ========================================
+    implementation project(':adapter-out:persistence-mysql')
+
+    // ========================================
+    // Spring Boot Starters
+    // ========================================
+    implementation libs.spring.boot.starter.web
+    implementation libs.spring.boot.starter.data.jpa
+    implementation libs.spring.boot.starter.validation
+    implementation libs.spring.boot.starter.actuator
+
+    // Configuration Processing
+    annotationProcessor libs.spring.boot.configuration.processor
+
+    // UUID v7 생성
+    implementation libs.uuid.creator
+
+    // ========================================
+    // Database
+    // ========================================
+    runtimeOnly libs.mysql.connector
+
+    // ========================================
+    // Logging
+    // ========================================
+    implementation libs.logstash.logback.encoder
+
+    // ========================================
+    // Test Dependencies
+    // ========================================
+    testImplementation libs.spring.boot.starter.test
+    testImplementation libs.testcontainers.mysql
+    testImplementation libs.testcontainers.junit
+}
+
+// ========================================
+// Spring Boot Configuration
+// ========================================
+tasks.bootJar {
+    archiveFileName = "${project.rootProject.name}-migration.jar"
+
+    manifest {
+        attributes(
+            'Implementation-Title': "${project.rootProject.name}-migration",
+            'Implementation-Version': project.version,
+            'Built-By': System.getProperty('user.name'),
+            'Built-JDK': System.getProperty('java.version'),
+            'Build-Timestamp': Instant.now().toString()
+        )
+    }
+}
+
+// ========================================
+// Application Run Configuration
+// ========================================
+tasks.bootRun {
+    jvmArgs = [
+        '-Xms256m',
+        '-Xmx512m',
+        '-XX:+UseG1GC'
+    ]
+}

@@ -1,0 +1,29 @@
+package com.connectly.partnerAdmin.module.display.entity.component.sub;
+
+import com.connectly.partnerAdmin.module.common.entity.BaseEntity;
+import com.connectly.partnerAdmin.module.display.entity.component.Component;
+import com.connectly.partnerAdmin.module.display.enums.ImageType;
+import jakarta.persistence.*;
+import lombok.*;
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Getter
+@Builder
+@Table(name = "IMAGE_COMPONENT")
+@Entity
+public class ImageComponent extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "IMAGE_COMPONENT_ID")
+    private long id;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "IMAGE_TYPE")
+    private ImageType imageType;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "COMPONENT_ID", referencedColumnName = "COMPONENT_ID")
+    private Component component;
+
+}

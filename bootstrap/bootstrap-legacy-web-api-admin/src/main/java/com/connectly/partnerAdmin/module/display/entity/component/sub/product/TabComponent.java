@@ -1,0 +1,39 @@
+package com.connectly.partnerAdmin.module.display.entity.component.sub.product;
+
+import com.connectly.partnerAdmin.module.common.entity.BaseEntity;
+import com.connectly.partnerAdmin.module.common.enums.Yn;
+import com.connectly.partnerAdmin.module.display.entity.component.Component;
+import com.connectly.partnerAdmin.module.display.enums.TabMovingType;
+import jakarta.persistence.*;
+import lombok.*;
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+@Getter
+@Table(name = "TAB_COMPONENT")
+@Entity
+public class TabComponent extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "TAB_COMPONENT_ID")
+    private long id;
+
+    @Column(name = "STICKY_YN")
+    @Enumerated(EnumType.STRING)
+    private Yn stickyYn;
+
+    @Column(name = "TAB_MOVING_TYPE")
+    @Enumerated(EnumType.STRING)
+    private TabMovingType tabMovingType;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "COMPONENT_ID", referencedColumnName = "COMPONENT_ID")
+    private Component component;
+
+    @Column(name = "DISPLAY_ORDER")
+    private int displayOrder;
+
+
+}

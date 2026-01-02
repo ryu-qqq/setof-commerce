@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: setof-migration
+
+  # Primary DataSource (신규 DB)
+  datasource:
+    url: jdbc:mysql://localhost:3306/setof?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: primary-pool
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+
+    # Legacy DataSource (레거시 DB)
+    legacy:
+      url: jdbc:mysql://localhost:3306/setof_legacy?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+      username: root
+      password: root
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+
+  # Flyway 비활성화 (마이그레이션 앱에서는 스키마 변경 안 함)
+  flyway:
+    enabled: false
+
+server:
+  port: 8082
+
+logging:
+  level:
+    com.ryuqq.setof.migration: INFO
+    org.springframework.jdbc: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

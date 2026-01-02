@@ -1,7 +1,15 @@
+// ========================================
+// Bootstrap: Legacy Web API Application
+// ========================================
+// Strangler Fig Pattern: 레거시 서버를 ECS로 이관
+// 점진적으로 새 아키텍처로 마이그레이션 예정
+// Lombok ALLOWED (레거시 코드)
+// ========================================
+
 plugins {
-    id 'org.springframework.boot'
-    id 'io.spring.dependency-management'
     id 'java'
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
 }
 
 group = 'com.setof'
@@ -19,13 +27,11 @@ configurations {
     }
 }
 
-def queryDslVersion = '5.0.0'
-
 repositories {
     mavenCentral()
-    maven { url 'https://repo.spring.io/milestone' }
-    maven { url 'https://repo.spring.io/snapshot' }
-    maven { url 'https://jitpack.io' }
+    maven { url = uri('https://repo.spring.io/milestone') }
+    maven { url = uri('https://repo.spring.io/snapshot') }
+    maven { url = uri('https://jitpack.io') }
 }
 
 dependencyManagement {
@@ -35,76 +41,106 @@ dependencyManagement {
 }
 
 dependencies {
-    // Spring Boot Starters
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // ========================================
+    // Spring Boot Starters (from libs)
+    // ========================================
+    implementation libs.spring.boot.starter.web
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation libs.spring.boot.starter.data.jpa
+    implementation libs.spring.boot.starter.security
+    implementation libs.spring.boot.starter.oauth2.client
+    implementation libs.spring.boot.starter.validation
+    implementation libs.spring.boot.starter.data.redis
+    implementation libs.spring.boot.starter.actuator
 
-    // Hibernate
+    // ========================================
+    // Legacy-only Dependencies (hardcoded)
+    // ========================================
+    // Hibernate (legacy version)
     implementation 'org.hibernate:hibernate-core:6.2.7.Final'
 
-    // Feign
+    // Feign (legacy)
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
-    // QueryDSL
-    implementation "com.querydsl:querydsl-sql:${queryDslVersion}"
-    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
-    annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
-    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
-    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+    // ========================================
+    // QueryDSL (from libs)
+    // ========================================
+    implementation(libs.querydsl.jpa) {
+        artifact {
+            classifier = 'jakarta'
+        }
+    }
+    implementation 'com.querydsl:querydsl-sql:5.1.0'
+    annotationProcessor(libs.querydsl.apt) {
+        artifact {
+            classifier = 'jakarta'
+        }
+    }
+    annotationProcessor libs.jakarta.persistence.api
 
-    // JWT
+    // ========================================
+    // JWT (legacy version - 0.11.5 API 호환)
+    // ========================================
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-    // Lombok
+    // ========================================
+    // Lombok (legacy only)
+    // ========================================
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
 
-    // MySQL
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    // ========================================
+    // Database (from libs)
+    // ========================================
+    runtimeOnly libs.mysql.connector
 
-    // AWS S3
-    implementation 'software.amazon.awssdk:s3:2.25.26'
+    // ========================================
+    // AWS SDK (from libs)
+    // ========================================
+    implementation platform(libs.aws.bom)
+    implementation libs.aws.s3
 
+    // ========================================
+    // Legacy-only Utilities
+    // ========================================
     // IBM ICU
     implementation 'com.ibm.icu:icu4j:51.1'
 
     // Jsoup
     implementation 'org.jsoup:jsoup:1.15.4'
-    implementation 'io.micrometer:micrometer-core'
 
     // PortOne (iamport)
     implementation 'com.github.iamport:iamport-rest-client-java:0.2.21'
 
-    // Logback + Janino (Spring Boot managed logback version)
-    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
-    implementation 'org.codehaus.janino:janino:3.1.12'
-
     // Slack
     implementation 'com.slack.api:bolt:1.28.0'
 
-    // Prometheus
-    implementation 'io.micrometer:micrometer-registry-prometheus'
+    // Logback - Spring Boot 관리 버전 사용, janino만 추가
+    implementation 'org.codehaus.janino:janino:3.1.12'
+    implementation 'org.codehaus.janino:commons-compiler:3.1.12'
 
-    // Test
-    testImplementation 'com.h2database:h2'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
+    // ========================================
+    // Observability (from libs)
+    // ========================================
+    implementation 'io.micrometer:micrometer-core'
+    implementation libs.micrometer.prometheus
+    implementation libs.logstash.logback.encoder
+
+    // ========================================
+    // Test Dependencies (from libs)
+    // ========================================
+    testImplementation libs.h2
+    testImplementation libs.spring.boot.starter.test
+    testImplementation libs.spring.security.test
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
-}
-
-// QueryDSL generated sources
+// ========================================
+// QueryDSL Generated Sources
+// ========================================
 def querydslDir = layout.buildDirectory.dir('generated/querydsl')
 
 tasks.withType(JavaCompile).configureEach {
@@ -123,4 +159,8 @@ tasks.named('clean') {
     doLast {
         delete querydslDir
     }
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
 }

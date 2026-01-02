@@ -1,0 +1,8 @@
+package com.connectly.partnerAdmin.module.external.service.qna;
+
+import com.connectly.partnerAdmin.module.external.core.ExMallQna;
+import com.connectly.partnerAdmin.module.external.entity.ExternalQna;
+
+public interface ExternalQnaRegistrationService {
+    <T extends ExMallQna> ExternalQna syncQna(T t);
+}

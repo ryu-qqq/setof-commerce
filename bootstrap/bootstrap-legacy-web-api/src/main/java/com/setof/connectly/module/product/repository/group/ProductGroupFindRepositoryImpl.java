@@ -36,6 +36,7 @@ import com.setof.connectly.module.product.dto.filter.ProductFilter;
 import com.setof.connectly.module.product.dto.group.ClothesDetailDto;
 import com.setof.connectly.module.product.dto.group.fetch.ProductFetchDto;
 import com.setof.connectly.module.product.dto.group.fetch.ProductGroupFetchDto;
+import com.setof.connectly.module.product.dto.group.fetch.ProductFetchDto;
 import com.setof.connectly.module.product.dto.group.fetch.QProductFetchDto;
 import com.setof.connectly.module.product.dto.image.ProductImageDto;
 import com.setof.connectly.module.product.dto.image.QProductImageDto;
@@ -48,6 +49,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import com.setof.connectly.module.product.dto.brand.BrandDto;
+import com.setof.connectly.module.product.dto.delivery.RefundNoticeDto;
+import com.setof.connectly.module.product.dto.group.ClothesDetailDto;
+import com.setof.connectly.module.product.dto.image.ProductImageDto;
+import com.setof.connectly.module.product.dto.notice.ProductNoticeDto;
+import com.setof.connectly.module.product.dto.review.ProductReviewDto;
+import com.setof.connectly.module.product.entity.delivery.embedded.DeliveryNotice;
+import com.setof.connectly.module.product.entity.group.embedded.Price;
+import com.setof.connectly.module.product.entity.group.embedded.ProductStatus;
+import com.setof.connectly.module.product.enums.option.OptionType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -83,58 +95,51 @@ public class ProductGroupFindRepositoryImpl extends AbstractComponentRepository
      * productGroupDetailDescription, productRatingStats (1:1 관계만)
      */
     private ProductGroupFetchDto fetchBasicInfo(long productGroupId) {
-        var tuple =
-                queryFactory
-                        .select(
-                                productGroup.id,
-                                productGroup.productGroupDetails.productGroupName,
-                                seller.id,
-                                seller.sellerName,
-                                brand.id,
-                                brand.brandName,
-                                category.id,
-                                category.path,
-                                productGroup.productGroupDetails.price,
-                                productGroup.productGroupDetails.optionType,
-                                productGroup.productGroupDetails.clothesDetailInfo.productCondition,
-                                productGroup.productGroupDetails.clothesDetailInfo.origin,
-                                productGroup.productGroupDetails.productStatus,
-                                productDelivery.deliveryNotice,
-                                productDelivery.refundNotice.returnMethodDomestic,
-                                productDelivery.refundNotice.returnCourierDomestic,
-                                productDelivery.refundNotice.returnChargeDomestic,
-                                productDelivery.refundNotice.returnExchangeAreaDomestic,
-                                productRatingStats.averageRating.coalesce(0.0),
-                                productRatingStats.reviewCount.coalesce(0L),
-                                productGroupDetailDescription.imageDetail.imageUrl,
-                                productNotice.id,
-                                productNotice.noticeDetail.material,
-                                productNotice.noticeDetail.color,
-                                productNotice.noticeDetail.size,
-                                productNotice.noticeDetail.maker,
-                                productNotice.noticeDetail.origin,
-                                productNotice.noticeDetail.washingMethod,
-                                productNotice.noticeDetail.yearMonth,
-                                productNotice.noticeDetail.assuranceStandard,
-                                productNotice.noticeDetail.asPhone)
-                        .from(productGroup)
-                        .innerJoin(seller)
-                        .on(seller.id.eq(productGroup.productGroupDetails.sellerId))
-                        .innerJoin(category)
-                        .on(category.id.eq(productGroup.productGroupDetails.categoryId))
-                        .innerJoin(brand)
-                        .on(brand.id.eq(productGroup.productGroupDetails.brandId))
-                        .innerJoin(productDelivery)
-                        .on(productDelivery.productGroup.id.eq(productGroup.id))
-                        .innerJoin(productNotice)
-                        .on(productNotice.productGroup.id.eq(productGroup.id))
-                        .innerJoin(productGroupDetailDescription)
-                        .on(productGroupDetailDescription.id.eq(productGroup.id))
-                        .on(productGroupDetailDescription.deleteYn.eq(Yn.N))
-                        .leftJoin(productRatingStats)
-                        .on(productRatingStats.id.eq(productGroup.id))
-                        .where(productGroupIdEq(productGroupId))
-                        .fetchOne();
+        var tuple = queryFactory
+                .select(
+                        productGroup.id,
+                        productGroup.productGroupDetails.productGroupName,
+                        seller.id,
+                        seller.sellerName,
+                        brand.id,
+                        brand.brandName,
+                        category.id,
+                        category.path,
+                        productGroup.productGroupDetails.price,
+                        productGroup.productGroupDetails.optionType,
+                        productGroup.productGroupDetails.clothesDetailInfo.productCondition,
+                        productGroup.productGroupDetails.clothesDetailInfo.origin,
+                        productGroup.productGroupDetails.productStatus,
+                        productDelivery.deliveryNotice,
+                        productDelivery.refundNotice.returnMethodDomestic,
+                        productDelivery.refundNotice.returnCourierDomestic,
+                        productDelivery.refundNotice.returnChargeDomestic,
+                        productDelivery.refundNotice.returnExchangeAreaDomestic,
+                        productRatingStats.averageRating.coalesce(0.0),
+                        productRatingStats.reviewCount.coalesce(0L),
+                        productGroupDetailDescription.imageDetail.imageUrl,
+                        productNotice.id,
+                        productNotice.noticeDetail.material,
+                        productNotice.noticeDetail.color,
+                        productNotice.noticeDetail.size,
+                        productNotice.noticeDetail.maker,
+                        productNotice.noticeDetail.origin,
+                        productNotice.noticeDetail.washingMethod,
+                        productNotice.noticeDetail.yearMonth,
+                        productNotice.noticeDetail.assuranceStandard,
+                        productNotice.noticeDetail.asPhone)
+                .from(productGroup)
+                .innerJoin(seller).on(seller.id.eq(productGroup.productGroupDetails.sellerId))
+                .innerJoin(category).on(category.id.eq(productGroup.productGroupDetails.categoryId))
+                .innerJoin(brand).on(brand.id.eq(productGroup.productGroupDetails.brandId))
+                .innerJoin(productDelivery).on(productDelivery.productGroup.id.eq(productGroup.id))
+                .innerJoin(productNotice).on(productNotice.productGroup.id.eq(productGroup.id))
+                .innerJoin(productGroupDetailDescription)
+                    .on(productGroupDetailDescription.id.eq(productGroup.id))
+                    .on(productGroupDetailDescription.deleteYn.eq(Yn.N))
+                .leftJoin(productRatingStats).on(productRatingStats.id.eq(productGroup.id))
+                .where(productGroupIdEq(productGroupId))
+                .fetchOne();
 
         if (tuple == null) {
             return null;
@@ -151,11 +156,7 @@ public class ProductGroupFindRepositoryImpl extends AbstractComponentRepository
                 tuple.get(productGroup.productGroupDetails.price),
                 tuple.get(productGroup.productGroupDetails.optionType),
                 new ClothesDetailDto(
-                        tuple.get(
-                                productGroup
-                                        .productGroupDetails
-                                        .clothesDetailInfo
-                                        .productCondition),
+                        tuple.get(productGroup.productGroupDetails.clothesDetailInfo.productCondition),
                         tuple.get(productGroup.productGroupDetails.clothesDetailInfo.origin)),
                 tuple.get(productGroup.productGroupDetails.productStatus),
                 tuple.get(productDelivery.deliveryNotice),
@@ -181,55 +182,51 @@ public class ProductGroupFindRepositoryImpl extends AbstractComponentRepository
                         tuple.get(productNotice.noticeDetail.asPhone)));
     }
 
-    /** 상품 목록 쿼리: product, productStock, productOption, optionGroup, optionDetail (1:N 관계) */
+    /**
+     * 상품 목록 쿼리: product, productStock, productOption, optionGroup, optionDetail (1:N 관계)
+     */
     private Set<ProductFetchDto> fetchProducts(long productGroupId) {
-        return new HashSet<>(
-                queryFactory
-                        .from(product)
-                        .innerJoin(productStock)
-                        .on(productStock.product.id.eq(product.id))
-                        .on(productStock.deleteYn.eq(Yn.N))
-                        .leftJoin(productOption)
-                        .on(productOption.product.id.eq(product.id))
-                        .on(productOption.deleteYn.eq(Yn.N))
-                        .leftJoin(optionGroup)
-                        .on(optionGroup.id.eq(productOption.optionGroup.id))
-                        .on(optionGroup.deleteYn.eq(Yn.N))
-                        .leftJoin(optionDetail)
-                        .on(optionDetail.id.eq(productOption.optionDetail.id))
-                        .on(optionDetail.deleteYn.eq(Yn.N))
-                        .where(
-                                product.productGroup.id.eq(productGroupId),
-                                product.deleteYn.eq(Yn.N))
-                        .transform(
-                                GroupBy.groupBy(product.id, optionDetail.id)
-                                        .list(
-                                                new QProductFetchDto(
-                                                        product.productGroup.id,
-                                                        product.id,
-                                                        productStock.stockQuantity,
-                                                        productOption.additionalPrice.coalesce(0L),
-                                                        product.productStatus,
-                                                        optionGroup.id.coalesce(0L),
-                                                        optionDetail.id.coalesce(0L),
-                                                        optionGroup.optionName,
-                                                        optionDetail.optionValue.coalesce("")))));
+        return new HashSet<>(queryFactory
+                .from(product)
+                .innerJoin(productStock).on(productStock.product.id.eq(product.id))
+                    .on(productStock.deleteYn.eq(Yn.N))
+                .leftJoin(productOption).on(productOption.product.id.eq(product.id))
+                    .on(productOption.deleteYn.eq(Yn.N))
+                .leftJoin(optionGroup).on(optionGroup.id.eq(productOption.optionGroup.id))
+                    .on(optionGroup.deleteYn.eq(Yn.N))
+                .leftJoin(optionDetail).on(optionDetail.id.eq(productOption.optionDetail.id))
+                    .on(optionDetail.deleteYn.eq(Yn.N))
+                .where(
+                        product.productGroup.id.eq(productGroupId),
+                        product.deleteYn.eq(Yn.N))
+                .transform(
+                        GroupBy.groupBy(product.id, optionDetail.id)
+                                .list(new QProductFetchDto(
+                                        product.productGroup.id,
+                                        product.id,
+                                        productStock.stockQuantity,
+                                        productOption.additionalPrice.coalesce(0L),
+                                        product.productStatus,
+                                        optionGroup.id.coalesce(0L),
+                                        optionDetail.id.coalesce(0L),
+                                        optionGroup.optionName,
+                                        optionDetail.optionValue.coalesce("")))));
     }
 
-    /** 이미지 목록 쿼리: productGroupImage (1:N 관계) */
+    /**
+     * 이미지 목록 쿼리: productGroupImage (1:N 관계)
+     */
     private Set<ProductImageDto> fetchImages(long productGroupId) {
-        return new HashSet<>(
-                queryFactory
-                        .select(
-                                new QProductImageDto(
-                                        productGroupImage.id,
-                                        productGroupImage.imageDetail.productGroupImageType,
-                                        productGroupImage.imageDetail.imageUrl))
-                        .from(productGroupImage)
-                        .where(
-                                productGroupImage.productGroup.id.eq(productGroupId),
-                                productGroupImage.deleteYn.eq(Yn.N))
-                        .fetch());
+        return new HashSet<>(queryFactory
+                .select(new QProductImageDto(
+                        productGroupImage.id,
+                        productGroupImage.imageDetail.productGroupImageType,
+                        productGroupImage.imageDetail.imageUrl))
+                .from(productGroupImage)
+                .where(
+                        productGroupImage.productGroup.id.eq(productGroupId),
+                        productGroupImage.deleteYn.eq(Yn.N))
+                .fetch());
     }
 
     @Override

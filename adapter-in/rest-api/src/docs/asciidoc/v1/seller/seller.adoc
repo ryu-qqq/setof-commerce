@@ -1,0 +1,38 @@
+=== Seller API (Legacy V1)
+
+[WARNING]
+====
+이 API는 레거시 호환을 위해 유지됩니다. 신규 개발 시 V2 API 사용을 권장합니다.
+====
+
+==== 권한
+
+[cols="1,2"]
+|===
+| 권한 레벨 | 설명
+
+| 🔓 **Public**
+| 인증 불필요
+|===
+
+==== 셀러 상세 조회
+
+`GET /api/v1/sellers/{sellerId}`
+
+셀러 ID로 상세 정보를 조회합니다.
+
+===== Request
+
+include::{snippets}/v1/seller-detail/http-request.adoc[]
+
+===== Path Parameters
+
+include::{snippets}/v1/seller-detail/path-parameters.adoc[]
+
+===== Response
+
+include::{snippets}/v1/seller-detail/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/v1/seller-detail/response-fields.adoc[]

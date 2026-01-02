@@ -1,0 +1,31 @@
+package com.connectly.partnerAdmin.module.order.entity.snapshot.option;
+
+import com.connectly.partnerAdmin.module.common.entity.BaseEntity;
+import com.connectly.partnerAdmin.module.order.entity.Order;
+import com.connectly.partnerAdmin.module.order.entity.snapshot.option.embedded.SnapShotProductOption;
+import jakarta.persistence.*;
+import lombok.*;
+
+
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
+@Getter
+@Table(name = "ORDER_SNAPSHOT_PRODUCT_OPTION")
+@Entity
+public class OrderSnapShotProductOption extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ORDER_SNAPSHOT_PRODUCT_OPTION_ID")
+    private long id;
+
+    @Embedded
+    private SnapShotProductOption snapShotProductOption;
+
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ORDER_ID")
+    private Order order;
+
+}

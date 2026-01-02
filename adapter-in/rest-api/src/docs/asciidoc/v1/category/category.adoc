@@ -1,0 +1,56 @@
+=== Category API (Legacy V1)
+
+[WARNING]
+====
+⚠️ **Deprecated API**: V2 API 사용을 권장합니다.
+
+- V2 엔드포인트: `/api/v2/categories`
+- V1은 하위 호환성을 위해 유지됩니다.
+====
+
+==== 권한
+
+[cols="1,2"]
+|===
+| 권한 레벨 | 설명
+
+| 🔓 **Public**
+| 인증 불필요
+|===
+
+==== V1 vs V2 차이점
+
+[cols="1,2,2"]
+|===
+| 항목 | V1 (Legacy) | V2 (권장)
+
+| 응답 형식
+| 중첩 트리 구조
+| 중첩 트리 구조
+
+| 인증
+| Public
+| Authenticated
+
+| 추가 엔드포인트
+| 트리만 제공
+| 단건/목록/트리/경로 제공
+
+| 응답 래퍼
+| V1ApiResponse
+| ApiResponse
+|===
+
+==== 카테고리 트리 조회
+
+===== Request
+
+include::{snippets}/v1/category-tree/http-request.adoc[]
+
+===== Response
+
+include::{snippets}/v1/category-tree/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/v1/category-tree/response-fields.adoc[]

@@ -90,8 +90,8 @@ public class TempSearchRepositoryImpl implements SearchRepository {
     }
 
     /**
-     * MySQL ngram FULLTEXT 인덱스를 사용한 검색 인덱스: ALTER TABLE product_group ADD FULLTEXT INDEX
-     * ft_product_group_name (product_group_name) WITH PARSER ngram;
+     * MySQL ngram FULLTEXT 인덱스를 사용한 검색
+     * 인덱스: ALTER TABLE product_group ADD FULLTEXT INDEX ft_product_group_name (product_group_name) WITH PARSER ngram;
      */
     private BooleanExpression fullTextSearch(String searchWord) {
         if (searchWord == null || searchWord.isBlank()) {

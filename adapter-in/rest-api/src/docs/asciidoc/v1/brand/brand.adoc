@@ -1,0 +1,78 @@
+=== Brand API (Legacy V1)
+
+[WARNING]
+====
+⚠️ **Deprecated API**: V2 API 사용을 권장합니다.
+
+- V2 엔드포인트: `/api/v2/brands`
+- V1은 하위 호환성을 위해 유지됩니다.
+====
+
+==== 권한
+
+[cols="1,2"]
+|===
+| 권한 레벨 | 설명
+
+| 🔓 **Public**
+| 인증 불필요
+|===
+
+==== V1 vs V2 차이점
+
+[cols="1,2,2"]
+|===
+| 항목 | V1 (Legacy) | V2 (권장)
+
+| 페이징
+| ❌ 미지원 (최대 1000건)
+| ✅ 지원
+
+| 응답 형식
+| List
+| PageResponse
+
+| 인증
+| Public
+| Authenticated
+
+| 응답 래퍼
+| V1ApiResponse
+| ApiResponse
+|===
+
+==== 브랜드 목록 조회
+
+===== Request
+
+include::{snippets}/v1/brand-list/http-request.adoc[]
+
+===== Query Parameters
+
+include::{snippets}/v1/brand-list/query-parameters.adoc[]
+
+===== Response
+
+include::{snippets}/v1/brand-list/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/v1/brand-list/response-fields.adoc[]
+
+==== 브랜드 단건 조회
+
+===== Request
+
+include::{snippets}/v1/brand-detail/http-request.adoc[]
+
+===== Path Parameters
+
+include::{snippets}/v1/brand-detail/path-parameters.adoc[]
+
+===== Response
+
+include::{snippets}/v1/brand-detail/http-response.adoc[]
+
+===== Response Fields
+
+include::{snippets}/v1/brand-detail/response-fields.adoc[]
