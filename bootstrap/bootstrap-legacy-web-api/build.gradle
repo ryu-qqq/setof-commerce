@@ -36,6 +36,8 @@ repositories {
 
 dependencyManagement {
     imports {
+        // Legacy 모듈만 Spring Boot 3.4.x 사용 (Spring Cloud 2024.0.0 호환)
+        mavenBom 'org.springframework.boot:spring-boot-dependencies:3.4.1'
         mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2024.0.0'
     }
 }
