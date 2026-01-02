@@ -20,7 +20,7 @@ public class CrawlProduct extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "crawl_product_id")
-    private long id;
+    private Long id;
 
     private Long productGroupId;
     private long crawlProductSku;

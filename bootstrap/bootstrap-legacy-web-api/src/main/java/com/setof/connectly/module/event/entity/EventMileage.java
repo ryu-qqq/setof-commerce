@@ -27,7 +27,7 @@ public class EventMileage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_mileage_id")
-    private long id;
+    private Long id;
 
     @Column(name = "event_id")
     private long eventId;

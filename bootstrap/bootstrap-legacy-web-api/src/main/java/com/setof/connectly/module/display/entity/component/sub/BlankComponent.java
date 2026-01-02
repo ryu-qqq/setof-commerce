@@ -23,7 +23,7 @@ public class BlankComponent extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "blank_component_id")
-    private long id;
+    private Long id;
 
     private double height;
 

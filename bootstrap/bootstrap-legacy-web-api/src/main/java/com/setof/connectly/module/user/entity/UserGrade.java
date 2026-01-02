@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class UserGrade extends BaseEntity {
     @Id
     @Column(name = "user_grade_id")
-    private long id;
+    private Long id;
 
     @Column(name = "grade_name")
     @Enumerated(EnumType.STRING)

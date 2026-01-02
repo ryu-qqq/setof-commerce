@@ -27,7 +27,7 @@ public class OrderHistory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_history_id")
-    private long id;
+    private Long id;
 
     @Column(name = "order_id")
     private long orderId;

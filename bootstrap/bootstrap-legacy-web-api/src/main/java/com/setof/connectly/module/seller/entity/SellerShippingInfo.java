@@ -28,7 +28,7 @@ public class SellerShippingInfo extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "seller_id")
-    private long id;
+    private Long id;
 
     private String returnAddressLine1;
     private String returnAddressLine2;

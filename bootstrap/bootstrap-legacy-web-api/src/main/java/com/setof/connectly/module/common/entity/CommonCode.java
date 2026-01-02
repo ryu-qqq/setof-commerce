@@ -20,7 +20,7 @@ public class CommonCode extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "code_id")
-    private long id;
+    private Long id;
 
     private long codeGroupId;
     private String codeDetail;

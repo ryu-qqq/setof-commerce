@@ -24,7 +24,7 @@ public class ProductOption extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_option_id")
-    private long id;
+    private Long id;
 
     private long additionalPrice;
 

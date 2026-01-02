@@ -29,7 +29,7 @@ public class MileageTransaction extends BaseEntity {
     @Id
     @Column(name = "mileage_transaction_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "mileage_id")
     private Long mileageId;

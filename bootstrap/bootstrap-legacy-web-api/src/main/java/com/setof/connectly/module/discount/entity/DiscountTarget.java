@@ -25,7 +25,7 @@ public class DiscountTarget extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "discount_target_id")
-    private long id;
+    private Long id;
 
     @Column(name = "discount_policy_id")
     private long discountPolicyId;

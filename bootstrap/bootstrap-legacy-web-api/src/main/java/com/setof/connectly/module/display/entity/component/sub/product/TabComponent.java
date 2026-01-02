@@ -28,7 +28,7 @@ public class TabComponent extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tab_component_id")
-    private long id;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     private Yn stickyYn;

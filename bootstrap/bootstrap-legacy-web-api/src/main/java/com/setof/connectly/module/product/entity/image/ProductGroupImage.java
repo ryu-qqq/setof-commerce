@@ -30,7 +30,7 @@ public class ProductGroupImage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_group_image_id")
-    private long id;
+    private Long id;
 
     @Embedded private ImageDetail imageDetail;
 

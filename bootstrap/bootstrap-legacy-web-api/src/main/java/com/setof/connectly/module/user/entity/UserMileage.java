@@ -25,7 +25,7 @@ public class UserMileage extends BaseEntity {
 
     @Id
     @Column(name = "user_id")
-    private long id;
+    private Long id;
 
     @Column(name = "current_mileage")
     private double currentMileage;

@@ -16,7 +16,7 @@ public class Brand extends BaseEntity {
 
     @Id
     @Column(name = "brand_id")
-    private long id;
+    private Long id;
 
     private String brandName;
     private String brandIconImageUrl;
@@ -52,7 +52,7 @@ public class Brand extends BaseEntity {
         this.displayYn = displayYn;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

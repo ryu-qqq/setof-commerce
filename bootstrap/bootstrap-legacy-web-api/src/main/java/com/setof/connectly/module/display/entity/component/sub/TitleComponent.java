@@ -22,7 +22,7 @@ public class TitleComponent extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "title_component_id")
-    private long id;
+    private Long id;
 
     @Embedded private TitleDetails titleDetails;
     private long componentId;

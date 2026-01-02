@@ -28,7 +28,7 @@ public class Mileage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mileage_id")
-    private long id;
+    private Long id;
 
     @Column(name = "user_id")
     private long userId;

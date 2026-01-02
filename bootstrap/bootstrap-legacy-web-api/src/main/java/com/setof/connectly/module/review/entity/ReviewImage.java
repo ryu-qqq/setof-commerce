@@ -27,7 +27,7 @@ public class ReviewImage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_image_id")
-    private long id;
+    private Long id;
 
     @Column(name = "review_id")
     private long reviewId;

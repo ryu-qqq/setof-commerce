@@ -27,7 +27,7 @@ public class OptionGroup extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "option_group_id")
-    private long id;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     private OptionName optionName;

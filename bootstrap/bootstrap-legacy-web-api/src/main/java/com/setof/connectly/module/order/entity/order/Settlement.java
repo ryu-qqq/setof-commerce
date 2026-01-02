@@ -27,7 +27,7 @@ public class Settlement extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "settlement_id")
-    private long id;
+    private Long id;
 
     @Column(name = "seller_commission_rate")
     private double sellerCommissionRate;

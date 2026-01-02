@@ -26,7 +26,7 @@ public class ComponentTarget extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "component_target_id")
-    private long id;
+    private Long id;
 
     @Column(name = "sort_type")
     @Enumerated(EnumType.STRING)

@@ -25,7 +25,7 @@ public class VBankAccount extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "vbank_account_id")
-    private long id;
+    private Long id;
 
     private long paymentId;
     private long userId;

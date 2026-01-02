@@ -26,7 +26,7 @@ public class ProductStock extends BaseEntity {
 
     @Id
     @Column(name = "product_id")
-    private long id;
+    private Long id;
 
     @Column(name = "stock_quantity")
     private int stockQuantity;

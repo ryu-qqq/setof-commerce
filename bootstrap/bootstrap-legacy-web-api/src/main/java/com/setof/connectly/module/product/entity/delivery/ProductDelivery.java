@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 public class ProductDelivery extends BaseEntity {
     @Id
     @Column(name = "product_group_id")
-    private long id;
+    private Long id;
 
     @Embedded private DeliveryNotice deliveryNotice;
     @Embedded private RefundNotice refundNotice;

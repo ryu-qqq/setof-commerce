@@ -25,7 +25,7 @@ public class QnaOrder extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "qna_order_id")
-    private long id;
+    private Long id;
 
     @Column(name = "qna_id")
     private long qnaId;

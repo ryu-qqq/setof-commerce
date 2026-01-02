@@ -27,7 +27,7 @@ public class ProductNotice extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_group_id")
-    private long id;
+    private Long id;
 
     @Embedded private NoticeDetail noticeDetail;
 

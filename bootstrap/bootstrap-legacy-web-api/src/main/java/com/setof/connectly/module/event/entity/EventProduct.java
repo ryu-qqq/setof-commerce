@@ -25,7 +25,7 @@ public class EventProduct extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_product_id")
-    private long id;
+    private Long id;
 
     @Column(name = "event_id")
     private long eventId;

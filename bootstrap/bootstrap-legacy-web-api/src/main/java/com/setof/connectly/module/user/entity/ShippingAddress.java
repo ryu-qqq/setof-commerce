@@ -27,7 +27,7 @@ public class ShippingAddress extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "shipping_address_id")
-    private long id;
+    private Long id;
 
     private long userId;
     @Embedded private ShippingDetails shippingDetails;

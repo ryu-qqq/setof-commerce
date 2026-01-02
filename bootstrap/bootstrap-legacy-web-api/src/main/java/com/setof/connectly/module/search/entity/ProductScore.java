@@ -22,7 +22,7 @@ public class ProductScore extends BaseEntity {
 
     @Id
     @Column(name = "product_group_id")
-    private long id;
+    private Long id;
 
     @Column(name = "score")
     private double score;

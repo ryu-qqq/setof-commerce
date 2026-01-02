@@ -26,7 +26,7 @@ public class PaymentSnapShotShippingAddress extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_snapshot_shipping_address_id")
-    private long id;
+    private Long id;
 
     @Column(name = "payment_id")
     private long paymentId;

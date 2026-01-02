@@ -28,7 +28,7 @@ public class QnaImage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "qna_image_id")
-    private long id;
+    private Long id;
     @Enumerated(EnumType.STRING)
     private QnaIssueType qnaIssueType;
 

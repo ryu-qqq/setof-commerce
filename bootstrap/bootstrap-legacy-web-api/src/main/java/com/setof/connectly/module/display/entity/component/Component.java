@@ -29,7 +29,7 @@ public class Component extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "component_id")
-    private long id;
+    private Long id;
 
     private long contentId;
 

@@ -24,7 +24,7 @@ public class BrandComponentItem extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "brand_component_item_id")
-    private long id;
+    private Long id;
 
     @Column(name = "brand_id")
     private long brandId;

@@ -28,7 +28,7 @@ public class OrderSnapShotProductGroupDetailDescription extends BaseEntity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_snapshot_product_group_detail_description_id")
-    private long id;
+    private Long id;
 
     @Column(name = "order_id")
     private long orderId;

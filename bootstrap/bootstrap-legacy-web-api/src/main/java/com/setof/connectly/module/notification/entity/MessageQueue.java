@@ -28,7 +28,7 @@ public class MessageQueue extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "message_id")
-    private long id;
+    private Long id;
 
     @Column(name = "template_code")
     @Enumerated(EnumType.STRING)

@@ -32,7 +32,7 @@ public class QnaAnswer extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "qna_answer_id")
-    private long id;
+    private Long id;
 
     @Column(name = "qna_id")
     private long qnaId;

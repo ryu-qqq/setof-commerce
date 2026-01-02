@@ -22,7 +22,7 @@ public class ViewExtension extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "view_extension_id")
-    private long id;
+    private Long id;
 
     @Embedded private ViewExtensionDetails viewExtensionDetails;
 }

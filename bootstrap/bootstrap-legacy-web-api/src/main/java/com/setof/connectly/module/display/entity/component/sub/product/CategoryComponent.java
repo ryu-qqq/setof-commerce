@@ -24,7 +24,7 @@ public class CategoryComponent extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_component_id")
-    private long id;
+    private Long id;
 
     private long categoryId;
 

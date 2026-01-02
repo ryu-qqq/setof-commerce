@@ -28,7 +28,7 @@ public class StockReservation extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stock_reservation_id")
-    private long id;
+    private Long id;
 
     @Column(name = "product_id")
     private long productId;

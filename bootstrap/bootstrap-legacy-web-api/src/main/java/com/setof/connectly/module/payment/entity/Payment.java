@@ -26,7 +26,7 @@ public class Payment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id")
-    private long id;
+    private Long id;
 
     @Embedded private PaymentDetails paymentDetails;
 

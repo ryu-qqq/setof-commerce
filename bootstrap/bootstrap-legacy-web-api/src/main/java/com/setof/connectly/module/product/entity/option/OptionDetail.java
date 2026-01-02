@@ -27,7 +27,7 @@ public class OptionDetail extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "option_detail_id")
-    private long id;
+    private Long id;
 
     private String optionValue;
 

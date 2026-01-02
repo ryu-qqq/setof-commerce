@@ -26,7 +26,7 @@ public class Banner extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "banner_id")
-    private long id;
+    private Long id;
 
     @Column(name = "title")
     private String title;

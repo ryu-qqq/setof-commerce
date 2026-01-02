@@ -24,7 +24,7 @@ public class BrandComponent extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "brand_component_id")
-    private long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COMPONENT_ID", referencedColumnName = "COMPONENT_ID")

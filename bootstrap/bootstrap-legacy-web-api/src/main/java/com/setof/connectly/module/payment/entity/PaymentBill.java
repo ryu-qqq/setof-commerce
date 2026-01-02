@@ -31,7 +31,7 @@ public class PaymentBill extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_bill_id")
-    private long id;
+    private Long id;
 
     @Column(name = "payment_id")
     private long paymentId;

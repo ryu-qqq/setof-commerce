@@ -17,7 +17,7 @@ public class Cart extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cart_id")
-    private long id;
+    private Long id;
 
     private long userId;
     @Embedded private CartDetails cartDetails;
@@ -29,7 +29,7 @@ public class Cart extends BaseEntity {
         this.cartDetails = cartDetails;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

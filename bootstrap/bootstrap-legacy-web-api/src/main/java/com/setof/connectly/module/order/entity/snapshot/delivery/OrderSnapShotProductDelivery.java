@@ -28,7 +28,7 @@ public class OrderSnapShotProductDelivery extends BaseEntity implements OrderSna
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_snapshot_product_delivery_id")
-    private long id;
+    private Long id;
 
     @Column(name = "order_id")
     private long orderId;

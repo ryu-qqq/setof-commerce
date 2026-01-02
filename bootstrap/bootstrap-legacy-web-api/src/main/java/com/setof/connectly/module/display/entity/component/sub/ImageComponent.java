@@ -23,7 +23,7 @@ public class ImageComponent extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "image_component_id")
-    private long id;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     private ImageType imageType;

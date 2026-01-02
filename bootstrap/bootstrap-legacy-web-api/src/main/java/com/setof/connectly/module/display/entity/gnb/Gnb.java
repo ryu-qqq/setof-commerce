@@ -26,7 +26,7 @@ public class Gnb extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "gnb_id")
-    private long id;
+    private Long id;
 
     @Embedded private GnbDetails gnbDetails;
 }

@@ -27,7 +27,7 @@ public class OrderSnapShotOptionDetail extends BaseEntity implements OrderSnapSh
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_snapshot_option_detail_id")
-    private long id;
+    private Long id;
 
     @Column(name = "order_id")
     private long orderId;

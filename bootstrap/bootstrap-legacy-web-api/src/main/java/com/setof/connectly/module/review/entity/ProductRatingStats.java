@@ -19,7 +19,7 @@ public class ProductRatingStats extends BaseEntity {
 
     @Id
     @Column(name = "product_group_id")
-    private long id;
+    private Long id;
 
     private double averageRating;
     private long reviewCount;

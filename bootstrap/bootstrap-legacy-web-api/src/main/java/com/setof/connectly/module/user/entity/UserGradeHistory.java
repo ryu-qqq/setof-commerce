@@ -17,7 +17,7 @@ public class UserGradeHistory extends BaseEntity {
 
     @Id
     @Column(name = "user_grade_history_id")
-    private long id;
+    private Long id;
 
     @Column(name = "user_id")
     private long userId;

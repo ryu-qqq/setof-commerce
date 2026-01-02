@@ -21,7 +21,7 @@ public class PaymentMethod extends BaseEntity {
 
     @Id
     @Column(name = "payment_method_id")
-    private long id;
+    private Long id;
 
     @Column(name = "payment_method")
     @Enumerated(EnumType.STRING)
