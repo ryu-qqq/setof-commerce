@@ -6,9 +6,10 @@ import java.util.List;
 import lombok.*;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class SearchFilter extends AbstractItemFilter {
     private String searchWord;
     private Long productGroupId;

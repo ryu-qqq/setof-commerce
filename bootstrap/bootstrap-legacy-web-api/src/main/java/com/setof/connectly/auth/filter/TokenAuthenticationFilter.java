@@ -33,9 +33,17 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private final AuthTokenProvider tokenProvider;
     private static final String ACCESS_TOKEN = "token";
     private static final String REFRESH_TOKEN = "refresh_token";
+    private static final String OAUTH2_CALLBACK_PATH = "/api/v1/login/oauth2/code/";
+    private static final String OAUTH2_AUTHORIZATION_PATH = "/api/v1/oauth2/authorization/";
 
     private final UserFindServiceImpl userFindService;
     private final RefreshTokenRedisService refreshTokenRedisService;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith(OAUTH2_CALLBACK_PATH) || path.startsWith(OAUTH2_AUTHORIZATION_PATH);
+    }
 
     @Override
     protected void doFilterInternal(
