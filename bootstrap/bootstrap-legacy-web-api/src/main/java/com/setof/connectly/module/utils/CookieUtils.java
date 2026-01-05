@@ -43,7 +43,7 @@ public class CookieUtils {
         response.addHeader(
                 "Set-Cookie",
                 String.format(
-                        "%s=%s; Path=/; Max-Age=%d; Secure; HttpOnly; SameSite=Strict%s",
+                        "%s=%s; Path=/; Max-Age=%d; Secure; HttpOnly; SameSite=Lax%s",
                         name, value, maxAge, domainAttribute));
     }
 

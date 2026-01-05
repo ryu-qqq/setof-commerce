@@ -7,10 +7,12 @@ import static com.setof.connectly.module.review.entity.QProductRatingStats.produ
 import static com.setof.connectly.module.search.entity.QProductScore.productScore;
 
 import com.querydsl.core.group.GroupBy;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.setof.connectly.module.common.enums.Yn;
+import com.setof.connectly.module.common.repository.AbstractCommonRepository;
 import com.setof.connectly.module.product.dto.ProductGroupThumbnail;
 import com.setof.connectly.module.product.dto.QProductGroupThumbnail;
 import com.setof.connectly.module.product.dto.brand.QBrandDto;
@@ -20,9 +22,9 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class TempSearchRepositoryImpl implements SearchRepository {
+public class TempSearchRepositoryImpl extends AbstractCommonRepository implements SearchRepository {
 
-    protected final JPAQueryFactory queryFactory;
+    private final JPAQueryFactory queryFactory;
 
     public TempSearchRepositoryImpl(JPAQueryFactory queryFactory) {
         this.queryFactory = queryFactory;
@@ -30,6 +32,11 @@ public class TempSearchRepositoryImpl implements SearchRepository {
 
     @Override
     public List<ProductGroupThumbnail> fetchResults(SearchFilter searchFilter, int size) {
+        List<OrderSpecifier<?>> orders =
+                createOrderSpecifiersFromPageable(productGroup, searchFilter.getOrderType());
+        BooleanExpression cursorCondition =
+                createDynamicWhereCondition(searchFilter, searchFilter.getOrderType());
+
         return queryFactory
                 .from(productGroup)
                 .innerJoin(productGroupImage)
@@ -44,8 +51,8 @@ public class TempSearchRepositoryImpl implements SearchRepository {
                 .on(productRatingStats.id.eq(productGroup.id))
                 .leftJoin(productScore)
                 .on(productScore.id.eq(productGroup.id))
-                .where(fullTextSearch(searchFilter.getSearchWord()))
-                .orderBy(productScore.score.coalesce(0.0).desc())
+                .where(fullTextSearch(searchFilter.getSearchWord()), cursorCondition)
+                .orderBy(orders.toArray(OrderSpecifier[]::new))
                 .limit(size)
                 .transform(
                         GroupBy.groupBy(productGroup.id)
