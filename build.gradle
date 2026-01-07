@@ -85,9 +85,13 @@ subprojects {
     // ========================================
     tasks.named('test') {
         useJUnitPlatform()
+    }
 
-        // Test Coverage Requirements
-        finalizedBy 'jacocoTestReport'
+    // JaCoCo 연동 (레거시 모듈 제외)
+    if (!isLegacyModule) {
+        tasks.named('test') {
+            finalizedBy 'jacocoTestReport'
+        }
     }
 
     // ========================================
