@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.connectly.partnerAdmin.module.coreServer.PreSignedUrlGenerateService;
-import com.connectly.partnerAdmin.module.coreServer.response.PreSignedUrlResponseDto;
 import com.connectly.partnerAdmin.module.image.dto.PreSignedUrlRequest;
 import com.connectly.partnerAdmin.module.image.dto.PreSignedUrlResponse;
 import com.connectly.partnerAdmin.module.image.dto.UploadCompleteRequest;
@@ -29,45 +27,21 @@ public class ImageController {
 
     private final ImageUploadService imageUploadService;
 
-    private final PreSignedUrlGenerateService preSignedUrlGenerateService;
-
     /**
-     * Presigned URL 발급.
-     *
-     * <p>클라이언트가 직접 S3에 업로드할 수 있는 Presigned URL을 발급합니다.
-     * 응답의 sessionId를 저장하여 업로드 완료 후 /image/complete 호출 시 사용합니다.
+     * Presigned URL 발급 - FileFlow 마이그레이션 후 재구현 예정
      */
     @PostMapping("/image/presigned")
     public ResponseEntity<ApiResponse<PreSignedUrlResponse>> getContent(
             @RequestBody @Validated PreSignedUrlRequest preSignedUrlRequest) {
-
-        PreSignedUrlResponseDto preSignedUrl = preSignedUrlGenerateService.getPreSignedUrl(
-            preSignedUrlRequest.getFileName(),
-            preSignedUrlRequest.getImagePath(),
-            preSignedUrlRequest.getFileSizeOrDefault()
-        );
-
-        PreSignedUrlResponse preSignedUrlResponse = PreSignedUrlResponse.builder()
-            .sessionId(preSignedUrl.sessionId())
-            .preSignedUrl(preSignedUrl.preSignedUrl())
-            .objectKey(preSignedUrl.objectKey())
-            .build();
-
-        return ResponseEntity.ok(ApiResponse.success(preSignedUrlResponse));
+        throw new UnsupportedOperationException("FileFlow 마이그레이션 진행 중 - 임시 비활성화");
     }
 
     /**
-     * 업로드 완료 처리.
-     *
-     * <p>클라이언트가 Presigned URL로 S3에 업로드를 완료한 후 호출합니다.
-     * S3 업로드 응답에서 받은 ETag 헤더 값을 함께 전달해야 합니다.
+     * 업로드 완료 처리 - FileFlow 마이그레이션 후 재구현 예정
      */
     @PostMapping("/image/complete")
     public ResponseEntity<ApiResponse<Void>> completeUpload(
             @RequestBody @Validated UploadCompleteRequest request) {
-
-        preSignedUrlGenerateService.completeUpload(request.getSessionId(), request.getEtag());
-
-        return ResponseEntity.ok(ApiResponse.success(null));
+        throw new UnsupportedOperationException("FileFlow 마이그레이션 진행 중 - 임시 비활성화");
     }
 }
