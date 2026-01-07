@@ -24,7 +24,7 @@ spring:
   # DataSource
   # ============================================================
   datasource:
-    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/luxurydb?useSSL=true&useUnicode=true&serverTimezone=Asia/Seoul&allowMultiQueries=true
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/luxurydb?sslMode=REQUIRED&useUnicode=true&serverTimezone=Asia/Seoul&allowMultiQueries=true
     username: ${DB_USERNAME:admin}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
