@@ -118,6 +118,9 @@ dependencies {
     // PortOne (iamport)
     implementation 'com.github.iamport:iamport-rest-client-java:0.2.21'
 
+    // FileFlow SDK
+    implementation 'com.github.ryu-qqq.fileflow:fileflow-sdk-core:v1.0.0'
+
     // Slack
     implementation 'com.slack.api:bolt:1.28.0'
 
@@ -126,11 +129,10 @@ dependencies {
     implementation 'org.codehaus.janino:commons-compiler:3.1.12'
 
     // ========================================
-    // Observability (from libs)
+    // Observability
     // ========================================
-    implementation 'io.micrometer:micrometer-core'
-    implementation libs.micrometer.prometheus
-    implementation libs.logstash.logback.encoder
+    // Observability Starter (TraceId + MDC Context propagation)
+    implementation 'com.github.ryu-qqq.observability-spring-boot-starter:observability-starter:v1.1.1'
 
     // ========================================
     // Test Dependencies (from libs)

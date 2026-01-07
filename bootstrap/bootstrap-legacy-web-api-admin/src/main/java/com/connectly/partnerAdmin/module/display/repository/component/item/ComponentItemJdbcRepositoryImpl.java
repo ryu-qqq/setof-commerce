@@ -27,7 +27,7 @@ public class ComponentItemJdbcRepositoryImpl implements ComponentItemJdbcReposit
 
     @Override
     public void saveAll(List<ComponentItem> componentItems) {
-        String sql = "INSERT INTO COMPONENT_ITEM (COMPONENT_TARGET_ID, PRODUCT_GROUP_ID, PRODUCT_DISPLAY_NAME, PRODUCT_DISPLAY_IMAGE, DISPLAY_ORDER, INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE, UPDATE_DATE) " +
+        String sql = "INSERT INTO component_item (component_target_id, product_group_id, product_display_name, product_display_image, display_order, insert_operator, update_operator, insert_date, update_date) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         List<Object[]> batchArgs = new ArrayList<>();
@@ -54,8 +54,8 @@ public class ComponentItemJdbcRepositoryImpl implements ComponentItemJdbcReposit
     public void deleteAll(List<Long> componentIds){
         if(componentIds.isEmpty() ) return;
 
-        String sql = "UPDATE COMPONENT_ITEM SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE COMPONENT_TARGET_ID IN " +
-                "(SELECT COMPONENT_TARGET_ID FROM COMPONENT_TARGET WHERE COMPONENT_ID IN (:ids))";
+        String sql = "UPDATE component_item SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE component_target_id IN " +
+                "(SELECT component_target_id FROM component_target WHERE component_id IN (:ids))";
 
 
         Map<String, Object> params = new HashMap<>();
@@ -70,8 +70,8 @@ public class ComponentItemJdbcRepositoryImpl implements ComponentItemJdbcReposit
     public void deleteAllWithTabIds(List<Long> tabIds) {
         if(tabIds.isEmpty() ) return;
 
-        String sql = "UPDATE COMPONENT_ITEM SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE COMPONENT_TARGET_ID IN " +
-                "(SELECT COMPONENT_TARGET_ID FROM COMPONENT_TARGET WHERE TAB_ID IN (:ids))";
+        String sql = "UPDATE component_item SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE component_target_id IN " +
+                "(SELECT component_target_id FROM component_target WHERE tab_id IN (:ids))";
 
 
         Map<String, Object> params = new HashMap<>();
@@ -86,8 +86,8 @@ public class ComponentItemJdbcRepositoryImpl implements ComponentItemJdbcReposit
     public void deleteAll(long componentId, SortType sortType,  List<Long> productGroupIds) {
         if(productGroupIds.isEmpty() ) return;
 
-        String sql = "UPDATE COMPONENT_ITEM SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE PRODUCT_GROUP_ID IN (:ids) AND COMPONENT_TARGET_ID IN " +
-                "(SELECT COMPONENT_TARGET_ID FROM COMPONENT_TARGET WHERE COMPONENT_ID = :id and SORT_TYPE = :sortType )";
+        String sql = "UPDATE component_item SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE product_group_id IN (:ids) AND component_target_id IN " +
+                "(SELECT component_target_id FROM component_target WHERE component_id = :id and sort_type = :sortType )";
 
 
         Map<String, Object> params = new HashMap<>();
@@ -102,13 +102,13 @@ public class ComponentItemJdbcRepositoryImpl implements ComponentItemJdbcReposit
 
     @Override
     public void updateAll(long componentId, long componentTargetId, List<DisplayProductGroupThumbnail> updatedProducts) {
-        String sql = "UPDATE COMPONENT_ITEM " +
-                "SET PRODUCT_DISPLAY_NAME = :productGroupName, " +
-                "PRODUCT_DISPLAY_IMAGE = :productImageUrl, " +
-                "COMPONENT_TARGET_ID = :componentTargetId, " +
-                "DISPLAY_ORDER = :displayOrder " +
-                "WHERE PRODUCT_GROUP_ID = :productGroupId " +
-                "AND COMPONENT_TARGET_ID IN (SELECT COMPONENT_TARGET_ID FROM COMPONENT_TARGET WHERE COMPONENT_ID = :componentId)";
+        String sql = "UPDATE component_item " +
+                "SET product_display_name = :productGroupName, " +
+                "product_display_image = :productImageUrl, " +
+                "component_target_id = :componentTargetId, " +
+                "display_order = :displayOrder " +
+                "WHERE product_group_id = :productGroupId " +
+                "AND component_target_id IN (SELECT component_target_id FROM component_target WHERE component_id = :componentId)";
 
         List<Map<String, Object>> batchValues = new ArrayList<>(updatedProducts.size());
         for (DisplayProductGroupThumbnail productGroupThumbnail : updatedProducts) {

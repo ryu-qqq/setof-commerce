@@ -26,7 +26,7 @@ public class TabJdbcRepositoryImpl implements TabJdbcRepository{
 
     @Override
     public void saveAll(List<Tab> tabs) {
-        String sql = "INSERT INTO TAB (TAB_NAME, TAB_COMPONENT_ID, DISPLAY_ORDER) " +
+        String sql = "INSERT INTO tab (tab_name, tab_component_id, display_order) " +
                 "VALUES (?, ?, ?, ?, ?)";
 
         List<Object[]> batchArgs = new ArrayList<>();
@@ -45,11 +45,11 @@ public class TabJdbcRepositoryImpl implements TabJdbcRepository{
 
     @Override
     public void update(TabDetail tabDetail) {
-        String sql = "UPDATE TAB SET TAB_NAME = :tabName, " +
-                "DISPLAY_ORDER = :displayOrder, " +
-                "UPDATE_OPERATOR = :updateOperator, " +
-                "UPDATE_DATE = :updateDate " +
-                "WHERE TAB_ID = :id";
+        String sql = "UPDATE tab SET tab_name = :tabName, " +
+                "display_order = :displayOrder, " +
+                "update_operator = :updateOperator, " +
+                "update_date = :updateDate " +
+                "WHERE tab_id = :id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", tabDetail.getTabId());
@@ -64,7 +64,7 @@ public class TabJdbcRepositoryImpl implements TabJdbcRepository{
 
     @Override
     public void deleteAllWithTabComponentIds(List<Long> tabComponentIds) {
-        String sql = "UPDATE TAB SET DELETE_YN = 'Y' WHERE TAB_COMPONENT_ID IN (:ids)";
+        String sql = "UPDATE tab SET delete_yn = 'Y' WHERE tab_component_id IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", tabComponentIds);
@@ -75,7 +75,7 @@ public class TabJdbcRepositoryImpl implements TabJdbcRepository{
     @Override
     public void deleteAll(List<Long> tabIds) {
 
-        String sql = "UPDATE TAB SET DELETE_YN = 'Y' WHERE TAB_ID IN (:ids)";
+        String sql = "UPDATE tab SET delete_yn = 'Y' WHERE tab_id IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", tabIds);

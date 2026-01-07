@@ -14,11 +14,12 @@ import java.io.IOException;
 @Slf4j
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
-    private static final String ERROR_MSG = "접근 권한이 없습니다.";
+    private static final String ERROR_MSG = "인증이 필요합니다.";
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, ERROR_MSG);
+        // 프론트엔드 호환성을 위해 403 대신 401 반환 (레거시 정책)
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ERROR_MSG);
     }
 
 }

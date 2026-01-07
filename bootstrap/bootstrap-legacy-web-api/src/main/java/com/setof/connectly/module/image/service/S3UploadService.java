@@ -1,260 +1,176 @@
 package com.setof.connectly.module.image.service;
 
+import com.ryuqq.fileflow.sdk.client.FileFlowClient;
+import com.ryuqq.fileflow.sdk.exception.FileFlowException;
+import com.ryuqq.fileflow.sdk.model.session.InitSingleUploadRequest;
+import com.ryuqq.fileflow.sdk.model.session.InitSingleUploadResponse;
 import com.setof.connectly.module.image.dto.PreSignedUrlRequest;
 import com.setof.connectly.module.image.dto.PreSignedUrlResponse;
 import com.setof.connectly.module.image.enums.ImagePath;
 import com.setof.connectly.module.utils.FileUtils;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
+import org.springframework.web.client.RestClient;
 
+/**
+ * FileFlow SDK 기반 이미지 업로드 서비스.
+ *
+ * <p>FileFlow 서비스를 통해 S3 Presigned URL을 발급받고,
+ * 외부 URL 이미지를 CDN으로 업로드합니다.
+ *
+ * @author development-team
+ * @since 1.0.0
+ */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class S3UploadService implements ImageUploadService {
 
-    private final S3Client s3Client;
-    private final S3Presigner presigner;
+    private static final long DEFAULT_FILE_SIZE = 10 * 1024 * 1024L; // 10MB
+    private static final String DEFAULT_IMAGE_URL =
+            "https://d3fej89xf1vai5.cloudfront.net/logo/setof-logo.png";
+
+    private final FileFlowClient fileFlowClient;
+    private final RestClient fileflowRestClient;
 
     @Value("${aws.assetUrl}")
     private String assetUrl;
 
-    @Value("${aws.bucket}")
-    private String bucket;
-
-    @Value("${aws.tempUrl}")
-    private String tempUrl;
-
-    @Value("${aws.tempBucket}")
-    private String tempBucket;
-
-    private static final String DEFAULT_IMAGE_URL =
-            "https://d3fej89xf1vai5.cloudfront.net/logo/setof-logo.png";
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
-    private static final Duration PRESIGNED_URL_DURATION = Duration.ofDays(7);
-
-    private static final String HTTPS = "https://";
-    private static final String HTTP = "http://";
-    private static final String SLASH = "/";
-    private static final String DOT = ".";
-    private static final String DIMS = "/_dims_/";
-
-    private static final String SPACE = "%20";
-
-    private CompletableFuture<String> uploadToS3(
-            String objectKey, byte[] imageBytes, String contentType) {
-        PutObjectRequest putObjectRequest =
-                PutObjectRequest.builder()
-                        .bucket(bucket)
-                        .key(objectKey)
-                        .contentType(contentType)
-                        .build();
-
-        try {
-            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(imageBytes));
-            return CompletableFuture.completedFuture(HTTPS + assetUrl + SLASH + objectKey);
-        } catch (S3Exception e) {
-            log.error("Failed to upload image to S3: {}", e.getMessage());
-            return CompletableFuture.completedFuture(DEFAULT_IMAGE_URL);
-        }
+    public S3UploadService(FileFlowClient fileFlowClient, RestClient fileflowRestClient) {
+        this.fileFlowClient = fileFlowClient;
+        this.fileflowRestClient = fileflowRestClient;
     }
 
-    @Async
-    @Override
-    public CompletableFuture<String> uploadImage(ImagePath imagePath, String originalImageUrl) {
-
-        String extension = getExtensionFromUrl(originalImageUrl);
-        String fileName = UUID.randomUUID() + (extension.isEmpty() ? "" : DOT + extension);
-
-        if (originalImageUrl.contains(assetUrl))
-            return CompletableFuture.completedFuture(originalImageUrl);
-        if (originalImageUrl.contains(tempUrl))
-            return moveImageFromTempToTargetBucket(originalImageUrl, imagePath, fileName);
-
-        String objectKey = generateObjectKey(imagePath, "", fileName);
-        String decodedUrl = originalImageUrl.replaceAll(" ", SPACE);
-        String contentType = FileUtils.getContentType(imagePath);
-
-        try (InputStream imageStream = new URL(decodedUrl).openStream()) {
-            byte[] imageBytes = IOUtils.toByteArray(imageStream);
-            return uploadToS3(objectKey, imageBytes, contentType);
-        } catch (IOException e) {
-            log.error("Failed to upload image: {}", e.getMessage());
-            return CompletableFuture.completedFuture(DEFAULT_IMAGE_URL);
-        }
-    }
-
-    @Async
-    public CompletableFuture<String> moveImageFromTempToTargetBucket(
-            String originalImageUrl, ImagePath imagePath, String fileName) {
-        return CompletableFuture.supplyAsync(
-                () -> {
-                    try {
-                        URL url = new URL(originalImageUrl);
-
-                        String sourceObjectKey = url.getPath().substring(1);
-
-                        if (sourceObjectKey.isEmpty()) {
-                            throw new IllegalStateException("Source object key cannot be empty");
-                        }
-
-                        String destinationObjectKey = generateObjectKey(imagePath, "", fileName);
-
-                        copyImage(tempBucket, bucket, sourceObjectKey, destinationObjectKey).join();
-                        // 복사가 완료되면 원본 이미지를 삭제합니다.
-                        deleteImageFromBucket(tempBucket, sourceObjectKey);
-
-                        // 새로운 버킷에 있는 이미지의 URL을 반환합니다.
-                        return getFileURL(destinationObjectKey);
-                    } catch (MalformedURLException e) {
-                        throw new RuntimeException("Failed to move image", e);
-                    }
-                });
-    }
-
+    /**
+     * Presigned URL 발급.
+     *
+     * @param preSignedUrlRequest 요청 정보 (파일명, 이미지 경로)
+     * @return PreSignedUrlResponse (sessionId, presignedUrl, objectKey)
+     */
     @Override
     public PreSignedUrlResponse getPreSignedUrl(PreSignedUrlRequest preSignedUrlRequest) {
         String fileName = preSignedUrlRequest.getFileName();
+        ImagePath imagePath = preSignedUrlRequest.getImagePath();
+        String contentType = FileUtils.getContentType(imagePath);
+        String category = toUploadCategory(imagePath);
 
-        String objectKey = generateObjectKey(preSignedUrlRequest.getImagePath(), "", fileName);
+        log.debug("FileFlow presigned URL 요청: fileName={}, category={}", fileName, category);
 
-        String extension = getExtensionFromFileName(fileName);
-
-        String contentType = FileUtils.getContentType(extension);
-
-        PutObjectRequest objectRequest =
-                PutObjectRequest.builder()
-                        .bucket(tempBucket)
-                        .key(objectKey)
-                        .contentType(contentType)
-                        .build();
-
-        PresignedPutObjectRequest presignedPutObjectRequest =
-                presigner.presignPutObject(
-                        b ->
-                                b.putObjectRequest(objectRequest)
-                                        .signatureDuration(PRESIGNED_URL_DURATION));
-
-        return PreSignedUrlResponse.builder()
-                .preSignedUrl(presignedPutObjectRequest.url().toString())
-                .objectKey(objectKey)
-                .build();
-    }
-
-    private String getExtensionFromUrl(String url) {
         try {
-            if (!url.startsWith(HTTP) && !url.startsWith(HTTPS)) {
-                url = HTTPS + url;
-            }
-            String fileName = new URL(url).getPath();
-            return getExtensionFromFileName(fileName);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Invalid URL format", e);
+            InitSingleUploadRequest sdkRequest = InitSingleUploadRequest.builder()
+                    .filename(fileName)
+                    .contentType(contentType)
+                    .fileSize(DEFAULT_FILE_SIZE)
+                    .category(category)
+                    .build();
+
+            InitSingleUploadResponse response = fileFlowClient.uploadSessions().initSingle(sdkRequest);
+
+            log.info("FileFlow presigned URL 발급 성공: sessionId={}", response.getSessionId());
+
+            return PreSignedUrlResponse.builder()
+                    .sessionId(response.getSessionId())
+                    .preSignedUrl(response.getPresignedUrl())
+                    .objectKey(response.getS3Key())
+                    .build();
+
+        } catch (FileFlowException e) {
+            log.error("FileFlow presigned URL 발급 실패: {}", e.getMessage(), e);
+            throw new RuntimeException("Presigned URL 발급 실패: " + e.getMessage(), e);
         }
     }
 
-    private String formatDate(LocalDate date) {
-        return date.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
-    }
-
-    private String getExtensionFromFileName(String fileName) {
-        int dimsIndex = fileName.indexOf(DIMS);
-        if (dimsIndex > 0) {
-            fileName = fileName.substring(0, dimsIndex);
-        }
-        int lastDotIndex = fileName.lastIndexOf(DOT);
-        if (lastDotIndex < 0) {
-            return "";
-        }
-        return fileName.substring(lastDotIndex + 1);
-    }
-
-    private String generateObjectKey(ImagePath imagePath, String tempKey, String fileName) {
-        String todayDate = formatDate(LocalDate.now());
-        String extension = getExtensionFromFileName(fileName.isEmpty() ? tempKey : fileName);
-        String cleanFileName = fileName.replaceAll("\\." + extension + "$", "");
-        String baseKey =
-                imagePath.getPath()
-                        + todayDate
-                        + SLASH
-                        + (cleanFileName.isEmpty() ? UUID.randomUUID().toString() : cleanFileName);
-        return extension.isEmpty() ? baseKey : baseKey + DOT + extension;
-    }
-
+    /**
+     * 외부 URL 이미지를 CDN으로 업로드.
+     *
+     * <p>FileFlow의 externalDownloads API를 사용하여
+     * 외부 URL에서 이미지를 다운로드하고 CDN에 업로드합니다.
+     *
+     * @param imagePath 이미지 카테고리
+     * @param originalImageUrl 원본 이미지 URL
+     * @return 새 CDN URL
+     */
     @Async
-    public CompletableFuture<Void> copyImage(
-            String sourceBucketName,
-            String destinationBucketName,
-            String sourceObjectKey,
-            String destinationObjectKey) {
-        return CompletableFuture.runAsync(
-                () -> {
-                    try {
+    @Override
+    public CompletableFuture<String> uploadImage(ImagePath imagePath, String originalImageUrl) {
+        // 이미 CDN에 있는 이미지는 그대로 반환
+        if (originalImageUrl.contains(assetUrl)) {
+            return CompletableFuture.completedFuture(originalImageUrl);
+        }
 
-                        CopyObjectRequest copyReq =
-                                CopyObjectRequest.builder()
-                                        .copySource(sourceObjectKey)
-                                        .destinationBucket(destinationBucketName)
-                                        .destinationKey(destinationObjectKey)
-                                        .build();
+        String category = toUploadCategory(imagePath);
+        String filename = extractFilename(originalImageUrl);
 
-                        s3Client.copyObject(copyReq);
+        log.debug("FileFlow 외부 URL 업로드 요청: sourceUrl={}, category={}", originalImageUrl, category);
 
-                    } catch (Exception e) {
-                        log.error(
-                                "Error copying image from bucket {} to bucket {}, image name {}:"
-                                        + " {}",
-                                sourceBucketName,
-                                destinationBucketName,
-                                sourceObjectKey,
-                                e.getMessage());
-                        throw new RuntimeException("Failed to copy image in S3", e);
-                    }
-                });
+        try {
+            String newCdnUrl = fileFlowClient.externalDownloads()
+                    .request(originalImageUrl, category, filename);
+
+            log.info("FileFlow 외부 URL 업로드 성공: sourceUrl={}, newCdnUrl={}",
+                    originalImageUrl, newCdnUrl);
+
+            return CompletableFuture.completedFuture(newCdnUrl);
+
+        } catch (FileFlowException e) {
+            log.error("FileFlow 외부 URL 업로드 실패: sourceUrl={}, error={}",
+                    originalImageUrl, e.getMessage(), e);
+            return CompletableFuture.completedFuture(DEFAULT_IMAGE_URL);
+        } catch (Exception e) {
+            log.error("FileFlow 외부 URL 업로드 중 예외: sourceUrl={}, error={}",
+                    originalImageUrl, e.getMessage(), e);
+            return CompletableFuture.completedFuture(DEFAULT_IMAGE_URL);
+        }
     }
 
-    public CompletableFuture<Void> deleteImageFromBucket(String bucketName, String objectKey) {
-        return CompletableFuture.runAsync(
-                () -> {
-                    try {
-                        DeleteObjectRequest deleteReq =
-                                DeleteObjectRequest.builder()
-                                        .bucket(bucketName)
-                                        .key(objectKey)
-                                        .build();
+    /**
+     * 업로드 완료 처리.
+     *
+     * <p>SDK에서 지원하지 않는 API이므로 RestClient를 사용하여 직접 호출합니다.
+     *
+     * @param sessionId FileFlow 세션 ID
+     * @param etag S3 업로드 후 반환된 ETag
+     */
+    @Override
+    public void completeUpload(String sessionId, String etag) {
+        log.debug("FileFlow 업로드 완료 처리: sessionId={}", sessionId);
 
-                        s3Client.deleteObject(deleteReq);
-                    } catch (Exception e) {
-                        log.error(
-                                "Error deleting image from bucket {}: {}",
-                                bucketName,
-                                e.getMessage());
-                        throw new RuntimeException("Failed to delete image from S3", e);
-                    }
-                });
+        try {
+            fileflowRestClient
+                    .put()
+                    .uri("/api/v1/upload-sessions/{sessionId}/complete", sessionId)
+                    .body(Map.of("etag", etag))
+                    .retrieve()
+                    .toBodilessEntity();
+
+            log.info("FileFlow 업로드 완료 성공: sessionId={}", sessionId);
+
+        } catch (Exception e) {
+            log.error("FileFlow 업로드 완료 실패: sessionId={}, error={}", sessionId, e.getMessage(), e);
+            throw new RuntimeException("업로드 완료 처리 실패: " + e.getMessage(), e);
+        }
     }
 
-    private String getFileURL(String objectKey) {
-        return HTTPS + assetUrl + SLASH + objectKey;
+    /**
+     * ImagePath를 FileFlow uploadCategory로 변환.
+     */
+    private String toUploadCategory(ImagePath imagePath) {
+        return imagePath.name();
+    }
+
+    /**
+     * URL에서 파일명 추출.
+     */
+    private String extractFilename(String url) {
+        try {
+            String path = new java.net.URL(url).getPath();
+            int lastSlash = path.lastIndexOf('/');
+            return lastSlash >= 0 ? path.substring(lastSlash + 1) : path;
+        } catch (Exception e) {
+            return "image.jpg";
+        }
     }
 }

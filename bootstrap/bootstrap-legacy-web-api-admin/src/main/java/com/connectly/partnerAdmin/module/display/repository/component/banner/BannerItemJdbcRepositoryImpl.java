@@ -17,7 +17,7 @@ public class BannerItemJdbcRepositoryImpl implements BannerItemJdbcRepository{
     private final JdbcTemplate jdbcTemplate;
     @Override
     public void saveAll(List<BannerItem> bannerItems) {
-        String sql = "INSERT INTO BANNER_ITEM (TITLE, IMAGE_URL, LINK_URL, DISPLAY_ORDER, DISPLAY_YN, BANNER_ID, DISPLAY_START_DATE, DISPLAY_END_DATE, WIDTH, HEIGHT, INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE, UPDATE_DATE) " +
+        String sql = "INSERT INTO banner_item (title, image_url, link_url, display_order, display_yn, banner_id, display_start_date, display_end_date, width, height, insert_operator, update_operator, insert_date, update_date) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?)";
 
         List<Object[]> batchArgs = new ArrayList<>();

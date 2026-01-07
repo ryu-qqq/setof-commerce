@@ -50,7 +50,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
                         authz ->
-                                authz.requestMatchers("/api/v1/**", "/actuator/**")
+                                authz.requestMatchers(
+                                                "/api/v1/oauth2/authorization/**",
+                                                "/api/v1/login/oauth2/code/**")
+                                        .permitAll()
+                                        .requestMatchers("/api/v1/**", "/actuator/**")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated())
@@ -63,6 +67,12 @@ public class SecurityConfig {
                 .exceptionHandling(
                         exceptions ->
                                 exceptions
+                                        .defaultAuthenticationEntryPointFor(
+                                                (request, response, authException) -> {
+                                                    // OAuth2 경로는 리다이렉트로 처리
+                                                    response.sendRedirect("/api/v1/oauth2/authorization/kakao");
+                                                },
+                                                new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/api/v1/login/oauth2/code/**"))
                                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                                         .accessDeniedHandler(jwtAccessDeniedHandler))
                 .oauth2Login(
@@ -71,8 +81,12 @@ public class SecurityConfig {
                                         .authorizationEndpoint(
                                                 authorization ->
                                                         authorization
+                                                                .baseUri("/api/v1/oauth2/authorization")
                                                                 .authorizationRequestRepository(
                                                                         customAuthorizationRequestRepository))
+                                        .redirectionEndpoint(
+                                                redirection ->
+                                                        redirection.baseUri("/api/v1/login/oauth2/code/*"))
                                         .userInfoEndpoint(
                                                 userInfoEndpointConfig ->
                                                         userInfoEndpointConfig.userService(

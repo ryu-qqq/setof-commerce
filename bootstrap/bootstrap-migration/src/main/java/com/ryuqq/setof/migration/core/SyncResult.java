@@ -32,6 +32,17 @@ public record SyncResult(
                 domainName, syncedCount, skippedCount, 0, startedAt, Instant.now(), null);
     }
 
+    /** 성공 결과 생성 (완료 시간 지정) */
+    public static SyncResult success(
+            String domainName,
+            long syncedCount,
+            long skippedCount,
+            Instant startedAt,
+            Instant completedAt) {
+        return new SyncResult(
+                domainName, syncedCount, skippedCount, 0, startedAt, completedAt, null);
+    }
+
     /** 부분 성공 결과 생성 (일부 실패) */
     public static SyncResult partial(
             String domainName,
@@ -50,6 +61,29 @@ public record SyncResult(
                 errorMessage);
     }
 
+    /** 부분 성공 결과 생성 (완료 시간 지정) */
+    public static SyncResult partial(
+            String domainName,
+            long syncedCount,
+            long skippedCount,
+            long failedCount,
+            Instant startedAt,
+            Instant completedAt) {
+        return new SyncResult(
+                domainName,
+                syncedCount,
+                skippedCount,
+                failedCount,
+                startedAt,
+                completedAt,
+                failedCount > 0 ? "일부 실패: " + failedCount + "건" : null);
+    }
+
+    /** 스킵 결과 생성 */
+    public static SyncResult skipped(String domainName, String reason) {
+        return new SyncResult(domainName, 0, 0, 0, Instant.now(), Instant.now(), reason);
+    }
+
     /** 실패 결과 생성 */
     public static SyncResult failure(String domainName, Instant startedAt, String errorMessage) {
         return new SyncResult(domainName, 0, 0, 0, startedAt, Instant.now(), errorMessage);
@@ -58,6 +92,11 @@ public record SyncResult(
     /** 성공 여부 */
     public boolean isSuccessful() {
         return failedCount == 0 && errorMessage == null;
+    }
+
+    /** 성공 여부 (alias) */
+    public boolean isSuccess() {
+        return isSuccessful();
     }
 
     /** 처리된 총 건수 */

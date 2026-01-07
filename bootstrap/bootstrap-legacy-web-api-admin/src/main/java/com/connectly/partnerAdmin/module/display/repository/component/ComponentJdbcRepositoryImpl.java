@@ -27,7 +27,7 @@ public class ComponentJdbcRepositoryImpl implements ComponentJdbcRepository{
             return;
         }
 
-        String sql = "UPDATE COMPONENT SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE COMPONENT_ID IN (:ids)";
+        String sql = "UPDATE component SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE component_id IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", componentIds);
@@ -39,20 +39,20 @@ public class ComponentJdbcRepositoryImpl implements ComponentJdbcRepository{
 
     @Override
     public void updateAll(List<SubComponent> components) {
-        String sql = "UPDATE COMPONENT " +
-                "SET COMPONENT_NAME = :componentName, " + // 콤마로 수정
-                "EXPOSED_PRODUCTS = :exposedProducts, " + // 공백 제거
-                "DISPLAY_START_DATE = :displayStartDate," +
-                "DISPLAY_END_DATE = :displayEndDate," +
-                "DISPLAY_ORDER = :displayOrder," +
-                "DISPLAY_YN = :displayYn," +
-                "LIST_TYPE = :listYn," +
-                "ORDER_TYPE = :orderType," +
-                "BADGE_TYPE = :badgeType," +
-                "FILTER_YN = :filterYn," +
-                "UPDATE_OPERATOR = :updateOperator," +
-                "UPDATE_DATE = :updateDate " +
-                "WHERE COMPONENT_ID = :componentId";
+        String sql = "UPDATE component " +
+                "SET component_name = :componentName, " + // 콤마로 수정
+                "exposed_products = :exposedProducts, " + // 공백 제거
+                "display_start_date = :displayStartDate," +
+                "display_end_date = :displayEndDate," +
+                "display_order = :displayOrder," +
+                "display_yn = :displayYn," +
+                "list_type = :listYn," +
+                "order_type = :orderType," +
+                "badge_type = :badgeType," +
+                "filter_yn = :filterYn," +
+                "update_operator = :updateOperator," +
+                "update_date = :updateDate " +
+                "WHERE component_id = :componentId";
 
         List<Map<String, Object>> batchValues = new ArrayList<>(components.size());
         for (SubComponent subComponent : components) {

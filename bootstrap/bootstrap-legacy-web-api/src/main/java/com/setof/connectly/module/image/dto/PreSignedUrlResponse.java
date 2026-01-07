@@ -7,6 +7,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 public class PreSignedUrlResponse {
+    private String sessionId;
     private String preSignedUrl;
     private String objectKey;
 }

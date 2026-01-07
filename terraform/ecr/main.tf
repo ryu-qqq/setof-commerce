@@ -4,6 +4,9 @@
 # Container registries using Infrastructure module
 # - web-api: REST API server (Spring Boot)
 # - web-api-admin: Admin API server (Spring Boot)
+# - legacy-api: Legacy API server (Spring Boot)
+# - legacy-api-admin: Legacy Admin API server (Spring Boot)
+# - migration: Data migration server (Spring Boot)
 # ========================================
 
 # ========================================
@@ -102,6 +105,67 @@ module "ecr_legacy_api" {
   # Required Tags (governance compliance)
   environment  = local.common_tags.environment
   service_name = "${var.project_name}-legacy-api"
+  team         = local.common_tags.team
+  owner        = local.common_tags.owner
+  cost_center  = local.common_tags.cost_center
+  project      = local.common_tags.project
+  data_class   = local.common_tags.data_class
+}
+
+# ========================================
+# ECR Repository: legacy-api-admin
+# ========================================
+# Strangler Fig Pattern: Legacy admin server migration
+module "ecr_legacy_api_admin" {
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
+
+  name                 = "${var.project_name}-legacy-api-admin-${var.environment}"
+  image_tag_mutability = "IMMUTABLE"
+  scan_on_push         = true
+
+  # Lifecycle Policy
+  enable_lifecycle_policy    = true
+  max_image_count            = 30
+  lifecycle_tag_prefixes     = ["v", "prod", "latest"]
+  untagged_image_expiry_days = 7
+
+  # SSM Parameter 비활성화 (Atlantis IAM 권한 제한)
+  create_ssm_parameter = false
+
+  # Required Tags (governance compliance)
+  environment  = local.common_tags.environment
+  service_name = "${var.project_name}-legacy-api-admin"
+  team         = local.common_tags.team
+  owner        = local.common_tags.owner
+  cost_center  = local.common_tags.cost_center
+  project      = local.common_tags.project
+  data_class   = local.common_tags.data_class
+}
+
+# ========================================
+# ECR Repository: migration
+# ========================================
+# Data migration service: Legacy DB -> New DB
+# Batch scheduler and sync operations
+module "ecr_migration" {
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
+
+  name                 = "${var.project_name}-migration-${var.environment}"
+  image_tag_mutability = "IMMUTABLE"
+  scan_on_push         = true
+
+  # Lifecycle Policy
+  enable_lifecycle_policy    = true
+  max_image_count            = 30
+  lifecycle_tag_prefixes     = ["v", "prod", "latest"]
+  untagged_image_expiry_days = 7
+
+  # SSM Parameter 비활성화 (Atlantis IAM 권한 제한)
+  create_ssm_parameter = false
+
+  # Required Tags (governance compliance)
+  environment  = local.common_tags.environment
+  service_name = "${var.project_name}-migration"
   team         = local.common_tags.team
   owner        = local.common_tags.owner
   cost_center  = local.common_tags.cost_center

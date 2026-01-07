@@ -24,7 +24,7 @@ public class BrandComponentJdbcRepositoryImpl implements BrandComponentJdbcRepos
 
     @Override
     public void saveAll(List<BrandComponent> brandComponents) {
-        String sql = "INSERT INTO BRAND_COMPONENT (COMPONENT_ID) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO brand_component (component_id) VALUES (?, ?, ?)";
 
         List<Object[]> batchArgs = new ArrayList<>();
 
@@ -40,7 +40,7 @@ public class BrandComponentJdbcRepositoryImpl implements BrandComponentJdbcRepos
 
     @Override
     public void deleteAll(List<Long> brandComponentIds) {
-        String sql = "UPDATE BRAND_COMPONENT SET DELETE_YN = 'Y' WHERE BRAND_COMPONENT_ID IN (:ids)";
+        String sql = "UPDATE brand_component SET delete_yn = 'Y' WHERE brand_component_id IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", brandComponentIds);

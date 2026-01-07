@@ -29,7 +29,7 @@ public class BlankComponentJdbcRepositoryImpl implements BlankComponentJdbcRepos
 
     @Override
     public void saveAll(List<BlankComponent> blankComponents) {
-        String sql = "INSERT INTO BLANK_COMPONENT (COMPONENT_ID, HEIGHT, LINE_YN, INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE, UPDATE_DATE) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO blank_component (component_id, height, line_yn, insert_operator, update_operator, insert_date, update_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         List<Object[]> batchArgs = new ArrayList<>();
 
@@ -52,12 +52,12 @@ public class BlankComponentJdbcRepositoryImpl implements BlankComponentJdbcRepos
 
     @Override
     public void updateAll(List<BlankComponentDetail> blankComponentDetails) {
-        String sql = "UPDATE BLANK_COMPONENT " +
-                "SET HEIGHT = :height, " +
-                "LINE_YN = :lineYn," +
-                "UPDATE_OPERATOR = :updateOperator," +
-                "UPDATE_DATE = :updateDate " +
-                "WHERE BLANK_COMPONENT_ID = :blankComponentId";
+        String sql = "UPDATE blank_component " +
+                "SET height = :height, " +
+                "line_yn = :lineYn," +
+                "update_operator = :updateOperator," +
+                "update_date = :updateDate " +
+                "WHERE blank_component_id = :blankComponentId";
 
         List<Map<String, Object>> batchValues = new ArrayList<>(blankComponentDetails.size());
         for (BlankComponentDetail blankComponentDetail : blankComponentDetails) {
@@ -78,7 +78,7 @@ public class BlankComponentJdbcRepositoryImpl implements BlankComponentJdbcRepos
 
     @Override
     public void deleteAll(List<Long> blankComponentIds) {
-        String sql = "UPDATE BLANK_COMPONENT SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE BLANK_COMPONENT_ID IN (:ids)";
+        String sql = "UPDATE blank_component SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE blank_component_id IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", blankComponentIds);

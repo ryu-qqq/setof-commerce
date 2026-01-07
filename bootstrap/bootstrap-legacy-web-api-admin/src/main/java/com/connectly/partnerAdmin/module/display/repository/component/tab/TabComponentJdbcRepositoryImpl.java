@@ -21,7 +21,7 @@ public class TabComponentJdbcRepositoryImpl implements TabComponentJdbcRepositor
 
     @Override
     public void deleteAll(List<Long> tabComponentIds) {
-        String sql = "UPDATE TAB_COMPONENT SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE TAB_COMPONENT_ID IN (:ids)";
+        String sql = "UPDATE tab_component SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE tab_component_id IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", tabComponentIds);
@@ -34,12 +34,12 @@ public class TabComponentJdbcRepositoryImpl implements TabComponentJdbcRepositor
 
     @Override
     public void update(long tabComponentId, TabDetail tabDetail) {
-        String sql = "UPDATE TAB_COMPONENT SET STICKY_YN = :stickyYn," +
-                "TAB_MOVING_TYPE = :tabMovingType," +
-                "DISPLAY_ORDER  = :displayOrder," +
-                "UPDATE_OPERATOR = :updateOperator, " +
-                "UPDATE_DATE = :updateDate " +
-                "WHERE TAB_COMPONENT_ID  = :id";
+        String sql = "UPDATE tab_component SET sticky_yn = :stickyYn," +
+                "tab_moving_type = :tabMovingType," +
+                "display_order  = :displayOrder," +
+                "update_operator = :updateOperator, " +
+                "update_date = :updateDate " +
+                "WHERE tab_component_id  = :id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", tabComponentId);

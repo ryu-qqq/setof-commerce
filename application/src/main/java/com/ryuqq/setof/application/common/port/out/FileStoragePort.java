@@ -59,6 +59,69 @@ public interface FileStoragePort {
     void deleteFiles(List<String> fileAssetIds);
 
     /**
+     * 외부 URL에서 파일을 다운로드하여 새 CDN에 업로드합니다.
+     *
+     * <p>FileFlow가 외부 URL에서 파일을 다운로드하여 내부 스토리지에 저장하고 새로운 CDN URL을 반환합니다.
+     *
+     * @param request 외부 다운로드 요청
+     * @return 새 CDN URL 정보
+     */
+    ExternalDownloadResponse downloadFromExternalUrl(ExternalDownloadRequest request);
+
+    /**
+     * 여러 외부 URL에서 파일을 배치로 다운로드하여 새 CDN에 업로드합니다.
+     *
+     * @param requests 외부 다운로드 요청 목록
+     * @return 새 CDN URL 정보 목록
+     */
+    List<ExternalDownloadResponse> downloadFromExternalUrls(List<ExternalDownloadRequest> requests);
+
+    /**
+     * 외부 URL 다운로드 요청
+     *
+     * @param sourceUrl 원본 파일 URL (S3 직접 URL 등)
+     * @param category 저장 카테고리 (예: products/images)
+     * @param filename 저장할 파일명 (optional, null이면 원본 파일명 사용)
+     */
+    record ExternalDownloadRequest(String sourceUrl, String category, String filename) {
+
+        public static ExternalDownloadRequest of(String sourceUrl, String category) {
+            return new ExternalDownloadRequest(sourceUrl, category, null);
+        }
+
+        public static ExternalDownloadRequest of(
+                String sourceUrl, String category, String filename) {
+            return new ExternalDownloadRequest(sourceUrl, category, filename);
+        }
+    }
+
+    /**
+     * 외부 URL 다운로드 응답
+     *
+     * @param originalUrl 원본 URL
+     * @param newCdnUrl 새 CDN URL
+     * @param fileAssetId FileFlow 파일 애셋 ID
+     * @param success 성공 여부
+     * @param errorMessage 실패 시 에러 메시지
+     */
+    record ExternalDownloadResponse(
+            String originalUrl,
+            String newCdnUrl,
+            String fileAssetId,
+            boolean success,
+            String errorMessage) {
+
+        public static ExternalDownloadResponse success(
+                String originalUrl, String newCdnUrl, String fileAssetId) {
+            return new ExternalDownloadResponse(originalUrl, newCdnUrl, fileAssetId, true, null);
+        }
+
+        public static ExternalDownloadResponse failure(String originalUrl, String errorMessage) {
+            return new ExternalDownloadResponse(originalUrl, null, null, false, errorMessage);
+        }
+    }
+
+    /**
      * 프리사인드 업로드 URL 발급 요청
      *
      * @param directory 저장 디렉토리 (예: products/images)

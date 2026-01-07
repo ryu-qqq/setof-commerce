@@ -22,6 +22,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
                 "접근 권한이 없는 사용자가 접근 하려 합니다. user {}, 요청 URI {}",
                 request.getRemoteHost(),
                 request.getRequestURI());
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, "접근 권한이 없습니다.");
+        // 프론트엔드 호환성을 위해 403 대신 401 반환 (레거시 정책)
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증이 필요합니다.");
     }
 }

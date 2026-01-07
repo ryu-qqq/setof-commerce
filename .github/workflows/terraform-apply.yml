@@ -16,6 +16,14 @@ on:
         description: 'Legacy API Docker image tag (e.g., legacy-api-1-abc1234)'
         required: false
         type: string
+      legacy-api-admin-image-tag:
+        description: 'Legacy API Admin Docker image tag (e.g., legacy-api-admin-1-abc1234)'
+        required: false
+        type: string
+      migration-image-tag:
+        description: 'Migration service Docker image tag (e.g., migration-1-abc1234)'
+        required: false
+        type: string
     secrets:
       AWS_ROLE_ARN:
         required: true
@@ -53,6 +61,12 @@ jobs:
           - name: ecs-web-api-legacy
             dir: terraform/ecs-web-api-legacy
             order: 5
+          - name: ecs-web-api-legacy-admin
+            dir: terraform/ecs-web-api-legacy-admin
+            order: 6
+          - name: ecs-migration
+            dir: terraform/ecs-migration
+            order: 7
 
     steps:
       - name: Checkout code
@@ -104,6 +118,14 @@ jobs:
               if aws ecr describe-repositories --repository-names setof-commerce-legacy-api-prod --region ap-northeast-2 >/dev/null 2>&1; then
                 echo "  → Importing setof-commerce-legacy-api-prod ECR repository..."
                 terraform import -input=false 'module.ecr_legacy_api.aws_ecr_repository.this[0]' setof-commerce-legacy-api-prod || echo "  ⚠️  Import failed or already in state"
+              fi
+              if aws ecr describe-repositories --repository-names setof-commerce-legacy-api-admin-prod --region ap-northeast-2 >/dev/null 2>&1; then
+                echo "  → Importing setof-commerce-legacy-api-admin-prod ECR repository..."
+                terraform import -input=false 'module.ecr_legacy_api_admin.aws_ecr_repository.this[0]' setof-commerce-legacy-api-admin-prod || echo "  ⚠️  Import failed or already in state"
+              fi
+              if aws ecr describe-repositories --repository-names setof-commerce-migration-prod --region ap-northeast-2 >/dev/null 2>&1; then
+                echo "  → Importing setof-commerce-migration-prod ECR repository..."
+                terraform import -input=false 'module.ecr_migration.aws_ecr_repository.this[0]' setof-commerce-migration-prod || echo "  ⚠️  Import failed or already in state"
               fi
             fi
 
@@ -171,6 +193,30 @@ jobs:
               fi
             fi
 
+            # ECS Web API Legacy Admin 모듈 (Partner Admin Server)
+            if [ "${{ matrix.module.name }}" == "ecs-web-api-legacy-admin" ]; then
+              echo "📦 ECS Legacy Admin API 리소스 Import 중..."
+
+              # ALB
+              ALB_ARN=$(aws elbv2 describe-load-balancers --names setof-commerce-legacy-admin-alb-prod --region ap-northeast-2 --query 'LoadBalancers[0].LoadBalancerArn' --output text 2>/dev/null || echo "")
+              if [ -n "$ALB_ARN" ] && [ "$ALB_ARN" != "None" ]; then
+                echo "  → Importing ALB: $ALB_ARN"
+                terraform import -input=false aws_lb.legacy_admin_api "$ALB_ARN" || echo "  ⚠️  Import failed or already in state"
+              fi
+
+              # Target Group
+              TG_ARN=$(aws elbv2 describe-target-groups --names setof-commerce-legacy-admin-tg-prod --region ap-northeast-2 --query 'TargetGroups[0].TargetGroupArn' --output text 2>/dev/null || echo "")
+              if [ -n "$TG_ARN" ] && [ "$TG_ARN" != "None" ]; then
+                echo "  → Importing Target Group: $TG_ARN"
+                terraform import -input=false aws_lb_target_group.legacy_admin_api "$TG_ARN" || echo "  ⚠️  Import failed or already in state"
+              fi
+            fi
+
+            # ECS Migration 모듈 (Data Migration & Batch Scheduler)
+            if [ "${{ matrix.module.name }}" == "ecs-migration" ]; then
+              echo "ℹ️  ECS Migration uses Service Discovery only (no ALB to import)"
+            fi
+
             echo "✅ Import 완료! Plan 재실행..."
             terraform plan -out=tfplan
           else
@@ -196,6 +242,12 @@ jobs:
           elif [ "${{ matrix.module.name }}" == "ecs-web-api-legacy" ] && [ -n "${{ inputs.legacy-api-image-tag }}" ]; then
             echo "📦 Using Legacy API image tag: ${{ inputs.legacy-api-image-tag }}"
             EXTRA_VARS="-var=image_tag=${{ inputs.legacy-api-image-tag }}"
+          elif [ "${{ matrix.module.name }}" == "ecs-web-api-legacy-admin" ] && [ -n "${{ inputs.legacy-api-admin-image-tag }}" ]; then
+            echo "📦 Using Legacy Admin API image tag: ${{ inputs.legacy-api-admin-image-tag }}"
+            EXTRA_VARS="-var=image_tag=${{ inputs.legacy-api-admin-image-tag }}"
+          elif [ "${{ matrix.module.name }}" == "ecs-migration" ] && [ -n "${{ inputs.migration-image-tag }}" ]; then
+            echo "📦 Using Migration image tag: ${{ inputs.migration-image-tag }}"
+            EXTRA_VARS="-var=image_tag=${{ inputs.migration-image-tag }}"
           else
             echo "ℹ️  No image tag provided for ${{ matrix.module.name }}, using default from provider.tf"
           fi
@@ -242,14 +294,18 @@ jobs:
           echo "- ✅ ECR Repository" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ ECS Cluster" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ ElastiCache (Redis)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ ECS Web API" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ ECS Web API Admin" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ ECS Web API (desired_count: 0)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ ECS Web API Admin (desired_count: 0)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ ECS Legacy API (Strangler Fig)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ ECS Legacy Admin API (Partner Admin)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ ECS Migration (Data Sync & Batch)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Application URLs**:" >> $GITHUB_STEP_SUMMARY
-          echo "- Web API: https://commerce.set-of.com" >> $GITHUB_STEP_SUMMARY
-          echo "- Admin API: https://admin.set-of.com" >> $GITHUB_STEP_SUMMARY
+          echo "- Web API: https://commerce.set-of.com (inactive)" >> $GITHUB_STEP_SUMMARY
+          echo "- Admin API: https://admin.set-of.com (inactive)" >> $GITHUB_STEP_SUMMARY
           echo "- Legacy API: https://server.set-of.com" >> $GITHUB_STEP_SUMMARY
+          echo "- Legacy Admin API: https://partner.set-of.com" >> $GITHUB_STEP_SUMMARY
+          echo "- Migration: Internal service (no public endpoint)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Next Steps**:" >> $GITHUB_STEP_SUMMARY
           echo "1. Verify infrastructure in AWS Console" >> $GITHUB_STEP_SUMMARY

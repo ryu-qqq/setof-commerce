@@ -45,6 +45,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Value(value = "${front.web-domain}")
     private String frontDomainUrl;
 
+    @Value(value = "${front.stage-domain:}")
+    private String stageDomainUrl;
+
     public static final String REDIRECT_URI_PARAM_COOKIE_NAME = "redirect_uri";
     public static final String REFERER_URI_PARAM_COOKIE_NAME = "referer";
     public static final String USER_INTEGRATION_PARAM_COOKIE_NAME = "integration";
@@ -202,10 +205,25 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     private boolean isAuthorizedRedirectUri(String uri) {
         URI clientRedirectUri = URI.create(uri);
-        URI frontDomainUri = URI.create(frontDomainUrl);
 
-        boolean isHostSame = frontDomainUri.getHost().equalsIgnoreCase(clientRedirectUri.getHost());
-        boolean isPortSame = frontDomainUri.getPort() == clientRedirectUri.getPort();
+        boolean matchesFront = isMatchingDomain(clientRedirectUri, frontDomainUrl);
+        boolean matchesStage =
+                StringUtils.hasText(stageDomainUrl)
+                        && isMatchingDomain(clientRedirectUri, stageDomainUrl);
+
+        return matchesFront || matchesStage;
+    }
+
+    private boolean isMatchingDomain(URI clientRedirectUri, String allowedDomainUrl) {
+        if (!StringUtils.hasText(allowedDomainUrl)) {
+            return false;
+        }
+
+        URI allowedDomainUri = URI.create(allowedDomainUrl);
+
+        boolean isHostSame =
+                allowedDomainUri.getHost().equalsIgnoreCase(clientRedirectUri.getHost());
+        boolean isPortSame = allowedDomainUri.getPort() == clientRedirectUri.getPort();
 
         return isHostSame && isPortSame;
     }

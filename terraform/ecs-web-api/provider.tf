@@ -71,9 +71,9 @@ variable "web_api_memory" {
 }
 
 variable "web_api_desired_count" {
-  description = "Desired count for web-api service"
+  description = "Desired count for web-api service (0 = inactive, dev in progress)"
   type        = number
-  default     = 2
+  default     = 0  # Set to 0: New architecture still in development
 }
 
 variable "image_tag" {

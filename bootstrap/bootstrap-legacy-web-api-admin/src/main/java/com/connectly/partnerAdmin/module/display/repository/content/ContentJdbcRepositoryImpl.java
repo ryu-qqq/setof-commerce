@@ -20,7 +20,7 @@ public class ContentJdbcRepositoryImpl implements ContentJdbcRepository{
 
     @Override
     public void update(Content content){
-        String sql = "UPDATE CONTENT SET TITLE = :title, MEMO = :memo, DISPLAY_YN = :displayYn, IMAGE_URL = :imageUrl, DISPLAY_START_DATE = :displayStartDate, DISPLAY_END_DATE = :displayEndDate, UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE CONTENT_ID = :id";
+        String sql = "UPDATE content SET title = :title, memo = :memo, display_yn = :displayYn, image_url = :imageUrl, display_start_date = :displayStartDate, display_end_date = :displayEndDate, update_operator = :updateOperator, update_date = :updateDate WHERE content_id = :id";
 
         Map<String, Object> params = new HashMap<>();
         params.put("title", content.getTitle());

@@ -24,7 +24,7 @@ public class ViewExtensionJdbcRepositoryImpl implements ViewExtensionJdbcReposit
     @Override
     public void deleteAll(List<Long> viewExtensionIds) {
 
-        String sql = "UPDATE VIEW_EXTENSION SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE VIEW_EXTENSION_ID = :id";
+        String sql = "UPDATE view_extension SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE view_extension_id = :id";
 
 
         List<Map<String, Object>> batchValues = new ArrayList<>(viewExtensionIds.size());
@@ -43,17 +43,17 @@ public class ViewExtensionJdbcRepositoryImpl implements ViewExtensionJdbcReposit
     @Override
     public void updateAll(List<ViewExtension> viewExtensions) {
 
-        String sql = "UPDATE VIEW_EXTENSION SET " +
-                "VIEW_EXTENSION_TYPE = :viewExtensionType, " +
-                "LINK_URL = :linkUrl, " +
-                "BUTTON_NAME = :buttonName, " +
-                "PRODUCT_COUNT_PER_CLICK = :productCountPerClick, " +
-                "MAX_CLICK_COUNT = :maxClickCount, " +
-                "AFTER_MAX_ACTION_TYPE = :afterMaxActionType, " +
-                "AFTER_MAX_ACTION_LINK_URL = :afterMaxActionLinkUrl," +
-                "UPDATE_OPERATOR = :updateOperator," +
-                "UPDATE_DATE = :updateDate " +
-                "WHERE VIEW_EXTENSION_ID = :viewExtensionId";
+        String sql = "UPDATE view_extension SET " +
+                "view_extension_type = :viewExtensionType, " +
+                "link_url = :linkUrl, " +
+                "button_name = :buttonName, " +
+                "product_count_per_click = :productCountPerClick, " +
+                "max_click_count = :maxClickCount, " +
+                "after_max_action_type = :afterMaxActionType, " +
+                "after_max_action_link_url = :afterMaxActionLinkUrl," +
+                "update_operator = :updateOperator," +
+                "update_date = :updateDate " +
+                "WHERE view_extension_id = :viewExtensionId";
 
 
         List<Map<String, Object>> batchValues = new ArrayList<>(viewExtensions.size());

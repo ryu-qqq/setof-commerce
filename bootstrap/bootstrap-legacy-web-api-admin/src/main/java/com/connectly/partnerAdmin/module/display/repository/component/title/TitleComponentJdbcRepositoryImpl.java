@@ -30,7 +30,7 @@ public class TitleComponentJdbcRepositoryImpl implements TitleComponentJdbcRepos
     @Override
     public void saveAll(List<TitleComponent> titleComponents) {
 
-        String sql = "INSERT INTO TITLE_COMPONENT (COMPONENT_ID, TITLE1, TITLE2, SUB_TITLE1, SUB_TITLE2, INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE, UPDATE_DATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO title_component (component_id, title1, title2, sub_title1, sub_title2, insert_operator, update_operator, insert_date, update_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         List<Object[]> batchArgs = new ArrayList<>();
 
@@ -54,14 +54,14 @@ public class TitleComponentJdbcRepositoryImpl implements TitleComponentJdbcRepos
 
     @Override
     public void updateAll(List<TitleComponentDetail> titleComponents) {
-        String sql = "UPDATE TITLE_COMPONENT " +
-                "SET TITLE1 = :title1, " +
-                "TITLE2 = :title2, " +
-                "SUB_TITLE1 = :subTitle1," +
-                "SUB_TITLE2 = :subTitle2," +
-                "UPDATE_OPERATOR = :updateOperator," +
-                "UPDATE_DATE = :updateDate " +
-                "WHERE TITLE_COMPONENT_ID = :titleComponentId";
+        String sql = "UPDATE title_component " +
+                "SET title1 = :title1, " +
+                "title2 = :title2, " +
+                "sub_title1 = :subTitle1," +
+                "sub_title2 = :subTitle2," +
+                "update_operator = :updateOperator," +
+                "update_date = :updateDate " +
+                "WHERE title_component_id = :titleComponentId";
 
         List<Map<String, Object>> batchValues = new ArrayList<>(titleComponents.size());
         for (TitleComponentDetail titleComponent : titleComponents) {
@@ -83,7 +83,7 @@ public class TitleComponentJdbcRepositoryImpl implements TitleComponentJdbcRepos
     @Override
     public void deleteAll(List<Long> titleComponentIds) {
 
-        String sql = "UPDATE TITLE_COMPONENT SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE TITLE_COMPONENT_ID IN (:ids)";
+        String sql = "UPDATE title_component SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE title_component_id IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", titleComponentIds);

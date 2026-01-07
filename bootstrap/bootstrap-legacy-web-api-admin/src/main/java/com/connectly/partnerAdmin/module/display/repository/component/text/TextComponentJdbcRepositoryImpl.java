@@ -29,7 +29,7 @@ public class TextComponentJdbcRepositoryImpl implements TextComponentJdbcReposit
 
     @Override
     public void saveAll(List<TextComponent> textComponents) {
-        String sql = "INSERT INTO TEXT_COMPONENT (COMPONENT_ID, CONTENT, INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE, UPDATE_DATE) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO text_component (component_id, content, insert_operator, update_operator, insert_date, update_date) VALUES (?, ?, ?, ?, ?, ?)";
 
         List<Object[]> batchArgs = new ArrayList<>();
 
@@ -51,11 +51,11 @@ public class TextComponentJdbcRepositoryImpl implements TextComponentJdbcReposit
 
     @Override
     public void updateAll(List<TextComponentDetail> textComponents) {
-        String sql = "UPDATE TEXT_COMPONENT " +
-                "SET CONTENT = :content, " +
-                "UPDATE_OPERATOR = :updateOperator," +
-                "UPDATE_DATE = :updateDate " +
-                "WHERE TEXT_COMPONENT_ID = :textComponentId";
+        String sql = "UPDATE text_component " +
+                "SET content = :content, " +
+                "update_operator = :updateOperator," +
+                "update_date = :updateDate " +
+                "WHERE text_component_id = :textComponentId";
 
         List<Map<String, Object>> batchValues = new ArrayList<>(textComponents.size());
         for (TextComponentDetail textComponentDetail : textComponents) {
@@ -74,7 +74,7 @@ public class TextComponentJdbcRepositoryImpl implements TextComponentJdbcReposit
     @Override
     public void deleteAll(List<Long> textComponentIds) {
 
-        String sql = "UPDATE TEXT_COMPONENT SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE TEXT_COMPONENT_ID IN (:ids)";
+        String sql = "UPDATE text_component SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE text_component_id IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", textComponentIds);

@@ -29,7 +29,7 @@ public class BrandComponentItemJdbcRepositoryImpl implements BrandComponentItemJ
 
     @Override
     public void saveAll(List<BrandComponentItem> brandComponentItems) {
-        String sql = "INSERT INTO BRAND_COMPONENT_ITEM (BRAND_ID, CATEGORY_ID, BRAND_COMPONENT_ID, INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE, UPDATE_DATE) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO brand_component_item (brand_id, category_id, brand_component_id, insert_operator, update_operator, insert_date, update_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         List<Object[]> batchArgs = new ArrayList<>();
 
@@ -53,7 +53,7 @@ public class BrandComponentItemJdbcRepositoryImpl implements BrandComponentItemJ
     public void deleteAll(List<BrandComponentDetail> deleteBrandComponentItems) {
         if(deleteBrandComponentItems.isEmpty()) return;
 
-        String sql = "UPDATE BRAND_COMPONENT_ITEM SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE BRAND_COMPONENT_ID IN (:brandComponentIds) AND BRAND_ID IN (:brandIds)";
+        String sql = "UPDATE brand_component_item SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE brand_component_id IN (:brandComponentIds) AND brand_id IN (:brandIds)";
 
         Map<String, Object> params = new HashMap<>();
 
@@ -79,7 +79,7 @@ public class BrandComponentItemJdbcRepositoryImpl implements BrandComponentItemJ
 
     @Override
     public void addAll(List<BrandComponentDetail> toAddBrandComponentItems) {
-        String sql = "INSERT INTO BRAND_COMPONENT_ITEM (BRAND_ID, CATEGORY_ID, BRAND_COMPONENT_ID, INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE, UPDATE_DATE) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO brand_component_item (brand_id, category_id, brand_component_id, insert_operator, update_operator, insert_date, update_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         List<Object[]> batchArgs = new ArrayList<>();
 
@@ -102,7 +102,7 @@ public class BrandComponentItemJdbcRepositoryImpl implements BrandComponentItemJ
 
     @Override
     public void updateCategoryIdAll(List<BrandComponentDetail> toUpdateBrandComponentItems) {
-        String sql = "UPDATE BRAND_COMPONENT_ITEM SET CATEGORY_ID = :categoryId WHERE BRAND_COMPONENT_ID = :brandComponentId AND BRAND_ID = :brandId";
+        String sql = "UPDATE brand_component_item SET category_id = :categoryId WHERE brand_component_id = :brandComponentId AND brand_id = :brandId";
 
         List<Map<String, Object>> batchValues = new ArrayList<>(toUpdateBrandComponentItems.size());
         for (BrandComponentDetail brandComponentDetail : toUpdateBrandComponentItems) {

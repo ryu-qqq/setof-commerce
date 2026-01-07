@@ -12,6 +12,10 @@ plugins {
     id 'java-test-fixtures'
 }
 
+repositories {
+    maven { url = uri('https://jitpack.io') }
+}
+
 dependencies {
     // ========================================
     // Core Dependencies

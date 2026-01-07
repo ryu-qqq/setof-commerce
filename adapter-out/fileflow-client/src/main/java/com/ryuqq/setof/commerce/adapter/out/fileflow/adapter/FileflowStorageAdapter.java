@@ -8,6 +8,7 @@ import com.ryuqq.fileflow.sdk.model.session.InitSingleUploadResponse;
 import com.ryuqq.setof.application.common.port.out.FileStoragePort;
 import java.time.Duration;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,6 +185,86 @@ public class FileflowStorageAdapter implements FileStoragePort {
                     e);
             throw new RuntimeException("Failed to delete files: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * 외부 URL에서 파일을 다운로드하여 새 CDN에 업로드합니다.
+     *
+     * <p>FileFlow SDK의 externalDownload API를 사용합니다.
+     *
+     * @param request 외부 다운로드 요청
+     * @return 새 CDN URL 정보
+     */
+    @Override
+    public ExternalDownloadResponse downloadFromExternalUrl(ExternalDownloadRequest request) {
+        log.debug(
+                "FileFlow 외부 URL 다운로드 요청: sourceUrl={}, category={}",
+                request.sourceUrl(),
+                request.category());
+
+        try {
+            // FileFlow SDK의 externalDownload API 호출
+            // request(sourceUrl, category, filename) → 새 CDN URL 반환
+            String newCdnUrl =
+                    fileFlowClient
+                            .externalDownloads()
+                            .request(request.sourceUrl(), request.category(), request.filename());
+
+            log.info(
+                    "FileFlow 외부 URL 다운로드 성공: sourceUrl={}, newCdnUrl={}",
+                    request.sourceUrl(),
+                    newCdnUrl);
+
+            // FileAsset ID는 CDN URL에서 추출하거나 null로 설정
+            // 추후 필요 시 별도 API 호출로 조회 가능
+            return ExternalDownloadResponse.success(request.sourceUrl(), newCdnUrl, null);
+
+        } catch (FileFlowException e) {
+            log.error(
+                    "FileFlow 외부 URL 다운로드 실패: sourceUrl={}, error={}",
+                    request.sourceUrl(),
+                    e.getMessage(),
+                    e);
+            return ExternalDownloadResponse.failure(request.sourceUrl(), e.getMessage());
+        } catch (Exception e) {
+            log.error(
+                    "FileFlow 외부 URL 다운로드 중 예외 발생: sourceUrl={}, error={}",
+                    request.sourceUrl(),
+                    e.getMessage(),
+                    e);
+            return ExternalDownloadResponse.failure(request.sourceUrl(), e.getMessage());
+        }
+    }
+
+    /**
+     * 여러 외부 URL에서 파일을 배치로 다운로드합니다.
+     *
+     * @param requests 외부 다운로드 요청 목록
+     * @return 새 CDN URL 정보 목록
+     */
+    @Override
+    public List<ExternalDownloadResponse> downloadFromExternalUrls(
+            List<ExternalDownloadRequest> requests) {
+        if (requests == null || requests.isEmpty()) {
+            log.debug("FileFlow 배치 외부 다운로드 요청: 빈 목록, 스킵");
+            return List.of();
+        }
+
+        log.debug("FileFlow 배치 외부 다운로드 요청: count={}", requests.size());
+
+        List<ExternalDownloadResponse> responses = new ArrayList<>();
+        for (ExternalDownloadRequest request : requests) {
+            responses.add(downloadFromExternalUrl(request));
+        }
+
+        long successCount = responses.stream().filter(ExternalDownloadResponse::success).count();
+        log.info(
+                "FileFlow 배치 외부 다운로드 완료: total={}, success={}, failed={}",
+                requests.size(),
+                successCount,
+                requests.size() - successCount);
+
+        return responses;
     }
 
     /**

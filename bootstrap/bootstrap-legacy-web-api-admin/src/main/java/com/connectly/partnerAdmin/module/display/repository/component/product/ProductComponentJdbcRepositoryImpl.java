@@ -21,7 +21,7 @@ public class ProductComponentJdbcRepositoryImpl implements ProductComponentJdbcR
     @Override
     public void deleteAll(List<Long> productComponentIds) {
 
-        String sql = "UPDATE PRODUCT_COMPONENT SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE PRODUCT_COMPONENT_ID IN (:ids)";
+        String sql = "UPDATE product_component SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE product_component_id IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", productComponentIds);

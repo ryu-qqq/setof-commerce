@@ -21,7 +21,7 @@ public class ComponentTargetJdbcRepositoryImpl implements ComponentTargetJdbcRep
 
     @Override
     public void deleteAll(List<Long> componentTargetIds) {
-        String sql = "UPDATE COMPONENT_TARGET SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE COMPONENT_TARGET_ID IN (:ids)";
+        String sql = "UPDATE component_target SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE component_target_id IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", componentTargetIds);
@@ -33,7 +33,7 @@ public class ComponentTargetJdbcRepositoryImpl implements ComponentTargetJdbcRep
 
     @Override
     public void deleteAllWithTabIds(List<Long> tabIds) {
-        String sql = "UPDATE COMPONENT_TARGET SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE TAB_ID IN (:ids)";
+        String sql = "UPDATE component_target SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE tab_id IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", tabIds);

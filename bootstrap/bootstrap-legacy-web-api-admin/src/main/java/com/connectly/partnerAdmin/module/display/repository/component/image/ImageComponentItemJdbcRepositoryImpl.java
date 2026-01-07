@@ -24,7 +24,7 @@ public class ImageComponentItemJdbcRepositoryImpl implements ImageComponentItemJ
 
     @Override
     public void saveAll(List<ImageComponentItem> imageComponentItems) {
-        String sql = "INSERT INTO IMAGE_COMPONENT_ITEM (IMAGE_COMPONENT_ID, IMAGE_URL, DISPLAY_ORDER, LINK_URL, WIDTH, HEIGHT, INSERT_OPERATOR, UPDATE_OPERATOR, INSERT_DATE, UPDATE_DATE) " +
+        String sql = "INSERT INTO image_component_item (image_component_id, image_url, display_order, link_url, width, height, insert_operator, update_operator, insert_date, update_date) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         List<Object[]> batchArgs = new ArrayList<>();
@@ -51,7 +51,7 @@ public class ImageComponentItemJdbcRepositoryImpl implements ImageComponentItemJ
     @Override
     public void deleteAll(List<Long> imageComponentIds) {
 
-        String sql = "UPDATE IMAGE_COMPONENT_ITEM SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE IMAGE_COMPONENT_ITEM_ID IN (:ids)";
+        String sql = "UPDATE image_component_item SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE image_component_item_id IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", imageComponentIds);
@@ -63,15 +63,15 @@ public class ImageComponentItemJdbcRepositoryImpl implements ImageComponentItemJ
     @Override
     public void updateAll(List<ImageComponentItem> imageComponentItems){
 
-        String sql = "UPDATE IMAGE_COMPONENT_ITEM " +
-                "SET IMAGE_URL = :imageUrl, " +
-                "DISPLAY_ORDER = :displayOrder, " +
-                "LINK_URL = :linkUrl," +
-                "WIDTH = :width," +
-                "HEIGHT = :height," +
-                "UPDATE_OPERATOR = :updateOperator," +
-                "UPDATE_DATE = :updateDate " +
-                "WHERE IMAGE_COMPONENT_ITEM_ID = :imageComponentItemId";
+        String sql = "UPDATE image_component_item " +
+                "SET image_url = :imageUrl, " +
+                "display_order = :displayOrder, " +
+                "link_url = :linkUrl," +
+                "width = :width," +
+                "height = :height," +
+                "update_operator = :updateOperator," +
+                "update_date = :updateDate " +
+                "WHERE image_component_item_id = :imageComponentItemId";
 
         List<Map<String, Object>> batchValues = new ArrayList<>(imageComponentItems.size());
         for (ImageComponentItem imageComponentItem : imageComponentItems) {

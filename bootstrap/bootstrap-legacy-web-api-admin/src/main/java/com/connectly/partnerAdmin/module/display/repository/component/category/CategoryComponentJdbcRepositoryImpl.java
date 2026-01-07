@@ -21,7 +21,7 @@ public class CategoryComponentJdbcRepositoryImpl implements CategoryComponentJdb
 
     @Override
     public void deleteAll(List<Long> categoryComponentIds) {
-        String sql = "UPDATE CATEGORY_COMPONENT SET DELETE_YN = 'Y', UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE CATEGORY_COMPONENT_ID IN (:ids)";
+        String sql = "UPDATE category_component SET delete_yn = 'Y', update_operator = :updateOperator, update_date = :updateDate WHERE category_component_id IN (:ids)";
 
         Map<String, Object> params = new HashMap<>();
         params.put("ids", categoryComponentIds);
@@ -34,7 +34,7 @@ public class CategoryComponentJdbcRepositoryImpl implements CategoryComponentJdb
 
     @Override
     public void updateAll(List<CategoryComponentDetail> componentDetails) {
-        String sql = "UPDATE CATEGORY_COMPONENT SET CATEGORY_ID = :categoryId, UPDATE_OPERATOR = :updateOperator, UPDATE_DATE = :updateDate WHERE CATEGORY_COMPONENT_ID = :categoryComponentId";
+        String sql = "UPDATE category_component SET category_id = :categoryId, update_operator = :updateOperator, update_date = :updateDate WHERE category_component_id = :categoryComponentId";
 
         List<Map<String, Object>> batchValues = new ArrayList<>(componentDetails.size());
         for (CategoryComponentDetail categoryComponentDetail : componentDetails) {

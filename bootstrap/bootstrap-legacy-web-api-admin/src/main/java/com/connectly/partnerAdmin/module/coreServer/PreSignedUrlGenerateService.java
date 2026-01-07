@@ -1,24 +1,36 @@
 package com.connectly.partnerAdmin.module.coreServer;
 
-import org.springframework.stereotype.Service;
-
-import com.connectly.partnerAdmin.infra.config.fileflow.FileflowClient;
-import com.connectly.partnerAdmin.infra.config.fileflow.dto.InitSingleUploadResponse;
 import com.connectly.partnerAdmin.module.coreServer.response.PreSignedUrlResponseDto;
 import com.connectly.partnerAdmin.module.image.enums.ImagePath;
+import com.ryuqq.fileflow.sdk.client.FileFlowClient;
+import com.ryuqq.fileflow.sdk.exception.FileFlowException;
+import com.ryuqq.fileflow.sdk.model.session.InitSingleUploadRequest;
+import com.ryuqq.fileflow.sdk.model.session.InitSingleUploadResponse;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 /**
  * Presigned URL 생성 서비스.
  *
- * <p>Fileflow 서비스를 통해 S3 Presigned URL을 발급받습니다.
+ * <p>FileFlow SDK를 통해 S3 Presigned URL을 발급받습니다.
+ *
+ * @author development-team
+ * @since 1.0.0
  */
 @Service
 public class PreSignedUrlGenerateService {
 
-    private final FileflowClient fileflowClient;
+    private static final Logger log = LoggerFactory.getLogger(PreSignedUrlGenerateService.class);
 
-    public PreSignedUrlGenerateService(FileflowClient fileflowClient) {
-        this.fileflowClient = fileflowClient;
+    private final FileFlowClient fileFlowClient;
+    private final RestClient fileflowRestClient;
+
+    public PreSignedUrlGenerateService(FileFlowClient fileFlowClient, RestClient fileflowRestClient) {
+        this.fileFlowClient = fileFlowClient;
+        this.fileflowRestClient = fileflowRestClient;
     }
 
     /**
@@ -42,43 +54,65 @@ public class PreSignedUrlGenerateService {
      */
     public PreSignedUrlResponseDto getPreSignedUrl(String fileName, ImagePath imagePath, long fileSize) {
         String contentType = ImageFileTypeUtils.getImageContentType(fileName);
-        String uploadCategory = toUploadCategory(imagePath);
+        String category = toUploadCategory(imagePath);
 
-        InitSingleUploadResponse response = fileflowClient.initSingleUpload(
-            fileName,
-            fileSize,
-            contentType,
-            uploadCategory
-        );
+        log.debug("FileFlow presigned URL 요청: fileName={}, category={}", fileName, category);
 
-        return new PreSignedUrlResponseDto(
-            response.sessionId(),
-            response.presignedUrl(),
-            response.key()
-        );
+        try {
+            InitSingleUploadRequest sdkRequest = InitSingleUploadRequest.builder()
+                    .filename(fileName)
+                    .contentType(contentType)
+                    .fileSize(fileSize)
+                    .category(category)
+                    .build();
+
+            InitSingleUploadResponse response = fileFlowClient.uploadSessions().initSingle(sdkRequest);
+
+            log.info("FileFlow presigned URL 발급 성공: sessionId={}", response.getSessionId());
+
+            return new PreSignedUrlResponseDto(
+                    response.getSessionId(),
+                    response.getPresignedUrl(),
+                    response.getS3Key()
+            );
+
+        } catch (FileFlowException e) {
+            log.error("FileFlow presigned URL 발급 실패: {}", e.getMessage(), e);
+            throw new RuntimeException("Presigned URL 발급 실패: " + e.getMessage(), e);
+        }
     }
 
     /**
      * 업로드 완료 처리.
      *
-     * @param sessionId Fileflow 세션 ID
+     * <p>SDK에서 지원하지 않는 API이므로 RestClient를 사용하여 직접 호출합니다.
+     *
+     * @param sessionId FileFlow 세션 ID
      * @param etag S3 업로드 후 반환된 ETag
      */
     public void completeUpload(String sessionId, String etag) {
-        fileflowClient.completeSingleUpload(sessionId, etag);
+        log.debug("FileFlow 업로드 완료 처리: sessionId={}", sessionId);
+
+        try {
+            fileflowRestClient
+                    .put()
+                    .uri("/api/v1/upload-sessions/{sessionId}/complete", sessionId)
+                    .body(Map.of("etag", etag))
+                    .retrieve()
+                    .toBodilessEntity();
+
+            log.info("FileFlow 업로드 완료 성공: sessionId={}", sessionId);
+
+        } catch (Exception e) {
+            log.error("FileFlow 업로드 완료 실패: sessionId={}, error={}", sessionId, e.getMessage(), e);
+            throw new RuntimeException("업로드 완료 처리 실패: " + e.getMessage(), e);
+        }
     }
 
     /**
-     * ImagePath를 Fileflow uploadCategory로 변환.
+     * ImagePath를 FileFlow uploadCategory로 변환.
      */
     private String toUploadCategory(ImagePath imagePath) {
-        return switch (imagePath) {
-            case PRODUCT -> "PRODUCT";
-            case DESCRIPTION -> "DESCRIPTION";
-            case QNA -> "QNA";
-            case CONTENT -> "CONTENT";
-            case IMAGE_COMPONENT -> "IMAGE_COMPONENT";
-            case BANNER -> "BANNER";
-        };
+        return imagePath.name();
     }
 }

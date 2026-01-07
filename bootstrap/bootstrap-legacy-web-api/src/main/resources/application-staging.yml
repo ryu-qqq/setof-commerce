@@ -1,8 +1,8 @@
 # ============================================================
-# Legacy Web API 운영 환경 설정
+# Legacy Web API Stage 환경 설정
 # ============================================================
 # Strangler Fig Pattern: 기존 레거시 서버를 ECS 인프라로 이관
-# 점진적으로 새 아키텍처로 마이그레이션 진행 예정
+# Stage 환경: stage.set-of.com
 #
 # 환경변수 주입 방식:
 # - DB_PASSWORD, KAKAO_CLIENT_SECRET, JWT_SECRET,
@@ -78,7 +78,7 @@ spring:
           clientSecret: ${KAKAO_CLIENT_SECRET}
           clientAuthenticationMethod: client_secret_post
           authorizationGrantType: authorization_code
-          redirectUri: "https://www.set-of.com/api/v1/login/oauth2/code/kakao"
+          redirectUri: "https://stage.set-of.com/api/v1/login/oauth2/code/kakao"
           scope:
             - profile_nickname
             - account_email
@@ -142,14 +142,14 @@ Import:
 # Admin API (Service Discovery)
 # ============================================================
 admin:
-  url: http://setof-commerce-legacy-admin-prod.connectly.local:8089
+  url: http://setof-commerce-legacy-admin-stage.connectly.local:8089
 
 # ============================================================
-# Front Domains (Production 환경 - www.set-of.com만 허용)
+# Front Domains (Stage 환경 - stage.set-of.com만 허용)
 # ============================================================
 front:
   path: '.set-of.com'
-  web-domain: 'https://www.set-of.com'
+  web-domain: 'https://stage.set-of.com'
   s3-domain: 'https://cdn.set-of.com'
   stage-domain: 'https://stage.set-of.com'
 
@@ -169,7 +169,7 @@ slack:
 fileflow:
   client:
     base-url: ${FILEFLOW_BASE_URL:http://fileflow.connectly.local:8082}
-    callback-url: ${FILEFLOW_CALLBACK_URL:https://api.set-of.com/api/v1/webhook/image-upload}
+    callback-url: ${FILEFLOW_CALLBACK_URL:https://stage.set-of.com/api/v1/webhook/image-upload}
     connect-timeout: 10000
     read-timeout: 60000
     service-token: ${SECURITY_SERVICE_TOKEN_SECRET}
@@ -190,4 +190,4 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
-      environment: ${spring.profiles.active:prod}
+      environment: ${spring.profiles.active:stage}

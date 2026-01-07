@@ -153,10 +153,13 @@ slack:
 # Service Discovery를 통해 Fileflow 서비스에 접근
 # 내부 서비스 간 통신에는 Service Token 인증 사용
 fileflow:
-  base-url: ${FILEFLOW_BASE_URL:http://fileflow.connectly.local:8082}
-  service-token: ${SECURITY_SERVICE_TOKEN_SECRET:}
-  connect-timeout-millis: 5000
-  read-timeout-millis: 30000
+  client:
+    base-url: ${FILEFLOW_BASE_URL:http://fileflow.connectly.local:8082}
+    callback-url: ${FILEFLOW_CALLBACK_URL}
+    connect-timeout: 10000
+    read-timeout: 60000
+    service-token: ${SECURITY_SERVICE_TOKEN_SECRET}
+    service-name: set-of-legacy
 
 # ============================================================
 # External Service URLs (FeignClient)

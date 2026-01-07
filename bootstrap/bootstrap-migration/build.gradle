@@ -28,6 +28,11 @@ dependencies {
     implementation project(':adapter-out:persistence-mysql')
 
     // ========================================
+    // FileFlow Client (이미지 마이그레이션용)
+    // ========================================
+    implementation project(':adapter-out:fileflow-client')
+
+    // ========================================
     // Spring Boot Starters
     // ========================================
     implementation libs.spring.boot.starter.web
@@ -47,9 +52,10 @@ dependencies {
     runtimeOnly libs.mysql.connector
 
     // ========================================
-    // Logging
+    // Observability
     // ========================================
-    implementation libs.logstash.logback.encoder
+    // Observability Starter (TraceId + MDC Context propagation)
+    implementation libs.observability.starter
 
     // ========================================
     // Test Dependencies
