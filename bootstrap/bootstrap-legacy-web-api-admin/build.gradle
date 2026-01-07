@@ -134,9 +134,10 @@ dependencies {
     // Slack
     implementation 'com.slack.api:bolt:1.28.0'
 
-    // Logback - Spring Boot 관리 버전 사용, janino만 추가
+    // Logback - Spring Boot 관리 버전 사용
     implementation 'org.codehaus.janino:janino:3.1.12'
     implementation 'org.codehaus.janino:commons-compiler:3.1.12'
+    implementation libs.logstash.logback.encoder
 
     // ========================================
     // Observability
