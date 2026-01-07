@@ -1,11 +1,11 @@
 # ========================================
-# ECS Service: legacy-web-api
+# ECS Service: legacy-admin-api
 # ========================================
-# Strangler Fig Pattern: Legacy server on ECS
+# Strangler Fig Pattern: Legacy Partner Admin on ECS
 # REST API server with ALB and Auto Scaling
 # Using Infrastructure modules
-# Domain: server.set-of.com
-# Port: 8088
+# Domain: partner-admin.set-of.com
+# Port: 8089
 # ========================================
 
 # ========================================
@@ -14,7 +14,7 @@
 locals {
   common_tags = {
     environment  = var.environment
-    service_name = "${var.project_name}-legacy-api"
+    service_name = "${var.project_name}-legacy-admin"
     team         = "platform-team"
     owner        = "platform@ryuqqq.com"
     cost_center  = "engineering"
@@ -26,8 +26,8 @@ locals {
 # ========================================
 # ECR Repository Reference
 # ========================================
-data "aws_ecr_repository" "legacy_api" {
-  name = "${var.project_name}-legacy-api-${var.environment}"
+data "aws_ecr_repository" "legacy_admin" {
+  name = "${var.project_name}-legacy-admin-${var.environment}"
 }
 
 # ========================================
@@ -46,6 +46,13 @@ data "aws_ssm_parameter" "service_discovery_namespace_id" {
   name = "/shared/service-discovery/namespace-id"
 }
 
+# ========================================
+# Service Token Secret (for internal service communication)
+# ========================================
+data "aws_ssm_parameter" "service_token_secret" {
+  name = "/shared/security/service-token-secret"
+}
+
 # VPC data source for internal communication
 data "aws_vpc" "main" {
   id = local.vpc_id
@@ -55,7 +62,7 @@ data "aws_vpc" "main" {
 # KMS Key for CloudWatch Logs Encryption
 # ========================================
 resource "aws_kms_key" "logs" {
-  description             = "KMS key for SetOf Commerce legacy-api CloudWatch logs encryption"
+  description             = "KMS key for SetOf Commerce legacy-admin CloudWatch logs encryption"
   deletion_window_in_days = 30
   enable_key_rotation     = true
 
@@ -87,7 +94,7 @@ resource "aws_kms_key" "logs" {
         Resource = "*"
         Condition = {
           ArnLike = {
-            "kms:EncryptionContext:aws:logs:arn" = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/ecs/${var.project_name}-legacy-api-${var.environment}/*"
+            "kms:EncryptionContext:aws:logs:arn" = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/ecs/${var.project_name}-legacy-admin-${var.environment}/*"
           }
         }
       }
@@ -95,24 +102,24 @@ resource "aws_kms_key" "logs" {
   })
 
   tags = merge(local.common_tags, {
-    Name      = "${var.project_name}-legacy-api-logs-kms-${var.environment}"
+    Name      = "${var.project_name}-legacy-admin-logs-kms-${var.environment}"
     Lifecycle = "production"
     ManagedBy = "terraform"
   })
 }
 
 resource "aws_kms_alias" "logs" {
-  name          = "alias/${var.project_name}-legacy-api-logs-${var.environment}"
+  name          = "alias/${var.project_name}-legacy-admin-logs-${var.environment}"
   target_key_id = aws_kms_key.logs.key_id
 }
 
 # ========================================
 # CloudWatch Log Group (using Infrastructure module)
 # ========================================
-module "legacy_api_logs" {
+module "legacy_admin_logs" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/cloudwatch-log-group?ref=main"
 
-  name              = "/aws/ecs/${var.project_name}-legacy-api-${var.environment}/application"
+  name              = "/aws/ecs/${var.project_name}-legacy-admin-${var.environment}/application"
   retention_in_days = 30
   kms_key_id        = aws_kms_key.logs.arn
 
@@ -129,8 +136,8 @@ module "legacy_api_logs" {
 # Security Groups
 # ========================================
 resource "aws_security_group" "alb" {
-  name        = "${var.project_name}-legacy-alb-sg-${var.environment}"
-  description = "Security group for Legacy ALB"
+  name        = "${var.project_name}-legacy-admin-alb-sg-${var.environment}"
+  description = "Security group for Legacy Admin ALB"
   vpc_id      = local.vpc_id
 
   ingress {
@@ -157,7 +164,7 @@ resource "aws_security_group" "alb" {
   }
 
   tags = merge(local.common_tags, {
-    Name      = "${var.project_name}-legacy-alb-sg-${var.environment}"
+    Name      = "${var.project_name}-legacy-admin-alb-sg-${var.environment}"
     Lifecycle = "production"
     ManagedBy = "terraform"
   })
@@ -166,23 +173,23 @@ resource "aws_security_group" "alb" {
 module "ecs_security_group" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/security-group?ref=main"
 
-  name        = "${var.project_name}-legacy-api-sg-${var.environment}"
-  description = "Security group for legacy-api ECS tasks"
+  name        = "${var.project_name}-legacy-admin-sg-${var.environment}"
+  description = "Security group for legacy-admin ECS tasks"
   vpc_id      = local.vpc_id
 
   type = "custom"
 
   custom_ingress_rules = [
     {
-      from_port                = 8088
-      to_port                  = 8088
+      from_port                = 8089
+      to_port                  = 8089
       protocol                 = "tcp"
       source_security_group_id = aws_security_group.alb.id
       description              = "From ALB only"
     },
     {
-      from_port   = 8088
-      to_port     = 8088
+      from_port   = 8089
+      to_port     = 8089
       protocol    = "tcp"
       cidr_block  = data.aws_vpc.main.cidr_block
       description = "Service Discovery - internal VPC communication"
@@ -201,8 +208,8 @@ module "ecs_security_group" {
 # ========================================
 # Application Load Balancer
 # ========================================
-resource "aws_lb" "legacy_api" {
-  name               = "${var.project_name}-legacy-alb-${var.environment}"
+resource "aws_lb" "legacy_admin" {
+  name               = "setof-lgc-admin-alb-${var.environment}"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
@@ -211,16 +218,16 @@ resource "aws_lb" "legacy_api" {
   enable_deletion_protection = false
 
   tags = merge(local.common_tags, {
-    Name      = "${var.project_name}-legacy-alb-${var.environment}"
+    Name      = "${var.project_name}-legacy-admin-alb-${var.environment}"
     Lifecycle = "production"
     ManagedBy = "terraform"
   })
 }
 
-# Target Group (Port 8088)
-resource "aws_lb_target_group" "legacy_api" {
-  name        = "${var.project_name}-legacy-tg-${var.environment}"
-  port        = 8088
+# Target Group (Port 8089)
+resource "aws_lb_target_group" "legacy_admin" {
+  name        = "setof-lgc-admin-tg-${var.environment}"
+  port        = 8089
   protocol    = "HTTP"
   vpc_id      = local.vpc_id
   target_type = "ip"
@@ -236,13 +243,13 @@ resource "aws_lb_target_group" "legacy_api" {
   }
 
   tags = merge(local.common_tags, {
-    Name = "${var.project_name}-legacy-tg-${var.environment}"
+    Name = "${var.project_name}-legacy-admin-tg-${var.environment}"
   })
 }
 
 # HTTPS Listener
 resource "aws_lb_listener" "https" {
-  load_balancer_arn = aws_lb.legacy_api.arn
+  load_balancer_arn = aws_lb.legacy_admin.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
@@ -250,13 +257,13 @@ resource "aws_lb_listener" "https" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.legacy_api.arn
+    target_group_arn = aws_lb_target_group.legacy_admin.arn
   }
 }
 
 # HTTP to HTTPS Redirect
 resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.legacy_api.arn
+  load_balancer_arn = aws_lb.legacy_admin.arn
   port              = "80"
   protocol          = "HTTP"
 
@@ -274,14 +281,14 @@ resource "aws_lb_listener" "http" {
 # ========================================
 # Route53 DNS Record
 # ========================================
-resource "aws_route53_record" "legacy_api" {
+resource "aws_route53_record" "legacy_admin" {
   zone_id = local.route53_zone_id
   name    = local.fqdn
   type    = "A"
 
   alias {
-    name                   = aws_lb.legacy_api.dns_name
-    zone_id                = aws_lb.legacy_api.zone_id
+    name                   = aws_lb.legacy_admin.dns_name
+    zone_id                = aws_lb.legacy_admin.zone_id
     evaluate_target_health = true
   }
 }
@@ -291,10 +298,10 @@ resource "aws_route53_record" "legacy_api" {
 # ========================================
 
 # ECS Task Execution Role
-module "legacy_api_task_execution_role" {
+module "legacy_admin_task_execution_role" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/iam-role-policy?ref=main"
 
-  role_name = "${var.project_name}-legacy-api-execution-role-${var.environment}"
+  role_name = "${var.project_name}-legacy-admin-execution-role-${var.environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -359,10 +366,10 @@ module "legacy_api_task_execution_role" {
 }
 
 # ECS Task Role
-module "legacy_api_task_role" {
+module "legacy_admin_task_role" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/iam-role-policy?ref=main"
 
-  role_name = "${var.project_name}-legacy-api-task-role-${var.environment}"
+  role_name = "${var.project_name}-legacy-admin-task-role-${var.environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -378,7 +385,7 @@ module "legacy_api_task_role" {
   })
 
   custom_inline_policies = {
-    legacy-api-access = {
+    legacy-admin-access = {
       policy = jsonencode({
         Version = "2012-10-17"
         Statement = [
@@ -453,6 +460,25 @@ module "legacy_api_task_role" {
               "arn:aws:s3:::set-of.net",
               "arn:aws:s3:::temp-set-of.net"
             ]
+          },
+          {
+            Sid    = "SQSAccess"
+            Effect = "Allow"
+            Action = [
+              "sqs:SendMessage",
+              "sqs:ReceiveMessage",
+              "sqs:DeleteMessage",
+              "sqs:GetQueueAttributes"
+            ]
+            Resource = "arn:aws:sqs:${var.aws_region}:*:*"
+          },
+          {
+            Sid    = "LambdaInvoke"
+            Effect = "Allow"
+            Action = [
+              "lambda:InvokeFunction"
+            ]
+            Resource = "arn:aws:lambda:${var.aws_region}:*:function:*"
           }
         ]
       })
@@ -475,16 +501,16 @@ module "adot_sidecar" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/adot-sidecar?ref=main"
 
   project_name              = var.project_name
-  service_name              = "legacy-api"
+  service_name              = "legacy-admin"
   aws_region                = var.aws_region
   amp_workspace_arn         = local.amp_workspace_arn
   amp_remote_write_endpoint = local.amp_remote_write_url
-  log_group_name            = module.legacy_api_logs.log_group_name
-  app_port                  = 8088
+  log_group_name            = module.legacy_admin_logs.log_group_name
+  app_port                  = 8089
   cluster_name              = data.aws_ecs_cluster.main.cluster_name
   environment               = var.environment
   config_bucket             = "prod-connectly"
-  config_version            = "20251215"
+  config_version            = "20251216"
 }
 
 # ========================================
@@ -494,18 +520,18 @@ module "ecs_service" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecs-service?ref=main"
 
   # Service Configuration
-  name            = "${var.project_name}-legacy-api-${var.environment}"
+  name            = "${var.project_name}-legacy-admin-${var.environment}"
   cluster_id      = data.aws_ecs_cluster.main.arn
-  container_name  = "legacy-api"
-  container_image = "${data.aws_ecr_repository.legacy_api.repository_url}:${var.image_tag}"
-  container_port  = 8088
-  cpu             = var.legacy_api_cpu
-  memory          = var.legacy_api_memory
-  desired_count   = var.legacy_api_desired_count
+  container_name  = "legacy-admin"
+  container_image = "${data.aws_ecr_repository.legacy_admin.repository_url}:${var.image_tag}"
+  container_port  = 8089
+  cpu             = var.legacy_admin_cpu
+  memory          = var.legacy_admin_memory
+  desired_count   = var.legacy_admin_desired_count
 
   # IAM Roles
-  execution_role_arn = module.legacy_api_task_execution_role.role_arn
-  task_role_arn      = module.legacy_api_task_role.role_arn
+  execution_role_arn = module.legacy_admin_task_execution_role.role_arn
+  task_role_arn      = module.legacy_admin_task_role.role_arn
 
   # Network Configuration
   subnet_ids         = local.private_subnets
@@ -514,9 +540,9 @@ module "ecs_service" {
 
   # Load Balancer Configuration
   load_balancer_config = {
-    target_group_arn = aws_lb_target_group.legacy_api.arn
-    container_name   = "legacy-api"
-    container_port   = 8088
+    target_group_arn = aws_lb_target_group.legacy_admin.arn
+    container_name   = "legacy-admin"
+    container_port   = 8089
   }
 
   # Health Check Grace Period (Legacy Spring Boot startup)
@@ -533,25 +559,26 @@ module "ecs_service" {
     { name = "REDIS_HOST", value = local.redis_host },
     { name = "REDIS_PORT", value = tostring(local.redis_port) },
     { name = "REDIS_DATABASE", value = "0" },
-    # Kakao OAuth
-    { name = "KAKAO_CLIENT_ID", value = "a12a765b27dfd19e5c5fc5a5a88963aa" }
+    # Service Token 인증 활성화 (서버 간 내부 통신용)
+    { name = "SECURITY_SERVICE_TOKEN_ENABLED", value = "true" }
   ]
 
   # Container Secrets (from Secrets Manager - 런타임에 읽음)
   container_secrets = [
     { name = "DB_USERNAME", valueFrom = "${data.aws_secretsmanager_secret.rds.arn}:username::" },
     { name = "DB_PASSWORD", valueFrom = "${data.aws_secretsmanager_secret.rds.arn}:password::" },
-    { name = "KAKAO_CLIENT_SECRET", valueFrom = "${data.aws_secretsmanager_secret.legacy.arn}:kakao_client_secret::" },
     { name = "JWT_SECRET", valueFrom = "${data.aws_secretsmanager_secret.legacy.arn}:jwt_secret::" },
     { name = "PORTONE_API_KEY", valueFrom = "${data.aws_secretsmanager_secret.legacy.arn}:portone_api_key::" },
     { name = "PORTONE_API_SECRET", valueFrom = "${data.aws_secretsmanager_secret.legacy.arn}:portone_api_secret::" },
     { name = "SLACK_TOKEN", valueFrom = "${data.aws_secretsmanager_secret.legacy.arn}:slack_token::" },
     { name = "AWS_ACCESS_KEY", valueFrom = "${data.aws_secretsmanager_secret.legacy.arn}:aws_access_key::" },
-    { name = "AWS_SECRET_KEY", valueFrom = "${data.aws_secretsmanager_secret.legacy.arn}:aws_secret_key::" }
+    { name = "AWS_SECRET_KEY", valueFrom = "${data.aws_secretsmanager_secret.legacy.arn}:aws_secret_key::" },
+    # Service Token Secret (서버 간 내부 통신 인증용)
+    { name = "SECURITY_SERVICE_TOKEN_SECRET", valueFrom = data.aws_ssm_parameter.service_token_secret.arn }
   ]
 
   # Health Check
-  health_check_command      = ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8088/actuator/health || exit 1"]
+  health_check_command      = ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8089/actuator/health || exit 1"]
   health_check_interval     = 30
   health_check_timeout      = 5
   health_check_retries      = 3
@@ -561,19 +588,19 @@ module "ecs_service" {
   log_configuration = {
     log_driver = "awslogs"
     options = {
-      "awslogs-group"         = module.legacy_api_logs.log_group_name
+      "awslogs-group"         = module.legacy_admin_logs.log_group_name
       "awslogs-region"        = var.aws_region
-      "awslogs-stream-prefix" = "legacy-api"
+      "awslogs-stream-prefix" = "legacy-admin"
     }
   }
 
   # ADOT Sidecar
   sidecars = [module.adot_sidecar.container_definition]
 
-  # Auto Scaling
+  # Auto Scaling (Admin은 트래픽이 적으므로 보수적 설정)
   enable_autoscaling        = true
-  autoscaling_min_capacity  = 2
-  autoscaling_max_capacity  = 10
+  autoscaling_min_capacity  = 1
+  autoscaling_max_capacity  = 4
   autoscaling_target_cpu    = 70
   autoscaling_target_memory = 80
 
