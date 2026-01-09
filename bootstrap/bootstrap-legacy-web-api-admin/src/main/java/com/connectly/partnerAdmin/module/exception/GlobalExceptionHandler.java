@@ -6,6 +6,7 @@ import com.connectly.partnerAdmin.module.common.exception.UnExpectedException;
 import com.connectly.partnerAdmin.module.notification.service.slack.SlackErrorIssueService;
 import com.connectly.partnerAdmin.module.payload.ApiResponse;
 import com.connectly.partnerAdmin.module.payload.ErrorResponse;
+import io.sentry.Sentry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 @RestController
 public class GlobalExceptionHandler {
 
-    private final SlackErrorIssueService slackErrorIssueService;
+    //private final SlackErrorIssueService slackErrorIssueService;
 
     private static final String ERROR_LOG_MSG_FORMAT = "ERROR Message : {}";
     private static final String CHECK_LOG_CODE_FORMAT = "Class : {}, Code : {}, Message : {}";
@@ -39,7 +40,7 @@ public class GlobalExceptionHandler {
 
         if(shouldSkipSlackMessage(e)) return;
 
-        slackErrorIssueService.sendSlackMessage(e);
+        //slackErrorIssueService.sendSlackMessage(e);
     }
 
     private boolean shouldSkipSlackMessage(ApplicationException e) {
@@ -55,7 +56,7 @@ public class GlobalExceptionHandler {
                     .collect(Collectors.joining("\n"));
         String logMessage = errorMsg + "\n" + stackTrace;
         log.error(ERROR_LOG_MSG_FORMAT, logMessage);
-        slackErrorIssueService.sendSlackMessage(e);
+        Sentry.captureException(e);
     }
 
 

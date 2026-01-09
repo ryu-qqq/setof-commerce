@@ -119,6 +119,8 @@ management:
   endpoint:
     health:
       show-details: when-authorized
+    prometheus:
+      enabled: true
 
   metrics:
     tags:

@@ -6,6 +6,7 @@ import com.setof.connectly.module.payload.ApiResponse;
 import com.setof.connectly.module.payload.CheckedErrorResponse;
 import com.setof.connectly.module.payload.ErrorResponse;
 import com.setof.connectly.module.utils.MessageUtils;
+import io.sentry.Sentry;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class GlobalExceptionHandler {
     private static final String CHECK_LOG_CODE_FORMAT = "Class : {}, Code : {}, Message : {}";
     private static final String DEFAULT_ERROR_MSG = "Invalid input format 유효하지 않은 요청 값 입니다.";
 
-    private final SlackErrorIssueService slackErrorIssueService;
+    //private final SlackErrorIssueService slackErrorIssueService;
 
     @ExceptionHandler(value = {HttpMessageNotReadableException.class})
     protected ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
@@ -46,7 +47,7 @@ public class GlobalExceptionHandler {
                         HttpStatus.BAD_REQUEST,
                         e.getClass().getSimpleName(),
                         detailMessage + e.getMessage());
-        slackErrorIssueService.sendSlackMessage(e);
+        //slackErrorIssueService.sendSlackMessage(e);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -66,7 +67,7 @@ public class GlobalExceptionHandler {
             ApiResponse<?> apiResponse = ApiResponse.dataNotFoundWithErrorMessage(message);
             return ResponseEntity.ok(apiResponse);
         } else {
-            slackErrorIssueService.sendSlackMessage(e);
+            //slackErrorIssueService.sendSlackMessage(e);
             ErrorResponse response = ErrorResponse.of(httpStatus, exceptionClassName, message);
             return ResponseEntity.status(response.getStatus()).body(response);
         }
@@ -89,7 +90,7 @@ public class GlobalExceptionHandler {
             ApiResponse<?> apiResponse = ApiResponse.dataNotFoundWithErrorMessage(message);
             return ResponseEntity.ok(apiResponse);
         } else {
-            slackErrorIssueService.sendSlackMessage(e);
+            //slackErrorIssueService.sendSlackMessage(e);
             ErrorResponse response =
                     CheckedErrorResponse.of(httpStatus, exceptionClassName, message, title);
             return ResponseEntity.status(response.getStatus()).body(response);
@@ -107,7 +108,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse response =
                 ErrorResponse.of(HttpStatus.BAD_REQUEST, exceptionClassName, errorMsg);
-        slackErrorIssueService.sendSlackMessage(e);
+        //slackErrorIssueService.sendSlackMessage(e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -119,7 +120,7 @@ public class GlobalExceptionHandler {
                         .map(StackTraceElement::toString)
                         .collect(Collectors.joining("\n"));
         log.error(stackTraceString);
-        slackErrorIssueService.sendSlackMessage(e);
+        Sentry.captureException(e);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
@@ -135,7 +136,7 @@ public class GlobalExceptionHandler {
                         .map(StackTraceElement::toString)
                         .collect(Collectors.joining("\n"));
         log.error(stackTraceString);
-        slackErrorIssueService.sendSlackMessage(e);
+        Sentry.captureException(e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -152,7 +153,7 @@ public class GlobalExceptionHandler {
                         .map(StackTraceElement::toString)
                         .collect(Collectors.joining("\n"));
         log.error(stackTraceString);
-        slackErrorIssueService.sendSlackMessage(e);
+        Sentry.captureException(e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -168,7 +169,7 @@ public class GlobalExceptionHandler {
                         .map(StackTraceElement::toString)
                         .collect(Collectors.joining("\n"));
         log.error(stackTraceString);
-        slackErrorIssueService.sendSlackMessage(e);
+        Sentry.captureException(e);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
