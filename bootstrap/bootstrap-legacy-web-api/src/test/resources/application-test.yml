@@ -1,0 +1,110 @@
+# ============================================================
+# Legacy Web API 테스트 환경 설정
+# ============================================================
+# Context Load 테스트용 최소 설정
+# ============================================================
+
+server:
+  port: 0  # 랜덤 포트
+
+spring:
+  # H2 인메모리 DB
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    hikari:
+      maximum-pool-size: 2
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    database-platform: org.hibernate.dialect.H2Dialect
+
+  # Redis 비활성화 (테스트에서는 불필요)
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  # OAuth2 테스트 설정
+  security:
+    oauth2.client:
+      registration:
+        kakao:
+          clientId: test-client-id
+          clientSecret: test-client-secret
+          clientAuthenticationMethod: client_secret_post
+          authorizationGrantType: authorization_code
+          redirectUri: "http://localhost/api/v1/login/oauth2/code/kakao"
+          scope:
+            - profile_nickname
+      provider:
+        kakao:
+          authorizationUri: https://kauth.kakao.com/oauth/authorize
+          tokenUri: https://kauth.kakao.com/oauth/token
+          userInfoUri: https://kapi.kakao.com/v2/user/me
+          userNameAttribute: id
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+# JWT
+token:
+  secret: test-jwt-secret-key-must-be-at-least-32-characters-long
+  ACCESS_TOKEN_EXPIRE_TIME: 1800000
+  REFRESH_TOKEN_EXPIRE_TIME: 10800000
+
+# AWS - 테스트용 더미 값
+aws:
+  accessKey: test-access-key
+  secretKey: test-secret-key
+  region: ap-northeast-2
+  bucket: test-bucket
+  assetUrl: test.cloudfront.net
+  tempBucket: test-temp-bucket
+  tempUrl: test-s3-url
+
+# PortOne - 테스트용 더미 값
+Import:
+  import-restApi: test-api-key
+  import-restApiSecret: test-api-secret
+  import-url: 'https://api.iamport.kr'
+
+# Admin API
+admin:
+  url: http://localhost:8089
+
+# Front
+front:
+  path: '.test.com'
+  web-domain: 'https://www.test.com'
+  s3-domain: 'https://cdn.test.com'
+  stage-domain: 'https://stage.test.com'
+
+# Slack
+slack:
+  token: test-slack-token
+  channel:
+    monitor: '#test-channel'
+    monitor2: '#test-channel'
+    monitor3: '#test-channel'
+
+# FileFlow (비활성화)
+fileflow:
+  client:
+    base-url: http://localhost:8082
+    callback-url: http://localhost/webhook
+    connect-timeout: 1000
+    read-timeout: 1000
+    service-token: test-token
+    service-name: test-service
+
+# Logging
+logging:
+  level:
+    root: WARN
+    com.setof.connectly: WARN
