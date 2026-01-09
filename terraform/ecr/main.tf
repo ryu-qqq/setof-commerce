@@ -33,6 +33,7 @@ module "ecr_web_api" {
   name                 = "${var.project_name}-web-api-${var.environment}"
   image_tag_mutability = "IMMUTABLE"
   scan_on_push         = true
+  encryption_type      = "AES256"  # AWS 관리형 암호화 (KMS 키 불필요)
 
   # Lifecycle Policy
   enable_lifecycle_policy    = true
@@ -62,6 +63,7 @@ module "ecr_web_api_admin" {
   name                 = "${var.project_name}-web-api-admin-${var.environment}"
   image_tag_mutability = "IMMUTABLE"
   scan_on_push         = true
+  encryption_type      = "AES256"  # AWS 관리형 암호화 (KMS 키 불필요)
 
   # Lifecycle Policy
   enable_lifecycle_policy    = true
@@ -92,6 +94,7 @@ module "ecr_legacy_api" {
   name                 = "${var.project_name}-legacy-api-${var.environment}"
   image_tag_mutability = "IMMUTABLE"
   scan_on_push         = true
+  encryption_type      = "AES256"  # AWS 관리형 암호화 (KMS 키 불필요)
 
   # Lifecycle Policy
   enable_lifecycle_policy    = true
@@ -122,6 +125,7 @@ module "ecr_legacy_api_admin" {
   name                 = "${var.project_name}-legacy-api-admin-${var.environment}"
   image_tag_mutability = "IMMUTABLE"
   scan_on_push         = true
+  encryption_type      = "AES256"  # AWS 관리형 암호화 (KMS 키 불필요)
 
   # Lifecycle Policy
   enable_lifecycle_policy    = true
@@ -153,6 +157,7 @@ module "ecr_legacy_batch" {
   name                 = "${var.project_name}-legacy-batch-${var.environment}"
   image_tag_mutability = "IMMUTABLE"
   scan_on_push         = true
+  encryption_type      = "AES256"  # AWS 관리형 암호화 (KMS 키 불필요)
 
   # Lifecycle Policy
   enable_lifecycle_policy    = true
@@ -184,6 +189,7 @@ module "ecr_migration" {
   name                 = "${var.project_name}-migration-${var.environment}"
   image_tag_mutability = "IMMUTABLE"
   scan_on_push         = true
+  encryption_type      = "AES256"  # AWS 관리형 암호화 (KMS 키 불필요)
 
   # Lifecycle Policy
   enable_lifecycle_policy    = true
