@@ -1,0 +1,147 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: bootstrap-batch
+
+  # ========================================
+  # Primary DataSource (setof - 신규 DB)
+  # Spring Batch 메타 테이블도 여기에 저장
+  # ========================================
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/setof?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul}
+    jdbc-url: ${DB_URL:jdbc:mysql://localhost:3306/setof?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: setof-batch-pool
+      jdbc-url: ${DB_URL:jdbc:mysql://localhost:3306/setof?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul}
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # ========================================
+  # Spring Batch Configuration
+  # ========================================
+  batch:
+    job:
+      enabled: false  # 자동 실행 비활성화 (API로 수동 실행)
+    jdbc:
+      initialize-schema: always  # 배치 메타 테이블 자동 생성
+
+# ========================================
+# Legacy DataSource (레거시 DB)
+# ========================================
+datasource:
+  legacy:
+    url: ${LEGACY_DB_URL:jdbc:mysql://localhost:3306/connectly?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul}
+    jdbc-url: ${LEGACY_DB_URL:jdbc:mysql://localhost:3306/connectly?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul}
+    username: ${LEGACY_DB_USERNAME:root}
+    password: ${LEGACY_DB_PASSWORD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: legacy-batch-pool
+      jdbc-url: ${LEGACY_DB_URL:jdbc:mysql://localhost:3306/connectly?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul}
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      read-only: false
+
+# ========================================
+# Batch Job Configuration
+# ========================================
+batch:
+  chunk-size: 100
+  skip-limit: 10
+  retry-limit: 3
+
+# ========================================
+# Shipment Tracker API
+# ========================================
+shipment:
+  tracker:
+    url: ${SHIPMENT_TRACKER_URL:https://info.sweettracker.co.kr/api/v1/trackingInfo?}
+    api-key: ${SHIPMENT_TRACKER_API_KEY:}
+
+# ========================================
+# Order API (for Cancel/PaymentFail processing)
+# ========================================
+order:
+  api:
+    url: ${ORDER_API_URL:http://localhost:8080}
+
+# ========================================
+# NHN Cloud AlimTalk API
+# ========================================
+nhn:
+  alimtalk:
+    url: ${NHN_ALIMTALK_URL:https://api-alimtalk.cloud.toast.com}
+    app-key: ${NHN_ALIMTALK_APP_KEY:}
+    secret-key: ${NHN_ALIMTALK_SECRET_KEY:}
+    sender-key: ${NHN_ALIMTALK_SENDER_KEY:}
+
+# ========================================
+# SELLIC External Mall API
+# ========================================
+sellic:
+  api:
+    url: ${SELLIC_API_URL:http://api.sellic.co.kr}
+    customer-id: ${SELLIC_CUSTOMER_ID:1012}
+    api-key: ${SELLIC_API_KEY:}
+    fetch-days: ${SELLIC_FETCH_DAYS:20}
+
+# ========================================
+# Spring Admin API (Legacy Web API Admin)
+# ECS 클러스터 내부: Service Discovery DNS 사용
+# ========================================
+admin-server:
+  url: ${ADMIN_SERVER_URL:http://localhost:8089}
+  api-key: ${ADMIN_SERVER_API_KEY:}
+  dry-run: ${ADMIN_SERVER_DRY_RUN:false}
+
+# ========================================
+# Logging
+# ========================================
+logging:
+  level:
+    root: INFO
+    com.ryuqq.setof.batch: DEBUG
+    org.springframework.batch: INFO
+    org.springframework.jdbc: DEBUG
+
+---
+# ========================================
+# Production Profile
+# ========================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+
+  batch:
+    jdbc:
+      initialize-schema: never  # 운영에서는 수동 관리
+
+datasource:
+  legacy:
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+
+logging:
+  level:
+    root: INFO
+    com.ryuqq.setof.batch: INFO
+    org.springframework.batch: WARN
+    org.springframework.jdbc: WARN

@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+}
+
+dependencies {
+    // Spring Boot
+    implementation libs.spring.boot.starter.web
+    implementation libs.spring.boot.starter.jdbc
+    implementation libs.spring.boot.starter.batch
+
+    // Database
+    runtimeOnly libs.mysql.connector
+
+    // UUID v7
+    implementation libs.uuid.creator
+
+    // Test
+    testImplementation libs.spring.boot.starter.test
+    testImplementation libs.spring.batch.test
+}
+
+bootJar {
+    enabled = true
+    archiveBaseName = 'bootstrap-batch'
+}
+
+jar {
+    enabled = false
+}
