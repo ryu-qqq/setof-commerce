@@ -3,6 +3,7 @@ package com.setof.connectly;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -26,6 +27,10 @@ class LegacyWebApiApplicationTest {
 
     @MockitoBean
     private S3Presigner s3Presigner;
+
+    // Redis는 CI 환경에 없으므로 Mock 처리
+    @MockitoBean
+    private StringRedisTemplate stringRedisTemplate;
 
     @Test
     @DisplayName("Spring Context가 정상적으로 로드되어야 한다")

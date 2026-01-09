@@ -8,6 +8,12 @@ server:
   port: 0  # 랜덤 포트
 
 spring:
+  # Redis Auto-Configuration 제외 (CI 환경에 Redis 없음)
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+
   # H2 인메모리 DB
   datasource:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
@@ -23,11 +29,7 @@ spring:
     show-sql: false
     database-platform: org.hibernate.dialect.H2Dialect
 
-  # Redis 비활성화 (테스트에서는 불필요)
-  data:
-    redis:
-      host: localhost
-      port: 6379
+  # Redis 설정 제거 (auto-configuration 제외됨)
 
   # OAuth2 테스트 설정
   security:
