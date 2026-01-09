@@ -13,9 +13,20 @@
 # Common Tags
 # ========================================
 locals {
-  # Note: Environment, Project, ManagedBy are already set via provider default_tags
-  # IAM tags are case-insensitive, so we exclude them here to avoid duplicates
   common_tags = {
+    environment  = var.environment
+    service_name = "${var.project_name}-legacy-batch"
+    team         = "platform-team"
+    owner        = "platform@ryuqqq.com"
+    cost_center  = "engineering"
+    project      = var.project_name
+    data_class   = "internal"
+  }
+
+  # IAM 리소스용 태그 (environment/project 제외)
+  # Provider default_tags에 Environment/Project가 있고
+  # IAM 태그는 대소문자 구분 안 함 → 중복 방지
+  iam_tags = {
     service_name = "${var.project_name}-legacy-batch"
     team         = "platform-team"
     owner        = "platform@ryuqqq.com"
@@ -213,12 +224,12 @@ module "legacy_batch_task_execution_role" {
     }
   }
 
-  environment  = local.common_tags.environment
+  environment  = var.environment
   service_name = local.common_tags.service_name
   team         = local.common_tags.team
   owner        = local.common_tags.owner
   cost_center  = local.common_tags.cost_center
-  project      = local.common_tags.project
+  project      = var.project_name
   data_class   = local.common_tags.data_class
 }
 
@@ -298,12 +309,12 @@ module "legacy_batch_task_role" {
     }
   }
 
-  environment  = local.common_tags.environment
+  environment  = var.environment
   service_name = local.common_tags.service_name
   team         = local.common_tags.team
   owner        = local.common_tags.owner
   cost_center  = local.common_tags.cost_center
-  project      = local.common_tags.project
+  project      = var.project_name
   data_class   = local.common_tags.data_class
 }
 
@@ -425,7 +436,7 @@ resource "aws_iam_role" "eventbridge_batch" {
     ]
   })
 
-  tags = local.common_tags
+  tags = local.iam_tags
 }
 
 resource "aws_iam_role_policy" "eventbridge_batch" {
@@ -465,6 +476,8 @@ resource "aws_iam_role_policy" "eventbridge_batch" {
 # Job: trackingShipmentJob
 # ========================================
 resource "aws_scheduler_schedule" "shipment_tracking" {
+  count = var.enable_eventbridge_schedules ? 1 : 0
+
   name       = "${var.project_name}-shipment-tracking-${var.environment}"
   group_name = "default"
 
@@ -510,6 +523,8 @@ resource "aws_scheduler_schedule" "shipment_tracking" {
 # Job: syncSellicOrderJob
 # ========================================
 resource "aws_scheduler_schedule" "sellic_sync" {
+  count = var.enable_eventbridge_schedules ? 1 : 0
+
   name       = "${var.project_name}-sellic-sync-${var.environment}"
   group_name = "default"
 
@@ -555,6 +570,8 @@ resource "aws_scheduler_schedule" "sellic_sync" {
 # Job: alimTalkNotifyJob
 # ========================================
 resource "aws_scheduler_schedule" "alimtalk_notify" {
+  count = var.enable_eventbridge_schedules ? 1 : 0
+
   name       = "${var.project_name}-alimtalk-notify-${var.environment}"
   group_name = "default"
 
@@ -600,6 +617,8 @@ resource "aws_scheduler_schedule" "alimtalk_notify" {
 # Job: updateCompletedOrdersJob
 # ========================================
 resource "aws_scheduler_schedule" "order_completed" {
+  count = var.enable_eventbridge_schedules ? 1 : 0
+
   name       = "${var.project_name}-order-completed-${var.environment}"
   group_name = "default"
 
@@ -645,6 +664,8 @@ resource "aws_scheduler_schedule" "order_completed" {
 # Job: updateSettlementOrdersJob
 # ========================================
 resource "aws_scheduler_schedule" "order_settlement" {
+  count = var.enable_eventbridge_schedules ? 1 : 0
+
   name       = "${var.project_name}-order-settlement-${var.environment}"
   group_name = "default"
 

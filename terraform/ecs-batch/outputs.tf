@@ -25,14 +25,14 @@ output "log_group_name" {
 }
 
 output "eventbridge_schedules" {
-  description = "EventBridge schedule names"
-  value = {
-    shipment_tracking = aws_scheduler_schedule.shipment_tracking.name
-    sellic_sync       = aws_scheduler_schedule.sellic_sync.name
-    alimtalk_notify   = aws_scheduler_schedule.alimtalk_notify.name
-    order_completed   = aws_scheduler_schedule.order_completed.name
-    order_settlement  = aws_scheduler_schedule.order_settlement.name
-  }
+  description = "EventBridge schedule names (empty if enable_eventbridge_schedules=false)"
+  value = var.enable_eventbridge_schedules ? {
+    shipment_tracking = aws_scheduler_schedule.shipment_tracking[0].name
+    sellic_sync       = aws_scheduler_schedule.sellic_sync[0].name
+    alimtalk_notify   = aws_scheduler_schedule.alimtalk_notify[0].name
+    order_completed   = aws_scheduler_schedule.order_completed[0].name
+    order_settlement  = aws_scheduler_schedule.order_settlement[0].name
+  } : {}
 }
 
 output "ecr_repository_url" {

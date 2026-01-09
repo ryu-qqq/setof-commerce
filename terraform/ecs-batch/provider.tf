@@ -87,6 +87,12 @@ variable "image_tag" {
   }
 }
 
+variable "enable_eventbridge_schedules" {
+  description = "Enable EventBridge Scheduler resources. Requires scheduler:* IAM permissions."
+  type        = bool
+  default     = false
+}
+
 # ========================================
 # Shared Resource References (SSM)
 # ========================================
