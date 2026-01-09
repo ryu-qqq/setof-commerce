@@ -138,7 +138,7 @@ module "ecs_security_group" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/security-group?ref=main"
 
   name        = "${var.project_name}-web-api-sg-${var.environment}"
-  description = "Security group for web-api ECS tasks - VPC internal only"
+  description = "Security group for web-api ECS tasks"
   vpc_id      = local.vpc_id
 
   type = "custom"
@@ -437,4 +437,15 @@ module "ecs_service" {
   cost_center  = local.common_tags.cost_center
   project      = local.common_tags.project
   data_class   = local.common_tags.data_class
+}
+
+# ========================================
+# Log Streaming to OpenSearch (V2 - Kinesis)
+# CloudWatch Logs → Kinesis → Lambda → OpenSearch
+# ========================================
+module "log_streaming" {
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/log-subscription-filter-v2?ref=main"
+
+  log_group_name = module.web_api_logs.log_group_name
+  service_name   = "web-api"
 }

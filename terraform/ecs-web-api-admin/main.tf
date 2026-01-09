@@ -449,3 +449,14 @@ module "ecs_service" {
   project      = local.common_tags.project
   data_class   = local.common_tags.data_class
 }
+
+# ========================================
+# Log Streaming to OpenSearch (V2 - Kinesis)
+# CloudWatch Logs → Kinesis → Lambda → OpenSearch
+# ========================================
+module "log_streaming" {
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/log-subscription-filter-v2?ref=main"
+
+  log_group_name = module.web_api_admin_logs.log_group_name
+  service_name   = "web-api-admin"
+}

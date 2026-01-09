@@ -684,3 +684,14 @@ resource "aws_scheduler_schedule" "order_settlement" {
 
   state = "DISABLED"
 }
+
+# ========================================
+# Log Streaming to OpenSearch (V2 - Kinesis)
+# CloudWatch Logs → Kinesis → Lambda → OpenSearch
+# ========================================
+module "log_streaming" {
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/log-subscription-filter-v2?ref=main"
+
+  log_group_name = module.legacy_batch_logs.log_group_name
+  service_name   = "legacy-batch"
+}
