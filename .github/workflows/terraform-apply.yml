@@ -68,9 +68,11 @@ jobs:
           - name: ecs-web-api-legacy-admin
             dir: terraform/ecs-web-api-legacy-admin
             order: 6
-          - name: ecs-migration
-            dir: terraform/ecs-migration
-            order: 7
+          # NOTE: ecs-migration 임시 비활성화 - legacy RDS 시크릿 미생성 상태
+          # 시크릿 생성 후 다시 활성화: setof-commerce/legacy-rds/credentials
+          # - name: ecs-migration
+          #   dir: terraform/ecs-migration
+          #   order: 7
           - name: ecs-batch
             dir: terraform/ecs-batch
             order: 8
