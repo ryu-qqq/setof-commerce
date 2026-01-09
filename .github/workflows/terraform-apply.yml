@@ -118,27 +118,27 @@ jobs:
             echo "📦 ECR Repository 리소스 Import 중..."
             if aws ecr describe-repositories --repository-names setof-commerce-web-api-prod --region ap-northeast-2 >/dev/null 2>&1; then
               echo "  → Importing setof-commerce-web-api-prod ECR repository..."
-              terraform import -input=false 'module.ecr_web_api.aws_ecr_repository.this[0]' setof-commerce-web-api-prod || echo "  ⚠️  Import failed or already in state"
+              terraform import -input=false 'module.ecr_web_api.aws_ecr_repository.this' setof-commerce-web-api-prod || echo "  ⚠️  Import failed or already in state"
             fi
             if aws ecr describe-repositories --repository-names setof-commerce-web-api-admin-prod --region ap-northeast-2 >/dev/null 2>&1; then
               echo "  → Importing setof-commerce-web-api-admin-prod ECR repository..."
-              terraform import -input=false 'module.ecr_web_api_admin.aws_ecr_repository.this[0]' setof-commerce-web-api-admin-prod || echo "  ⚠️  Import failed or already in state"
+              terraform import -input=false 'module.ecr_web_api_admin.aws_ecr_repository.this' setof-commerce-web-api-admin-prod || echo "  ⚠️  Import failed or already in state"
             fi
             if aws ecr describe-repositories --repository-names setof-commerce-legacy-api-prod --region ap-northeast-2 >/dev/null 2>&1; then
               echo "  → Importing setof-commerce-legacy-api-prod ECR repository..."
-              terraform import -input=false 'module.ecr_legacy_api.aws_ecr_repository.this[0]' setof-commerce-legacy-api-prod || echo "  ⚠️  Import failed or already in state"
+              terraform import -input=false 'module.ecr_legacy_api.aws_ecr_repository.this' setof-commerce-legacy-api-prod || echo "  ⚠️  Import failed or already in state"
             fi
             if aws ecr describe-repositories --repository-names setof-commerce-legacy-api-admin-prod --region ap-northeast-2 >/dev/null 2>&1; then
               echo "  → Importing setof-commerce-legacy-api-admin-prod ECR repository..."
-              terraform import -input=false 'module.ecr_legacy_api_admin.aws_ecr_repository.this[0]' setof-commerce-legacy-api-admin-prod || echo "  ⚠️  Import failed or already in state"
+              terraform import -input=false 'module.ecr_legacy_api_admin.aws_ecr_repository.this' setof-commerce-legacy-api-admin-prod || echo "  ⚠️  Import failed or already in state"
             fi
             if aws ecr describe-repositories --repository-names setof-commerce-migration-prod --region ap-northeast-2 >/dev/null 2>&1; then
               echo "  → Importing setof-commerce-migration-prod ECR repository..."
-              terraform import -input=false 'module.ecr_migration.aws_ecr_repository.this[0]' setof-commerce-migration-prod || echo "  ⚠️  Import failed or already in state"
+              terraform import -input=false 'module.ecr_migration.aws_ecr_repository.this' setof-commerce-migration-prod || echo "  ⚠️  Import failed or already in state"
             fi
             if aws ecr describe-repositories --repository-names setof-commerce-legacy-batch-prod --region ap-northeast-2 >/dev/null 2>&1; then
               echo "  → Importing setof-commerce-legacy-batch-prod ECR repository..."
-              terraform import -input=false 'module.ecr_legacy_batch.aws_ecr_repository.this[0]' setof-commerce-legacy-batch-prod || echo "  ⚠️  Import failed or already in state"
+              terraform import -input=false 'module.ecr_legacy_batch.aws_ecr_repository.this' setof-commerce-legacy-batch-prod || echo "  ⚠️  Import failed or already in state"
             fi
           fi
 
