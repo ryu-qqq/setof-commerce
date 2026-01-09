@@ -101,44 +101,56 @@ jobs:
         run: |
           echo "🔍 기존 리소스 확인 및 Import 중..."
 
+          # ECR 모듈: 항상 기존 리소스 import 시도 (apply 시 RepositoryAlreadyExistsException 방지)
+          if [ "${{ matrix.module.name }}" == "ecr" ]; then
+            echo "🧹 OLD ECR Repository state 정리 중..."
+            # OLD repo (setof-commerce-legacy-admin-prod - "-api-" 없는 이전 버전)가 state에 있으면 제거
+            # 이 repo는 더 이상 Terraform으로 관리하지 않음
+            OLD_ECR_RESOURCES=$(terraform state list 2>/dev/null | grep -E 'ecr.*legacy.*admin' | grep -v 'api' || true)
+            if [ -n "$OLD_ECR_RESOURCES" ]; then
+              echo "  ⚠️  OLD ECR resources found in state, removing to prevent force_delete..."
+              for resource in $OLD_ECR_RESOURCES; do
+                echo "  → Removing from state: $resource"
+                terraform state rm "$resource" || echo "  ⚠️  Failed to remove $resource"
+              done
+            fi
+
+            echo "📦 ECR Repository 리소스 Import 중..."
+            if aws ecr describe-repositories --repository-names setof-commerce-web-api-prod --region ap-northeast-2 >/dev/null 2>&1; then
+              echo "  → Importing setof-commerce-web-api-prod ECR repository..."
+              terraform import -input=false 'module.ecr_web_api.aws_ecr_repository.this[0]' setof-commerce-web-api-prod || echo "  ⚠️  Import failed or already in state"
+            fi
+            if aws ecr describe-repositories --repository-names setof-commerce-web-api-admin-prod --region ap-northeast-2 >/dev/null 2>&1; then
+              echo "  → Importing setof-commerce-web-api-admin-prod ECR repository..."
+              terraform import -input=false 'module.ecr_web_api_admin.aws_ecr_repository.this[0]' setof-commerce-web-api-admin-prod || echo "  ⚠️  Import failed or already in state"
+            fi
+            if aws ecr describe-repositories --repository-names setof-commerce-legacy-api-prod --region ap-northeast-2 >/dev/null 2>&1; then
+              echo "  → Importing setof-commerce-legacy-api-prod ECR repository..."
+              terraform import -input=false 'module.ecr_legacy_api.aws_ecr_repository.this[0]' setof-commerce-legacy-api-prod || echo "  ⚠️  Import failed or already in state"
+            fi
+            if aws ecr describe-repositories --repository-names setof-commerce-legacy-api-admin-prod --region ap-northeast-2 >/dev/null 2>&1; then
+              echo "  → Importing setof-commerce-legacy-api-admin-prod ECR repository..."
+              terraform import -input=false 'module.ecr_legacy_api_admin.aws_ecr_repository.this[0]' setof-commerce-legacy-api-admin-prod || echo "  ⚠️  Import failed or already in state"
+            fi
+            if aws ecr describe-repositories --repository-names setof-commerce-migration-prod --region ap-northeast-2 >/dev/null 2>&1; then
+              echo "  → Importing setof-commerce-migration-prod ECR repository..."
+              terraform import -input=false 'module.ecr_migration.aws_ecr_repository.this[0]' setof-commerce-migration-prod || echo "  ⚠️  Import failed or already in state"
+            fi
+            if aws ecr describe-repositories --repository-names setof-commerce-legacy-batch-prod --region ap-northeast-2 >/dev/null 2>&1; then
+              echo "  → Importing setof-commerce-legacy-batch-prod ECR repository..."
+              terraform import -input=false 'module.ecr_legacy_batch.aws_ecr_repository.this[0]' setof-commerce-legacy-batch-prod || echo "  ⚠️  Import failed or already in state"
+            fi
+          fi
+
           # Plan 실행하여 충돌 확인
           set +e
           terraform plan -out=tfplan 2>&1 | tee plan_output.txt
           PLAN_EXIT_CODE=$?
           set -e
 
-          # 409 에러 또는 "already exists" 패턴 확인
+          # 409 에러 또는 "already exists" 패턴 확인 (ECR 외 다른 모듈용)
           if grep -q "EntityAlreadyExists\|already exists" plan_output.txt; then
             echo "⚠️  기존 리소스 발견! Import 작업 시작..."
-
-            # ECR 모듈
-            if [ "${{ matrix.module.name }}" == "ecr" ]; then
-              echo "📦 ECR Repository 리소스 Import 중..."
-              if aws ecr describe-repositories --repository-names setof-commerce-web-api-prod --region ap-northeast-2 >/dev/null 2>&1; then
-                echo "  → Importing setof-commerce-web-api-prod ECR repository..."
-                terraform import -input=false 'module.ecr_web_api.aws_ecr_repository.this[0]' setof-commerce-web-api-prod || echo "  ⚠️  Import failed or already in state"
-              fi
-              if aws ecr describe-repositories --repository-names setof-commerce-web-api-admin-prod --region ap-northeast-2 >/dev/null 2>&1; then
-                echo "  → Importing setof-commerce-web-api-admin-prod ECR repository..."
-                terraform import -input=false 'module.ecr_web_api_admin.aws_ecr_repository.this[0]' setof-commerce-web-api-admin-prod || echo "  ⚠️  Import failed or already in state"
-              fi
-              if aws ecr describe-repositories --repository-names setof-commerce-legacy-api-prod --region ap-northeast-2 >/dev/null 2>&1; then
-                echo "  → Importing setof-commerce-legacy-api-prod ECR repository..."
-                terraform import -input=false 'module.ecr_legacy_api.aws_ecr_repository.this[0]' setof-commerce-legacy-api-prod || echo "  ⚠️  Import failed or already in state"
-              fi
-              if aws ecr describe-repositories --repository-names setof-commerce-legacy-api-admin-prod --region ap-northeast-2 >/dev/null 2>&1; then
-                echo "  → Importing setof-commerce-legacy-api-admin-prod ECR repository..."
-                terraform import -input=false 'module.ecr_legacy_api_admin.aws_ecr_repository.this[0]' setof-commerce-legacy-api-admin-prod || echo "  ⚠️  Import failed or already in state"
-              fi
-              if aws ecr describe-repositories --repository-names setof-commerce-migration-prod --region ap-northeast-2 >/dev/null 2>&1; then
-                echo "  → Importing setof-commerce-migration-prod ECR repository..."
-                terraform import -input=false 'module.ecr_migration.aws_ecr_repository.this[0]' setof-commerce-migration-prod || echo "  ⚠️  Import failed or already in state"
-              fi
-              if aws ecr describe-repositories --repository-names setof-commerce-legacy-batch-prod --region ap-northeast-2 >/dev/null 2>&1; then
-                echo "  → Importing setof-commerce-legacy-batch-prod ECR repository..."
-                terraform import -input=false 'module.ecr_legacy_batch.aws_ecr_repository.this[0]' setof-commerce-legacy-batch-prod || echo "  ⚠️  Import failed or already in state"
-              fi
-            fi
 
             # ECS Cluster 모듈
             if [ "${{ matrix.module.name }}" == "ecs-cluster" ]; then
