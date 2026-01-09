@@ -142,6 +142,46 @@ jobs:
             fi
           fi
 
+          # ECS 모듈: Security Group import 시도 (apply 시 InvalidGroup.Duplicate 방지)
+          if [[ "${{ matrix.module.name }}" == ecs-web-api* ]] || [[ "${{ matrix.module.name }}" == ecs-migration ]] || [[ "${{ matrix.module.name }}" == ecs-batch ]]; then
+            echo "🛡️  ECS Security Group Import 시도 중..."
+
+            # Security Group 이름 결정
+            case "${{ matrix.module.name }}" in
+              "ecs-web-api")
+                SG_NAME="setof-commerce-web-api-sg-prod"
+                ;;
+              "ecs-web-api-admin")
+                SG_NAME="setof-commerce-web-api-admin-sg-prod"
+                ;;
+              "ecs-web-api-legacy")
+                SG_NAME="setof-commerce-legacy-api-sg-prod"
+                ;;
+              "ecs-web-api-legacy-admin")
+                SG_NAME="setof-commerce-legacy-admin-sg-prod"
+                ;;
+              "ecs-migration")
+                SG_NAME="setof-commerce-migration-sg-prod"
+                ;;
+              "ecs-batch")
+                SG_NAME="setof-commerce-legacy-batch-sg-prod"
+                ;;
+              *)
+                SG_NAME=""
+                ;;
+            esac
+
+            if [ -n "$SG_NAME" ]; then
+              SG_ID=$(aws ec2 describe-security-groups --filters "Name=group-name,Values=$SG_NAME" --query 'SecurityGroups[0].GroupId' --output text --region ap-northeast-2 2>/dev/null || echo "")
+              if [ -n "$SG_ID" ] && [ "$SG_ID" != "None" ]; then
+                echo "  → Importing Security Group: $SG_NAME ($SG_ID)"
+                terraform import -input=false 'module.ecs_security_group.aws_security_group.this' "$SG_ID" || echo "  ⚠️  Import failed or already in state"
+              else
+                echo "  ℹ️  Security Group $SG_NAME not found in AWS (will be created)"
+              fi
+            fi
+          fi
+
           # Plan 실행하여 충돌 확인
           set +e
           terraform plan -out=tfplan 2>&1 | tee plan_output.txt
