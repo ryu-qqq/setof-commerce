@@ -13,13 +13,13 @@
 # Common Tags
 # ========================================
 locals {
+  # Note: Environment, Project, ManagedBy are already set via provider default_tags
+  # IAM tags are case-insensitive, so we exclude them here to avoid duplicates
   common_tags = {
-    environment  = var.environment
     service_name = "${var.project_name}-legacy-batch"
     team         = "platform-team"
     owner        = "platform@ryuqqq.com"
     cost_center  = "engineering"
-    project      = var.project_name
     data_class   = "internal"
   }
 }
