@@ -1,3 +1,13 @@
+// ============================================================
+// SetOf Commerce - Legacy Batch Module
+// ============================================================
+// Spring Batch jobs for legacy system integration:
+// - Sellic external mall order sync
+// - Delivery tracking (SweetTracker API)
+// - KakaoTalk notification
+// - Order status updates
+// ============================================================
+
 plugins {
     id 'java'
     id 'org.springframework.boot'
@@ -8,6 +18,22 @@ dependencies {
     implementation libs.spring.boot.starter.web
     implementation libs.spring.boot.starter.jdbc
     implementation libs.spring.boot.starter.batch
+    implementation libs.spring.boot.starter.actuator
+
+    // ========================================
+    // Observability
+    // ========================================
+    // Observability SDK v1.3.1 (TraceId + MDC Context propagation + @Loggable)
+    implementation libs.observability.adapter
+
+    // Sentry (Error Tracking)
+    implementation libs.sentry.spring.boot
+
+    // Micrometer Prometheus (for ADOT collector metrics scraping)
+    implementation libs.micrometer.prometheus
+
+    // Logstash Logback Encoder (JSON structured logging)
+    implementation libs.logstash.logback.encoder
 
     // Database
     runtimeOnly libs.mysql.connector

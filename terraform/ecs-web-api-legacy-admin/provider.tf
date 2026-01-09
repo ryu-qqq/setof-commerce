@@ -78,11 +78,11 @@ variable "legacy_admin_desired_count" {
 variable "image_tag" {
   description = "Docker image tag to deploy. Auto-set by GitHub Actions. Format: {component}-{build-number}-{git-sha}"
   type        = string
-  default     = "legacy-admin-1-initial" # Fallback only - GitHub Actions will override this
+  default     = "legacy-api-admin-46-4de8ac0" # Current running image - GitHub Actions will override this
 
   validation {
-    condition     = can(regex("^legacy-admin-[0-9]+-[a-zA-Z0-9]+$", var.image_tag))
-    error_message = "Image tag must follow format: legacy-admin-{build-number}-{git-sha} (e.g., legacy-admin-1-abc1234)"
+    condition     = can(regex("^legacy-api-admin-[0-9]+-[a-zA-Z0-9]+$", var.image_tag))
+    error_message = "Image tag must follow format: legacy-api-admin-{build-number}-{git-sha} (e.g., legacy-api-admin-1-abc1234)"
   }
 }
 

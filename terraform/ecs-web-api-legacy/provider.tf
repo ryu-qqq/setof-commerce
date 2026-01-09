@@ -78,7 +78,7 @@ variable "legacy_api_desired_count" {
 variable "image_tag" {
   description = "Docker image tag to deploy. Auto-set by GitHub Actions. Format: {component}-{build-number}-{git-sha}"
   type        = string
-  default     = "legacy-api-1-initial" # Fallback only - GitHub Actions will override this
+  default     = "legacy-api-46-4de8ac0" # Current running image - GitHub Actions will override this
 
   validation {
     condition     = can(regex("^legacy-api-[0-9]+-[a-zA-Z0-9]+$", var.image_tag))
