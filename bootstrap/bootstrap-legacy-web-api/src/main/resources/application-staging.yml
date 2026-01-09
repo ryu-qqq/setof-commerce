@@ -126,7 +126,6 @@ logging:
   level:
     root: INFO
     com.setof.connectly: INFO
-    com.setof.connectly.auth.filter.CustomLoggingFilter: INFO
     org.hibernate.SQL: WARN
     org.springframework: WARN
 

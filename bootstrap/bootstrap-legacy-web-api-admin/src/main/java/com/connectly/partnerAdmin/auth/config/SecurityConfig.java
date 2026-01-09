@@ -1,16 +1,13 @@
 package com.connectly.partnerAdmin.auth.config;
 
-import com.connectly.partnerAdmin.auth.filter.CustomLoggingFilter;
 import com.connectly.partnerAdmin.auth.filter.JwtAuthenticationFilter;
 import com.connectly.partnerAdmin.auth.handler.JwtAccessDeniedHandler;
 import com.connectly.partnerAdmin.auth.handler.JwtAuthorizationDeniedHandler;
 import com.connectly.partnerAdmin.auth.provider.AuthTokenProvider;
 import com.connectly.partnerAdmin.auth.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -70,14 +67,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-
-    @Bean
-    public FilterRegistrationBean<CustomLoggingFilter> loggingFilterRegistration() {
-        FilterRegistrationBean<CustomLoggingFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new CustomLoggingFilter());
-        registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        registration.setEnabled(false);
-        return registration;
-    }
-
+    // CustomLoggingFilter 제거됨 - SDK(observability-adapter)가 HTTP 로깅 담당
+    // SellerContextFilter(@Component)가 셀러 컨텍스트 MDC 추가 담당
 }

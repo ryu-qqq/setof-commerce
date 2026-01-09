@@ -1,7 +1,6 @@
 package com.setof.connectly.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.setof.connectly.auth.filter.CustomLoggingFilter;
 import com.setof.connectly.auth.filter.TokenAuthenticationExceptionFilter;
 import com.setof.connectly.auth.filter.TokenAuthenticationFilter;
 import com.setof.connectly.auth.handler.OAuth2AuthenticationFailureHandler;
@@ -15,10 +14,8 @@ import com.setof.connectly.module.user.service.fetch.UserFindServiceImpl;
 import com.setof.connectly.module.user.service.query.UserQueryServiceImpl;
 import com.setof.connectly.module.user.service.token.RefreshTokenRedisService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -126,11 +123,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public FilterRegistrationBean<CustomLoggingFilter> loggingFilterRegistration() {
-        FilterRegistrationBean<CustomLoggingFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new CustomLoggingFilter());
-        registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        return registration;
-    }
+    // CustomLoggingFilter 제거됨 - SDK(observability-adapter)가 HTTP 로깅 담당
+    // UserContextFilter(@Component)가 사용자 컨텍스트 MDC 추가 담당
 }
