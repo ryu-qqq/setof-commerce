@@ -515,7 +515,7 @@ resource "aws_scheduler_schedule" "shipment_tracking" {
     })
   }
 
-  state = "DISABLED" # 초기에는 비활성화, 테스트 후 활성화
+  state = "ENABLED"
 }
 
 # ========================================
@@ -562,7 +562,7 @@ resource "aws_scheduler_schedule" "sellic_sync" {
     })
   }
 
-  state = "DISABLED"
+  state = "ENABLED"
 }
 
 # ========================================
@@ -609,7 +609,7 @@ resource "aws_scheduler_schedule" "alimtalk_notify" {
     })
   }
 
-  state = "DISABLED"
+  state = "ENABLED"
 }
 
 # ========================================
@@ -656,7 +656,7 @@ resource "aws_scheduler_schedule" "order_completed" {
     })
   }
 
-  state = "DISABLED"
+  state = "ENABLED"
 }
 
 # ========================================
@@ -703,7 +703,7 @@ resource "aws_scheduler_schedule" "order_settlement" {
     })
   }
 
-  state = "DISABLED"
+  state = "ENABLED"
 }
 
 # ========================================
