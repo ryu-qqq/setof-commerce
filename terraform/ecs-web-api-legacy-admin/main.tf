@@ -607,7 +607,9 @@ module "ecs_service" {
   # Enable ECS Exec for debugging
   enable_execute_command = true
 
-  # Deployment Configuration
+  # Deployment Configuration - Zero-Downtime Rolling Update
+  deployment_maximum_percent         = 200  # 새 태스크 먼저 시작
+  deployment_minimum_healthy_percent = 50   # 최소 50% 유지
   deployment_circuit_breaker_enable   = true
   deployment_circuit_breaker_rollback = true
 
