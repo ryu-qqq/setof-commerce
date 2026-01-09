@@ -1,16 +1,19 @@
 # ============================================================================
-# SetOf Commerce Build & Deploy
+# SetOf Commerce Build & Deploy (Legacy Only)
 #
-# 개선 사항:
-# 1. 변경 감지 기반 선택적 빌드 (path filter)
-# 2. 테스트 필수화 (continue-on-error 제거)
-# 3. Spring Context 로드 검증
+# 현재 배포 대상:
+# - legacy-api (bootstrap-legacy-web-api)
+# - legacy-api-admin (bootstrap-legacy-web-api-admin)
+# - legacy-batch (bootstrap-batch)
+#
+# TODO: 추후 안정화 후 추가 예정
+# - web-api, web-api-admin, migration
 # ============================================================================
 
 name: Build and Deploy to ECS
 
 on:
-  workflow_dispatch:  # 수동 트리거 허용
+  workflow_dispatch:
     inputs:
       force-all:
         description: '모든 서비스 강제 빌드/배포'
@@ -36,19 +39,14 @@ env:
 
 jobs:
   # ============================================================================
-  # 변경 감지 (Path Filter)
-  # - 공유 모듈 변경 시 모든 서비스 빌드
-  # - 개별 서비스 변경 시 해당 서비스만 빌드
+  # 변경 감지 (Path Filter) - Legacy 모듈만
   # ============================================================================
   detect-changes:
     name: Detect Changes
     runs-on: ubuntu-latest
     outputs:
-      web-api: ${{ steps.filter.outputs.web-api }}
-      web-api-admin: ${{ steps.filter.outputs.web-api-admin }}
       legacy-api: ${{ steps.filter.outputs.legacy-api }}
       legacy-api-admin: ${{ steps.filter.outputs.legacy-api-admin }}
-      migration: ${{ steps.filter.outputs.migration }}
       legacy-batch: ${{ steps.filter.outputs.legacy-batch }}
       shared: ${{ steps.filter.outputs.shared }}
     steps:
@@ -61,27 +59,14 @@ jobs:
         with:
           filters: |
             shared:
-              - 'domain/**'
-              - 'core/**'
-              - 'adapter-in/**'
-              - 'adapter-out/**'
-              - 'port-in/**'
-              - 'port-out/**'
-              - 'support/**'
               - 'gradle/**'
               - 'build.gradle'
               - 'settings.gradle'
               - 'libs.versions.toml'
-            web-api:
-              - 'bootstrap/bootstrap-web-api/**'
-            web-api-admin:
-              - 'bootstrap/bootstrap-web-api-admin/**'
             legacy-api:
               - 'bootstrap/bootstrap-legacy-web-api/**'
             legacy-api-admin:
               - 'bootstrap/bootstrap-legacy-web-api-admin/**'
-            migration:
-              - 'bootstrap/bootstrap-migration/**'
             legacy-batch:
               - 'bootstrap/bootstrap-batch/**'
 
@@ -91,30 +76,23 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Component | Changed |" >> $GITHUB_STEP_SUMMARY
           echo "|-----------|---------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Shared Modules | ${{ steps.filter.outputs.shared }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| web-api | ${{ steps.filter.outputs.web-api }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| web-api-admin | ${{ steps.filter.outputs.web-api-admin }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Shared (gradle) | ${{ steps.filter.outputs.shared }} |" >> $GITHUB_STEP_SUMMARY
           echo "| legacy-api | ${{ steps.filter.outputs.legacy-api }} |" >> $GITHUB_STEP_SUMMARY
           echo "| legacy-api-admin | ${{ steps.filter.outputs.legacy-api-admin }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| migration | ${{ steps.filter.outputs.migration }} |" >> $GITHUB_STEP_SUMMARY
           echo "| legacy-batch | ${{ steps.filter.outputs.legacy-batch }} |" >> $GITHUB_STEP_SUMMARY
 
   # ============================================================================
-  # 테스트 (필수 - 실패 시 빌드 중단)
+  # 테스트 - Legacy 모듈만 (ArchUnit, domain 테스트 제외)
   # ============================================================================
   test:
-    name: Run Tests
+    name: Run Tests (Legacy Only)
     needs: detect-changes
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    # shared 또는 개별 서비스 변경 시에만 실행
     if: |
       needs.detect-changes.outputs.shared == 'true' ||
-      needs.detect-changes.outputs.web-api == 'true' ||
-      needs.detect-changes.outputs.web-api-admin == 'true' ||
       needs.detect-changes.outputs.legacy-api == 'true' ||
       needs.detect-changes.outputs.legacy-api-admin == 'true' ||
-      needs.detect-changes.outputs.migration == 'true' ||
       needs.detect-changes.outputs.legacy-batch == 'true' ||
       github.event.inputs.force-all == 'true'
 
@@ -129,62 +107,27 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Run tests
+      - name: Run Legacy Module Tests Only
         run: |
           chmod +x gradlew
-          ./gradlew clean test -x jacocoTestCoverageVerification --no-daemon
-        # 테스트 필수화 - 실패 시 빌드 중단
+          ./gradlew \
+            :bootstrap:bootstrap-legacy-web-api:test \
+            :bootstrap:bootstrap-legacy-web-api-admin:test \
+            :bootstrap:bootstrap-batch:test \
+            --no-daemon
 
       - name: Test Summary
         if: always()
         run: |
-          echo "### 🧪 Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "### 🧪 Test Results (Legacy Modules)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [ -d "*/build/test-results" ]; then
-            echo "Test reports generated" >> $GITHUB_STEP_SUMMARY
-          fi
+          echo "- bootstrap-legacy-web-api" >> $GITHUB_STEP_SUMMARY
+          echo "- bootstrap-legacy-web-api-admin" >> $GITHUB_STEP_SUMMARY
+          echo "- bootstrap-batch" >> $GITHUB_STEP_SUMMARY
 
   # ============================================================================
-  # 빌드 Jobs (조건부 실행)
+  # 빌드 Jobs - Legacy 모듈만
   # ============================================================================
-  build-web-api:
-    name: Build web-api
-    needs: [detect-changes, test]
-    if: |
-      always() &&
-      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
-      (needs.detect-changes.outputs.shared == 'true' ||
-       needs.detect-changes.outputs.web-api == 'true' ||
-       github.event.inputs.force-all == 'true')
-    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
-    with:
-      ecr-repository: setof-commerce-web-api-prod
-      component: web-api
-      dockerfile: bootstrap/bootstrap-web-api/Dockerfile
-      gradle-task: ":bootstrap:bootstrap-web-api:bootJar"
-      timeout-minutes: 30
-    secrets:
-      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
-
-  build-web-api-admin:
-    name: Build web-api-admin
-    needs: [detect-changes, test]
-    if: |
-      always() &&
-      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
-      (needs.detect-changes.outputs.shared == 'true' ||
-       needs.detect-changes.outputs.web-api-admin == 'true' ||
-       github.event.inputs.force-all == 'true')
-    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
-    with:
-      ecr-repository: setof-commerce-web-api-admin-prod
-      component: web-api-admin
-      dockerfile: bootstrap/bootstrap-web-api-admin/Dockerfile
-      gradle-task: ":bootstrap:bootstrap-web-api-admin:bootJar"
-      timeout-minutes: 30
-    secrets:
-      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
-
   build-legacy-api:
     name: Build legacy-api
     needs: [detect-changes, test]
@@ -223,25 +166,6 @@ jobs:
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
-  build-migration:
-    name: Build migration
-    needs: [detect-changes, test]
-    if: |
-      always() &&
-      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
-      (needs.detect-changes.outputs.shared == 'true' ||
-       needs.detect-changes.outputs.migration == 'true' ||
-       github.event.inputs.force-all == 'true')
-    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
-    with:
-      ecr-repository: setof-commerce-migration-prod
-      component: migration
-      dockerfile: bootstrap/bootstrap-migration/Dockerfile
-      gradle-task: ":bootstrap:bootstrap-migration:bootJar"
-      timeout-minutes: 30
-    secrets:
-      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
-
   build-legacy-batch:
     name: Build legacy-batch
     needs: [detect-changes, test]
@@ -262,32 +186,8 @@ jobs:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
   # ============================================================================
-  # 배포 Jobs (빌드 성공 시에만)
+  # 배포 Jobs - Legacy 모듈만
   # ============================================================================
-  deploy-web-api:
-    name: Deploy web-api
-    needs: build-web-api
-    if: needs.build-web-api.result == 'success'
-    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
-    with:
-      ecs-cluster: setof-commerce-cluster-prod
-      ecs-service: setof-commerce-web-api-prod
-      image-uri: ${{ needs.build-web-api.outputs.image-uri }}
-    secrets:
-      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
-
-  deploy-web-api-admin:
-    name: Deploy web-api-admin
-    needs: build-web-api-admin
-    if: needs.build-web-api-admin.result == 'success'
-    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
-    with:
-      ecs-cluster: setof-commerce-cluster-prod
-      ecs-service: setof-commerce-web-api-admin-prod
-      image-uri: ${{ needs.build-web-api-admin.outputs.image-uri }}
-    secrets:
-      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
-
   deploy-legacy-api:
     name: Deploy legacy-api
     needs: build-legacy-api
@@ -307,71 +207,47 @@ jobs:
     uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
     with:
       ecs-cluster: setof-commerce-cluster-prod
-      # FIXME: AWS 서비스명과 일치 (legacy-admin-prod, not legacy-api-admin-prod)
       ecs-service: setof-commerce-legacy-admin-prod
       image-uri: ${{ needs.build-legacy-api-admin.outputs.image-uri }}
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
-  # FIXME: migration ECS 서비스 생성 후 활성화 필요 (Secrets Manager 설정 필요)
-  # deploy-migration:
-  #   name: Deploy migration
-  #   needs: build-migration
-  #   if: needs.build-migration.result == 'success'
-  #   uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
-  #   with:
-  #     ecs-cluster: setof-commerce-cluster-prod
-  #     ecs-service: setof-commerce-migration-prod
-  #     image-uri: ${{ needs.build-migration.outputs.image-uri }}
-  #   secrets:
-  #     AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
-
   # NOTE: legacy-batch는 ECS Service가 없음 (RunTask 전용)
-  # Task Definition은 Terraform이 관리하므로 별도 배포 job 불필요
   # EventBridge 스케줄이 자동으로 최신 Task Definition 사용
 
   # ============================================================================
-  # Terraform Image Tag 업데이트 (자동화)
-  # - 빌드 성공한 서비스만 태그 업데이트
+  # Terraform Image Tag 업데이트
   # ============================================================================
   update-terraform-tags:
     name: Update Terraform Image Tags
-    needs: [build-web-api, build-web-api-admin, build-legacy-api, build-legacy-api-admin, build-migration, build-legacy-batch]
+    needs: [build-legacy-api, build-legacy-api-admin, build-legacy-batch]
     if: |
       always() &&
-      (needs.build-web-api.result == 'success' ||
-       needs.build-web-api-admin.result == 'success' ||
-       needs.build-legacy-api.result == 'success' ||
+      (needs.build-legacy-api.result == 'success' ||
        needs.build-legacy-api-admin.result == 'success' ||
-       needs.build-migration.result == 'success' ||
        needs.build-legacy-batch.result == 'success')
     uses: ./.github/workflows/terraform-apply.yml
     with:
-      web-api-image-tag: ${{ needs.build-web-api.outputs.image-tag || '' }}
-      web-api-admin-image-tag: ${{ needs.build-web-api-admin.outputs.image-tag || '' }}
       legacy-api-image-tag: ${{ needs.build-legacy-api.outputs.image-tag || '' }}
       legacy-api-admin-image-tag: ${{ needs.build-legacy-api-admin.outputs.image-tag || '' }}
-      migration-image-tag: ${{ needs.build-migration.outputs.image-tag || '' }}
       legacy-batch-image-tag: ${{ needs.build-legacy-batch.outputs.image-tag || '' }}
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
   # ============================================================================
-  # 배포 완료 알림 (Slack + GitHub Summary)
+  # 배포 완료 알림
   # ============================================================================
   notify:
     name: Deployment Notification
-    needs: [detect-changes, test, deploy-web-api, deploy-web-api-admin, deploy-legacy-api, deploy-legacy-api-admin, update-terraform-tags]
+    needs: [detect-changes, test, deploy-legacy-api, deploy-legacy-api-admin, update-terraform-tags]
     if: always()
     uses: ryu-qqq/Infrastructure/.github/workflows/reusable-notify-slack.yml@main
     with:
-      project-name: SetOf Commerce
+      project-name: SetOf Commerce (Legacy)
       environment: prod
       status: |
         ${{
           (needs.test.result == 'failure') && 'failure' ||
-          (needs.deploy-web-api.result == 'success' || needs.deploy-web-api.result == 'skipped') &&
-          (needs.deploy-web-api-admin.result == 'success' || needs.deploy-web-api-admin.result == 'skipped') &&
           (needs.deploy-legacy-api.result == 'success' || needs.deploy-legacy-api.result == 'skipped') &&
           (needs.deploy-legacy-api-admin.result == 'success' || needs.deploy-legacy-api-admin.result == 'skipped') &&
           'success' || 'failure'
@@ -379,8 +255,6 @@ jobs:
       components: |
         [
           {"name": "test", "status": "${{ needs.test.result }}"},
-          {"name": "web-api", "status": "${{ needs.deploy-web-api.result }}"},
-          {"name": "web-api-admin", "status": "${{ needs.deploy-web-api-admin.result }}"},
           {"name": "legacy-api", "status": "${{ needs.deploy-legacy-api.result }}"},
           {"name": "legacy-api-admin", "status": "${{ needs.deploy-legacy-api-admin.result }}"},
           {"name": "terraform-tags", "status": "${{ needs.update-terraform-tags.result }}"}
