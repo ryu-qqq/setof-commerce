@@ -121,6 +121,19 @@ jobs:
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
+  build-legacy-batch:
+    name: Build legacy-batch
+    needs: test
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
+    with:
+      ecr-repository: setof-commerce-legacy-batch-prod
+      component: legacy-batch
+      dockerfile: bootstrap/bootstrap-batch/Dockerfile
+      gradle-task: ":bootstrap:bootstrap-batch:bootJar"
+      timeout-minutes: 30
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
   # ============================================================================
   # 배포 Jobs
   # ============================================================================
@@ -181,12 +194,16 @@ jobs:
   #   secrets:
   #     AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
+  # NOTE: legacy-batch는 ECS Service가 없음 (RunTask 전용)
+  # Task Definition은 Terraform이 관리하므로 별도 배포 job 불필요
+  # EventBridge 스케줄이 자동으로 최신 Task Definition 사용
+
   # ============================================================================
   # Terraform Image Tag 업데이트 (자동화)
   # ============================================================================
   update-terraform-tags:
     name: Update Terraform Image Tags
-    needs: [build-web-api, build-web-api-admin, build-legacy-api, build-legacy-api-admin, build-migration]
+    needs: [build-web-api, build-web-api-admin, build-legacy-api, build-legacy-api-admin, build-migration, build-legacy-batch]
     uses: ./.github/workflows/terraform-apply.yml
     with:
       web-api-image-tag: ${{ needs.build-web-api.outputs.image-tag }}
@@ -194,12 +211,14 @@ jobs:
       legacy-api-image-tag: ${{ needs.build-legacy-api.outputs.image-tag }}
       legacy-api-admin-image-tag: ${{ needs.build-legacy-api-admin.outputs.image-tag }}
       migration-image-tag: ${{ needs.build-migration.outputs.image-tag }}
+      legacy-batch-image-tag: ${{ needs.build-legacy-batch.outputs.image-tag }}
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
   # ============================================================================
   # 배포 완료 알림 (Slack + GitHub Summary)
   # FIXME: migration 배포 활성화 후 needs에 deploy-migration 추가 필요
+  # NOTE: legacy-batch는 ECS Service 없음 (RunTask 전용, Terraform 관리)
   # ============================================================================
   notify:
     name: Deployment Notification

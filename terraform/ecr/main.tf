@@ -143,6 +143,37 @@ module "ecr_legacy_api_admin" {
 }
 
 # ========================================
+# ECR Repository: legacy-batch
+# ========================================
+# Legacy batch jobs: 배송조회, 주문동기화, 알림톡 등
+# Python Airflow 대체 Java Spring Batch
+module "ecr_legacy_batch" {
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
+
+  name                 = "${var.project_name}-legacy-batch-${var.environment}"
+  image_tag_mutability = "IMMUTABLE"
+  scan_on_push         = true
+
+  # Lifecycle Policy
+  enable_lifecycle_policy    = true
+  max_image_count            = 30
+  lifecycle_tag_prefixes     = ["v", "prod", "latest"]
+  untagged_image_expiry_days = 7
+
+  # SSM Parameter 비활성화 (Atlantis IAM 권한 제한)
+  create_ssm_parameter = false
+
+  # Required Tags (governance compliance)
+  environment  = local.common_tags.environment
+  service_name = "${var.project_name}-legacy-batch"
+  team         = local.common_tags.team
+  owner        = local.common_tags.owner
+  cost_center  = local.common_tags.cost_center
+  project      = local.common_tags.project
+  data_class   = local.common_tags.data_class
+}
+
+# ========================================
 # ECR Repository: migration
 # ========================================
 # Data migration service: Legacy DB -> New DB
