@@ -142,8 +142,15 @@ dependencies {
     // ========================================
     // Observability
     // ========================================
-    // Observability Starter (TraceId + MDC Context propagation)
-    implementation 'com.github.ryu-qqq.observability-spring-boot-starter:observability-starter:v1.1.1'
+    // Observability SDK v1.3.1 (TraceId + MDC Context propagation + @Loggable)
+    implementation libs.observability.adapter
+
+    // Sentry (Error Tracking)
+    implementation libs.sentry.core
+    implementation libs.sentry.spring.boot
+
+    // Micrometer Prometheus (for ADOT collector metrics scraping)
+    implementation libs.micrometer.prometheus
 
     // ========================================
     // Test Dependencies (from libs)

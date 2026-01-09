@@ -199,6 +199,7 @@ observability-adapter = { module = "com.github.ryu-qqq.observability-spring-boot
 # ========================================
 # Sentry
 # ========================================
+sentry-core = { module = "io.sentry:sentry", version.ref = "sentry" }
 sentry-spring-boot = { module = "io.sentry:sentry-spring-boot-starter-jakarta", version.ref = "sentry" }
 
 # ========================================
