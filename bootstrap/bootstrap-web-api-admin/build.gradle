@@ -48,8 +48,17 @@ dependencies {
     // ========================================
     // Observability
     // ========================================
-    // Observability Starter (TraceId + MDC Context propagation)
-    implementation libs.observability.starter
+    // Observability SDK v1.3.1 (TraceId + MDC Context propagation + @Loggable)
+    implementation libs.observability.adapter
+
+    // Sentry (Error Tracking)
+    implementation libs.sentry.spring.boot
+
+    // Micrometer Prometheus (for ADOT collector metrics scraping)
+    implementation libs.micrometer.prometheus
+
+    // Logstash Logback Encoder (JSON structured logging)
+    implementation libs.logstash.logback.encoder
 
     // ========================================
     // Database
