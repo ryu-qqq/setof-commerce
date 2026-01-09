@@ -1,3 +1,4 @@
+# Batch Module - SDK Observability 적용됨 (2026-01-09)
 server:
   port: 8082
 
@@ -104,6 +105,61 @@ admin-server:
   url: ${ADMIN_SERVER_URL:http://localhost:8089}
   api-key: ${ADMIN_SERVER_API_KEY:}
   dry-run: ${ADMIN_SERVER_DRY_RUN:false}
+
+# ========================================
+# Management & Actuator (ADOT Collector)
+# ========================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+
+  endpoint:
+    health:
+      show-details: when-authorized
+
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      environment: ${spring.profiles.active:local}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5,0.95,0.99
+      slo:
+        http.server.requests: 100ms,500ms,1s,5s
+    export:
+      prometheus:
+        enabled: true
+
+# ========================================
+# Observability (TraceId + MDC Context Propagation)
+# ========================================
+observability:
+  http:
+    enabled: true
+    log-request-body: false
+    log-response-body: false
+    exclude-paths:
+      - /actuator/**
+    exclude-headers:
+      - Authorization
+      - Cookie
+
+# ========================================
+# Sentry Configuration (Error Tracking)
+# ========================================
+sentry:
+  dsn: ${SENTRY_DSN:https://93171c7ddb8ad90ef418b7aa0b2b0efc@o4510661281644544.ingest.us.sentry.io/4510678108012544}
+  environment: ${spring.profiles.active:local}
+  release: ${APP_VERSION:unknown}
+  traces-sample-rate: 1.0
+  enable-tracing: true
+  ignored-exceptions-for-type:
+    - org.springframework.web.servlet.resource.NoResourceFoundException
 
 # ========================================
 # Logging
