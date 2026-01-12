@@ -19,23 +19,23 @@ import java.util.List;
 @FeignClient(name = "seWonClient", url="${sewon.host-url}")
 public interface SeWonClient {
 
-    @PostMapping("/get_category")
+    @PostMapping("/openapi/get_category")
     ResponseEntity<SeWonResponse<List<SeWonCategoryResponse>>> fetchSewonCategories(
             @RequestBody SeWonCategoryRequest seWonCategoryRequest
     );
 
-    @PostMapping("/set_ship")
+    @PostMapping("/openapi/set_ship")
     ResponseEntity<SeWonResponse<List<SellicShipmentResponseDto>>> createShipment(
             @RequestBody SellicShipmentRequestDto seWonShipmentRequestDto
     );
 
 
-    @PostMapping("/get_claim")
+    @PostMapping("/openapi/get_claim")
     ResponseEntity<SeWonResponse<List<SellicClaimOrderResponse>>> fetchClaimOrders(
             @RequestBody SellicClaimOrderRequest sellicClaimOrderRequest
     );
 
-    @PostMapping("/set_answer")
+    @PostMapping("/openapi/set_answer")
     ResponseEntity<SeWonResponse<Object>> createQna(
             @RequestBody SewonQnaRequest sewonQnaRequest
     );
