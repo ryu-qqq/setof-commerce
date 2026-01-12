@@ -562,7 +562,10 @@ module "ecs_service" {
     # Core Server (외부 API 통신용)
     { name = "CORE_SERVER_URL", value = "https://core-server.set-of.net" },
     # Service Token 인증 활성화 (서버 간 내부 통신용)
-    { name = "SECURITY_SERVICE_TOKEN_ENABLED", value = "true" }
+    { name = "SECURITY_SERVICE_TOKEN_ENABLED", value = "true" },
+    # SEWON (Sellic) 외부 API 연동
+    { name = "SEWON_URL", value = "http://api.sellic.co.kr" },
+    { name = "SEWON_CUSTOMER_ID", value = "1012" }
   ]
 
   # Container Secrets (from Secrets Manager - 런타임에 읽음)
@@ -576,7 +579,9 @@ module "ecs_service" {
     { name = "AWS_ACCESS_KEY", valueFrom = "${data.aws_secretsmanager_secret.legacy.arn}:aws_access_key::" },
     { name = "AWS_SECRET_KEY", valueFrom = "${data.aws_secretsmanager_secret.legacy.arn}:aws_secret_key::" },
     # Service Token Secret (서버 간 내부 통신 인증용)
-    { name = "SECURITY_SERVICE_TOKEN_SECRET", valueFrom = data.aws_ssm_parameter.service_token_secret.arn }
+    { name = "SECURITY_SERVICE_TOKEN_SECRET", valueFrom = data.aws_ssm_parameter.service_token_secret.arn },
+    # SEWON (Sellic) API Key
+    { name = "SEWON_API_KEY", valueFrom = "${data.aws_secretsmanager_secret.legacy.arn}:sellic_api_key::" }
   ]
 
   # Health Check
