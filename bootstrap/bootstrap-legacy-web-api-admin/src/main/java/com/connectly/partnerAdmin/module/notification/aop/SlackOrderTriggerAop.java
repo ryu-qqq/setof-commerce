@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Aspect
-@Component
+// @Component  // Slack 채널 삭제로 인해 비활성화
 @RequiredArgsConstructor
 public class SlackOrderTriggerAop {
     private final SlackOrderIssueService slackOrderIssueService;

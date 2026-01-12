@@ -15,7 +15,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 @Aspect
-@Component
+// @Component  // Slack 채널 삭제로 인해 비활성화
 @RequiredArgsConstructor
 public class SlackQnaTriggerAop {
 

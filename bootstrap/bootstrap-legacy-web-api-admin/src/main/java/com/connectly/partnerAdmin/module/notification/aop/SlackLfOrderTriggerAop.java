@@ -16,7 +16,7 @@ import com.connectly.partnerAdmin.module.notification.service.slack.SlackOrderIs
 import lombok.RequiredArgsConstructor;
 
 @Aspect
-@Component
+// @Component  // Slack 채널 삭제로 인해 비활성화
 @RequiredArgsConstructor
 public class SlackLfOrderTriggerAop {
     private final SlackOrderIssueService slackOrderIssueService;

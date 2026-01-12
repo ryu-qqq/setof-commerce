@@ -50,6 +50,12 @@ public abstract class AbstractSellicOrderUpdateService<T extends UpdateOrder>  i
 
         ResponseEntity<SeWonResponse<List<SellicClaimOrderResponse>>> response = seWonClient.fetchClaimOrders(sellicClaimOrderRequest);
         List<SellicClaimOrderResponse> sellicClaimOrderResponses = sewonResponseHandler.handleResponse(response);
+
+        // datas가 null인 경우 (클레임 데이터 없음) 처리
+        if (sellicClaimOrderResponses == null || sellicClaimOrderResponses.isEmpty()) {
+            return;
+        }
+
         Optional<SellicClaimOrderResponse> sellicClaimOrderResponseOpt = sellicClaimOrderResponses.stream()
                 .filter(sellicClaimOrderResponse -> sellicClaimOrderResponse.getIdx() == externalOrderId)
                 .findFirst();
