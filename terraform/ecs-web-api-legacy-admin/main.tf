@@ -559,6 +559,8 @@ module "ecs_service" {
     { name = "REDIS_HOST", value = local.redis_host },
     { name = "REDIS_PORT", value = tostring(local.redis_port) },
     { name = "REDIS_DATABASE", value = "0" },
+    # Core Server (외부 API 통신용)
+    { name = "CORE_SERVER_URL", value = "https://core-server.set-of.net" },
     # Service Token 인증 활성화 (서버 간 내부 통신용)
     { name = "SECURITY_SERVICE_TOKEN_ENABLED", value = "true" }
   ]
@@ -600,7 +602,7 @@ module "ecs_service" {
   # Auto Scaling (Admin은 트래픽이 적으므로 보수적 설정)
   enable_autoscaling        = true
   autoscaling_min_capacity  = 1
-  autoscaling_max_capacity  = 4
+  autoscaling_max_capacity  = 3
   autoscaling_target_cpu    = 70
   autoscaling_target_memory = 80
 
