@@ -8,6 +8,8 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.lambda.LambdaClient;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.sqs.SqsClient;
 
 /**
@@ -47,6 +49,30 @@ public class AWSConfig {
                 StaticCredentialsProvider.create(awsCredentials);
 
         return SqsClient.builder()
+                .region(Region.of(region))
+                .credentialsProvider(staticCredentialsProvider)
+                .build();
+    }
+
+    @Bean
+    public S3Client s3Client() {
+        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(accessKey, secretKey);
+        StaticCredentialsProvider staticCredentialsProvider =
+                StaticCredentialsProvider.create(awsCredentials);
+
+        return S3Client.builder()
+                .region(Region.of(region))
+                .credentialsProvider(staticCredentialsProvider)
+                .build();
+    }
+
+    @Bean
+    public S3Presigner s3Presigner() {
+        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(accessKey, secretKey);
+        StaticCredentialsProvider staticCredentialsProvider =
+                StaticCredentialsProvider.create(awsCredentials);
+
+        return S3Presigner.builder()
                 .region(Region.of(region))
                 .credentialsProvider(staticCredentialsProvider)
                 .build();

@@ -28,20 +28,26 @@ public class ImageController {
     private final ImageUploadService imageUploadService;
 
     /**
-     * Presigned URL 발급 - FileFlow 마이그레이션 후 재구현 예정
+     * Presigned URL 발급.
+     *
+     * <p>클라이언트가 직접 S3에 업로드할 수 있는 Presigned URL을 발급합니다.
      */
     @PostMapping("/image/presigned")
     public ResponseEntity<ApiResponse<PreSignedUrlResponse>> getContent(
             @RequestBody @Validated PreSignedUrlRequest preSignedUrlRequest) {
-        throw new UnsupportedOperationException("FileFlow 마이그레이션 진행 중 - 임시 비활성화");
+        return ResponseEntity.ok(
+                ApiResponse.success(imageUploadService.getPreSignedUrl(preSignedUrlRequest)));
     }
 
     /**
-     * 업로드 완료 처리 - FileFlow 마이그레이션 후 재구현 예정
+     * 업로드 완료 처리.
+     *
+     * <p>클라이언트가 Presigned URL로 S3에 업로드를 완료한 후 호출합니다.
      */
     @PostMapping("/image/complete")
     public ResponseEntity<ApiResponse<Void>> completeUpload(
             @RequestBody @Validated UploadCompleteRequest request) {
-        throw new UnsupportedOperationException("FileFlow 마이그레이션 진행 중 - 임시 비활성화");
+        imageUploadService.completeUpload(request.getSessionId(), request.getEtag());
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }
