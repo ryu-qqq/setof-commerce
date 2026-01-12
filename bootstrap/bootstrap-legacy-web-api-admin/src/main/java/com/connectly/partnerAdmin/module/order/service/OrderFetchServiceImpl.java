@@ -80,6 +80,12 @@ public class OrderFetchServiceImpl implements OrderFetchService {
     public CustomPageable<OrderListResponse> fetchOrders(OrderFilter filter, Pageable pageable) {
         List<OrderListResponse> results = orderFetchRepository.fetchOrders(filter, pageable);
 
+        // 조회 결과가 없으면 스냅샷/히스토리 조회 없이 조기 반환 (풀스캔 방지)
+        if (results.isEmpty()) {
+            long totalCount = fetchOrderCount(filter);
+            return orderPageableMapper.toOrderResponse(results, pageable, totalCount);
+        }
+
         List<Long> orderIds = results.stream()
                 .map(OrderListResponse::getOrderId)
                 .collect(Collectors.toList());
