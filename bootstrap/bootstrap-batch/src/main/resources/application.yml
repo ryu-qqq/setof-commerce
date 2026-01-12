@@ -95,7 +95,7 @@ sellic:
     url: ${SELLIC_API_URL:http://api.sellic.co.kr}
     customer-id: ${SELLIC_CUSTOMER_ID:1012}
     api-key: ${SELLIC_API_KEY:}
-    fetch-days: ${SELLIC_FETCH_DAYS:20}
+    fetch-days: ${SELLIC_FETCH_DAYS:2}
 
 # ========================================
 # Spring Admin API (Legacy Web API Admin)

@@ -40,7 +40,7 @@ public class SellicClient {
     @Value("${sellic.api.api-key:}")
     private String apiKey;
 
-    @Value("${sellic.api.fetch-days:20}")
+    @Value("${sellic.api.fetch-days:2}")
     private int fetchDays;
 
     public SellicClient(RestTemplate restTemplate, ObjectMapper objectMapper) {
