@@ -1,5 +1,7 @@
 package com.ryuqq.setof.batch.legacy.notification;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ryuqq.setof.batch.legacy.notification.client.NhnCloudAlimTalkClient;
 import com.ryuqq.setof.batch.legacy.notification.dto.AlimTalkSendResult;
 import com.ryuqq.setof.batch.legacy.notification.dto.MessageQueueItem;
@@ -7,6 +9,7 @@ import com.ryuqq.setof.batch.legacy.notification.enums.AlimTalkTemplateCode;
 import com.ryuqq.setof.batch.legacy.notification.enums.MessageStatus;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +51,7 @@ public class AlimTalkNotifyJobConfig {
     private final DataSource legacyDataSource;
     private final NamedParameterJdbcTemplate legacyJdbcTemplate;
     private final NhnCloudAlimTalkClient alimTalkClient;
+    private final ObjectMapper objectMapper;
 
     @Value("${batch.chunk-size:100}")
     private int chunkSize;
@@ -58,10 +62,12 @@ public class AlimTalkNotifyJobConfig {
     public AlimTalkNotifyJobConfig(
             @Qualifier("legacyDataSource") DataSource legacyDataSource,
             @Qualifier("legacyNamedJdbcTemplate") NamedParameterJdbcTemplate legacyJdbcTemplate,
-            NhnCloudAlimTalkClient alimTalkClient) {
+            NhnCloudAlimTalkClient alimTalkClient,
+            ObjectMapper objectMapper) {
         this.legacyDataSource = legacyDataSource;
         this.legacyJdbcTemplate = legacyJdbcTemplate;
         this.alimTalkClient = alimTalkClient;
+        this.objectMapper = objectMapper;
     }
 
     @Bean
@@ -92,12 +98,10 @@ public class AlimTalkNotifyJobConfig {
         return new JdbcPagingItemReaderBuilder<MessageQueueItem>()
                 .name("pendingMessageReader")
                 .dataSource(legacyDataSource)
-                .selectClause(
-                        "SELECT message_id, order_id, phone_number, template_code,"
-                                + " template_variables, status, created_at")
+                .selectClause("SELECT message_id, TEMPLATE_CODE, PARAMETERS, STATUS, INSERT_DATE")
                 .fromClause("FROM message_queue")
-                .whereClause("WHERE status = :status")
-                .parameterValues(Map.of("status", MessageStatus.PENDING.name()))
+                .whereClause("WHERE STATUS = :status AND delete_yn = 'N'")
+                .parameterValues(Map.of("status", MessageStatus.PENDING.getValue()))
                 .sortKeys(sortKeys)
                 .pageSize(chunkSize)
                 .rowMapper(this::mapToMessageQueueItem)
@@ -105,14 +109,35 @@ public class AlimTalkNotifyJobConfig {
     }
 
     private MessageQueueItem mapToMessageQueueItem(ResultSet rs, int rowNum) throws SQLException {
+        String parameters = rs.getString("PARAMETERS");
+        String phoneNumber = extractPhoneNumber(parameters);
+        String templateCode = rs.getString("TEMPLATE_CODE");
+
+        Timestamp insertDate = rs.getTimestamp("INSERT_DATE");
+        LocalDateTime createdAt =
+                insertDate != null ? insertDate.toLocalDateTime() : LocalDateTime.now();
+
         return new MessageQueueItem(
                 rs.getLong("message_id"),
-                rs.getLong("order_id"),
-                rs.getString("phone_number"),
-                AlimTalkTemplateCode.valueOf(rs.getString("template_code")),
-                rs.getString("template_variables"),
-                MessageStatus.valueOf(rs.getString("status")),
-                rs.getTimestamp("created_at").toLocalDateTime());
+                phoneNumber,
+                AlimTalkTemplateCode.valueOf(templateCode),
+                parameters,
+                MessageStatus.fromValue(rs.getString("STATUS")),
+                createdAt);
+    }
+
+    private String extractPhoneNumber(String parameters) {
+        if (parameters == null || parameters.isEmpty()) {
+            return null;
+        }
+        try {
+            JsonNode node = objectMapper.readTree(parameters);
+            JsonNode recipientNo = node.get("recipientNo");
+            return recipientNo != null ? recipientNo.asText() : null;
+        } catch (Exception e) {
+            log.warn("Failed to parse PARAMETERS JSON: {}", parameters, e);
+            return null;
+        }
     }
 
     @Bean
@@ -129,20 +154,16 @@ public class AlimTalkNotifyJobConfig {
             String sql =
                     """
                     UPDATE message_queue
-                    SET status = :status,
-                        response_code = :responseCode,
-                        response_message = :responseMessage,
-                        sent_at = :sentAt
+                    SET STATUS = :status,
+                        UPDATE_DATE = :updateDate
                     WHERE message_id = :messageId
                     """;
 
             for (AlimTalkSendResult result : results) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("messageId", result.messageId());
-                params.put("status", result.status().name());
-                params.put("responseCode", result.responseCode());
-                params.put("responseMessage", result.responseMessage());
-                params.put("sentAt", LocalDateTime.now());
+                params.put("status", result.status().getValue());
+                params.put("updateDate", LocalDateTime.now());
 
                 legacyJdbcTemplate.update(sql, params);
 
