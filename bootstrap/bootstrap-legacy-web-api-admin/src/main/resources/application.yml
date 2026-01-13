@@ -41,6 +41,20 @@ sentry:
     - org.springframework.security.access.AccessDeniedException
 
 # ============================================================
+# External Service URLs (FeignClient)
+# ============================================================
+# 기본값은 로컬 개발용, 프로필별/환경변수로 오버라이드
+core-server:
+  host-url: ${CORE_SERVER_URL:http://localhost:8088}
+
+sewon:
+  url: ${SEWON_URL:http://localhost:8099}
+  customer-id: ${SEWON_CUSTOMER_ID:1012}
+
+oco:
+  url: ${OCO_URL:http://localhost:9001}
+
+# ============================================================
 # Management & Actuator
 # ============================================================
 management:
