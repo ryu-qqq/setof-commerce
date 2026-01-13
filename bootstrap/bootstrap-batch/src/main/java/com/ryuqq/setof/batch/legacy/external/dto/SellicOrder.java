@@ -13,6 +13,9 @@ public class SellicOrder {
     @JsonProperty("ORDER_ID")
     private String orderId;
 
+    @JsonProperty("ORDER_SUB_ID")
+    private String orderSubId;
+
     @JsonProperty("ORDER_STATUS")
     private long orderStatus;
 
@@ -78,6 +81,10 @@ public class SellicOrder {
 
     public String getOrderId() {
         return orderId;
+    }
+
+    public String getOrderSubId() {
+        return orderSubId;
     }
 
     public long getOrderStatus() {
@@ -163,6 +170,7 @@ public class SellicOrder {
                    "type": "sellicOrder",
                    "IDX": %d,
                    "ORDER_ID": "%s",
+                   "ORDER_SUB_ID": "%s",
                    "ORDER_STATUS": %d,
                    "ORDER_DATE": "%s",
                    "ORDER_TYPE": %d,
@@ -187,6 +195,7 @@ public class SellicOrder {
                 .formatted(
                         idx,
                         orderId != null ? orderId : "",
+                        orderSubId != null ? orderSubId : "",
                         orderStatus,
                         orderDate != null ? orderDate : "",
                         orderType,

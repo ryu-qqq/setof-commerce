@@ -33,6 +33,9 @@ public class SellicOrder implements ExMallOrder, ExMallShipping, ExMallOrderProd
     @JsonProperty("ORDER_ID")
     private String orderId;
 
+    @JsonProperty("ORDER_SUB_ID")
+    private String orderSubId;
+
     @JsonProperty("ORDER_STATUS")
     private long orderStatus;
 
@@ -132,6 +135,9 @@ public class SellicOrder implements ExMallOrder, ExMallShipping, ExMallOrderProd
 
     @Override
     public String getExMallOrderCode() {
+        if (StringUtils.hasText(orderSubId)) {
+            return orderId + "_" + orderSubId;
+        }
         return orderId;
     }
 
