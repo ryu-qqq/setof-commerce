@@ -118,7 +118,7 @@ aws:
   accessKey: ${AWS_ACCESS_KEY}
   secretKey: ${AWS_SECRET_KEY}
   region: ap-northeast-2
-  assetUrl: d3fej89xf1vai5.cloudfront.net
+  assetUrl: cdn.set-of.com
   tempUrl: s3.ap-northeast-2.amazonaws.com/temp-set-of.net
 
 # ============================================================
