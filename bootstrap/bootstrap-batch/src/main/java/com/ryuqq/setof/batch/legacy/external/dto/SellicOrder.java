@@ -194,26 +194,38 @@ public class SellicOrder {
                """
                 .formatted(
                         idx,
-                        orderId != null ? orderId : "",
-                        orderSubId != null ? orderSubId : "",
+                        escapeJson(orderId),
+                        escapeJson(orderSubId),
                         orderStatus,
-                        orderDate != null ? orderDate : "",
+                        escapeJson(orderDate),
                         orderType,
-                        userName != null ? userName : "",
-                        userTel != null ? userTel : "",
-                        userCel != null ? userCel : "",
-                        deliveryMsg != null ? deliveryMsg : "",
-                        receiveName != null ? receiveName : "",
-                        receiverCel != null ? receiverCel : "",
-                        zipCode != null ? zipCode : "",
-                        receiveAddr != null ? receiveAddr.replace("\"", "\\\"") : "",
+                        escapeJson(userName),
+                        escapeJson(userTel),
+                        escapeJson(userCel),
+                        escapeJson(deliveryMsg),
+                        escapeJson(receiveName),
+                        escapeJson(receiverCel),
+                        escapeJson(zipCode),
+                        escapeJson(receiveAddr),
                         paymentAmount,
                         externalProductGroupId,
-                        mallProductId != null ? mallProductId : "",
-                        optionName != null ? optionName.replace("\"", "\\\"") : "",
+                        escapeJson(mallProductId),
+                        escapeJson(optionName),
                         qty,
-                        productGroupId != null ? productGroupId : "",
+                        escapeJson(productGroupId),
                         siteId,
-                        mallId != null ? mallId : "");
+                        escapeJson(mallId));
+    }
+
+    /** JSON 문자열 이스케이프 처리 */
+    private String escapeJson(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
     }
 }
