@@ -1,0 +1,425 @@
+---
+description: Application Layer 코딩 규칙 (UseCase, Service, Manager, Facade)
+globs: ["**/application/**/*.java"]
+alwaysApply: false
+---
+
+# Application Layer Rules (103개 규칙)
+
+Application Layer는 UseCase 오케스트레이션을 담당합니다. Domain을 조합하고 Port를 통해 외부와 통신합니다.
+
+---
+
+## 핵심 원칙 (Zero-Tolerance)
+
+| Code | Rule | Detection |
+|------|------|-----------|
+| C-001 | Lombok 금지 | `@Data`, `@Builder`, `@Getter` |
+| C-004 | @Transactional Manager/Facade만 | Service, Factory에 `@Transactional` |
+| CDTO-001 | Command DTO Record 필수 | class 키워드 Command DTO |
+| UC-001 | UseCase Interface | class로 직접 구현 |
+
+---
+
+## 컴포넌트 역할 분담
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Application Layer                        │
+├──────────┬──────────┬──────────┬──────────┬────────────────┤
+│ UseCase  │ Service  │ Manager  │ Facade   │ Factory/Asm   │
+│ (Port-In)│ (조합)   │ (TX)     │ (Multi)  │ (변환)        │
+├──────────┼──────────┼──────────┼──────────┼────────────────┤
+│ Interface│ 비즈니스 │ 단일Port │ 2+ Mgr   │ DTO↔Domain    │
+│ 정의     │ 로직조합 │ @Tx      │ @Tx      │ 변환          │
+│          │ No @Tx   │ persist* │ fetch*   │               │
+└──────────┴──────────┴──────────┴──────────┴────────────────┘
+```
+
+---
+
+## UseCase (UC-*)
+
+### Interface 정의 (Port-In)
+```java
+// Command UseCase
+public interface CreateOrderUseCase {
+    Long execute(CreateOrderCommand command);
+}
+
+// Query UseCase
+public interface GetOrderUseCase {
+    OrderResponse execute(GetOrderQuery query);
+}
+```
+
+### Service 구현
+```java
+@Component
+public class CreateOrderService implements CreateOrderUseCase {
+
+    private final OrderCommandFactory factory;
+    private final OrderManager manager;
+
+    public CreateOrderService(OrderCommandFactory factory, OrderManager manager) {
+        this.factory = factory;
+        this.manager = manager;
+    }
+
+    @Override
+    public Long execute(CreateOrderCommand command) {
+        // 1. Factory로 Domain 생성
+        PersistBundle bundle = factory.create(command);
+
+        // 2. Manager로 영속화
+        return manager.persistOrder(bundle);
+    }
+}
+```
+
+### UC 규칙 상세
+
+| Code | Rule | Severity |
+|------|------|----------|
+| UC-001 | Interface로 정의 | BLOCKER |
+| UC-002 | Command/Query 분리 | CRITICAL |
+| UC-003 | 단일 public execute() 메서드 | CRITICAL |
+| UC-004 | @Transactional 금지 | BLOCKER |
+| UC-005 | Port 통한 의존성 주입 | MAJOR |
+
+---
+
+## Service (SVC-*)
+
+Service는 비즈니스 로직을 조합합니다. **@Transactional 금지**.
+
+```java
+@Component
+public class OrderService {
+
+    private final OrderFactory factory;
+    private final OrderAssembler assembler;
+
+    // ❌ @Transactional 금지 - Manager가 담당
+
+    public Order createOrder(CreateOrderCommand command) {
+        // 검증 + 생성 로직
+        return factory.create(command);
+    }
+
+    public OrderResponse toResponse(Order order) {
+        return assembler.toResponse(order);
+    }
+}
+```
+
+### SVC 규칙 상세
+
+| Code | Rule | Severity |
+|------|------|----------|
+| SVC-001 | @Component 사용 | MAJOR |
+| SVC-002 | 비즈니스 로직 조합 | MAJOR |
+| SVC-003 | Factory/Assembler 활용 | MAJOR |
+| SVC-004 | Port 의존 | CRITICAL |
+| SVC-005 | Domain 반환 | CRITICAL |
+| SVC-006 | @Transactional 금지 | BLOCKER |
+
+---
+
+## Manager (MGR-*)
+
+Manager는 **단일 Port 조합 + 트랜잭션 관리**를 담당합니다.
+
+```java
+@Component
+public class OrderManager {
+
+    private final OrderCommandPort commandPort;
+    private final OrderEntityMapper mapper;
+
+    public OrderManager(OrderCommandPort commandPort, OrderEntityMapper mapper) {
+        this.commandPort = commandPort;
+        this.mapper = mapper;
+    }
+
+    @Transactional  // Manager에서만 @Transactional
+    public Long persistOrder(PersistBundle bundle) {
+        return commandPort.save(bundle.order());
+    }
+
+    @Transactional
+    public void updateOrderStatus(Order order, OrderStatus newStatus) {
+        order.changeStatus(newStatus);
+        commandPort.save(order);
+    }
+
+    @Transactional
+    public void deleteOrder(OrderId orderId) {
+        commandPort.delete(orderId);
+    }
+}
+```
+
+### MGR 규칙 상세
+
+| Code | Rule | Severity |
+|------|------|----------|
+| MGR-001 | @Component 사용 | MAJOR |
+| MGR-002 | 단일 Port 조합 | CRITICAL |
+| MGR-003 | @Transactional 필수 | CRITICAL |
+| MGR-004 | persist*/update*/delete* 네이밍 | MAJOR |
+| MGR-005 | 비즈니스 로직 최소화 | MAJOR |
+
+---
+
+## Facade (FAC-*)
+
+Facade는 **2개 이상 Manager 조합**을 담당합니다.
+
+```java
+@Component
+public class OrderFacade {
+
+    private final OrderManager orderManager;
+    private final PaymentManager paymentManager;
+    private final InventoryManager inventoryManager;
+
+    @Transactional  // 여러 Manager 조합이므로 Facade에서 TX
+    public Long createOrderWithPayment(CreateOrderCommand command) {
+        // 1. 재고 확보
+        inventoryManager.reserve(command.productId(), command.quantity());
+
+        // 2. 주문 생성
+        Long orderId = orderManager.persistOrder(command);
+
+        // 3. 결제 처리
+        paymentManager.processPayment(orderId, command.paymentInfo());
+
+        return orderId;
+    }
+}
+```
+
+### FAC 규칙 상세
+
+| Code | Rule | Severity |
+|------|------|----------|
+| FAC-001 | @Component 사용 | MAJOR |
+| FAC-002 | 2+ Manager 조합 | CRITICAL |
+| FAC-003 | @Transactional 필수 | CRITICAL |
+| FAC-004 | fetch* 네이밍 (Query) | MAJOR |
+| FAC-005 | 복잡한 비즈니스 흐름 조율 | MAJOR |
+
+---
+
+## Factory (FAC-*)
+
+Factory는 **Command → Domain 변환**을 담당합니다.
+
+```java
+@Component
+public class OrderCommandFactory {
+
+    private final IdGenerator idGenerator;
+
+    public OrderCommandFactory(IdGenerator idGenerator) {
+        this.idGenerator = idGenerator;
+    }
+
+    public PersistBundle create(CreateOrderCommand command) {
+        OrderId orderId = new OrderId(idGenerator.generate());
+
+        List<OrderLine> orderLines = command.items().stream()
+            .map(this::toOrderLine)
+            .toList();
+
+        Order order = Order.forNew(orderId, command.customerId(), orderLines);
+
+        return new PersistBundle(order);
+    }
+
+    private OrderLine toOrderLine(OrderItemCommand item) {
+        return OrderLine.forNew(
+            new ProductId(item.productId()),
+            item.quantity(),
+            new Money(item.price())
+        );
+    }
+}
+```
+
+### Factory 규칙
+
+| Code | Rule | Severity |
+|------|------|----------|
+| CF-001 | @Component 사용 | MAJOR |
+| CF-002 | Command → Domain 변환 | CRITICAL |
+| CF-003 | 비즈니스 로직 금지 | MAJOR |
+| CF-004 | forNew() 팩토리 호출 | CRITICAL |
+
+---
+
+## Assembler (ASM-*)
+
+Assembler는 **Domain → Response 변환**을 담당합니다.
+
+```java
+@Component
+public class OrderAssembler {
+
+    public OrderResponse toResponse(Order order) {
+        return new OrderResponse(
+            order.id().value(),
+            order.status().name(),
+            order.totalAmount().value(),
+            order.orderLines().stream()
+                .map(this::toLineResponse)
+                .toList()
+        );
+    }
+
+    private OrderLineResponse toLineResponse(OrderLine line) {
+        return new OrderLineResponse(
+            line.productId().value(),
+            line.quantity(),
+            line.amount().value()
+        );
+    }
+}
+```
+
+### Assembler 규칙
+
+| Code | Rule | Severity |
+|------|------|----------|
+| ASM-001 | @Component 사용 | MAJOR |
+| ASM-002 | Domain → Response 변환 | CRITICAL |
+| ASM-003 | 비즈니스 로직 금지 | MAJOR |
+| ASM-004 | 컬렉션 변환 지원 | MINOR |
+
+---
+
+## DTO 규칙
+
+### Command DTO (Record 필수)
+```java
+public record CreateOrderCommand(
+    Long customerId,
+    List<OrderItemCommand> items,
+    PaymentInfo paymentInfo
+) {
+    public CreateOrderCommand {
+        Objects.requireNonNull(customerId);
+        Objects.requireNonNull(items);
+        if (items.isEmpty()) {
+            throw new IllegalArgumentException("items must not be empty");
+        }
+    }
+}
+```
+
+### Query DTO
+```java
+public record GetOrderQuery(Long orderId) {
+    public GetOrderQuery {
+        Objects.requireNonNull(orderId);
+    }
+}
+
+public record SearchOrderCriteria(
+    Long customerId,
+    OrderStatus status,
+    LocalDate fromDate,
+    LocalDate toDate,
+    int page,
+    int size
+) { }
+```
+
+### Response DTO
+```java
+public record OrderResponse(
+    Long id,
+    String status,
+    BigDecimal totalAmount,
+    List<OrderLineResponse> lines
+) { }
+```
+
+### DTO 규칙 상세
+
+| Code | Rule | Severity |
+|------|------|----------|
+| CDTO-001 | Command DTO Record 필수 | BLOCKER |
+| CDTO-002 | Compact Constructor 검증 | MAJOR |
+| QDTO-001 | Query DTO Record 권장 | MAJOR |
+| RDTO-001 | Response DTO Record 필수 | CRITICAL |
+
+---
+
+## Port 인터페이스
+
+### Command Port (Out)
+```java
+public interface OrderCommandPort {
+    Long save(Order order);
+    void delete(OrderId orderId);
+}
+```
+
+### Query Port (Out)
+```java
+public interface OrderQueryPort {
+    Optional<Order> findById(OrderId id);
+    List<Order> findByCriteria(SearchOrderCriteria criteria);
+    boolean existsById(OrderId id);
+    long countByCriteria(SearchOrderCriteria criteria);
+}
+```
+
+---
+
+## @Transactional 경계 규칙
+
+```
+┌─────────────────────────────────────────┐
+│         @Transactional 허용 위치        │
+├─────────────────────────────────────────┤
+│  ✅ Manager (단일 Port)                 │
+│  ✅ Facade (2+ Manager)                 │
+├─────────────────────────────────────────┤
+│  ❌ UseCase/Service                     │
+│  ❌ Factory/Assembler                   │
+│  ❌ Controller                          │
+│  ❌ Adapter                             │
+└─────────────────────────────────────────┘
+```
+
+### 트랜잭션 내 외부 API 호출 금지
+```java
+// ❌ BAD - @Transactional 내 외부 API
+@Transactional
+public void processOrder(Order order) {
+    orderRepository.save(order);
+    externalPaymentApi.charge(order);  // 외부 호출 금지!
+}
+
+// ✅ GOOD - 트랜잭션 분리
+public void processOrder(Order order) {
+    // 1. 주문 저장 (TX1)
+    orderManager.persistOrder(order);
+
+    // 2. 외부 결제 (TX 없음)
+    paymentClient.charge(order);
+
+    // 3. 결제 결과 저장 (TX2)
+    orderManager.updatePaymentStatus(order.id(), PaymentStatus.COMPLETED);
+}
+```
+
+---
+
+## 참조 문서
+- 전체 규칙: `.claude/knowledge/rules/application-rules.md` (103개)
+- 클래스 템플릿: `.claude/knowledge/templates/application-templates.md` (5개)
+- GOOD/BAD 예제: `.claude/knowledge/examples/application-examples.md` (21개)

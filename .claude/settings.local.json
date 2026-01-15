@@ -1,95 +1,55 @@
 {
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/user-prompt-submit.sh '{{prompt}}'"
-          }
+    "hooks": {
+        "UserPromptSubmit": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": ".claude/hooks/session-tracker.sh"
+                    }
+                ]
+            }
+        ],
+        "PostToolUse": [
+            {
+                "matcher": "Edit",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": ".claude/hooks/rule-checker-hook.sh '{{tool_input}}'"
+                    },
+                    {
+                        "type": "command",
+                        "command": ".claude/hooks/auto-commit-hook.sh '{{tool_input}}'"
+                    }
+                ]
+            },
+            {
+                "matcher": "Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": ".claude/hooks/rule-checker-hook.sh '{{tool_input}}'"
+                    },
+                    {
+                        "type": "command",
+                        "command": ".claude/hooks/auto-commit-hook.sh '{{tool_input}}'"
+                    }
+                ]
+            },
+            {
+                "matcher": "MultiEdit",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": ".claude/hooks/rule-checker-hook.sh '{{tool_input}}'"
+                    },
+                    {
+                        "type": "command",
+                        "command": ".claude/hooks/auto-commit-hook.sh '{{tool_input}}'"
+                    }
+                ]
+            }
         ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/stop-session.sh"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/pre-tool-use-edit.sh '{{tool_input}}'"
-          }
-        ]
-      },
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/pre-tool-use-edit.sh '{{tool_input}}'"
-          }
-        ]
-      },
-      {
-        "matcher": "MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/pre-tool-use-edit.sh '{{tool_input}}'"
-          }
-        ]
-      },
-      {
-        "matcher": "SlashCommand",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/pre-tool-use-impl.sh '{{tool_input}}'"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/post-tool-use-format.sh '{{tool_input}}'"
-          }
-        ]
-      },
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/post-tool-use-format.sh '{{tool_input}}'"
-          }
-        ]
-      },
-      {
-        "matcher": "MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/post-tool-use-format.sh '{{tool_input}}'"
-          }
-        ]
-      }
-    ]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "python3 .claude/scripts/context-monitor.py"
-  }
+    }
 }

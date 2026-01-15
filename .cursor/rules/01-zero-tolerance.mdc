@@ -1,0 +1,320 @@
+---
+description: Zero-Tolerance 규칙 - 절대 위반 금지 (빌드 실패 원인)
+globs: ["**/*.java"]
+alwaysApply: true
+---
+
+# Zero-Tolerance Rules (BLOCKER)
+
+아래 규칙 위반 시 **빌드 실패** 또는 **코드 리뷰 거절**됩니다.
+모든 규칙은 Severity: BLOCKER 등급입니다.
+
+---
+
+## Domain Layer Zero-Tolerance
+
+### AGG-001: Lombok 사용 절대 금지
+- **Detection**: `@Data`, `@Getter`, `@Setter`, `@Builder`, `@Value`, `@AllArgsConstructor`, `@NoArgsConstructor`
+- **Rationale**: Pure Java 원칙. 바이트코드 조작으로 인한 예측 불가능한 동작 방지
+```java
+// ❌ BAD
+@Data
+public class Order { ... }
+
+// ✅ GOOD
+public class Order {
+    private final OrderId id;
+    public OrderId id() { return id; }
+}
+```
+
+### AGG-014: Law of Demeter 위반 금지 (Getter 체이닝)
+- **Detection**: `object.getA().getB().method()` 패턴
+- **Rationale**: 객체 내부 구조 노출 방지, 결합도 감소
+```java
+// ❌ BAD
+order.getCustomer().getAddress().getCity()
+
+// ✅ GOOD
+order.getDeliveryCity()  // 위임 메서드 사용
+```
+
+### VO-006: Value Object 불변성 필수
+- **Detection**: non-final 필드, setter 메서드
+- **Rationale**: VO는 값으로서 동등성 비교, 불변이어야 Thread-safe
+```java
+// ❌ BAD
+public class Money {
+    private BigDecimal amount;  // non-final
+    public void setAmount(...) { }  // setter
+}
+
+// ✅ GOOD
+public class Money {
+    private final BigDecimal amount;
+    public Money(BigDecimal amount) {
+        this.amount = amount;
+    }
+}
+```
+
+### EXC-001: Domain Exception만 사용
+- **Detection**: raw `RuntimeException`, `IllegalArgumentException` 직접 throw
+- **Rationale**: 도메인 언어로 예외 표현, 에러 코드 체계화
+```java
+// ❌ BAD
+throw new RuntimeException("Order not found");
+
+// ✅ GOOD
+throw new OrderNotFoundException(orderId);
+```
+
+---
+
+## Application Layer Zero-Tolerance
+
+### C-001: Application Layer Lombok 금지
+- **Detection**: `@Data`, `@Builder`, `@Getter` (UseCase, Service, Manager, Facade)
+- **Rationale**: Pure Java 원칙 전 계층 적용
+
+### C-004: @Transactional은 Manager/Facade에서만
+- **Detection**: Service, Factory에 `@Transactional`
+- **Rationale**: 트랜잭션 경계 명확화, 단일 책임 원칙
+```java
+// ❌ BAD - Service에 @Transactional
+@Transactional
+public class OrderService { ... }
+
+// ✅ GOOD - Manager에서만
+@Component
+public class OrderManager {
+    @Transactional
+    public void persistOrder(Order order) { ... }
+}
+```
+
+### CDTO-001: Command DTO는 Record 필수
+- **Detection**: `class` 키워드로 정의된 Command DTO
+- **Rationale**: 불변성 보장, boilerplate 제거
+```java
+// ❌ BAD
+public class CreateOrderCommand { ... }
+
+// ✅ GOOD
+public record CreateOrderCommand(Long productId, int quantity) { }
+```
+
+### UC-001: UseCase는 Interface로 정의
+- **Detection**: UseCase를 class로 직접 구현
+- **Rationale**: 의존성 역전, 테스트 용이성
+
+---
+
+## Persistence Layer Zero-Tolerance
+
+### ENT-002: Long FK 전략 (JPA 관계 어노테이션 금지)
+- **Detection**: `@ManyToOne`, `@OneToMany`, `@OneToOne`, `@ManyToMany`
+- **Rationale**: N+1 문제 방지, 명시적 조인 제어, 데이터 경계 명확화
+```java
+// ❌ BAD
+@ManyToOne
+private UserEntity user;
+
+// ✅ GOOD
+private Long userId;
+```
+
+### EMAP-002: EntityMapper Pure Java (Lombok/MapStruct 금지)
+- **Detection**: `@Mapper`, `@Data`, `@Builder` in Mapper
+- **Rationale**: 변환 로직 명시적 제어, 디버깅 용이
+
+### EMAP-003: Mapper에서 시간 필드 생성 금지
+- **Detection**: `Instant.now()`, `LocalDateTime.now()`, `System.currentTimeMillis()`
+- **Rationale**: 테스트 가능성, 결정론적 동작 보장. JPA Auditing 사용
+
+### QADP-001: QueryAdapter는 QueryDslRepository 위임만
+- **Detection**: Adapter에 JPAQueryFactory 직접 사용
+- **Rationale**: 책임 분리. Repository=쿼리, Mapper=변환, Adapter=조합
+
+### QADP-002: QueryAdapter @Transactional 금지
+- **Detection**: QueryAdapter에 `@Transactional`
+- **Rationale**: 트랜잭션은 Application Layer에서 관리
+
+### QADP-008: QueryAdapter 비즈니스 로직 금지
+- **Detection**: if/switch 조건 분기, 필터링 로직
+- **Rationale**: Adapter는 기술적 변환만 담당
+
+---
+
+## REST API Layer Zero-Tolerance
+
+### CTR-001: Thin Controller 패턴
+- **Detection**: Controller에 비즈니스 로직, if/switch, 계산
+- **Rationale**: Controller는 HTTP 어댑터 역할만
+```java
+// ❌ BAD
+@PostMapping
+public ResponseEntity<?> create(...) {
+    if (order.getTotal() > 10000) {  // 비즈니스 로직!
+        discount = 0.1;
+    }
+}
+
+// ✅ GOOD
+@PostMapping
+public ResponseEntity<ApiResponse<Long>> create(
+    @Valid @RequestBody CreateOrderRequest request) {
+    return ResponseEntity.ok(ApiResponse.success(
+        useCase.execute(mapper.toCommand(request))));
+}
+```
+
+### CTR-002: ResponseEntity<ApiResponse<T>> 래핑 필수
+- **Detection**: `ApiResponse<T>` 또는 `ResponseEntity<T>` 단독 반환
+- **Rationale**: HTTP 상태 코드 + 표준 응답 형식 동시 충족
+
+### CTR-004: DELETE 메서드 금지 (소프트 삭제는 PATCH)
+- **Detection**: `@DeleteMapping`
+- **Rationale**: 실제 삭제 위험, 감사 추적 불가. PATCH로 상태 변경
+```java
+// ❌ BAD
+@DeleteMapping("/{id}")
+public void delete(...) { }
+
+// ✅ GOOD
+@PatchMapping("/{id}/delete")
+public ResponseEntity<ApiResponse<Void>> softDelete(...) { }
+```
+
+### CTR-005: Controller @Transactional 절대 금지
+- **Detection**: Controller에 `@Transactional`
+- **Rationale**: 트랜잭션은 UseCase 계층 책임
+
+### CTR-007: Controller 비즈니스 로직 금지
+- **Detection**: if/switch 비즈니스 규칙, 계산, 상태 변경
+- **Rationale**: Thin Controller 원칙
+
+### CTR-008: Controller에서 Domain 객체 직접 생성/조작 금지
+- **Detection**: Controller에서 Aggregate, Entity, VO import
+- **Rationale**: 계층 분리. Domain은 Application Layer 통해서만 접근
+
+### CTR-009: Controller Lombok 금지
+- **Detection**: `@Data`, `@Builder`, `@RequiredArgsConstructor`
+- **Rationale**: Pure Java 원칙
+
+### DTO-001: Request/Response DTO는 Record 필수
+- **Detection**: `class` 키워드 DTO
+- **Rationale**: 불변성, 자동 equals/hashCode/toString
+```java
+// ❌ BAD
+public class CreateOrderRequest { ... }
+
+// ✅ GOOD
+public record CreateOrderRequest(
+    @NotNull Long productId,
+    @NotNull @Min(1) Integer quantity
+) { }
+```
+
+### DTO-002: Request DTO @NotNull 필수 (Nullable 금지)
+- **Detection**: 검증 어노테이션 없는 필드
+- **Rationale**: 의도적 null과 누락 구분 불가. 모든 필드 필수
+
+### DTO-005: DTO Lombok 금지
+- **Detection**: `@Data`, `@Builder`, `@Getter`
+- **Rationale**: Record가 Lombok 대체
+
+### DTO-007: DTO에 Domain 변환 메서드 금지
+- **Detection**: `toDomain()`, `toEntity()`, `toAggregate()`
+- **Rationale**: 변환은 Mapper/Assembler 책임
+
+### DTO-008: DTO 비즈니스 로직 금지
+- **Detection**: `isVip()`, `calculateTotal()`, `validate()`
+- **Rationale**: 비즈니스 로직은 Domain Layer 책임
+
+### DTO-011: DTO Setter 금지
+- **Detection**: setter 메서드
+- **Rationale**: 불변성 보장. Record는 기본 불변
+
+### DTO-014: ApiResponse 원시타입 래핑 금지
+- **Detection**: `ApiResponse<String>`, `ApiResponse<Long>`
+- **Rationale**: API 확장성, OpenAPI 문서화
+```java
+// ❌ BAD
+ApiResponse<Long>
+
+// ✅ GOOD
+ApiResponse<OrderIdApiResponse>
+```
+
+### MAP-001: Mapper @Component 필수
+- **Detection**: static 메서드 Mapper
+- **Rationale**: DI 가능, Mock 테스트 용이
+
+### MAP-002: Mapper Static 메서드 금지
+- **Detection**: `static` 변환 메서드
+- **Rationale**: DI 불가, 테스트 어려움
+
+### MAP-004~008: Mapper 제약사항
+- **MAP-004**: 필드 매핑만 수행 (비즈니스 로직 금지)
+- **MAP-005**: if/switch 조건부 로직 금지
+- **MAP-006**: Domain 객체 직접 사용 금지
+- **MAP-007**: Lombok 금지
+- **MAP-008**: Repository/UseCase 주입 금지
+
+### TEST-001: RestDocsTestSupport 상속 필수
+- **Detection**: `@WebMvcTest`, `MockMvc` 직접 사용
+- **Rationale**: 통합 테스트로 실제 동작 검증
+```java
+// ❌ BAD
+@WebMvcTest
+class OrderControllerTest {
+    @Autowired MockMvc mockMvc;
+}
+
+// ✅ GOOD
+class OrderControllerTest extends RestDocsTestSupport {
+    @Autowired TestRestTemplate restTemplate;
+}
+```
+
+---
+
+## Scheduler Layer Zero-Tolerance
+
+### TSCH-002: Thin Scheduler UseCase 의존만
+- **Detection**: Manager, Port, Repository 직접 주입
+- **Rationale**: Thin Layer 원칙
+
+### TSCH-003: @Scheduled 메서드는 UseCase.execute() 단일 호출
+- **Detection**: 조건 분기, 예외 처리, 로깅 외 로직
+- **Rationale**: 스케줄러는 트리거 역할만
+
+### TSCH-004: Thin Scheduler 비즈니스 로직 금지
+- **Detection**: 분산락, Outbox 조회, 상태 업데이트 로직
+- **Rationale**: 모든 로직은 Application Layer에서 처리
+
+---
+
+## Config Layer Zero-Tolerance
+
+### CFG-001: OpenApiConfig 중앙 설정 필수
+- **Detection**: Controller에서 개별 OpenAPI 설정
+- **Rationale**: Swagger UI 일관성
+
+### CFG-002: JacksonConfig 중앙 설정 필수
+- **Detection**: DTO에 `@JsonFormat` 등 개별 설정
+- **Rationale**: JSON 직렬화 일관성
+
+---
+
+## 탐지 자동화
+
+이 프로젝트는 Hook 시스템으로 Zero-Tolerance 위반을 자동 탐지합니다:
+- `.claude/hooks/rule-checker-hook.sh` - 파일 수정 시 자동 검증
+- ArchUnit 테스트 - 빌드 시 아키텍처 규칙 검증
+
+## 참조 문서
+- 전체 규칙: `.claude/knowledge/rules/`
+- GOOD/BAD 예제: `.claude/knowledge/examples/`
+- 클래스 템플릿: `.claude/knowledge/templates/`

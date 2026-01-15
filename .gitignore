@@ -97,3 +97,5 @@ terraform.tfvars
 **/application-local.yml
 **/application-local.yaml
 
+local-dev/.env.aws.stage
+local-dev/.env.aws.*

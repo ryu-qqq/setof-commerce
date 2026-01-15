@@ -1,0 +1,28 @@
+---
+description: Spring Standards 프로젝트 개요 및 아키텍처 가이드
+globs: ["**/*.java"]
+alwaysApply: true
+---
+
+# Spring Standards Project
+
+## 프로젝트 개요
+- **아키텍처**: Hexagonal Architecture (Ports & Adapters)
+- **기술 스택**: Spring Boot 3.5.x + Java 21
+- **설계 원칙**: DDD, CQRS, Clean Architecture
+
+## 레이어 구조
+```
+adapter-in/     → REST API, Scheduler (외부 → 내부)
+application/    → UseCase, Service, Port 정의
+domain/         → Aggregate, VO, Event, Exception
+adapter-out/    → Persistence, External API (내부 → 외부)
+```
+
+## Knowledge Base 참조
+```
+.claude/knowledge/
+├── rules/       # 401개 코딩 규칙
+├── templates/   # 67개 클래스 템플릿
+└── examples/    # 184개 GOOD/BAD 예제
+```

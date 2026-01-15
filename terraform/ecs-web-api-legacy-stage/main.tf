@@ -31,6 +31,24 @@ data "aws_ecr_repository" "legacy_api" {
 }
 
 # ========================================
+# Staging RDS Security Group Reference
+# ========================================
+data "aws_db_instance" "staging_rds" {
+  db_instance_identifier = "staging-shared-mysql"
+}
+
+# Add inbound rule to staging RDS security group for legacy-api ECS access
+resource "aws_security_group_rule" "legacy_api_to_rds" {
+  type                     = "ingress"
+  from_port                = 3306
+  to_port                  = 3306
+  protocol                 = "tcp"
+  security_group_id        = tolist(data.aws_db_instance.staging_rds.vpc_security_groups)[0]
+  source_security_group_id = module.ecs_security_group.security_group_id
+  description              = "Allow legacy-api-staging ECS to access staging RDS"
+}
+
+# ========================================
 # ECS Cluster Reference (from ecs-cluster-stage)
 # ========================================
 data "aws_ssm_parameter" "cluster_name" {

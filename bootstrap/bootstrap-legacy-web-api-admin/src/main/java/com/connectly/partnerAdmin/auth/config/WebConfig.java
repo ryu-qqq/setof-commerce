@@ -38,7 +38,7 @@ public class WebConfig implements WebMvcConfigurer {
                 registry.addMapping("/**")
                         .allowedMethods("*")
                         .allowedHeaders("*")
-                        .allowedOriginPatterns(webDomain, adminDomain, s3Domain, s3TempDomain, "https://www.set-of.com", "https://www.set-of.com")
+                        .allowedOriginPatterns("*")
                         .allowCredentials(true);
             }
         };

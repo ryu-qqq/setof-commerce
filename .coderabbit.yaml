@@ -36,7 +36,8 @@ reviews:
     drafts: false
     base_branches:
       - "main"
-      - "develop"
+      - "stage"
+      - "dev"
     ignore_usernames:
       - "dependabot"
       - "renovate"

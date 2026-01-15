@@ -1,26 +1,45 @@
+# ========================================
+# Migration Application Configuration
+# ========================================
+# 3개 DataSource 구조:
+# - legacy: 레거시 DB (읽기 전용)
+# - migration: 배치 메타 + 체크포인트 DB
+# - setof: 신규 DB (쓰기)
+# ========================================
+
 spring:
   application:
     name: setof-migration
 
-  # Primary DataSource (신규 DB)
+  # ========================================
+  # Primary DataSource (기본값 - Migration 스키마)
+  # Spring Batch 메타 테이블이 여기에 생성됨
+  # ========================================
   datasource:
-    url: jdbc:mysql://localhost:3306/setof?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
-    username: root
-    password: root
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/setof_migration?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&rewriteBatchedStatements=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      pool-name: primary-pool
-      maximum-pool-size: 10
-      minimum-idle: 5
+      pool-name: migration-pool
+      maximum-pool-size: 5
+      minimum-idle: 2
       connection-timeout: 30000
 
-    # Legacy DataSource (레거시 DB)
-    legacy:
-      url: jdbc:mysql://localhost:3306/setof_legacy?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
-      username: root
-      password: root
-      driver-class-name: com.mysql.cj.jdbc.Driver
+  # ========================================
+  # Spring Batch Configuration
+  # ========================================
+  batch:
+    jdbc:
+      # 메타 테이블 자동 생성 (최초 1회)
+      initialize-schema: always
+    job:
+      # 애플리케이션 시작 시 자동 실행 비활성화
+      enabled: false
 
+  # ========================================
+  # JPA Configuration (신규 DB용)
+  # ========================================
   jpa:
     hibernate:
       ddl-auto: none
@@ -29,24 +48,106 @@ spring:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 100
+        jdbc:
+          batch_size: 100
+        order_inserts: true
+        order_updates: true
 
-  # Flyway 비활성화 (마이그레이션 앱에서는 스키마 변경 안 함)
+  # ========================================
+  # Flyway Configuration (Migration 스키마용)
+  # ========================================
   flyway:
+    enabled: true
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/setof_migration?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    user: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+
+# ========================================
+# Multi-DataSource Configuration
+# ========================================
+datasource:
+  # Legacy DB (읽기 전용)
+  legacy:
+    url: jdbc:mysql://${LEGACY_DB_HOST:localhost}:${LEGACY_DB_PORT:3306}/${LEGACY_DB_NAME:connectly}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&rewriteBatchedStatements=true
+    username: ${LEGACY_DB_USERNAME:root}
+    password: ${LEGACY_DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: legacy-pool
+      maximum-pool-size: 10
+      minimum-idle: 3
+      connection-timeout: 30000
+      read-only: true
+
+  # Setof DB (신규 - 쓰기)
+  setof:
+    url: jdbc:mysql://${SETOF_DB_HOST:localhost}:${SETOF_DB_PORT:3306}/${SETOF_DB_NAME:setof}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&rewriteBatchedStatements=true
+    username: ${SETOF_DB_USERNAME:root}
+    password: ${SETOF_DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: setof-pool
+      maximum-pool-size: 10
+      minimum-idle: 3
+      connection-timeout: 30000
+
+# ========================================
+# Migration Configuration
+# ========================================
+migration:
+  # 배치 처리 설정
+  batch:
+    chunk-size: 1000
+    skip-limit: 100
+    retry-limit: 3
+
+  # 스케줄링 설정
+  schedule:
+    # 초기 마이그레이션 스케줄
     enabled: false
+    cron: "0 0 2 * * ?"  # 매일 새벽 2시
+    # 증분 동기화 스케줄
+    incremental-enabled: false  # 운영 환경에서 true로 설정
+    check-interval-ms: 60000    # 체크포인트 확인 간격 (1분)
 
+# ========================================
+# Server Configuration
+# ========================================
 server:
-  port: 8082
+  port: ${SERVER_PORT:8082}
 
+# ========================================
+# Sentry Configuration (Error Tracking)
+# ========================================
+sentry:
+  dsn: ${SENTRY_DSN:https://93171c7ddb8ad90ef418b7aa0b2b0efc@o4510661281644544.ingest.us.sentry.io/4510678108012544}
+  environment: ${spring.profiles.active:local}
+  release: ${APP_VERSION:unknown}
+  traces-sample-rate: 1.0
+  enable-tracing: true
+
+# ========================================
+# Logging Configuration
+# ========================================
 logging:
   level:
-    com.ryuqq.setof.migration: INFO
+    root: INFO
+    com.ryuqq.setof.migration: DEBUG
+    org.springframework.batch: INFO
     org.springframework.jdbc: DEBUG
+    org.flywaydb: INFO
 
+# ========================================
+# Actuator Configuration
+# ========================================
 management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,batch
   endpoint:
     health:
       show-details: always
