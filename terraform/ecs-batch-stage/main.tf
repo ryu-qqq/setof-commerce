@@ -383,7 +383,9 @@ resource "aws_ecs_task_definition" "legacy_batch" {
         { name = "SERVER_PORT", value = "8090" },
         # Spring Admin API (Service Discovery DNS - ECS 내부 통신)
         # Stage 환경 Admin API
-        { name = "ADMIN_SERVER_URL", value = "http://setof-commerce-legacy-admin-stage.connectly.local:8089" }
+        { name = "ADMIN_SERVER_URL", value = "http://setof-commerce-legacy-admin-stage.connectly.local:8089" },
+        # Stage Environment: Disable external notification API (dry-run mode)
+        { name = "NHN_ALIMTALK_DRY_RUN", value = "true" }
         # JOB_NAME은 EventBridge containerOverrides로 주입
       ]
 
