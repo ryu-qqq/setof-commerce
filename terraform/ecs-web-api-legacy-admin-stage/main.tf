@@ -469,7 +469,7 @@ module "ecs_service" {
   health_check_grace_period_seconds = 180
 
   container_environment = [
-    { name = "SPRING_PROFILES_ACTIVE", value = "prod" },
+    { name = "SPRING_PROFILES_ACTIVE", value = var.environment },
     { name = "DB_HOST", value = local.rds_host },
     { name = "DB_PORT", value = local.rds_port },
     { name = "DB_NAME", value = local.rds_dbname },
@@ -480,7 +480,9 @@ module "ecs_service" {
     { name = "SECURITY_SERVICE_TOKEN_ENABLED", value = "true" },
     { name = "SEWON_URL", value = "http://api.sellic.co.kr" },
     { name = "SEWON_CUSTOMER_ID", value = "1012" },
-    { name = "OCO_URL", value = "http://localhost:9998" }
+    { name = "OCO_URL", value = "http://localhost:9998" },
+    # Stage Environment: Disable external payment API
+    { name = "PORTONE_ENABLED", value = "false" }
   ]
 
   container_secrets = [
