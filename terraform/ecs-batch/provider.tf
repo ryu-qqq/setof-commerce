@@ -79,7 +79,7 @@ variable "batch_desired_count" {
 variable "image_tag" {
   description = "Docker image tag to deploy. Auto-set by GitHub Actions."
   type        = string
-  default     = "legacy-batch-1-initial"
+  default     = "legacy-batch-78-10d4b01"
 
   validation {
     condition     = can(regex("^legacy-batch-[0-9]+-[a-zA-Z0-9]+$", var.image_tag))

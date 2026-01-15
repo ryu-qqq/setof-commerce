@@ -1,0 +1,66 @@
+---
+description: Spring 프록시 제약사항 및 주의사항
+globs: ["**/*.java"]
+alwaysApply: true
+---
+
+# Spring Proxy 제약사항
+
+## @Transactional 작동 안 함
+
+다음 경우 `@Transactional`이 **작동하지 않습니다**:
+
+### 1. Private 메서드
+```java
+// ❌ @Transactional 무시됨
+@Transactional
+private void process() { }
+
+// ✅ public 필수
+@Transactional
+public void process() { }
+```
+
+### 2. Final 클래스/메서드
+```java
+// ❌ 프록시 생성 불가
+public final class OrderService { }
+
+// ❌ 메서드 오버라이드 불가
+public final void process() { }
+```
+
+### 3. 같은 클래스 내부 호출
+```java
+public class OrderService {
+    public void outer() {
+        this.inner(); // ❌ 트랜잭션 미적용
+    }
+
+    @Transactional
+    public void inner() { }
+}
+```
+
+### 해결 방법
+- 별도 클래스로 분리
+- `self` 주입 패턴 사용
+
+## @Transactional 내 외부 API 호출 금지
+
+```java
+// ❌ 절대 금지
+@Transactional
+public void process() {
+    repository.save(entity);
+    externalApi.call(); // 롤백 불가!
+}
+
+// ✅ 트랜잭션 밖에서 호출
+public void process() {
+    transactionManager.execute(() -> {
+        repository.save(entity);
+    });
+    externalApi.call(); // 트랜잭션 커밋 후 호출
+}
+```

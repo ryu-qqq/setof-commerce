@@ -6,6 +6,19 @@ OMS(Order Management System) 프론트엔드 개발을 위한 Mock API 서버입
 
 ## 🚀 빠른 시작
 
+### 방법 1: 로컬 개발 환경과 함께 (권장)
+
+```bash
+# 로컬 개발 환경 + Mock Server 함께 시작
+cd local-dev
+./scripts/local-start.sh --mock
+
+# 종료
+./scripts/local-stop.sh --mock
+```
+
+### 방법 2: Mock Server만 단독 실행
+
 ```bash
 # 1. Mock 서버 실행
 cd mock-server
@@ -19,6 +32,17 @@ curl http://localhost:8089/api/oms/presets
 
 # 4. 서버 중지
 docker-compose down
+```
+
+### 방법 3: 완전 독립 로컬 환경에서 사용
+
+```bash
+# MySQL + Redis + Mock Server 함께 시작
+cd local-dev
+docker-compose -f docker-compose.dev.yml --profile mock up -d
+
+# 종료
+docker-compose -f docker-compose.dev.yml --profile mock down
 ```
 
 **Base URL**: `http://localhost:8089`
@@ -235,6 +259,7 @@ GET /api/oms/presets
 > 화면: 연동 정보 등록 (리스트), 상품 전송 모달
 
 **Query Parameters:**
+
 ```
 startDate   (string, 선택)  등록일 시작 YYYY-MM-DD
 endDate     (string, 선택)  등록일 종료 YYYY-MM-DD
@@ -243,11 +268,13 @@ keyword     (string, 선택)  설정 제목 검색
 ```
 
 **Request:**
+
 ```bash
 curl "http://localhost:8089/api/oms/presets?startDate=2025-12-01&endDate=2025-12-15"
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -286,6 +313,7 @@ POST /api/oms/presets
 > 화면: 연동 정보 등록 → [신규 등록] 모달 → [저장]
 
 **Request Body:**
+
 ```
 shopId        (number, 필수)  쇼핑몰 ID - GET /api/oms/shops 에서 조회
 presetName    (string, 필수)  설정 제목
@@ -293,6 +321,7 @@ categoryCode  (string, 필수)  세분류 카테고리 코드
 ```
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:8089/api/oms/presets \
   -H "Content-Type: application/json" \
@@ -304,6 +333,7 @@ curl -X POST http://localhost:8089/api/oms/presets \
 ```
 
 **Response (성공):**
+
 ```json
 {
   "success": true,
@@ -317,6 +347,7 @@ curl -X POST http://localhost:8089/api/oms/presets \
 ```
 
 **Response (검증 실패):**
+
 ```json
 {
   "type": "about:blank",
@@ -344,17 +375,20 @@ PUT /api/oms/presets/{id}
 > 화면: 연동 정보 등록 → [수정] 버튼
 
 **Path Parameters:**
+
 ```
 id  (number, 필수)  프리셋 ID
 ```
 
 **Request Body:**
+
 ```
 presetName    (string, 선택)  설정 제목
 categoryCode  (string, 선택)  세분류 카테고리 코드
 ```
 
 **Request:**
+
 ```bash
 curl -X PUT http://localhost:8089/api/oms/presets/1001 \
   -H "Content-Type: application/json" \
@@ -365,6 +399,7 @@ curl -X PUT http://localhost:8089/api/oms/presets/1001 \
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -385,11 +420,13 @@ DELETE /api/oms/presets
 > 화면: 연동 정보 등록 → 체크박스 선택 → [선택 삭제]
 
 **Request Body:**
+
 ```
 ids  (number[], 필수)  삭제할 프리셋 ID 배열
 ```
 
 **Request:**
+
 ```bash
 curl -X DELETE http://localhost:8089/api/oms/presets \
   -H "Content-Type: application/json" \
@@ -397,6 +434,7 @@ curl -X DELETE http://localhost:8089/api/oms/presets \
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -419,6 +457,7 @@ GET /api/oms/shops
 > 화면: 연동 정보 등록 → [신규 등록] 모달 → 쇼핑몰/계정 드롭다운
 
 **Query Parameters:**
+
 ```
 keyword  (string, 선택)  쇼핑몰명 또는 계정 ID 검색
 status   (string, 선택)  ACTIVE | INACTIVE
@@ -427,11 +466,13 @@ size     (number, 선택)  페이지 크기 (기본: 10)
 ```
 
 **Request:**
+
 ```bash
 curl "http://localhost:8089/api/oms/shops?page=0&size=10"
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -467,6 +508,7 @@ GET /api/oms/partners
 > 화면: 상품 조회 및 전송 → 파트너사 드롭다운/검색
 
 **Query Parameters:**
+
 ```
 keyword  (string, 선택)  파트너사명 또는 코드 검색
 status   (string, 선택)  ACTIVE | INACTIVE
@@ -475,11 +517,13 @@ size     (number, 선택)  페이지 크기 (기본: 10)
 ```
 
 **Request:**
+
 ```bash
 curl "http://localhost:8089/api/oms/partners?keyword=나이키&page=0&size=10"
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -516,11 +560,13 @@ GET /api/oms/categories
 > 화면: 연동 정보 등록 → [신규 등록] 모달 → 카테고리 매핑
 
 **Request:**
+
 ```bash
 curl http://localhost:8089/api/oms/categories/{shopId}
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -561,6 +607,7 @@ curl http://localhost:8089/api/oms/categories/{shopId}
 ```
 
 **트리 구조 특징:**
+
 ```
 • children: []      → leaf 노드 (최하위 카테고리, 이 코드를 저장)
 • children: [...]   → 하위 존재, 드릴다운 가능
@@ -569,6 +616,7 @@ curl http://localhost:8089/api/oms/categories/{shopId}
 ```
 
 **프론트 처리 예시:**
+
 ```javascript
 // 재귀적 렌더링
 function renderCategory(category) {
@@ -595,6 +643,7 @@ GET /api/oms/products
 > 화면: 상품 조회 및 전송 → [상품 조회]
 
 **Query Parameters:**
+
 ```
 dateType      (string, 선택)  createdAt | updatedAt
 startDate     (string, 선택)  시작일 YYYY-MM-DD
@@ -610,11 +659,13 @@ size          (number, 선택)  페이지 크기 (기본: 10)
 ```
 
 **Request:**
+
 ```bash
 curl "http://localhost:8089/api/oms/products?status=ON_SALE&syncStatus=SUCCESS&page=0"
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -649,6 +700,7 @@ curl "http://localhost:8089/api/oms/products?status=ON_SALE&syncStatus=SUCCESS&p
 ```
 
 **상태값:**
+
 ```
 status:
   ON_SALE   → 판매중 (초록)
@@ -671,16 +723,19 @@ GET /api/oms/products/{id}
 > 화면: 상품 상세 페이지 상단 정보 영역
 
 **Path Parameters:**
+
 ```
 id  (number, 필수)  상품 ID (productGroupId)
 ```
 
 **Request:**
+
 ```bash
 curl http://localhost:8089/api/oms/products/125694305
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -757,6 +812,7 @@ curl http://localhost:8089/api/oms/products/125694305
 ```
 
 **Response (상품 없음):**
+
 ```json
 {
   "type": "about:blank",
@@ -780,11 +836,13 @@ GET /api/oms/products/{id}/sync-history
 > 화면: 상품 상세 → 연동 이력 테이블 (필터 + 페이징)
 
 **Path Parameters:**
+
 ```
 id  (number, 필수)  상품 ID
 ```
 
 **Query Parameters:**
+
 ```
 status  (string, 선택)  SUCCESS | FAILED | PENDING
 page    (number, 선택)  페이지 번호 (기본: 0)
@@ -792,11 +850,13 @@ size    (number, 선택)  페이지 크기 (기본: 10)
 ```
 
 **Request:**
+
 ```bash
 curl "http://localhost:8089/api/oms/products/15/sync-history?status=FAILED&page=0&size=10"
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -843,7 +903,8 @@ curl "http://localhost:8089/api/oms/products/15/sync-history?status=FAILED&page=
 }
 ```
 
-**상태값:**
+**상태값:**c
+
 ```
 SUCCESS  → 성공    (외부몰 등록 완료)
 FAILED   → 실패    (오류 발생, 재처리 가능)
@@ -861,23 +922,26 @@ POST /api/oms/sync-history/{historyId}/retry
 > 화면: 상품 상세 → 연동 이력 → [재처리] 버튼
 
 **Path Parameters:**
+
 ```
 historyId  (number, 필수)  연동 이력 ID
 ```
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:8089/api/oms/sync-history/1003/retry
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
   "data": {
     "historyId": 1003,
     "newJobId": "SYNC-20251217-RETRY-001",
-    "status": "RETRY_PENDING"
+    "status": "PENDING"
   },
   "timestamp": "2025-12-22T10:30:00",
   "requestId": "req-mock-010"
@@ -895,12 +959,14 @@ POST /api/oms/products/sync
 > 화면: 상품 조회 및 전송 → [선택 상품 연동] 모달 → [전송 시작]
 
 **Request Body:**
+
 ```
 productIds  (number[], 필수)  전송할 상품 ID 배열
 presetIds   (number[], 필수)  전송 대상 프리셋 ID 배열
 ```
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:8089/api/oms/products/sync \
   -H "Content-Type: application/json" \
@@ -911,6 +977,7 @@ curl -X POST http://localhost:8089/api/oms/products/sync \
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,

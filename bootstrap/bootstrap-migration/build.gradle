@@ -2,8 +2,8 @@
 // Bootstrap: Migration Application
 // ========================================
 // 레거시 DB에서 신규 DB로 데이터 마이그레이션
-// Bounded Context 별 마이그레이션 서비스 제공
-// Strangler Fig 패턴 지원
+// Spring Batch 기반 배치 처리
+// 3개 DataSource: Legacy(읽기), Migration(배치메타), Setof(쓰기)
 // NO Lombok allowed
 // ========================================
 
@@ -17,50 +17,58 @@ plugins {
 
 dependencies {
     // ========================================
-    // Core Modules
+    // Core Modules (신규 스키마 접근용)
     // ========================================
     implementation project(':domain')
     implementation project(':application')
-
-    // ========================================
-    // Adapters (신규 DB 접근용)
-    // ========================================
     implementation project(':adapter-out:persistence-mysql')
-
-    // ========================================
-    // FileFlow Client (이미지 마이그레이션용)
-    // ========================================
-    implementation project(':adapter-out:fileflow-client')
 
     // ========================================
     // Spring Boot Starters
     // ========================================
     implementation libs.spring.boot.starter.web
+    implementation libs.spring.boot.starter.batch
     implementation libs.spring.boot.starter.data.jpa
+    implementation libs.spring.boot.starter.jdbc
     implementation libs.spring.boot.starter.validation
     implementation libs.spring.boot.starter.actuator
 
     // Configuration Processing
     annotationProcessor libs.spring.boot.configuration.processor
 
-    // UUID v7 생성
-    implementation libs.uuid.creator
-
     // ========================================
     // Database
     // ========================================
     runtimeOnly libs.mysql.connector
+    implementation libs.hikaricp
+
+    // Flyway (Migration 스키마용)
+    implementation libs.flyway.core
+    implementation libs.flyway.mysql
+
+    // ========================================
+    // Utilities
+    // ========================================
+    // UUID v7 생성
+    implementation libs.uuid.creator
 
     // ========================================
     // Observability
     // ========================================
-    // Observability Starter (TraceId + MDC Context propagation)
-    implementation libs.observability.starter
+    // Observability SDK v1.3.1 (TraceId + MDC Context propagation + @Loggable)
+    implementation libs.observability.adapter
+
+    // Sentry (Error Tracking)
+    implementation libs.sentry.spring.boot
+
+    // Logging
+    implementation libs.logstash.logback.encoder
 
     // ========================================
     // Test Dependencies
     // ========================================
     testImplementation libs.spring.boot.starter.test
+    testImplementation 'org.springframework.batch:spring-batch-test'
     testImplementation libs.testcontainers.mysql
     testImplementation libs.testcontainers.junit
 }
@@ -87,8 +95,8 @@ tasks.bootJar {
 // ========================================
 tasks.bootRun {
     jvmArgs = [
-        '-Xms256m',
-        '-Xmx512m',
+        '-Xms512m',
+        '-Xmx1024m',
         '-XX:+UseG1GC'
     ]
 }

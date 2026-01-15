@@ -90,6 +90,46 @@ public class LegacyUserRepository {
     }
 
     /**
+     * PK 기반 사용자 목록 조회 (마이그레이션용)
+     *
+     * <p>지정된 ID보다 큰 사용자를 PK 순서대로 조회합니다. 체크포인트 기반 마이그레이션에 사용됩니다.
+     *
+     * @param afterId 이 ID보다 큰 사용자만 조회
+     * @param limit 조회 개수
+     * @return 레거시 사용자 목록
+     */
+    public List<LegacyUserDto> findUsersAfterIdOrdered(long afterId, int limit) {
+        String sql =
+                """
+                SELECT
+                    USER_ID,
+                    SOCIAL_PK_ID,
+                    PHONE_NUMBER,
+                    EMAIL,
+                    PASSWORD_HASH,
+                    NAME,
+                    DATE_OF_BIRTH,
+                    GENDER,
+                    PROVIDER,
+                    STATUS,
+                    PRIVACY_CONSENT,
+                    SERVICE_TERMS_CONSENT,
+                    AD_CONSENT,
+                    WITHDRAWAL_REASON,
+                    WITHDRAWN_AT,
+                    CREATED_AT,
+                    UPDATED_AT,
+                    DELETED_AT
+                FROM USERS
+                WHERE USER_ID > ?
+                ORDER BY USER_ID ASC
+                LIMIT ?
+                """;
+
+        return legacyJdbcTemplate.query(sql, new LegacyUserRowMapper(), afterId, limit);
+    }
+
+    /**
      * 특정 시간 이후 수정된 사용자 목록 조회 (증분 동기화용)
      *
      * @param modifiedAfter 이 시간 이후 수정된 사용자만 조회

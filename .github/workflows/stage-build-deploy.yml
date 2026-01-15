@@ -1,0 +1,412 @@
+# ============================================================================
+# SetOf Commerce Stage Build & Deploy
+#
+# Stage 환경 배포 파이프라인
+# 트리거: stage 브랜치 push
+#
+# 배포 대상:
+# - legacy-api (bootstrap-legacy-web-api)
+# - legacy-api-admin (bootstrap-legacy-web-api-admin)
+# - legacy-batch (bootstrap-batch)
+# - web-api (bootstrap-web-api)
+# - web-api-admin (bootstrap-web-api-admin)
+# - migration (bootstrap-migration) - RunTask 전용
+#
+# Stage 환경 특징:
+# - Production 미러 환경
+# - Stage DB 연결
+# - E2E 테스트 실행
+# ============================================================================
+
+name: Stage Build and Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      force-all:
+        description: '모든 서비스 강제 빌드/배포'
+        required: false
+        default: 'false'
+        type: boolean
+  push:
+    branches:
+      - stage
+    paths-ignore:
+      - 'terraform/**'
+      - '.github/workflows/terraform-*.yml'
+      - '**.md'
+      - 'docs/**'
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: ap-northeast-2
+  ECS_CLUSTER: setof-commerce-cluster-stage
+  ENVIRONMENT: stage
+
+jobs:
+  # ============================================================================
+  # 변경 감지 (Path Filter) - All Modules
+  # ============================================================================
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      legacy-api: ${{ steps.filter.outputs.legacy-api }}
+      legacy-api-admin: ${{ steps.filter.outputs.legacy-api-admin }}
+      legacy-batch: ${{ steps.filter.outputs.legacy-batch }}
+      web-api: ${{ steps.filter.outputs.web-api }}
+      web-api-admin: ${{ steps.filter.outputs.web-api-admin }}
+      migration: ${{ steps.filter.outputs.migration }}
+      shared: ${{ steps.filter.outputs.shared }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Detect file changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            shared:
+              - 'gradle/**'
+              - 'build.gradle'
+              - 'settings.gradle'
+              - 'libs.versions.toml'
+              - 'domain/**'
+              - 'application/**'
+              - 'adapter-out/**'
+            legacy-api:
+              - 'bootstrap/bootstrap-legacy-web-api/**'
+              - 'adapter-in/rest-api/**'
+            legacy-api-admin:
+              - 'bootstrap/bootstrap-legacy-web-api-admin/**'
+              - 'adapter-in/rest-api-admin/**'
+            legacy-batch:
+              - 'bootstrap/bootstrap-batch/**'
+            web-api:
+              - 'bootstrap/bootstrap-web-api/**'
+              - 'adapter-in/rest-api/**'
+            web-api-admin:
+              - 'bootstrap/bootstrap-web-api-admin/**'
+              - 'adapter-in/rest-api-admin/**'
+            migration:
+              - 'bootstrap/bootstrap-migration/**'
+
+      - name: Summary
+        run: |
+          echo "### 🔍 Stage Change Detection Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Changed |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Shared (gradle/domain/app) | ${{ steps.filter.outputs.shared }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| legacy-api | ${{ steps.filter.outputs.legacy-api }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| legacy-api-admin | ${{ steps.filter.outputs.legacy-api-admin }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| legacy-batch | ${{ steps.filter.outputs.legacy-batch }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| web-api | ${{ steps.filter.outputs.web-api }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| web-api-admin | ${{ steps.filter.outputs.web-api-admin }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| migration | ${{ steps.filter.outputs.migration }} |" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # 테스트 - All Modules
+  # ============================================================================
+  test:
+    name: Run Tests (Stage)
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: |
+      needs.detect-changes.outputs.shared == 'true' ||
+      needs.detect-changes.outputs.legacy-api == 'true' ||
+      needs.detect-changes.outputs.legacy-api-admin == 'true' ||
+      needs.detect-changes.outputs.legacy-batch == 'true' ||
+      needs.detect-changes.outputs.web-api == 'true' ||
+      needs.detect-changes.outputs.web-api-admin == 'true' ||
+      needs.detect-changes.outputs.migration == 'true' ||
+      github.event.inputs.force-all == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Run All Module Tests
+        run: |
+          chmod +x gradlew
+          ./gradlew \
+            :bootstrap:bootstrap-legacy-web-api:test \
+            :bootstrap:bootstrap-legacy-web-api-admin:test \
+            :bootstrap:bootstrap-batch:test \
+            :bootstrap:bootstrap-web-api:test \
+            :bootstrap:bootstrap-web-api-admin:test \
+            :bootstrap:bootstrap-migration:test \
+            --no-daemon
+
+      - name: Test Summary
+        if: always()
+        run: |
+          echo "### 🧪 Stage Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment**: Stage" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Legacy Modules:**" >> $GITHUB_STEP_SUMMARY
+          echo "- bootstrap-legacy-web-api" >> $GITHUB_STEP_SUMMARY
+          echo "- bootstrap-legacy-web-api-admin" >> $GITHUB_STEP_SUMMARY
+          echo "- bootstrap-batch" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**New Modules:**" >> $GITHUB_STEP_SUMMARY
+          echo "- bootstrap-web-api" >> $GITHUB_STEP_SUMMARY
+          echo "- bootstrap-web-api-admin" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Batch/Migration Modules:**" >> $GITHUB_STEP_SUMMARY
+          echo "- bootstrap-batch (RunTask 전용)" >> $GITHUB_STEP_SUMMARY
+          echo "- bootstrap-migration (RunTask 전용)" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # 빌드 Jobs - Legacy 모듈 (Stage ECR)
+  # ============================================================================
+  build-legacy-api:
+    name: Build legacy-api (Stage)
+    needs: [detect-changes, test]
+    if: |
+      always() &&
+      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
+      (needs.detect-changes.outputs.shared == 'true' ||
+       needs.detect-changes.outputs.legacy-api == 'true' ||
+       github.event.inputs.force-all == 'true')
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
+    with:
+      ecr-repository: setof-commerce-legacy-api-stage
+      component: legacy-api-stage
+      dockerfile: bootstrap/bootstrap-legacy-web-api/Dockerfile
+      gradle-task: ":bootstrap:bootstrap-legacy-web-api:bootJar"
+      timeout-minutes: 30
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  build-legacy-api-admin:
+    name: Build legacy-api-admin (Stage)
+    needs: [detect-changes, test]
+    if: |
+      always() &&
+      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
+      (needs.detect-changes.outputs.shared == 'true' ||
+       needs.detect-changes.outputs.legacy-api-admin == 'true' ||
+       github.event.inputs.force-all == 'true')
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
+    with:
+      ecr-repository: setof-commerce-legacy-api-admin-stage
+      component: legacy-api-admin-stage
+      dockerfile: bootstrap/bootstrap-legacy-web-api-admin/Dockerfile
+      gradle-task: ":bootstrap:bootstrap-legacy-web-api-admin:bootJar"
+      timeout-minutes: 30
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  build-legacy-batch:
+    name: Build legacy-batch (Stage)
+    needs: [detect-changes, test]
+    if: |
+      always() &&
+      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
+      (needs.detect-changes.outputs.shared == 'true' ||
+       needs.detect-changes.outputs.legacy-batch == 'true' ||
+       github.event.inputs.force-all == 'true')
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
+    with:
+      ecr-repository: setof-commerce-legacy-batch-stage
+      component: legacy-batch-stage
+      dockerfile: bootstrap/bootstrap-batch/Dockerfile
+      gradle-task: ":bootstrap:bootstrap-batch:bootJar"
+      timeout-minutes: 30
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  # ============================================================================
+  # 빌드 Jobs - New 모듈 (Stage ECR)
+  # ============================================================================
+  build-web-api:
+    name: Build web-api (Stage)
+    needs: [detect-changes, test]
+    if: |
+      always() &&
+      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
+      (needs.detect-changes.outputs.shared == 'true' ||
+       needs.detect-changes.outputs.web-api == 'true' ||
+       github.event.inputs.force-all == 'true')
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
+    with:
+      ecr-repository: setof-commerce-web-api-stage
+      component: web-api-stage
+      dockerfile: bootstrap/bootstrap-web-api/Dockerfile
+      gradle-task: ":bootstrap:bootstrap-web-api:bootJar"
+      timeout-minutes: 30
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  build-web-api-admin:
+    name: Build web-api-admin (Stage)
+    needs: [detect-changes, test]
+    if: |
+      always() &&
+      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
+      (needs.detect-changes.outputs.shared == 'true' ||
+       needs.detect-changes.outputs.web-api-admin == 'true' ||
+       github.event.inputs.force-all == 'true')
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
+    with:
+      ecr-repository: setof-commerce-web-api-admin-stage
+      component: web-api-admin-stage
+      dockerfile: bootstrap/bootstrap-web-api-admin/Dockerfile
+      gradle-task: ":bootstrap:bootstrap-web-api-admin:bootJar"
+      timeout-minutes: 30
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  # ============================================================================
+  # 빌드 Jobs - Batch/Migration 모듈 (Stage ECR, RunTask 전용)
+  # ============================================================================
+  build-migration:
+    name: Build migration (Stage)
+    needs: [detect-changes, test]
+    if: |
+      always() &&
+      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
+      (needs.detect-changes.outputs.shared == 'true' ||
+       needs.detect-changes.outputs.migration == 'true' ||
+       github.event.inputs.force-all == 'true')
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
+    with:
+      ecr-repository: setof-commerce-migration-stage
+      component: migration-stage
+      dockerfile: bootstrap/bootstrap-migration/Dockerfile
+      gradle-task: ":bootstrap:bootstrap-migration:bootJar"
+      timeout-minutes: 30
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  # NOTE: migration은 ECS Service가 없음 (RunTask 전용, legacy-batch와 동일)
+
+  # ============================================================================
+  # 배포 Jobs - Legacy 모듈 (Stage ECS)
+  # ============================================================================
+  deploy-legacy-api:
+    name: Deploy legacy-api (Stage)
+    needs: build-legacy-api
+    if: needs.build-legacy-api.result == 'success'
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
+    with:
+      ecs-cluster: setof-commerce-cluster-stage
+      ecs-service: setof-commerce-legacy-api-stage
+      image-uri: ${{ needs.build-legacy-api.outputs.image-uri }}
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  deploy-legacy-api-admin:
+    name: Deploy legacy-api-admin (Stage)
+    needs: build-legacy-api-admin
+    if: needs.build-legacy-api-admin.result == 'success'
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
+    with:
+      ecs-cluster: setof-commerce-cluster-stage
+      ecs-service: setof-commerce-legacy-admin-stage
+      image-uri: ${{ needs.build-legacy-api-admin.outputs.image-uri }}
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  # NOTE: legacy-batch는 ECS Service가 없음 (RunTask 전용)
+
+  # ============================================================================
+  # 배포 Jobs - New 모듈 (Stage ECS)
+  # ============================================================================
+  deploy-web-api:
+    name: Deploy web-api (Stage)
+    needs: build-web-api
+    if: needs.build-web-api.result == 'success'
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
+    with:
+      ecs-cluster: setof-commerce-cluster-stage
+      ecs-service: setof-commerce-web-api-stage
+      image-uri: ${{ needs.build-web-api.outputs.image-uri }}
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  deploy-web-api-admin:
+    name: Deploy web-api-admin (Stage)
+    needs: build-web-api-admin
+    if: needs.build-web-api-admin.result == 'success'
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
+    with:
+      ecs-cluster: setof-commerce-cluster-stage
+      ecs-service: setof-commerce-web-api-admin-stage
+      image-uri: ${{ needs.build-web-api-admin.outputs.image-uri }}
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  # ============================================================================
+  # Terraform Image Tag 업데이트 (Stage)
+  # ============================================================================
+  update-terraform-tags:
+    name: Update Terraform Image Tags (Stage)
+    needs: [build-legacy-api, build-legacy-api-admin, build-legacy-batch, build-web-api, build-web-api-admin, build-migration]
+    if: |
+      always() &&
+      (needs.build-legacy-api.result == 'success' ||
+       needs.build-legacy-api-admin.result == 'success' ||
+       needs.build-legacy-batch.result == 'success' ||
+       needs.build-web-api.result == 'success' ||
+       needs.build-web-api-admin.result == 'success' ||
+       needs.build-migration.result == 'success')
+    uses: ./.github/workflows/terraform-apply-stage.yml
+    with:
+      legacy-api-image-tag: ${{ needs.build-legacy-api.outputs.image-tag || '' }}
+      legacy-api-admin-image-tag: ${{ needs.build-legacy-api-admin.outputs.image-tag || '' }}
+      legacy-batch-image-tag: ${{ needs.build-legacy-batch.outputs.image-tag || '' }}
+      # NOTE: web-api, web-api-admin, migration Stage Terraform 모듈 추가 시 아래 주석 해제
+      # web-api-image-tag: ${{ needs.build-web-api.outputs.image-tag || '' }}
+      # web-api-admin-image-tag: ${{ needs.build-web-api-admin.outputs.image-tag || '' }}
+      # migration-image-tag: ${{ needs.build-migration.outputs.image-tag || '' }}
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  # ============================================================================
+  # 배포 완료 알림
+  # ============================================================================
+  notify:
+    name: Stage Deployment Notification
+    needs: [detect-changes, test, deploy-legacy-api, deploy-legacy-api-admin, deploy-web-api, deploy-web-api-admin, build-migration, update-terraform-tags]
+    if: always()
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-notify-slack.yml@main
+    with:
+      project-name: SetOf Commerce
+      environment: stage
+      status: |
+        ${{
+          (needs.test.result == 'failure') && 'failure' ||
+          (needs.deploy-legacy-api.result == 'success' || needs.deploy-legacy-api.result == 'skipped') &&
+          (needs.deploy-legacy-api-admin.result == 'success' || needs.deploy-legacy-api-admin.result == 'skipped') &&
+          (needs.deploy-web-api.result == 'success' || needs.deploy-web-api.result == 'skipped') &&
+          (needs.deploy-web-api-admin.result == 'success' || needs.deploy-web-api-admin.result == 'skipped') &&
+          'success' || 'failure'
+        }}
+      components: |
+        [
+          {"name": "test", "status": "${{ needs.test.result }}"},
+          {"name": "legacy-api", "status": "${{ needs.deploy-legacy-api.result }}"},
+          {"name": "legacy-api-admin", "status": "${{ needs.deploy-legacy-api-admin.result }}"},
+          {"name": "web-api", "status": "${{ needs.deploy-web-api.result }}"},
+          {"name": "web-api-admin", "status": "${{ needs.deploy-web-api-admin.result }}"},
+          {"name": "migration (build)", "status": "${{ needs.build-migration.result }}"},
+          {"name": "terraform-tags", "status": "${{ needs.update-terraform-tags.result }}"}
+        ]
+      mention-on-failure: "@channel"
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -2,22 +2,31 @@ package com.ryuqq.setof.migration;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Migration Application
  *
- * <p>레거시 DB에서 신규 DB로 데이터를 마이그레이션하는 애플리케이션입니다.
+ * <p>레거시 DB에서 신규 DB로 데이터를 마이그레이션하는 Spring Batch 기반 애플리케이션입니다.
  *
- * <p><strong>Strangler Fig 패턴:</strong>
+ * <h2>3개 DataSource 구조</h2>
  *
  * <ul>
- *   <li>레거시 Users 테이블 → 신규 members 테이블
- *   <li>레거시 ORDER 테이블 → 신규 orders 테이블
- *   <li>레거시 PAYMENT 테이블 → 신규 payments 테이블
+ *   <li><b>migrationDataSource</b>: Spring Batch 메타 테이블 + migration_checkpoint
+ *   <li><b>legacyDataSource</b>: 레거시 DB (읽기 전용)
+ *   <li><b>setofDataSource</b>: 신규 DB (쓰기)
  * </ul>
  *
- * <p><strong>ID 매핑 전략:</strong>
+ * <h2>마이그레이션 전략</h2>
+ *
+ * <ul>
+ *   <li>PK 기반 체크포인트로 진행 상태 추적
+ *   <li>Chunk 단위 트랜잭션으로 안전한 배치 처리
+ *   <li>실패 시 재시작 지원
+ * </ul>
+ *
+ * <h2>ID 매핑 전략</h2>
  *
  * <ul>
  *   <li>신규 테이블에 legacy_*_id 컬럼 추가
@@ -31,6 +40,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication(
         scanBasePackages = {"com.ryuqq.setof.migration", "com.ryuqq.setof.adapter.out.persistence"})
 @EnableScheduling
+@ConfigurationPropertiesScan
 public class MigrationApplication {
 
     public static void main(String[] args) {

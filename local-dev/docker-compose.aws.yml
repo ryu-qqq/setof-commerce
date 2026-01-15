@@ -1,100 +1,171 @@
-version: '3.8'
-name: setof-commerce
+# ===============================================
+# SetOf Commerce - AWS 리소스 연결 로컬 개발 환경
+# ===============================================
+# 사전 조건: ./scripts/local-start.sh 실행 (Redis + Stage RDS 포트포워딩)
+#
+# 사용법:
+#   # 특정 서비스만 실행
+#   docker-compose -f docker-compose.aws.yml --profile web-api up -d
+#   docker-compose -f docker-compose.aws.yml --profile api up -d
+#   docker-compose -f docker-compose.aws.yml --profile legacy up -d
+#   docker-compose -f docker-compose.aws.yml --profile batch up -d
+#
+#   # 전체 실행
+#   docker-compose -f docker-compose.aws.yml --profile all up -d
+#
+#   # 종료
+#   docker-compose -f docker-compose.aws.yml down
+# ===============================================
+
+name: setof-commerce-aws
 
 # ===============================================
-# SetOf Commerce - AWS 리소스 연결용 로컬 개발 환경
+# 공통 설정
 # ===============================================
-# 사용법:
-# 1. AWS SSM Session Manager로 RDS 포트 포워딩 설정
-#    ./scripts/aws-port-forward.sh
-# 2. docker-compose --env-file .env.aws -f docker-compose.aws.yml up -d
-# ===============================================
+x-common-env: &common-env
+  # Database (Stage RDS via SSM Port Forwarding)
+  DB_HOST: host.docker.internal
+  DB_PORT: 13308
+  DB_NAME: ${DB_NAME:-common}
+  DB_USERNAME: ${DB_USERNAME:-admin}
+  DB_PASSWORD: ${DB_PASSWORD}
+
+  # Redis (로컬 Docker - local-start.sh로 실행)
+  REDIS_HOST: host.docker.internal
+  REDIS_PORT: 46379
+
+  # AWS
+  AWS_REGION: ${AWS_REGION:-ap-northeast-2}
+
+  # Logging
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+x-common-settings: &common-settings
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  restart: unless-stopped
 
 services:
   # ===============================================
-  # Infrastructure Services (Local)
+  # Web API (신규)
   # ===============================================
-
-  redis:
-    image: redis:7.2-alpine
-    container_name: setof-redis-local
-    ports:
-      - "6379:6379"
-    command: redis-server --appendonly yes
-    volumes:
-      - redis-data:/data
-    networks:
-      - setof-network
-    healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
-  # ===============================================
-  # Application Services (AWS RDS 연결)
-  # ===============================================
-
   web-api:
     build:
       context: ..
       dockerfile: bootstrap/bootstrap-web-api/Dockerfile
-    container_name: setof-web-api-aws
+    container_name: setof-web-api
     environment:
-      SPRING_PROFILES_ACTIVE: prod
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: stage
       SERVER_PORT: 8080
-
-      # Database (AWS RDS via SSM Port Forwarding)
-      # SSM으로 localhost:13307 -> RDS:3306 포워딩 필요
-      DB_HOST: host.docker.internal
-      DB_PORT: 13307
-      DB_NAME: ${DB_NAME}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-
-      # Redis (Local Docker)
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-
       # Kakao OAuth
-      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
-      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
-
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID:-}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET:-}
       # JWT
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_ACCESS_TOKEN_EXPIRATION: ${JWT_ACCESS_TOKEN_EXPIRATION:-3600}
-      JWT_REFRESH_TOKEN_EXPIRATION: ${JWT_REFRESH_TOKEN_EXPIRATION:-604800}
-
-      # AWS Credentials (실제 AWS 리소스 접근)
-      AWS_REGION: ${AWS_REGION}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
-
-      # Logging
-      LOG_LEVEL: ${LOG_LEVEL:-INFO}
-
+      JWT_SECRET: ${JWT_SECRET:-}
     ports:
-      - "8080:8080"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    depends_on:
-      redis:
-        condition: service_healthy
-    networks:
-      - setof-network
-    restart: unless-stopped
+      - "48080:8080"
+    <<: *common-settings
+    profiles:
+      - web-api
+      - api
+      - all
 
-# ===============================================
-# Networks
-# ===============================================
-networks:
-  setof-network:
-    driver: bridge
+  # ===============================================
+  # Web API Admin (신규)
+  # ===============================================
+  web-api-admin:
+    build:
+      context: ..
+      dockerfile: bootstrap/bootstrap-web-api-admin/Dockerfile
+    container_name: setof-web-api-admin
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: stage
+      SERVER_PORT: 8080
+    ports:
+      - "48081:8080"
+    <<: *common-settings
+    profiles:
+      - web-api-admin
+      - api
+      - all
 
-# ===============================================
-# Volumes
-# ===============================================
-volumes:
-  redis-data:
+  # ===============================================
+  # Legacy Web API
+  # ===============================================
+  legacy-web-api:
+    build:
+      context: ..
+      dockerfile: bootstrap/bootstrap-legacy-web-api/Dockerfile
+    container_name: setof-legacy-web-api
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: stage
+      SERVER_PORT: 8080
+    ports:
+      - "48082:8080"
+    <<: *common-settings
+    profiles:
+      - legacy-web-api
+      - legacy
+      - all
+
+  # ===============================================
+  # Legacy Web API Admin
+  # ===============================================
+  legacy-web-api-admin:
+    build:
+      context: ..
+      dockerfile: bootstrap/bootstrap-legacy-web-api-admin/Dockerfile
+    container_name: setof-legacy-web-api-admin
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: stage
+      SERVER_PORT: 8080
+    ports:
+      - "48083:8080"
+    <<: *common-settings
+    profiles:
+      - legacy-web-api-admin
+      - legacy
+      - all
+
+  # ===============================================
+  # Batch
+  # ===============================================
+  batch:
+    build:
+      context: ..
+      dockerfile: bootstrap/bootstrap-batch/Dockerfile
+    container_name: setof-batch
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: stage
+      SERVER_PORT: 8080
+    ports:
+      - "48084:8080"
+    <<: *common-settings
+    profiles:
+      - batch
+      - all
+
+  # ===============================================
+  # Migration
+  # ===============================================
+  migration:
+    build:
+      context: ..
+      dockerfile: bootstrap/bootstrap-migration/Dockerfile
+    container_name: setof-migration
+    environment:
+      <<: *common-env
+      SPRING_PROFILES_ACTIVE: stage
+      SERVER_PORT: 8080
+    ports:
+      - "48085:8080"
+    <<: *common-settings
+    profiles:
+      - migration
+      - all
+

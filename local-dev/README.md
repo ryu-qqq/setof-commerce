@@ -1,157 +1,192 @@
-# FileFlow 로컬 개발 환경
+# SetOf Commerce 로컬 개발 환경
 
-로컬에서 FileFlow를 개발하고 테스트하기 위한 Docker Compose 환경 모음입니다.
+로컬에서 Stage AWS 리소스에 연결하여 개발하기 위한 환경입니다.
 
-## 📦 구성
+## 구조
 
 ```
 local-dev/
-├── README.md                          # 이 파일
-├── docker-compose.local.yml          # 완전 독립 로컬 환경
-├── docker-compose.aws.yml            # AWS 리소스 연결 환경
-├── .env.local.example                # 로컬 환경 변수 예시
-├── .env.aws.example                  # AWS 환경 변수 예시
-├── scripts/
-│   ├── local-start.sh                # 로컬 환경 시작
-│   ├── local-stop.sh                 # 로컬 환경 종료
-│   ├── aws-start.sh                  # AWS 연결 환경 시작
-│   ├── aws-stop.sh                   # AWS 연결 환경 종료
-│   └── aws-port-forward.sh           # AWS SSM 포트 포워딩
-└── docs/
-    ├── LOCAL_SETUP.md                # 로컬 환경 상세 가이드
-    └── AWS_SETUP.md                  # AWS 연결 환경 상세 가이드
+├── README.md                    # 이 파일
+├── docker-compose.aws.yml       # 애플리케이션 서버 (Stage RDS 연결)
+├── .env.aws.example             # 환경변수 예시
+├── .env.aws.stage               # 실제 환경변수 (git 제외)
+└── scripts/
+    ├── local-start.sh           # 인프라 시작 (Redis + Stage RDS 포트포워딩)
+    ├── local-stop.sh            # 인프라 종료
+    └── aws-port-forward-stage.sh # SSM 포트포워딩 스크립트
 ```
 
-## 🚀 빠른 시작
+## 사전 준비
 
-### 방법 1: 완전 독립 로컬 환경 (권장 - 일반 개발용)
+```bash
+# 1. AWS SSO 로그인
+aws sso login
 
-로컬 MySQL, Redis를 Docker로 실행하여 완전히 독립된 환경에서 개발합니다.
+# 2. 자격 증명 확인
+aws sts get-caller-identity
+
+# 3. 환경변수 파일 생성
+cd local-dev
+cp .env.aws.example .env.aws.stage
+
+# 4. Stage DB 비밀번호 조회 후 .env.aws.stage에 입력
+aws secretsmanager get-secret-value \
+  --secret-id "stage-shared-mysql-master-password" \
+  --query "SecretString" --output text | jq -r '.password'
+```
+
+## 빠른 시작
+
+### 1. 인프라만 시작 (IDE에서 직접 실행 시)
 
 ```bash
 cd local-dev
 
-# 환경 변수 설정 (선택사항)
-cp .env.local .env.local
-
-# 시작
+# Redis + Stage RDS 포트포워딩 시작
 ./scripts/local-start.sh
 
+# IDE에서 애플리케이션 실행
+# VM Options: -Dspring.profiles.active=local
+# 환경변수: DB_HOST=127.0.0.1, DB_PORT=13308, REDIS_HOST=127.0.0.1, REDIS_PORT=46379
+```
+
+### 2. 애플리케이션 서버 띄우기 (프론트 개발자용)
+
+```bash
+cd local-dev
+
+# 인프라 시작
+./scripts/local-start.sh
+
+# 원하는 서비스 실행
+docker-compose -f docker-compose.aws.yml --env-file .env.aws.stage --profile web-api up -d
+
 # 종료
+docker-compose -f docker-compose.aws.yml down
 ./scripts/local-stop.sh
 ```
 
-**특징:**
-- ✅ 인터넷 연결 불필요 (빌드 후)
-- ✅ AWS 계정 불필요
-- ✅ 빠른 시작/종료
-- ✅ 데이터 격리 (로컬 볼륨)
-- ❌ AWS 서비스(S3, SQS) 비활성화
-
-### 방법 2: AWS 리소스 연결 환경 (프로덕션 데이터 테스트용)
-
-실제 AWS RDS, ElastiCache, S3, SQS에 연결하여 프로덕션과 동일한 환경에서 테스트합니다.
+### 3. Mock Server 실행 (개발 완료 전 프론트 개발자용)
 
 ```bash
 cd local-dev
 
-# 1. 환경 변수 설정 (필수)
-cp .env.aws .env.aws
-vim .env.aws  # AWS 자격 증명 입력
+# Mock Server 포함 시작
+./scripts/local-start.sh --mock
 
-# 2. AWS 포트 포워딩 시작 (터미널 1)
-./scripts/aws-port-forward.sh
-
-# 3. Docker Compose 시작 (터미널 2)
-./scripts/aws-start.sh
-
-# 4. 종료
-./scripts/aws-stop.sh
-# 포트 포워딩 터미널에서 Ctrl+C
+# 종료
+./scripts/local-stop.sh --mock
 ```
 
-**특징:**
-- ✅ 실제 프로덕션 데이터 접근
-- ✅ AWS 서비스(S3, SQS) 활성화
-- ✅ 프로덕션 환경 디버깅
-- ❌ AWS 계정 및 권한 필요
-- ❌ 인터넷 연결 필수
-- ⚠️  프로덕션 데이터 주의
+## 명령어 상세
 
-## 📊 환경 비교
-
-| 항목 | 로컬 환경 | AWS 연결 환경 |
-|------|----------|--------------|
-| **MySQL** | 로컬 Docker 컨테이너 | AWS RDS (SSM 포워딩) |
-| **Redis** | 로컬 Docker 컨테이너 | AWS ElastiCache (SSM 포워딩) |
-| **S3** | 비활성화/Mock | 실제 AWS S3 |
-| **SQS** | 비활성화 | 실제 AWS SQS |
-| **데이터** | 로컬 테스트 데이터 | 프로덕션 데이터 |
-| **AWS 계정** | 불필요 | 필요 |
-| **인터넷** | 불필요 | 필요 |
-| **시작 속도** | 빠름 (~30초) | 느림 (~2분) |
-| **용도** | 일반 개발, 단위 테스트 | 통합 테스트, 디버깅 |
-
-## 🔧 서비스 포트
-
-| 서비스 | 로컬 환경 | AWS 환경 |
-|--------|----------|----------|
-| Web API | http://localhost:8080 | http://localhost:8080 |
-| Scheduler | http://localhost:8081 | http://localhost:8081 |
-| Download Worker | http://localhost:8082 | http://localhost:8082 |
-| MySQL | localhost:13306 | localhost:13307 (포워딩) |
-| Redis | localhost:16379 | localhost:16380 (포워딩) |
-
-## 📝 상세 가이드
-
-- [로컬 환경 상세 가이드](docs/LOCAL_SETUP.md)
-- [AWS 연결 환경 상세 가이드](docs/AWS_SETUP.md)
-
-## 🛠️ 트러블슈팅
-
-### 포트 충돌
+### local-start.sh
 
 ```bash
-# 포트 사용 확인
-lsof -i :8080
-lsof -i :3306
+./scripts/local-start.sh [OPTIONS]
 
-# 프로세스 종료
-kill -9 <PID>
+Options:
+  --mock, -m    OMS Mock Server도 함께 시작
+  --help, -h    도움말 표시
+```
+
+**실행 내용:**
+1. Redis 컨테이너 시작 (포트 46379)
+2. Stage RDS SSM 포트포워딩 (포트 13308)
+3. (선택) Mock Server 시작 (포트 48089)
+
+### local-stop.sh
+
+```bash
+./scripts/local-stop.sh [OPTIONS]
+
+Options:
+  --mock, -m    Mock Server도 함께 종료
+  --clean, -c   컨테이너 완전 삭제 (데이터 포함)
+  --help, -h    도움말 표시
+```
+
+### docker-compose.aws.yml
+
+```bash
+# 개별 서비스
+docker-compose -f docker-compose.aws.yml --env-file .env.aws.stage --profile web-api up -d
+docker-compose -f docker-compose.aws.yml --env-file .env.aws.stage --profile web-api-admin up -d
+docker-compose -f docker-compose.aws.yml --env-file .env.aws.stage --profile legacy-web-api up -d
+docker-compose -f docker-compose.aws.yml --env-file .env.aws.stage --profile batch up -d
+docker-compose -f docker-compose.aws.yml --env-file .env.aws.stage --profile migration up -d
+
+# 그룹
+docker-compose -f docker-compose.aws.yml --env-file .env.aws.stage --profile api up -d      # web-api + web-api-admin
+docker-compose -f docker-compose.aws.yml --env-file .env.aws.stage --profile legacy up -d   # legacy-web-api + legacy-web-api-admin
+
+# 전체
+docker-compose -f docker-compose.aws.yml --env-file .env.aws.stage --profile all up -d
+```
+
+## 포트 정보
+
+| 서비스 | 포트 | 설명 |
+|--------|------|------|
+| Redis | 46379 | 로컬 캐시 |
+| Stage RDS | 13308 | SSM 포트포워딩 |
+| Mock Server | 48089 | OMS Mock API |
+| web-api | 48080 | 신규 API |
+| web-api-admin | 48081 | 신규 Admin API |
+| legacy-web-api | 48082 | 레거시 API |
+| legacy-web-api-admin | 48083 | 레거시 Admin API |
+| batch | 48084 | 배치 서버 |
+| migration | 48085 | 마이그레이션 서버 |
+
+## 환경변수
+
+`.env.aws.stage` 파일에 설정 (`.env.aws.example` 참고):
+
+| 변수 | 설명 | 필수 |
+|------|------|------|
+| DB_PASSWORD | Stage RDS 비밀번호 | ✅ |
+| DB_NAME | 데이터베이스명 (기본: common) | |
+| DB_USERNAME | DB 사용자 (기본: admin) | |
+| KAKAO_CLIENT_ID | 카카오 OAuth | |
+| JWT_SECRET | JWT 시크릿 | |
+
+## 트러블슈팅
+
+### AWS SSO 로그인 필요
+
+```bash
+aws sso login
+aws sts get-caller-identity  # 확인
+```
+
+### 포트포워딩 실패
+
+```bash
+# 포트 확인
+lsof -i :13308
+lsof -i :46379
+
+# 재시작
+./scripts/local-stop.sh
+./scripts/local-start.sh
 ```
 
 ### Docker 빌드 실패
 
 ```bash
-# 캐시 없이 재빌드
-cd local-dev
-docker-compose -f docker-compose.local.yml build --no-cache
+# 캐시 없이 빌드
+docker-compose -f docker-compose.aws.yml --env-file .env.aws.stage --profile web-api build --no-cache
 ```
 
-### AWS 연결 실패
+### 컨테이너 로그 확인
 
 ```bash
-# AWS 자격 증명 확인
-aws sts get-caller-identity
-
-# 포트 포워딩 재시작
-./scripts/aws-port-forward.sh
+docker logs setof-web-api
+docker logs setof-redis-dev
 ```
 
-## 🔒 보안 주의사항
+## 보안 주의
 
-### 로컬 환경
-- `.env.local` 파일은 Git에 커밋하지 마세요
-- 로컬 MySQL 비밀번호는 간단하게 설정 가능 (개발용)
-
-### AWS 환경
-- `.env.aws` 파일은 **절대** Git에 커밋하지 마세요
-- AWS 자격 증명은 최소 권한 원칙 적용
-- 프로덕션 데이터 수정 시 각별히 주의
-- AWS SSO 사용 권장 (임시 자격 증명)
-
-## 📚 추가 리소스
-
-- [Docker Compose 공식 문서](https://docs.docker.com/compose/)
-- [AWS SSM Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html)
-- [FileFlow 아키텍처 문서](../docs/ARCHITECTURE.md)
+- `.env.aws.stage`는 절대 커밋하지 마세요 (.gitignore에 포함됨)
+- Stage DB는 실제 테스트 데이터 - 수정 시 주의
+- AWS 자격 증명은 SSO로 관리 (키 하드코딩 금지)

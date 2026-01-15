@@ -1,0 +1,600 @@
+---
+description: REST API Layer 코딩 규칙 (Controller, DTO, Mapper)
+globs: ["**/adapter/in/rest/**/*.java", "**/rest/**/*.java"]
+alwaysApply: false
+---
+
+# REST API Layer Rules (58개 규칙)
+
+REST API Layer는 HTTP 요청을 받아 UseCase로 전달하고 응답을 반환하는 역할을 담당합니다. Thin Controller 패턴을 적용합니다.
+
+---
+
+## 핵심 원칙 (Zero-Tolerance)
+
+| Code | Rule | Detection |
+|------|------|-----------|
+| CTR-001 | Thin Controller 패턴 | 비즈니스 로직, if/switch |
+| CTR-002 | ResponseEntity<ApiResponse<T>> 래핑 | 단독 ApiResponse 또는 ResponseEntity |
+| CTR-004 | DELETE 메서드 금지 | `@DeleteMapping` |
+| CTR-005 | Controller @Transactional 금지 | `@Transactional` |
+| CTR-009 | Controller Lombok 금지 | `@Data`, `@RequiredArgsConstructor` |
+| DTO-001 | Request/Response DTO Record 필수 | `class` 키워드 DTO |
+| DTO-002 | Request DTO @NotNull 필수 | 검증 어노테이션 누락 |
+| DTO-014 | ApiResponse 원시타입 래핑 금지 | `ApiResponse<String>`, `ApiResponse<Long>` |
+| MAP-001 | Mapper @Component 필수 | static 메서드 Mapper |
+| TEST-001 | RestDocsTestSupport 상속 필수 | `@WebMvcTest`, `MockMvc` |
+
+---
+
+## 컴포넌트 역할 분담
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    REST API Layer                           │
+├──────────┬──────────┬──────────┬──────────┬────────────────┤
+│Controller│ Request  │ Response │ Mapper   │ ErrorMapper    │
+│(HTTP)    │ (입력)   │ (출력)   │ (변환)   │ (예외처리)     │
+├──────────┼──────────┼──────────┼──────────┼────────────────┤
+│ Thin     │ Record   │ Record   │@Component│DomainException │
+│ UseCase  │ @Valid   │ 불변     │Pure Java │→ErrorResponse  │
+│ 위임만   │ @NotNull │          │Lombok ❌ │                │
+└──────────┴──────────┴──────────┴──────────┴────────────────┘
+```
+
+---
+
+## Controller (CTR-*)
+
+### Thin Controller 패턴 (CTR-001) 🚨 **Zero-Tolerance**
+
+Controller는 HTTP 어댑터 역할만 수행합니다. 비즈니스 로직을 포함하면 안 됩니다.
+
+```java
+// ❌ BAD - 비즈니스 로직 포함
+@RestController
+public class OrderController {
+
+    @PostMapping("/orders")
+    public ResponseEntity<?> create(@RequestBody CreateOrderRequest request) {
+        // 비즈니스 로직 금지!
+        if (request.getQuantity() > 100) {
+            throw new IllegalArgumentException("Too many items");
+        }
+        // 할인 계산 금지!
+        BigDecimal discount = calculateDiscount(request.getTotal());
+        // Domain 객체 직접 생성 금지!
+        Order order = new Order(request.getProductId(), discount);
+        return ResponseEntity.ok(order);
+    }
+}
+
+// ✅ GOOD - Thin Controller
+@RestController
+@RequestMapping("/api/v1/orders")
+@Tag(name = "Order", description = "주문 관리 API")
+public class OrderCommandController {
+
+    private final CreateOrderUseCase createOrderUseCase;
+    private final OrderCommandApiMapper mapper;
+
+    public OrderCommandController(CreateOrderUseCase createOrderUseCase,
+                                  OrderCommandApiMapper mapper) {
+        this.createOrderUseCase = createOrderUseCase;
+        this.mapper = mapper;
+    }
+
+    @PostMapping
+    @Operation(summary = "주문 생성")
+    public ResponseEntity<ApiResponse<OrderIdApiResponse>> create(
+            @Valid @RequestBody CreateOrderApiRequest request) {
+
+        CreateOrderCommand command = mapper.toCommand(request);
+        Long orderId = createOrderUseCase.execute(command);
+
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(ApiResponse.success(new OrderIdApiResponse(orderId)));
+    }
+}
+```
+
+### ResponseEntity<ApiResponse<T>> 필수 (CTR-002) 🚨 **Zero-Tolerance**
+```java
+// ❌ BAD - ApiResponse만 반환
+@GetMapping("/{id}")
+public ApiResponse<OrderApiResponse> getOrder(@PathVariable Long id) {
+    return ApiResponse.success(response);  // HTTP 상태 코드 제어 불가
+}
+
+// ❌ BAD - ResponseEntity만 반환
+@GetMapping("/{id}")
+public ResponseEntity<OrderApiResponse> getOrder(@PathVariable Long id) {
+    return ResponseEntity.ok(response);  // 표준 응답 형식 위반
+}
+
+// ✅ GOOD - 둘 다 래핑
+@GetMapping("/{id}")
+public ResponseEntity<ApiResponse<OrderApiResponse>> getOrder(
+        @PathVariable Long id) {
+    OrderResponse order = getOrderUseCase.execute(new GetOrderQuery(id));
+    return ResponseEntity.ok(
+        ApiResponse.success(mapper.toApiResponse(order))
+    );
+}
+```
+
+### DELETE 메서드 금지 (CTR-004) 🚨 **Zero-Tolerance**
+```java
+// ❌ BAD - DELETE 메서드 사용
+@DeleteMapping("/{id}")
+public ResponseEntity<Void> delete(@PathVariable Long id) {
+    deleteUseCase.execute(id);
+    return ResponseEntity.noContent().build();
+}
+
+// ✅ GOOD - PATCH로 소프트 삭제
+@PatchMapping("/{id}/delete")
+@Operation(summary = "주문 삭제 (소프트)")
+public ResponseEntity<ApiResponse<Void>> softDelete(@PathVariable Long id) {
+    softDeleteOrderUseCase.execute(new DeleteOrderCommand(id));
+    return ResponseEntity.ok(ApiResponse.success(null));
+}
+```
+
+### CTR 규칙 상세
+
+| Code | Rule | Severity |
+|------|------|----------|
+| CTR-001 | Thin Controller 패턴 | BLOCKER |
+| CTR-002 | ResponseEntity<ApiResponse<T>> 래핑 | BLOCKER |
+| CTR-003 | @Valid 필수 | CRITICAL |
+| CTR-004 | DELETE 메서드 금지 | BLOCKER |
+| CTR-005 | @Transactional 금지 | BLOCKER |
+| CTR-006 | CQRS 분리 (Command/Query Controller) | CRITICAL |
+| CTR-007 | 비즈니스 로직 금지 | BLOCKER |
+| CTR-008 | Domain 객체 직접 생성/조작 금지 | BLOCKER |
+| CTR-009 | Lombok 금지 | BLOCKER |
+
+---
+
+## Request DTO (DTO-*)
+
+### Record 필수 + @NotNull (DTO-001, DTO-002) 🚨 **Zero-Tolerance**
+```java
+// ❌ BAD - class 사용 + 검증 누락
+public class CreateOrderRequest {
+    private Long productId;  // @NotNull 없음
+    private Integer quantity;
+
+    // getter/setter 필요...
+}
+
+// ✅ GOOD - Record + 검증 어노테이션
+public record CreateOrderApiRequest(
+    @NotNull @Schema(description = "상품 ID", example = "1")
+    Long productId,
+
+    @NotNull @Min(1) @Schema(description = "수량", example = "2")
+    Integer quantity,
+
+    @NotBlank @Schema(description = "배송 주소")
+    String shippingAddress
+) {
+    // Compact Constructor 검증 (선택)
+    public CreateOrderApiRequest {
+        if (quantity != null && quantity > 1000) {
+            throw new IllegalArgumentException("Maximum quantity is 1000");
+        }
+    }
+}
+```
+
+### 검색 조건 DTO
+```java
+public record SearchOrdersApiRequest(
+    @Schema(description = "사용자 ID")
+    Long userId,
+
+    @Schema(description = "주문 상태")
+    OrderStatus status,
+
+    @Schema(description = "시작일")
+    LocalDate fromDate,
+
+    @Schema(description = "종료일")
+    LocalDate toDate,
+
+    @Min(0) @Schema(description = "페이지 번호", defaultValue = "0")
+    Integer page,
+
+    @Min(1) @Max(100) @Schema(description = "페이지 크기", defaultValue = "20")
+    Integer size
+) {
+    public SearchOrdersApiRequest {
+        page = page != null ? page : 0;
+        size = size != null ? size : 20;
+    }
+}
+```
+
+### DTO 규칙 상세
+
+| Code | Rule | Severity |
+|------|------|----------|
+| DTO-001 | Request/Response DTO Record 필수 | BLOCKER |
+| DTO-002 | Request DTO @NotNull 필수 | BLOCKER |
+| DTO-003 | @Schema 설명 필수 | MAJOR |
+| DTO-004 | 네이밍: *ApiRequest, *ApiResponse | MAJOR |
+| DTO-005 | Lombok 금지 | BLOCKER |
+| DTO-006 | 불변성 유지 | CRITICAL |
+| DTO-007 | Domain 변환 메서드 금지 (toDomain) | BLOCKER |
+| DTO-008 | 비즈니스 로직 금지 | BLOCKER |
+| DTO-011 | Setter 금지 | BLOCKER |
+| DTO-014 | ApiResponse 원시타입 래핑 금지 | BLOCKER |
+
+### ApiResponse 원시타입 래핑 금지 (DTO-014) 🚨 **Zero-Tolerance**
+```java
+// ❌ BAD - 원시타입 직접 반환
+public ResponseEntity<ApiResponse<Long>> create(...) {
+    return ResponseEntity.ok(ApiResponse.success(orderId));
+}
+
+// ✅ GOOD - 전용 Response DTO 사용
+public record OrderIdApiResponse(
+    @Schema(description = "생성된 주문 ID")
+    Long orderId
+) { }
+
+public ResponseEntity<ApiResponse<OrderIdApiResponse>> create(...) {
+    return ResponseEntity.ok(
+        ApiResponse.success(new OrderIdApiResponse(orderId))
+    );
+}
+```
+
+---
+
+## Response DTO
+
+### 표준 Response 구조
+```java
+public record OrderApiResponse(
+    @Schema(description = "주문 ID")
+    Long id,
+
+    @Schema(description = "주문 상태")
+    String status,
+
+    @Schema(description = "총 금액")
+    BigDecimal totalAmount,
+
+    @Schema(description = "주문 항목 목록")
+    List<OrderLineApiResponse> lines,
+
+    @Schema(description = "생성 시간")
+    Instant createdAt
+) { }
+
+public record OrderLineApiResponse(
+    @Schema(description = "상품 ID")
+    Long productId,
+
+    @Schema(description = "수량")
+    Integer quantity,
+
+    @Schema(description = "단가")
+    BigDecimal unitPrice
+) { }
+```
+
+### 목록 조회 Response
+```java
+public record OrderPageApiResponse(
+    @Schema(description = "주문 목록")
+    List<OrderSummaryApiResponse> orders,
+
+    @Schema(description = "전체 개수")
+    Long totalCount,
+
+    @Schema(description = "현재 페이지")
+    Integer page,
+
+    @Schema(description = "페이지 크기")
+    Integer size,
+
+    @Schema(description = "다음 페이지 존재 여부")
+    Boolean hasNext
+) { }
+```
+
+---
+
+## API Mapper (MAP-*)
+
+### @Component 필수 + Static 금지 (MAP-001, MAP-002) 🚨 **Zero-Tolerance**
+```java
+// ❌ BAD - static 메서드 Mapper
+public class OrderMapper {
+    public static CreateOrderCommand toCommand(CreateOrderRequest req) {
+        return new CreateOrderCommand(req.productId(), req.quantity());
+    }
+}
+
+// ✅ GOOD - @Component Bean
+@Component
+public class OrderCommandApiMapper {
+
+    // Request → Command 변환
+    public CreateOrderCommand toCommand(CreateOrderApiRequest request) {
+        return new CreateOrderCommand(
+            request.productId(),
+            request.quantity(),
+            request.shippingAddress()
+        );
+    }
+
+    // Query DTO → Criteria 변환
+    public SearchOrderCriteria toCriteria(SearchOrdersApiRequest request) {
+        return new SearchOrderCriteria(
+            request.userId(),
+            request.status(),
+            request.fromDate(),
+            request.toDate(),
+            request.page(),
+            request.size()
+        );
+    }
+}
+
+@Component
+public class OrderQueryApiMapper {
+
+    // Domain → Response 변환
+    public OrderApiResponse toApiResponse(OrderResponse order) {
+        return new OrderApiResponse(
+            order.id(),
+            order.status(),
+            order.totalAmount(),
+            toLineResponses(order.lines()),
+            order.createdAt()
+        );
+    }
+
+    private List<OrderLineApiResponse> toLineResponses(
+            List<OrderLineResponse> lines) {
+        return lines.stream()
+            .map(this::toLineApiResponse)
+            .toList();
+    }
+
+    private OrderLineApiResponse toLineApiResponse(OrderLineResponse line) {
+        return new OrderLineApiResponse(
+            line.productId(),
+            line.quantity(),
+            line.unitPrice()
+        );
+    }
+}
+```
+
+### Mapper 제약사항 (MAP-004 ~ MAP-008) 🚨 **Zero-Tolerance**
+```java
+// ❌ BAD - 비즈니스 로직 포함
+@Component
+public class OrderApiMapper {
+
+    public CreateOrderCommand toCommand(CreateOrderApiRequest request) {
+        // 비즈니스 로직 금지! (MAP-004)
+        BigDecimal discount = request.quantity() > 10 ? 0.1 : 0;
+
+        // 조건부 로직 금지! (MAP-005)
+        if (request.isVip()) {
+            discount = 0.2;
+        }
+
+        return new CreateOrderCommand(...);
+    }
+}
+
+// ✅ GOOD - 필드 매핑만
+@Component
+public class OrderApiMapper {
+
+    public CreateOrderCommand toCommand(CreateOrderApiRequest request) {
+        return new CreateOrderCommand(
+            request.productId(),
+            request.quantity(),
+            request.shippingAddress()
+        );
+    }
+}
+```
+
+### MAP 규칙 상세
+
+| Code | Rule | Severity |
+|------|------|----------|
+| MAP-001 | @Component 필수 | BLOCKER |
+| MAP-002 | static 메서드 금지 | BLOCKER |
+| MAP-003 | 생성자 주입 | CRITICAL |
+| MAP-004 | 필드 매핑만 (비즈니스 로직 금지) | BLOCKER |
+| MAP-005 | if/switch 조건부 로직 금지 | BLOCKER |
+| MAP-006 | Domain 객체 직접 사용 금지 | BLOCKER |
+| MAP-007 | Lombok 금지 | BLOCKER |
+| MAP-008 | Repository/UseCase 주입 금지 | BLOCKER |
+
+---
+
+## Error Mapper
+
+### Domain Exception → Error Response 변환
+```java
+@Component
+public class OrderErrorMapper implements DomainErrorMapper {
+
+    @Override
+    public Class<? extends DomainException> getSupportedException() {
+        return OrderException.class;
+    }
+
+    @Override
+    public ErrorResponse toErrorResponse(DomainException exception) {
+        return switch (exception) {
+            case OrderNotFoundException e -> ErrorResponse.of(
+                "ORDER_NOT_FOUND",
+                "주문을 찾을 수 없습니다: " + e.getOrderId(),
+                HttpStatus.NOT_FOUND
+            );
+            case OrderAlreadyCancelledException e -> ErrorResponse.of(
+                "ORDER_ALREADY_CANCELLED",
+                "이미 취소된 주문입니다",
+                HttpStatus.CONFLICT
+            );
+            default -> ErrorResponse.of(
+                exception.getErrorCode(),
+                exception.getMessage(),
+                HttpStatus.BAD_REQUEST
+            );
+        };
+    }
+}
+```
+
+---
+
+## Query Controller 예시
+
+```java
+@RestController
+@RequestMapping("/api/v1/orders")
+@Tag(name = "Order Query", description = "주문 조회 API")
+public class OrderQueryController {
+
+    private final GetOrderUseCase getOrderUseCase;
+    private final SearchOrdersUseCase searchOrdersUseCase;
+    private final OrderQueryApiMapper mapper;
+
+    public OrderQueryController(
+            GetOrderUseCase getOrderUseCase,
+            SearchOrdersUseCase searchOrdersUseCase,
+            OrderQueryApiMapper mapper) {
+        this.getOrderUseCase = getOrderUseCase;
+        this.searchOrdersUseCase = searchOrdersUseCase;
+        this.mapper = mapper;
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "주문 단건 조회")
+    public ResponseEntity<ApiResponse<OrderApiResponse>> getOrder(
+            @PathVariable Long id) {
+        OrderResponse order = getOrderUseCase.execute(new GetOrderQuery(id));
+        return ResponseEntity.ok(
+            ApiResponse.success(mapper.toApiResponse(order))
+        );
+    }
+
+    @GetMapping
+    @Operation(summary = "주문 목록 조회")
+    public ResponseEntity<ApiResponse<OrderPageApiResponse>> searchOrders(
+            @Valid SearchOrdersApiRequest request) {
+        SearchOrderCriteria criteria = mapper.toCriteria(request);
+        OrderPageResponse result = searchOrdersUseCase.execute(criteria);
+        return ResponseEntity.ok(
+            ApiResponse.success(mapper.toPageResponse(result))
+        );
+    }
+}
+```
+
+---
+
+## 테스트 규칙 (TEST-*)
+
+### TestRestTemplate 필수 (TEST-001) 🚨 **Zero-Tolerance**
+```java
+// ❌ BAD - MockMvc 사용
+@WebMvcTest(OrderController.class)
+class OrderControllerTest {
+    @Autowired
+    MockMvc mockMvc;
+
+    @Test
+    void test() throws Exception {
+        mockMvc.perform(get("/api/v1/orders/1"))
+            .andExpect(status().isOk());
+    }
+}
+
+// ✅ GOOD - TestRestTemplate 사용
+class OrderControllerDocsTest extends RestDocsTestSupport {
+
+    @Autowired
+    TestRestTemplate restTemplate;
+
+    @Test
+    @Sql("/sql/order-test-data.sql")
+    void getOrder_success() {
+        // given
+        Long orderId = 1L;
+
+        // when
+        ResponseEntity<ApiResponse<OrderApiResponse>> response =
+            restTemplate.exchange(
+                "/api/v1/orders/{id}",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<>() {},
+                orderId
+            );
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getData().id()).isEqualTo(orderId);
+    }
+}
+```
+
+### 테스트 규칙 상세
+
+| Code | Rule | Severity |
+|------|------|----------|
+| TEST-001 | RestDocsTestSupport 상속 필수 | BLOCKER |
+| TEST-002 | TestRestTemplate 사용 (MockMvc 금지) | BLOCKER |
+| TEST-003 | @Sql로 테스트 데이터 설정 | CRITICAL |
+| TEST-004 | E2E 통합 테스트 | CRITICAL |
+| TEST-005 | 실제 HTTP 요청/응답 검증 | CRITICAL |
+
+---
+
+## OpenAPI 문서화
+
+### Controller 어노테이션
+```java
+@RestController
+@RequestMapping("/api/v1/orders")
+@Tag(name = "Order", description = "주문 관리 API")
+public class OrderCommandController {
+
+    @PostMapping
+    @Operation(
+        summary = "주문 생성",
+        description = "새로운 주문을 생성합니다",
+        responses = {
+            @ApiResponse(responseCode = "201", description = "주문 생성 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "404", description = "상품을 찾을 수 없음")
+        }
+    )
+    public ResponseEntity<ApiResponse<OrderIdApiResponse>> create(...) {
+        // ...
+    }
+}
+```
+
+---
+
+## 참조 문서
+- 전체 규칙: `.claude/knowledge/rules/rest-api-rules.md` (58개)
+- 클래스 템플릿: `.claude/knowledge/templates/rest-api-templates.md` (37개)
+- GOOD/BAD 예제: `.claude/knowledge/examples/rest-api-examples.md` (62개)

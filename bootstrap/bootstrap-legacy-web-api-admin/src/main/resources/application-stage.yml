@@ -1,0 +1,217 @@
+# ============================================================
+# Legacy Admin API 스테이징 환경 설정
+# ============================================================
+# Strangler Fig Pattern: Partner Admin 서버를 ECS 인프라로 이관
+# 점진적으로 새 아키텍처로 마이그레이션 진행 예정
+#
+# 환경변수 주입 방식:
+# - DB_PASSWORD, JWT_SECRET, PORTONE_SECRET, SLACK_TOKEN
+#   → AWS Secrets Manager
+# - 나머지 → ECS Task Definition 환경변수
+# ============================================================
+
+server:
+  port: 8089
+  error:
+    include-exception: false
+    include-message: always
+    include-stacktrace: ON_PARAM
+    whitelabel:
+      enabled: true
+
+spring:
+  # ============================================================
+  # Spring Cloud Compatibility (disable for Spring Boot 3.5.x)
+  # ============================================================
+  cloud:
+    compatibility-verifier:
+      enabled: false
+
+  # ============================================================
+  # DataSource (Staging RDS)
+  # ============================================================
+  datasource:
+    url: jdbc:mysql://${DB_HOST:staging-shared-mysql.cfacertspqbw.ap-northeast-2.rds.amazonaws.com}:${DB_PORT:3306}/luxurydb?sslMode=REQUIRED&useUnicode=true&serverTimezone=Asia/Seoul&allowMultiQueries=true
+    username: ${DB_USERNAME:admin}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: legacy-admin-hikari-pool
+      maximum-pool-size: 20
+      minimum-idle: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
+      connection-init-sql: SELECT 1
+
+      # MySQL 최적화 (persistence-prod.yml 동기화)
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+        rewriteBatchedStatements: true
+        cacheResultSetMetadata: true
+        cacheServerConfiguration: true
+        elideSetAutoCommits: true
+        maintainTimeStats: false
+
+  # ============================================================
+  # JPA Configuration
+  # ============================================================
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+    show-sql: false
+    open-in-view: false
+
+  # ============================================================
+  # Redis
+  # ============================================================
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 32
+          max-idle: 16
+          min-idle: 8
+          max-wait: 3000ms
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+# ============================================================
+# JWT Configuration
+# ============================================================
+token:
+  secret: ${JWT_SECRET}
+  ACCESS_TOKEN_EXPIRE_TIME: 1800000
+  REFRESH_TOKEN_EXPIRE_TIME: 10800000
+  ADMIN_EMAIL: ${ADMIN_EMAIL:master@connectly.co.kr}
+
+# ============================================================
+# Service Token (서버 간 내부 통신용)
+# ============================================================
+# SSM Parameter Store에서 환경변수로 주입됨
+security:
+  service-token:
+    enabled: ${SECURITY_SERVICE_TOKEN_ENABLED:false}
+    secret: ${SECURITY_SERVICE_TOKEN_SECRET:}
+
+# ============================================================
+# AWS Configuration
+# ============================================================
+# S3 직접 접근은 Fileflow 서비스로 대체됨
+# assetUrl, tempUrl은 이미지 URL 검증/변환에 사용됨
+aws:
+  accessKey: ${AWS_ACCESS_KEY}
+  secretKey: ${AWS_SECRET_KEY}
+  region: ap-northeast-2
+  assetUrl: cdn.set-of.com
+  tempUrl: s3.ap-northeast-2.amazonaws.com/temp-set-of.net
+
+# ============================================================
+# Logging (JSON Structured for CloudWatch)
+# ============================================================
+logging:
+  level:
+    root: INFO
+    com.connectly.partnerAdmin: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.springframework: INFO
+
+# ============================================================
+# PortOne (iamport)
+# ============================================================
+Import:
+  import-restApi: ${PORTONE_API_KEY}
+  import-restApiSecret: ${PORTONE_API_SECRET}
+  import-url: 'https://api.iamport.kr'
+
+# ============================================================
+# Front Domains (Staging)
+# ============================================================
+front:
+  path: '.set-of.com'
+  web-domain: 'https://stage.set-of.com'
+  admin-domain: 'https://stage-partner.set-of.com'
+  stage-domain: 'https://stage.set-of.com'
+  s3-domain: 'https://cdn.set-of.com'
+  s3-temp-domain: 'https://temp-set-of.net.s3.ap-northeast-2.amazonaws.com'
+
+# ============================================================
+# Slack Notification
+# ============================================================
+slack:
+  token: ${SLACK_TOKEN}
+  channel:
+    monitor: '#1_order_complete_notification'
+    monitor2: '#1_qna_issue_notification'
+    monitor3: '#1_error_notification'
+
+# ============================================================
+# Fileflow Service (파일 업로드 서비스)
+# ============================================================
+# Service Discovery를 통해 Fileflow 서비스에 접근
+# 내부 서비스 간 통신에는 Service Token 인증 사용
+fileflow:
+  client:
+    base-url: ${FILEFLOW_BASE_URL:http://fileflow.connectly.local:8082}
+    callback-url: ${FILEFLOW_CALLBACK_URL}
+    connect-timeout: 10000
+    read-timeout: 60000
+    service-token: ${SECURITY_SERVICE_TOKEN_SECRET}
+    service-name: set-of-legacy
+
+# ============================================================
+# External Service URLs (FeignClient)
+# ============================================================
+# core-server: legacy-web-api 서비스 호출용
+# sewon, oco: 외부 연동 서비스 (사용하지 않으면 dummy URL 설정)
+core-server:
+  host-url: ${CORE_SERVER_URL:http://localhost:8088}
+
+sewon:
+  host-url: ${SEWON_URL:http://localhost:9999}
+  customer_id: ${SEWON_CUSTOMER_ID:}
+  api_key: ${SEWON_API_KEY:}
+
+oco:
+  host-url: ${OCO_URL:http://localhost:9998}
+  api-key: ${OCO_API_KEY:}
+  id: ${OCO_ID:}
+  password: ${OCO_PASSWORD:}
+
+# ============================================================
+# Actuator (Prometheus Metrics)
+# ============================================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: when-authorized
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      environment: ${spring.profiles.active:stage}
