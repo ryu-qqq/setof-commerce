@@ -70,15 +70,15 @@ variable "legacy_api_memory" {
 }
 
 variable "legacy_api_desired_count" {
-  description = "Desired count for legacy-api service"
+  description = "Desired count for legacy-api service (0 = inactive)"
   type        = number
-  default     = 1
+  default     = 0
 }
 
 variable "image_tag" {
   description = "Docker image tag to deploy"
   type        = string
-  default     = "latest"
+  default     = "legacy-api-75-dd1e941"
 }
 
 # ========================================
@@ -105,12 +105,12 @@ data "aws_ssm_parameter" "route53_zone_id" {
 }
 
 # ========================================
-# RDS Configuration (MySQL - luxurydb)
+# Staging RDS Configuration (MySQL - luxurydb)
 # ========================================
 
-# SetOf Commerce Secrets Manager secret (same DB as new architecture)
+# Staging RDS Credentials
 data "aws_secretsmanager_secret" "rds" {
-  name = "setof-commerce/rds/credentials"
+  name = "setof-commerce/rds/staging-credentials"
 }
 
 data "aws_secretsmanager_secret_version" "rds" {
@@ -159,12 +159,11 @@ locals {
   route53_zone_id = data.aws_ssm_parameter.route53_zone_id.value
   fqdn            = "stage.set-of.com" # Stage server domain
 
-  # RDS Configuration (MySQL - luxurydb schema)
-  # Using RDS Proxy for connection pooling and failover resilience
+  # Staging RDS Configuration
   rds_credentials = jsondecode(data.aws_secretsmanager_secret_version.rds.secret_string)
-  rds_host        = "prod-shared-mysql-proxy.proxy-cfacertspqbw.ap-northeast-2.rds.amazonaws.com"
-  rds_port        = "3306"
-  rds_dbname      = "luxurydb" # Legacy uses luxurydb schema
+  rds_host        = local.rds_credentials.host
+  rds_port        = local.rds_credentials.port
+  rds_dbname      = "luxurydb"
   rds_username    = local.rds_credentials.username
 
   # Redis Configuration

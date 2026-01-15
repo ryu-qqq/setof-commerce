@@ -1,20 +1,44 @@
 # ============================================================================
-# Spring Hexagonal Template - CI Pipeline
+# SetOf Commerce - CI Pipeline
 # ============================================================================
-# Phase 1: 기본 CI (테스트 + 품질 검증)
+# 3-Tier CI/CD 파이프라인의 CI 단계
 #
-# 이 워크플로우는 템플릿 프로젝트의 기본 CI 파이프라인입니다.
-# 프로젝트 확장 시 github-workflows-guide.md를 참조하여
-# Phase 2-4로 점진적으로 확장하세요.
+# 트리거:
+# - Push: main, stage, develop 브랜치
+# - PR: main, stage, develop 브랜치로의 PR
+#
+# 지원 브랜치:
+# - main: Production 환경
+# - stage: Staging 환경
+# - develop: Development 통합
+# - feature/*: 기능 개발
+# - bugfix/*: 버그 수정
+# - hotfix/*: 긴급 수정
 # ============================================================================
 
 name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches:
+      - main
+      - stage
+      - develop
+    paths-ignore:
+      - 'terraform/**'
+      - '.github/workflows/terraform-*.yml'
+      - '**.md'
+      - 'docs/**'
   pull_request:
-    branches: [main, develop]
+    branches:
+      - main
+      - stage
+      - develop
+    paths-ignore:
+      - 'terraform/**'
+      - '.github/workflows/terraform-*.yml'
+      - '**.md'
+      - 'docs/**'
 
 permissions:
   contents: read

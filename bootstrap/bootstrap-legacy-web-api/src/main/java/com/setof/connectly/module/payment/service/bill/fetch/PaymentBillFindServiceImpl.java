@@ -7,19 +7,26 @@ import com.setof.connectly.module.payment.entity.PaymentBill;
 import com.setof.connectly.module.payment.repository.bill.fetch.PaymentBillFindRepository;
 import com.setof.connectly.module.portone.client.PortOneClient;
 import com.setof.connectly.module.utils.SecurityUtils;
-import lombok.RequiredArgsConstructor;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 @Transactional(readOnly = true)
 @Service
-@RequiredArgsConstructor
 public class PaymentBillFindServiceImpl implements PaymentBillFindService {
 
     private final PaymentBillFindRepository paymentBillFindRepository;
+    private final Optional<PortOneClient> portOneClient;
 
-    private final PortOneClient portOneClient;
+    @Autowired
+    public PaymentBillFindServiceImpl(
+            PaymentBillFindRepository paymentBillFindRepository,
+            @Autowired(required = false) PortOneClient portOneClient) {
+        this.paymentBillFindRepository = paymentBillFindRepository;
+        this.portOneClient = Optional.ofNullable(portOneClient);
+    }
 
     @Override
     public PaymentBill fetchPaymentBillEntity(long paymentId) {
@@ -44,11 +51,16 @@ public class PaymentBillFindServiceImpl implements PaymentBillFindService {
 
     @Override
     public PaymentResult fetchPaymentResult(long paymentId) {
+        if (portOneClient.isEmpty()) {
+            // PortOne 비활성화 시 DB 기반으로만 결과 반환
+            return new PaymentResult(false);
+        }
+
         Boolean aBoolean =
                 paymentBillFindRepository
                         .fetchPaymentAgencyId(paymentId)
                         .filter(StringUtils::hasText)
-                        .flatMap(portOneClient::fetchPaymentPortOne)
+                        .flatMap(portOneClient.get()::fetchPaymentPortOne)
                         .map(payment -> "paid".equals(payment.getStatus()))
                         .orElse(false);
 

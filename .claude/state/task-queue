@@ -1,0 +1,20 @@
+{
+  "epic": "SC-7",
+  "epicTitle": "[CI/CD] 3-Tier 파이프라인 표준화 (dev → stage → prod)",
+  "branch": "feature/SC-7-cicd-pipeline",
+  "tasks": [
+    {"key": "SC-8", "title": "GitHub 브랜치 보호 규칙 문서화", "status": "done", "order": 1},
+    {"key": "SC-9", "title": "ci.yml 브랜치 확장", "status": "done", "order": 2},
+    {"key": "SC-10", "title": "stage-build-deploy.yml 생성", "status": "done", "order": 3},
+    {"key": "SC-11", "title": "Terraform Stage 모듈 완성", "status": "done", "order": 4},
+    {"key": "SC-12", "title": "terraform-apply.yml Stage 지원 추가", "status": "done", "order": 5},
+    {"key": "SC-13", "title": "build-and-deploy.yml 확장", "status": "in_progress", "order": 6},
+    {"key": "SC-14", "title": "트래픽 전환 스크립트 작성", "status": "pending", "order": 7},
+    {"key": "SC-15", "title": "bootstrap-web-api 파이프라인 완성", "status": "pending", "order": 8},
+    {"key": "SC-16", "title": "bootstrap-migration 파이프라인 완성", "status": "pending", "order": 9},
+    {"key": "SC-17", "title": "docker-compose.dev.yml 생성", "status": "pending", "order": 10},
+    {"key": "SC-18", "title": "Mock Server 확장", "status": "pending", "order": 11}
+  ],
+  "currentTaskIndex": 5,
+  "totalTasks": 11
+}

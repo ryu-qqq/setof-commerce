@@ -7,10 +7,12 @@ import com.setof.connectly.module.portone.mapper.PortOneMapper;
 import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "portone.enabled", havingValue = "true", matchIfMissing = true)
 public class PortOnePaymentService implements PgPaymentService {
     private final PortOneClient portOneClient;
     private final PortOneMapper portOneMapper;

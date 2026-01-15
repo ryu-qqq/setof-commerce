@@ -368,18 +368,22 @@ resource "aws_ecs_task_definition" "legacy_batch" {
 
       environment = [
         { name = "SPRING_PROFILES_ACTIVE", value = var.environment },
-        # Database (Legacy DB)
+        # Primary Database (SetOf - Spring Batch metadata)
+        { name = "DB_URL", value = "jdbc:mysql://${local.rds_host}:${local.rds_port}/${local.rds_dbname}?useSSL=false&serverTimezone=Asia/Seoul" },
         { name = "DB_HOST", value = local.rds_host },
         { name = "DB_PORT", value = local.rds_port },
         { name = "DB_NAME", value = local.rds_dbname },
         # Legacy DB 설정
-        { name = "LEGACY_DB_URL", value = "jdbc:mysql://${local.rds_host}:${local.rds_port}/${local.rds_dbname}?useSSL=true&requireSSL=true&serverTimezone=Asia/Seoul" },
+        { name = "LEGACY_DB_URL", value = "jdbc:mysql://${local.rds_host}:${local.rds_port}/${local.rds_dbname}?useSSL=false&serverTimezone=Asia/Seoul" },
         # Redis
         { name = "REDIS_HOST", value = local.redis_host },
         { name = "REDIS_PORT", value = tostring(local.redis_port) },
         { name = "REDIS_DATABASE", value = "0" },
         # Server Port
-        { name = "SERVER_PORT", value = "8090" }
+        { name = "SERVER_PORT", value = "8090" },
+        # Spring Admin API (Service Discovery DNS - ECS 내부 통신)
+        # legacy-admin-prod는 bootstrap-legacy-web-api-admin 모듈 (port 8089)
+        { name = "ADMIN_SERVER_URL", value = "http://setof-commerce-legacy-admin-prod.connectly.local:8089" }
         # JOB_NAME은 EventBridge containerOverrides로 주입
       ]
 
@@ -519,8 +523,9 @@ resource "aws_scheduler_schedule" "shipment_tracking" {
 }
 
 # ========================================
-# Schedule: Sellic 주문 동기화 (매 10분)
+# Schedule: Sellic 주문 동기화
 # Job: syncSellicOrderJob
+# 스케줄: 07, 10, 13, 16, 19, 22시 05분 (KST)
 # ========================================
 resource "aws_scheduler_schedule" "sellic_sync" {
   count = var.enable_eventbridge_schedules ? 1 : 0
@@ -532,7 +537,9 @@ resource "aws_scheduler_schedule" "sellic_sync" {
     mode = "OFF"
   }
 
-  schedule_expression = "rate(10 minutes)"
+  # KST 07,10,13,16,19,22시 05분 = UTC 22,01,04,07,10,13시 05분 (KST = UTC+9)
+  schedule_expression          = "cron(5 22,1,4,7,10,13 * * ? *)"
+  schedule_expression_timezone = "Asia/Seoul"
 
   target {
     arn      = data.aws_ecs_cluster.main.arn

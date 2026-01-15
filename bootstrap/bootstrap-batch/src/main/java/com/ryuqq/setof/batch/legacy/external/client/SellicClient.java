@@ -43,6 +43,9 @@ public class SellicClient {
     @Value("${sellic.api.fetch-days:2}")
     private int fetchDays;
 
+    @Value("${sellic.api.enabled:true}")
+    private boolean enabled;
+
     public SellicClient(RestTemplate restTemplate, ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
@@ -50,6 +53,11 @@ public class SellicClient {
 
     /** SELLIC에서 주문 목록 조회 */
     public List<SellicOrder> fetchOrders() {
+        if (!enabled) {
+            log.info("[DISABLED] Sellic API is disabled in this environment");
+            return Collections.emptyList();
+        }
+
         String url = baseUrl + "/openapi/get_order";
 
         LocalDateTime now = LocalDateTime.now();

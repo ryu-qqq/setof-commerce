@@ -1,0 +1,457 @@
+---
+description: Persistence Layer 코딩 규칙 (Entity, Repository, Adapter, Mapper)
+globs: ["**/persistence/**/*.java", "**/adapter/out/**/*.java"]
+alwaysApply: false
+---
+
+# Persistence Layer Rules (18개 규칙)
+
+Persistence Layer는 Domain 객체를 영속화하고 조회하는 역할을 담당합니다. Long FK 전략과 CQRS 패턴을 적용합니다.
+
+---
+
+## 핵심 원칙 (Zero-Tolerance)
+
+| Code | Rule | Detection |
+|------|------|-----------|
+| ENT-002 | Long FK 전략 (JPA 관계 금지) | `@ManyToOne`, `@OneToMany` |
+| EMAP-002 | EntityMapper Pure Java | `@Mapper`, `@Data`, `@Builder` |
+| EMAP-003 | 시간 필드 생성 금지 | `Instant.now()`, `LocalDateTime.now()` |
+| QADP-001 | QueryAdapter는 위임만 | `JPAQueryFactory` 직접 사용 |
+| QADP-002 | QueryAdapter @Transactional 금지 | `@Transactional` |
+| QADP-008 | QueryAdapter 비즈니스 로직 금지 | if/switch 조건 분기 |
+
+---
+
+## 컴포넌트 역할 분담
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   Persistence Layer                         │
+├──────────┬──────────┬──────────┬──────────┬────────────────┤
+│ Entity   │JpaRepo   │QueryDsl  │ Mapper   │ Adapter        │
+│(영속객체)│(Command) │(Query)   │(변환)    │(조합)          │
+├──────────┼──────────┼──────────┼──────────┼────────────────┤
+│ Long FK  │ save()   │ findBy*  │ Domain   │ CommandAdapter │
+│ BaseAudit│ delete() │ count()  │ ↔Entity  │ QueryAdapter   │
+│ Lombok ❌│          │ exists() │ Pure Java│ @Transactional❌│
+└──────────┴──────────┴──────────┴──────────┴────────────────┘
+```
+
+---
+
+## Entity (ENT-*)
+
+### Long FK 전략 (ENT-002) 🚨 **Zero-Tolerance**
+
+**JPA 관계 어노테이션을 사용하면 안 됩니다.** Long 타입 FK로 저장합니다.
+
+```java
+// ❌ BAD - JPA 관계 어노테이션
+@Entity
+public class OrderJpaEntity {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserJpaEntity user;  // N+1 문제 원인
+
+    @OneToMany(mappedBy = "order")
+    private List<OrderLineJpaEntity> orderLines;  // 금지!
+}
+
+// ✅ GOOD - Long FK 전략
+@Entity
+@Table(name = "orders")
+public class OrderJpaEntity extends SoftDeletableEntity {
+    @Id
+    private Long id;
+
+    @Column(name = "user_id", nullable = false)
+    private Long userId;  // Long FK
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
+    @Column(name = "total_amount", nullable = false)
+    private BigDecimal totalAmount;
+
+    // Lombok 금지 - 수동 생성자/팩토리
+    protected OrderJpaEntity() { }  // JPA용
+
+    public static OrderJpaEntity of(Long id, Long userId,
+            OrderStatus status, BigDecimal totalAmount) {
+        OrderJpaEntity entity = new OrderJpaEntity();
+        entity.id = id;
+        entity.userId = userId;
+        entity.status = status;
+        entity.totalAmount = totalAmount;
+        return entity;
+    }
+
+    // 접근자 메서드
+    public Long getId() { return id; }
+    public Long getUserId() { return userId; }
+    public OrderStatus getStatus() { return status; }
+    public BigDecimal getTotalAmount() { return totalAmount; }
+}
+```
+
+### ENT 규칙 상세
+
+| Code | Rule | Severity |
+|------|------|----------|
+| ENT-001 | BaseAuditEntity/SoftDeletableEntity 상속 | CRITICAL |
+| ENT-002 | Long FK 전략 (관계 어노테이션 금지) | BLOCKER |
+| ENT-003 | Lombok 금지 | BLOCKER |
+| ENT-004 | of() static factory method | CRITICAL |
+| ENT-005 | protected/private 생성자 | MAJOR |
+
+### Base Entity 상속
+```java
+// BaseAuditEntity - 생성/수정 시간
+@MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
+public abstract class BaseAuditEntity {
+    @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+}
+
+// SoftDeletableEntity - 소프트 삭제 지원
+@MappedSuperclass
+public abstract class SoftDeletableEntity extends BaseAuditEntity {
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
+
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+
+    public void markDeleted() {
+        this.deleted = true;
+        this.deletedAt = Instant.now();
+    }
+}
+```
+
+---
+
+## Repository (REPO-*)
+
+### JpaRepository (Command 전용)
+```java
+public interface OrderJpaRepository extends JpaRepository<OrderJpaEntity, Long> {
+    // save(), delete() 기본 제공
+    // 커스텀 Command 메서드만 추가 (Query 금지)
+}
+```
+
+### QueryDslRepository (Query 전용)
+```java
+@Repository
+public class OrderQueryDslRepository {
+
+    private final JPAQueryFactory queryFactory;
+
+    public OrderQueryDslRepository(JPAQueryFactory queryFactory) {
+        this.queryFactory = queryFactory;
+    }
+
+    // 4가지 표준 메서드
+    public Optional<OrderJpaEntity> findById(Long id) {
+        return Optional.ofNullable(
+            queryFactory.selectFrom(order)
+                .where(order.id.eq(id), order.deleted.isFalse())
+                .fetchOne()
+        );
+    }
+
+    public List<OrderJpaEntity> findByCriteria(SearchOrderCriteria criteria) {
+        return queryFactory.selectFrom(order)
+            .where(
+                userIdEq(criteria.userId()),
+                statusEq(criteria.status()),
+                order.deleted.isFalse()
+            )
+            .offset(criteria.offset())
+            .limit(criteria.limit())
+            .fetch();
+    }
+
+    public boolean existsById(Long id) {
+        return queryFactory.selectOne()
+            .from(order)
+            .where(order.id.eq(id), order.deleted.isFalse())
+            .fetchFirst() != null;
+    }
+
+    public long countByCriteria(SearchOrderCriteria criteria) {
+        return queryFactory.select(order.count())
+            .from(order)
+            .where(
+                userIdEq(criteria.userId()),
+                statusEq(criteria.status()),
+                order.deleted.isFalse()
+            )
+            .fetchOne();
+    }
+
+    // BooleanExpression 헬퍼
+    private BooleanExpression userIdEq(Long userId) {
+        return userId != null ? order.userId.eq(userId) : null;
+    }
+
+    private BooleanExpression statusEq(OrderStatus status) {
+        return status != null ? order.status.eq(status) : null;
+    }
+}
+```
+
+### REPO 규칙 상세
+
+| Code | Rule | Severity |
+|------|------|----------|
+| REPO-001 | JpaRepository는 Command만 | CRITICAL |
+| REPO-002 | QueryDslRepository는 Query만 | CRITICAL |
+| REPO-003 | Entity 직접 반환 금지 (Adapter 통해) | MAJOR |
+| REPO-004 | N+1 방지 (fetch join 또는 분리 쿼리) | CRITICAL |
+
+---
+
+## EntityMapper (EMAP-*)
+
+### Pure Java 필수 (EMAP-002) 🚨 **Zero-Tolerance**
+```java
+// ❌ BAD - MapStruct/Lombok 사용
+@Mapper
+public interface OrderEntityMapper {
+    OrderJpaEntity toEntity(Order order);
+}
+
+// ✅ GOOD - Pure Java
+@Component
+public class OrderJpaEntityMapper {
+
+    // Domain → Entity
+    public OrderJpaEntity toEntity(Order order) {
+        return OrderJpaEntity.of(
+            order.id().value(),
+            order.userId().value(),
+            order.status(),
+            order.totalAmount().value()
+        );
+    }
+
+    // Entity → Domain
+    public Order toDomain(OrderJpaEntity entity) {
+        return Order.reconstitute(
+            new OrderId(entity.getId()),
+            new UserId(entity.getUserId()),
+            entity.getStatus(),
+            new Money(entity.getTotalAmount())
+        );
+    }
+
+    // 컬렉션 변환
+    public List<Order> toDomainList(List<OrderJpaEntity> entities) {
+        return entities.stream()
+            .map(this::toDomain)
+            .toList();
+    }
+}
+```
+
+### 시간 필드 생성 금지 (EMAP-003) 🚨 **Zero-Tolerance**
+```java
+// ❌ BAD - Mapper에서 시간 생성
+public OrderJpaEntity toEntity(Order order) {
+    entity.setCreatedAt(Instant.now());  // 금지!
+    entity.setUpdatedAt(LocalDateTime.now());  // 금지!
+    return entity;
+}
+
+// ✅ GOOD - JPA Auditing으로 처리
+// @CreatedDate, @LastModifiedDate 자동 설정
+```
+
+### EMAP 규칙 상세
+
+| Code | Rule | Severity |
+|------|------|----------|
+| EMAP-001 | @Component 사용 | MAJOR |
+| EMAP-002 | Pure Java (Lombok/MapStruct 금지) | BLOCKER |
+| EMAP-003 | 시간 필드 생성 금지 | BLOCKER |
+| EMAP-004 | 양방향 변환 (toEntity/toDomain) | CRITICAL |
+| EMAP-005 | 비즈니스 로직 금지 | CRITICAL |
+| EMAP-006 | 컬렉션 변환 지원 | MAJOR |
+
+---
+
+## Adapter (CADP-*, QADP-*)
+
+### CommandAdapter (CADP-*)
+```java
+@Component
+public class OrderCommandAdapter implements OrderCommandPort {
+
+    private final OrderJpaRepository repository;
+    private final OrderJpaEntityMapper mapper;
+
+    public OrderCommandAdapter(OrderJpaRepository repository,
+                               OrderJpaEntityMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
+    }
+
+    // ❌ @Transactional 금지 - Manager가 담당
+
+    @Override
+    public Long persist(Order order) {
+        OrderJpaEntity entity = mapper.toEntity(order);
+        return repository.save(entity).getId();
+    }
+
+    @Override
+    public void delete(OrderId orderId) {
+        repository.findById(orderId.value())
+            .ifPresent(entity -> {
+                entity.markDeleted();
+                repository.save(entity);
+            });
+    }
+}
+```
+
+### QueryAdapter (QADP-*) 🚨 **Zero-Tolerance**
+```java
+@Component
+public class OrderQueryAdapter implements OrderQueryPort {
+
+    private final OrderQueryDslRepository queryRepository;
+    private final OrderJpaEntityMapper mapper;
+
+    public OrderQueryAdapter(OrderQueryDslRepository queryRepository,
+                             OrderJpaEntityMapper mapper) {
+        this.queryRepository = queryRepository;
+        this.mapper = mapper;
+    }
+
+    // ❌ @Transactional 금지 (QADP-002)
+    // ❌ JPAQueryFactory 직접 사용 금지 (QADP-001)
+    // ❌ 비즈니스 로직 금지 (QADP-008)
+
+    @Override
+    public Optional<Order> findById(OrderId id) {
+        return queryRepository.findById(id.value())
+            .map(mapper::toDomain);
+    }
+
+    @Override
+    public List<Order> findByCriteria(SearchOrderCriteria criteria) {
+        return mapper.toDomainList(
+            queryRepository.findByCriteria(criteria)
+        );
+    }
+
+    @Override
+    public boolean existsById(OrderId id) {
+        return queryRepository.existsById(id.value());
+    }
+
+    @Override
+    public long countByCriteria(SearchOrderCriteria criteria) {
+        return queryRepository.countByCriteria(criteria);
+    }
+
+    @Override
+    public Order getById(OrderId id) {
+        return findById(id)
+            .orElseThrow(() -> new OrderNotFoundException(id));
+    }
+}
+```
+
+### QADP 규칙 상세 (Zero-Tolerance 다수)
+
+| Code | Rule | Severity |
+|------|------|----------|
+| QADP-001 | QueryDslRepository 위임만 | BLOCKER |
+| QADP-002 | @Transactional 금지 | BLOCKER |
+| QADP-003 | @Component 사용 | MAJOR |
+| QADP-004 | 4개 표준 메서드 (findBy/get/exists/count) | MAJOR |
+| QADP-005 | Mapper 위임 변환 | MAJOR |
+| QADP-006 | Optional 반환 (findBy) | CRITICAL |
+| QADP-007 | Exception throw (get) | CRITICAL |
+| QADP-008 | 비즈니스 로직 금지 | BLOCKER |
+| QADP-009 | 단일 QueryDslRepository 의존 | MAJOR |
+
+---
+
+## Admin Query (특수 케이스)
+
+Admin 기능에서는 Join이 허용됩니다.
+
+```java
+@Repository
+public class OrderAdminQueryDslRepository {
+
+    // Admin 전용 - Join 허용, DTO Projection 사용
+    public List<OrderAdminDto> findWithUserInfo(SearchOrderCriteria criteria) {
+        return queryFactory
+            .select(new QOrderAdminDto(
+                order.id,
+                order.totalAmount,
+                // User 정보 서브쿼리 (Join 대신)
+                JPAExpressions.select(user.name)
+                    .from(user)
+                    .where(user.id.eq(order.userId))
+            ))
+            .from(order)
+            .where(order.deleted.isFalse())
+            .fetch();
+    }
+}
+```
+
+---
+
+## Lock Repository (분산 락)
+
+```java
+@Repository
+public class OrderLockRepository {
+
+    private final JPAQueryFactory queryFactory;
+
+    // 6개 Lock 메서드
+    public Optional<OrderJpaEntity> findByIdWithPessimisticRead(Long id) {
+        return Optional.ofNullable(
+            queryFactory.selectFrom(order)
+                .where(order.id.eq(id))
+                .setLockMode(LockModeType.PESSIMISTIC_READ)
+                .fetchOne()
+        );
+    }
+
+    public Optional<OrderJpaEntity> findByIdWithPessimisticWrite(Long id) {
+        return Optional.ofNullable(
+            queryFactory.selectFrom(order)
+                .where(order.id.eq(id))
+                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                .fetchOne()
+        );
+    }
+
+    // PESSIMISTIC_FORCE_INCREMENT 등...
+}
+```
+
+---
+
+## 참조 문서
+- 전체 규칙: `.claude/knowledge/rules/persistence-rules.md` (18개)
+- 클래스 템플릿: `.claude/knowledge/templates/persistence-templates.md` (3개)
+- GOOD/BAD 예제: `.claude/knowledge/examples/persistence-examples.md` (8개)

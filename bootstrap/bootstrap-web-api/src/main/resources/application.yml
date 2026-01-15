@@ -170,6 +170,22 @@ management:
       enabled: true
 
 # ===============================================
+# Sentry Configuration (Error Tracking)
+# ===============================================
+sentry:
+  dsn: ${SENTRY_DSN:https://93171c7ddb8ad90ef418b7aa0b2b0efc@o4510661281644544.ingest.us.sentry.io/4510678108012544}
+  environment: ${spring.profiles.active:local}
+  release: ${APP_VERSION:unknown}
+  # TraceId 연동 (OpenTelemetry 연계)
+  traces-sample-rate: 1.0
+  # 성능 모니터링
+  enable-tracing: true
+  # 예외 필터링
+  ignored-exceptions-for-type:
+    - org.springframework.web.servlet.resource.NoResourceFoundException
+    - org.springframework.security.access.AccessDeniedException
+
+# ===============================================
 # Profile-Specific Configurations
 # ===============================================
 ---
