@@ -559,9 +559,7 @@ module "ecs_service" {
     # Kakao OAuth
     { name = "KAKAO_CLIENT_ID", value = "a12a765b27dfd19e5c5fc5a5a88963aa" },
     # Security Service Token
-    { name = "SECURITY_SERVICE_TOKEN_ENABLED", value = "true" },
-    # Stage Environment: Disable external payment API
-    { name = "PORTONE_ENABLED", value = "false" }
+    { name = "SECURITY_SERVICE_TOKEN_ENABLED", value = "true" }
   ]
 
   # Container Secrets (from Secrets Manager and SSM)
