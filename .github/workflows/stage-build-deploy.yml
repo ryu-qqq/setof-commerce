@@ -313,7 +313,7 @@ jobs:
     uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
     with:
       ecs-cluster: setof-commerce-cluster-stage
-      ecs-service: setof-commerce-legacy-api-stage
+      ecs-service: setof-commerce-legacy-api-staging
       image-uri: ${{ needs.build-legacy-api.outputs.image-uri }}
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
@@ -325,7 +325,7 @@ jobs:
     uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
     with:
       ecs-cluster: setof-commerce-cluster-stage
-      ecs-service: setof-commerce-legacy-admin-stage
+      ecs-service: setof-commerce-legacy-admin-staging
       image-uri: ${{ needs.build-legacy-api-admin.outputs.image-uri }}
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
@@ -334,30 +334,31 @@ jobs:
 
   # ============================================================================
   # 배포 Jobs - New 모듈 (Stage ECS)
+  # NOTE: web-api, web-api-admin Stage ECS 서비스 생성 후 활성화 필요
   # ============================================================================
-  deploy-web-api:
-    name: Deploy web-api (Stage)
-    needs: build-web-api
-    if: needs.build-web-api.result == 'success'
-    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
-    with:
-      ecs-cluster: setof-commerce-cluster-stage
-      ecs-service: setof-commerce-web-api-stage
-      image-uri: ${{ needs.build-web-api.outputs.image-uri }}
-    secrets:
-      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+  # deploy-web-api:
+  #   name: Deploy web-api (Stage)
+  #   needs: build-web-api
+  #   if: needs.build-web-api.result == 'success'
+  #   uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
+  #   with:
+  #     ecs-cluster: setof-commerce-cluster-stage
+  #     ecs-service: setof-commerce-web-api-staging
+  #     image-uri: ${{ needs.build-web-api.outputs.image-uri }}
+  #   secrets:
+  #     AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
-  deploy-web-api-admin:
-    name: Deploy web-api-admin (Stage)
-    needs: build-web-api-admin
-    if: needs.build-web-api-admin.result == 'success'
-    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
-    with:
-      ecs-cluster: setof-commerce-cluster-stage
-      ecs-service: setof-commerce-web-api-admin-stage
-      image-uri: ${{ needs.build-web-api-admin.outputs.image-uri }}
-    secrets:
-      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+  # deploy-web-api-admin:
+  #   name: Deploy web-api-admin (Stage)
+  #   needs: build-web-api-admin
+  #   if: needs.build-web-api-admin.result == 'success'
+  #   uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
+  #   with:
+  #     ecs-cluster: setof-commerce-cluster-stage
+  #     ecs-service: setof-commerce-web-api-admin-staging
+  #     image-uri: ${{ needs.build-web-api-admin.outputs.image-uri }}
+  #   secrets:
+  #     AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
   # ============================================================================
   # Terraform Image Tag 업데이트 (Stage)
@@ -390,7 +391,7 @@ jobs:
   # ============================================================================
   notify:
     name: Stage Deployment Notification
-    needs: [detect-changes, test, deploy-legacy-api, deploy-legacy-api-admin, deploy-web-api, deploy-web-api-admin, build-migration, update-terraform-tags]
+    needs: [detect-changes, test, deploy-legacy-api, deploy-legacy-api-admin, build-migration, update-terraform-tags]
     if: always()
     uses: ryu-qqq/Infrastructure/.github/workflows/reusable-notify-slack.yml@main
     with:
@@ -401,8 +402,6 @@ jobs:
           (needs.test.result == 'failure') && 'failure' ||
           (needs.deploy-legacy-api.result == 'success' || needs.deploy-legacy-api.result == 'skipped') &&
           (needs.deploy-legacy-api-admin.result == 'success' || needs.deploy-legacy-api-admin.result == 'skipped') &&
-          (needs.deploy-web-api.result == 'success' || needs.deploy-web-api.result == 'skipped') &&
-          (needs.deploy-web-api-admin.result == 'success' || needs.deploy-web-api-admin.result == 'skipped') &&
           'success' || 'failure'
         }}
       components: |
@@ -410,8 +409,6 @@ jobs:
           {"name": "test", "status": "${{ needs.test.result }}"},
           {"name": "legacy-api", "status": "${{ needs.deploy-legacy-api.result }}"},
           {"name": "legacy-api-admin", "status": "${{ needs.deploy-legacy-api-admin.result }}"},
-          {"name": "web-api", "status": "${{ needs.deploy-web-api.result }}"},
-          {"name": "web-api-admin", "status": "${{ needs.deploy-web-api-admin.result }}"},
           {"name": "migration (build)", "status": "${{ needs.build-migration.result }}"},
           {"name": "terraform-tags", "status": "${{ needs.update-terraform-tags.result }}"}
         ]
