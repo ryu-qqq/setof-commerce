@@ -96,6 +96,7 @@ sellic:
     customer-id: ${SELLIC_CUSTOMER_ID:1012}
     api-key: ${SELLIC_API_KEY:}
     fetch-days: ${SELLIC_FETCH_DAYS:2}
+    enabled: ${SELLIC_API_ENABLED:true}  # Stage: false (외부 API 호출 비활성화)
 
 # ========================================
 # Spring Admin API (Legacy Web API Admin)

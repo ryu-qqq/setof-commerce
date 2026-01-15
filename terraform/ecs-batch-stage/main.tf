@@ -384,8 +384,15 @@ resource "aws_ecs_task_definition" "legacy_batch" {
         # Spring Admin API (Service Discovery DNS - ECS 내부 통신)
         # Stage 환경 Admin API
         { name = "ADMIN_SERVER_URL", value = "http://setof-commerce-legacy-admin-stage.connectly.local:8089" },
-        # Stage Environment: Disable external notification API (dry-run mode)
-        { name = "NHN_ALIMTALK_DRY_RUN", value = "true" }
+        # ========================================
+        # Stage Environment: 외부 API 호출 비활성화
+        # ========================================
+        # 알림톡 dry-run 모드 (실제 발송 안 함)
+        { name = "NHN_ALIMTALK_DRY_RUN", value = "true" },
+        # Admin Server dry-run 모드 (Sellic 주문 전송 안 함)
+        { name = "ADMIN_SERVER_DRY_RUN", value = "true" },
+        # Sellic API 비활성화 (sellic.api.enabled=false)
+        { name = "SELLIC_API_ENABLED", value = "false" }
         # JOB_NAME은 EventBridge containerOverrides로 주입
       ]
 
@@ -528,7 +535,7 @@ resource "aws_scheduler_schedule" "shipment_tracking" {
 # ========================================
 # Schedule: Sellic 주문 동기화
 # Job: syncSellicOrderJob
-# 스케줄: 09, 12, 18시 (Stage 절감)
+# Stage: 외부 API 호출 → 비활성화
 # ========================================
 resource "aws_scheduler_schedule" "sellic_sync" {
   count = var.enable_eventbridge_schedules ? 1 : 0
@@ -572,12 +579,14 @@ resource "aws_scheduler_schedule" "sellic_sync" {
     })
   }
 
-  state = "ENABLED"
+  # Stage: 외부몰 API 호출 비활성화
+  state = "DISABLED"
 }
 
 # ========================================
-# Schedule: 알림톡 발송 (매 15분 - Stage 절감)
+# Schedule: 알림톡 발송
 # Job: alimTalkNotifyJob
+# Stage: 외부 API 호출 → 비활성화
 # ========================================
 resource "aws_scheduler_schedule" "alimtalk_notify" {
   count = var.enable_eventbridge_schedules ? 1 : 0
@@ -589,7 +598,7 @@ resource "aws_scheduler_schedule" "alimtalk_notify" {
     mode = "OFF"
   }
 
-  schedule_expression = "rate(15 minutes)" # Stage: 15분 (Prod: 5분)
+  schedule_expression = "rate(15 minutes)"
 
   target {
     arn      = data.aws_ecs_cluster.main.arn
@@ -619,7 +628,8 @@ resource "aws_scheduler_schedule" "alimtalk_notify" {
     })
   }
 
-  state = "ENABLED"
+  # Stage: 외부 알림 API 호출 비활성화
+  state = "DISABLED"
 }
 
 # ========================================
