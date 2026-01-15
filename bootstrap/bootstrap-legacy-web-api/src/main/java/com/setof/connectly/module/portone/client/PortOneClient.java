@@ -13,11 +13,13 @@ import com.siot.IamportRestClient.response.Payment;
 import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "portone.enabled", havingValue = "true", matchIfMissing = true)
 public class PortOneClient {
 
     private final IamportClient iamportClient;
