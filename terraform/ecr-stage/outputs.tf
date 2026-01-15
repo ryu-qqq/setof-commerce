@@ -38,11 +38,11 @@ output "ecr_migration_url" {
 output "ecr_repository_names" {
   description = "All ECR repository names for Stage environment"
   value = {
-    web_api           = "${var.project_name}-web-api-${var.environment}"
-    web_api_admin     = "${var.project_name}-web-api-admin-${var.environment}"
-    legacy_api        = "${var.project_name}-legacy-api-${var.environment}"
-    legacy_api_admin  = "${var.project_name}-legacy-api-admin-${var.environment}"
-    legacy_batch      = "${var.project_name}-legacy-batch-${var.environment}"
-    migration         = "${var.project_name}-migration-${var.environment}"
+    web_api           = "${var.project_name}-web-api-stage"
+    web_api_admin     = "${var.project_name}-web-api-admin-stage"
+    legacy_api        = "${var.project_name}-legacy-api-stage"
+    legacy_api_admin  = "${var.project_name}-legacy-api-admin-stage"
+    legacy_batch      = "${var.project_name}-legacy-batch-stage"
+    migration         = "${var.project_name}-migration-stage"
   }
 }

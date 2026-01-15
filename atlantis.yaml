@@ -17,12 +17,20 @@ projects:
   # Container Registry
   # ============================================================================
 
-  # ECR repository for web-api
+  # ECR repository (Production)
   - name: setof-commerce-ecr-prod
     dir: terraform/ecr
     workspace: default
     autoplan:
       when_modified: ["*.tf", "*.tfvars", "../*.tf"]
+      enabled: true
+
+  # ECR repository (Stage)
+  - name: setof-commerce-ecr-stage
+    dir: terraform/ecr-stage
+    workspace: default
+    autoplan:
+      when_modified: ["*.tf", "*.tfvars"]
       enabled: true
 
   # ============================================================================

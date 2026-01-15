@@ -14,8 +14,13 @@
 # Common Tags (for governance)
 # ========================================
 locals {
+  # ECR 모듈은 environment 검증에서 staging만 허용 (stage X)
+  # 리포지토리 이름에는 "stage" 사용, 태그에는 "staging" 사용
+  ecr_environment = "staging"
+  ecr_name_suffix = "stage"
+
   common_tags = {
-    environment  = var.environment
+    environment  = local.ecr_environment
     service_name = "${var.project_name}-ecr"
     team         = "platform-team"
     owner        = "platform@ryuqqq.com"
@@ -31,7 +36,7 @@ locals {
 module "ecr_web_api" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
 
-  name                 = "${var.project_name}-web-api-${var.environment}"
+  name                 = "${var.project_name}-web-api-${local.ecr_name_suffix}"
   image_tag_mutability = "MUTABLE"  # Stage에서는 MUTABLE 허용 (빠른 반복)
   scan_on_push         = true
   encryption_type      = "AES256"
@@ -61,7 +66,7 @@ module "ecr_web_api" {
 module "ecr_web_api_admin" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
 
-  name                 = "${var.project_name}-web-api-admin-${var.environment}"
+  name                 = "${var.project_name}-web-api-admin-${local.ecr_name_suffix}"
   image_tag_mutability = "MUTABLE"
   scan_on_push         = true
   encryption_type      = "AES256"
@@ -91,7 +96,7 @@ module "ecr_web_api_admin" {
 module "ecr_legacy_api" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
 
-  name                 = "${var.project_name}-legacy-api-${var.environment}"
+  name                 = "${var.project_name}-legacy-api-${local.ecr_name_suffix}"
   image_tag_mutability = "MUTABLE"
   scan_on_push         = true
   encryption_type      = "AES256"
@@ -121,7 +126,7 @@ module "ecr_legacy_api" {
 module "ecr_legacy_api_admin" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
 
-  name                 = "${var.project_name}-legacy-api-admin-${var.environment}"
+  name                 = "${var.project_name}-legacy-api-admin-${local.ecr_name_suffix}"
   image_tag_mutability = "MUTABLE"
   scan_on_push         = true
   encryption_type      = "AES256"
@@ -151,7 +156,7 @@ module "ecr_legacy_api_admin" {
 module "ecr_legacy_batch" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
 
-  name                 = "${var.project_name}-legacy-batch-${var.environment}"
+  name                 = "${var.project_name}-legacy-batch-${local.ecr_name_suffix}"
   image_tag_mutability = "MUTABLE"
   scan_on_push         = true
   encryption_type      = "AES256"
@@ -181,7 +186,7 @@ module "ecr_legacy_batch" {
 module "ecr_migration" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
 
-  name                 = "${var.project_name}-migration-${var.environment}"
+  name                 = "${var.project_name}-migration-${local.ecr_name_suffix}"
   image_tag_mutability = "MUTABLE"
   scan_on_push         = true
   encryption_type      = "AES256"
