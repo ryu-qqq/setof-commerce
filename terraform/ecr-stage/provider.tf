@@ -1,7 +1,5 @@
 # ========================================
-# Terraform Provider Configuration
-# ========================================
-# Stage ECR Repositories
+# Terraform Provider Configuration (Stage)
 # ========================================
 
 terraform {

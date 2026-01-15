@@ -1,13 +1,14 @@
-# ============================================================================
-# SetOf Commerce - Stage ECR Repositories
-# ============================================================================
-# Stage 환경용 ECR 레포지토리
-#
-# 레포지토리 목록:
-# - setof-commerce-legacy-api-stage: Legacy API (Stage)
-# - setof-commerce-legacy-api-admin-stage: Legacy Admin API (Stage)
-# - setof-commerce-legacy-batch-stage: Legacy Batch Jobs (Stage)
-# ============================================================================
+# ========================================
+# ECR Repositories for SetOf Commerce (Stage)
+# ========================================
+# Container registries using Infrastructure module
+# - web-api: REST API server (Spring Boot)
+# - web-api-admin: Admin API server (Spring Boot)
+# - legacy-api: Legacy API server (Spring Boot)
+# - legacy-api-admin: Legacy Admin API server (Spring Boot)
+# - legacy-batch: Legacy batch jobs (Spring Batch)
+# - migration: Data migration server (Spring Boot)
+# ========================================
 
 # ========================================
 # Common Tags (for governance)
@@ -25,136 +26,181 @@ locals {
 }
 
 # ========================================
-# ECR Module - Legacy API (Stage)
+# ECR Repository: web-api (Stage)
 # ========================================
-module "ecr_legacy_api_stage" {
-  source = "git::https://github.com/ryu-qqq/Infrastructure.git//modules/ecr?ref=main"
+module "ecr_web_api" {
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
 
-  repository_name = "${var.project_name}-legacy-api-${var.environment}"
+  name                 = "${var.project_name}-web-api-${var.environment}"
+  image_tag_mutability = "MUTABLE"  # Stage에서는 MUTABLE 허용 (빠른 반복)
+  scan_on_push         = true
+  encryption_type      = "AES256"
 
-  governance_tags = {
-    environment  = local.common_tags.environment
-    service_name = "legacy-api"
-    team         = local.common_tags.team
-    owner        = local.common_tags.owner
-    cost_center  = local.common_tags.cost_center
-    project      = local.common_tags.project
-    data_class   = local.common_tags.data_class
-  }
+  # Lifecycle Policy (Stage는 더 짧은 보존)
+  enable_lifecycle_policy    = true
+  max_image_count            = 15
+  lifecycle_tag_prefixes     = ["v", "stage", "latest"]
+  untagged_image_expiry_days = 3
 
-  lifecycle_policy_rules = [
-    {
-      rulePriority = 1
-      description  = "Keep last 10 images for stage environment"
-      selection = {
-        tagStatus   = "any"
-        countType   = "imageCountMoreThan"
-        countNumber = 10
-      }
-      action = {
-        type = "expire"
-      }
-    }
-  ]
+  # SSM Parameter 비활성화
+  create_ssm_parameter = false
+
+  # Required Tags (governance compliance)
+  environment  = local.common_tags.environment
+  service_name = "${var.project_name}-web-api"
+  team         = local.common_tags.team
+  owner        = local.common_tags.owner
+  cost_center  = local.common_tags.cost_center
+  project      = local.common_tags.project
+  data_class   = local.common_tags.data_class
 }
 
 # ========================================
-# ECR Module - Legacy Admin API (Stage)
+# ECR Repository: web-api-admin (Stage)
 # ========================================
-module "ecr_legacy_api_admin_stage" {
-  source = "git::https://github.com/ryu-qqq/Infrastructure.git//modules/ecr?ref=main"
+module "ecr_web_api_admin" {
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
 
-  repository_name = "${var.project_name}-legacy-api-admin-${var.environment}"
+  name                 = "${var.project_name}-web-api-admin-${var.environment}"
+  image_tag_mutability = "MUTABLE"
+  scan_on_push         = true
+  encryption_type      = "AES256"
 
-  governance_tags = {
-    environment  = local.common_tags.environment
-    service_name = "legacy-api-admin"
-    team         = local.common_tags.team
-    owner        = local.common_tags.owner
-    cost_center  = local.common_tags.cost_center
-    project      = local.common_tags.project
-    data_class   = local.common_tags.data_class
-  }
+  # Lifecycle Policy
+  enable_lifecycle_policy    = true
+  max_image_count            = 15
+  lifecycle_tag_prefixes     = ["v", "stage", "latest"]
+  untagged_image_expiry_days = 3
 
-  lifecycle_policy_rules = [
-    {
-      rulePriority = 1
-      description  = "Keep last 10 images for stage environment"
-      selection = {
-        tagStatus   = "any"
-        countType   = "imageCountMoreThan"
-        countNumber = 10
-      }
-      action = {
-        type = "expire"
-      }
-    }
-  ]
+  # SSM Parameter 비활성화
+  create_ssm_parameter = false
+
+  # Required Tags (governance compliance)
+  environment  = local.common_tags.environment
+  service_name = "${var.project_name}-web-api-admin"
+  team         = local.common_tags.team
+  owner        = local.common_tags.owner
+  cost_center  = local.common_tags.cost_center
+  project      = local.common_tags.project
+  data_class   = local.common_tags.data_class
 }
 
 # ========================================
-# ECR Module - Legacy Batch (Stage)
+# ECR Repository: legacy-api (Stage)
 # ========================================
-module "ecr_legacy_batch_stage" {
-  source = "git::https://github.com/ryu-qqq/Infrastructure.git//modules/ecr?ref=main"
+module "ecr_legacy_api" {
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
 
-  repository_name = "${var.project_name}-legacy-batch-${var.environment}"
+  name                 = "${var.project_name}-legacy-api-${var.environment}"
+  image_tag_mutability = "MUTABLE"
+  scan_on_push         = true
+  encryption_type      = "AES256"
 
-  governance_tags = {
-    environment  = local.common_tags.environment
-    service_name = "legacy-batch"
-    team         = local.common_tags.team
-    owner        = local.common_tags.owner
-    cost_center  = local.common_tags.cost_center
-    project      = local.common_tags.project
-    data_class   = local.common_tags.data_class
-  }
+  # Lifecycle Policy
+  enable_lifecycle_policy    = true
+  max_image_count            = 15
+  lifecycle_tag_prefixes     = ["v", "stage", "latest"]
+  untagged_image_expiry_days = 3
 
-  lifecycle_policy_rules = [
-    {
-      rulePriority = 1
-      description  = "Keep last 10 images for stage environment"
-      selection = {
-        tagStatus   = "any"
-        countType   = "imageCountMoreThan"
-        countNumber = 10
-      }
-      action = {
-        type = "expire"
-      }
-    }
-  ]
+  # SSM Parameter 비활성화
+  create_ssm_parameter = false
+
+  # Required Tags (governance compliance)
+  environment  = local.common_tags.environment
+  service_name = "${var.project_name}-legacy-api"
+  team         = local.common_tags.team
+  owner        = local.common_tags.owner
+  cost_center  = local.common_tags.cost_center
+  project      = local.common_tags.project
+  data_class   = local.common_tags.data_class
 }
 
 # ========================================
-# Outputs
+# ECR Repository: legacy-api-admin (Stage)
 # ========================================
-output "legacy_api_repository_url" {
-  description = "Legacy API ECR repository URL (Stage)"
-  value       = module.ecr_legacy_api_stage.repository_url
+module "ecr_legacy_api_admin" {
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
+
+  name                 = "${var.project_name}-legacy-api-admin-${var.environment}"
+  image_tag_mutability = "MUTABLE"
+  scan_on_push         = true
+  encryption_type      = "AES256"
+
+  # Lifecycle Policy
+  enable_lifecycle_policy    = true
+  max_image_count            = 15
+  lifecycle_tag_prefixes     = ["v", "stage", "latest"]
+  untagged_image_expiry_days = 3
+
+  # SSM Parameter 비활성화
+  create_ssm_parameter = false
+
+  # Required Tags (governance compliance)
+  environment  = local.common_tags.environment
+  service_name = "${var.project_name}-legacy-api-admin"
+  team         = local.common_tags.team
+  owner        = local.common_tags.owner
+  cost_center  = local.common_tags.cost_center
+  project      = local.common_tags.project
+  data_class   = local.common_tags.data_class
 }
 
-output "legacy_api_admin_repository_url" {
-  description = "Legacy Admin API ECR repository URL (Stage)"
-  value       = module.ecr_legacy_api_admin_stage.repository_url
+# ========================================
+# ECR Repository: legacy-batch (Stage)
+# ========================================
+module "ecr_legacy_batch" {
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
+
+  name                 = "${var.project_name}-legacy-batch-${var.environment}"
+  image_tag_mutability = "MUTABLE"
+  scan_on_push         = true
+  encryption_type      = "AES256"
+
+  # Lifecycle Policy
+  enable_lifecycle_policy    = true
+  max_image_count            = 15
+  lifecycle_tag_prefixes     = ["v", "stage", "latest"]
+  untagged_image_expiry_days = 3
+
+  # SSM Parameter 비활성화
+  create_ssm_parameter = false
+
+  # Required Tags (governance compliance)
+  environment  = local.common_tags.environment
+  service_name = "${var.project_name}-legacy-batch"
+  team         = local.common_tags.team
+  owner        = local.common_tags.owner
+  cost_center  = local.common_tags.cost_center
+  project      = local.common_tags.project
+  data_class   = local.common_tags.data_class
 }
 
-output "legacy_batch_repository_url" {
-  description = "Legacy Batch ECR repository URL (Stage)"
-  value       = module.ecr_legacy_batch_stage.repository_url
-}
+# ========================================
+# ECR Repository: migration (Stage)
+# ========================================
+module "ecr_migration" {
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
 
-output "legacy_api_repository_arn" {
-  description = "Legacy API ECR repository ARN (Stage)"
-  value       = module.ecr_legacy_api_stage.repository_arn
-}
+  name                 = "${var.project_name}-migration-${var.environment}"
+  image_tag_mutability = "MUTABLE"
+  scan_on_push         = true
+  encryption_type      = "AES256"
 
-output "legacy_api_admin_repository_arn" {
-  description = "Legacy Admin API ECR repository ARN (Stage)"
-  value       = module.ecr_legacy_api_admin_stage.repository_arn
-}
+  # Lifecycle Policy
+  enable_lifecycle_policy    = true
+  max_image_count            = 15
+  lifecycle_tag_prefixes     = ["v", "stage", "latest"]
+  untagged_image_expiry_days = 3
 
-output "legacy_batch_repository_arn" {
-  description = "Legacy Batch ECR repository ARN (Stage)"
-  value       = module.ecr_legacy_batch_stage.repository_arn
+  # SSM Parameter 비활성화
+  create_ssm_parameter = false
+
+  # Required Tags (governance compliance)
+  environment  = local.common_tags.environment
+  service_name = "${var.project_name}-migration"
+  team         = local.common_tags.team
+  owner        = local.common_tags.owner
+  cost_center  = local.common_tags.cost_center
+  project      = local.common_tags.project
+  data_class   = local.common_tags.data_class
 }
