@@ -260,36 +260,6 @@ container_secrets = [
 
 `GlobalExceptionHandler.java`:
 
-```java
-import io.sentry.Sentry;
-import io.sentry.SentryLevel;
-
-@RestControllerAdvice
-public class GlobalExceptionHandler {
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception e, HttpServletRequest request) {
-        // Sentry에 추가 컨텍스트 전송
-        Sentry.withScope(scope -> {
-            scope.setTag("endpoint", request.getRequestURI());
-            scope.setTag("method", request.getMethod());
-            scope.setLevel(SentryLevel.ERROR);
-
-            // 사용자 정보 (있는 경우)
-            if (SecurityContextHolder.getContext().getAuthentication() != null) {
-                scope.setTag("user", SecurityContextHolder.getContext()
-                    .getAuthentication().getName());
-            }
-
-            Sentry.captureException(e);
-        });
-
-        return ResponseEntity.status(500)
-            .body(new ErrorResponse("Internal Server Error", e.getMessage()));
-    }
-}
-```
-
 ---
 
 ## Phase 3: Trace ID 연결
@@ -431,6 +401,7 @@ dependencies {
 ### 결과: 통합된 Trace ID
 
 **OpenSearch 로그**:
+
 ```json
 {
   "@timestamp": "2024-01-15T10:30:00.000Z",
@@ -443,6 +414,7 @@ dependencies {
 ```
 
 **Sentry 이벤트**:
+
 ```
 Tags:
   trace_id: abc123def456
@@ -451,6 +423,7 @@ Tags:
 ```
 
 **X-Ray 콘솔에서 조회**:
+
 ```
 Trace ID: abc123def456
 → 전체 요청 경로 시각화
@@ -487,16 +460,19 @@ public class TestController {
 ### 3. 통합 쿼리 예시
 
 **OpenSearch에서 특정 trace의 모든 로그 조회**:
+
 ```
 traceId: "abc123def456"
 ```
 
 **Sentry에서 특정 trace의 에러 찾기**:
+
 ```
 trace_id:abc123def456
 ```
 
 **X-Ray에서 분석**:
+
 1. X-Ray 콘솔 접속
 2. Traces 메뉴
 3. trace_id 검색
@@ -549,11 +525,13 @@ trace_id:abc123def456
 ### Sentry Webhook → n8n 연동
 
 **Sentry 설정**:
+
 1. Settings → Integrations → Webhooks
 2. Callback URL: `https://your-n8n-domain/webhook/sentry-error`
 3. 이벤트: `issue.created`, `issue.resolved`
 
 **n8n Workflow 예시**:
+
 ```json
 {
   "trigger": "Sentry Webhook",

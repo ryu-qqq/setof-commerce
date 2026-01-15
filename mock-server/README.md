@@ -903,7 +903,7 @@ curl "http://localhost:8089/api/oms/products/15/sync-history?status=FAILED&page=
 }
 ```
 
-**상태값:**c
+**상태값:**
 
 ```
 SUCCESS  → 성공    (외부몰 등록 완료)
