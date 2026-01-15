@@ -1,0 +1,498 @@
+# ============================================================================
+# SetOf Commerce Promote to Production
+#
+# Stage → Production 수동 프로모션 파이프라인
+# 트리거: 수동 실행 (workflow_dispatch)
+#
+# 프로세스:
+# 1. Stage 환경 헬스체크
+# 2. Terraform Plan (Production 인프라 변경 사항 확인)
+# 3. 승인 게이트 (GitHub Environment Protection)
+# 4. stage → main 머지
+# 5. Production ECR 빌드
+# 6. Production ECS 배포
+# 7. Terraform Apply
+# 8. Production 헬스체크
+# ============================================================================
+
+name: Promote to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      skip-stage-check:
+        description: '긴급 배포: Stage 헬스체크 스킵'
+        required: false
+        default: false
+        type: boolean
+      dry-run:
+        description: 'Dry Run: 실제 배포 없이 Plan만 확인'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+env:
+  AWS_REGION: ap-northeast-2
+  ECS_CLUSTER_PROD: setof-commerce-cluster-prod
+  ECS_CLUSTER_STAGE: setof-commerce-cluster-stage
+  STAGE_API_URL: https://stage-server.set-of.com
+  STAGE_ADMIN_URL: https://stage-partner.set-of.com
+  PROD_API_URL: https://server.set-of.com
+  PROD_ADMIN_URL: https://partner.set-of.com
+
+jobs:
+  # ============================================================================
+  # Stage 환경 헬스체크
+  # ============================================================================
+  verify-stage-health:
+    name: Verify Stage Environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event.inputs.skip-stage-check != 'true'
+
+    steps:
+      - name: Check Stage Legacy API Health
+        id: stage-api
+        run: |
+          echo "🔍 Checking Stage Legacy API health..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --connect-timeout 10 \
+            --max-time 30 \
+            "${{ env.STAGE_API_URL }}/actuator/health" || echo "000")
+
+          if [ "$RESPONSE" == "200" ]; then
+            echo "✅ Stage Legacy API is healthy (HTTP $RESPONSE)"
+            echo "status=healthy" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Stage Legacy API returned HTTP $RESPONSE"
+            echo "status=unhealthy" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Check Stage Admin API Health
+        id: stage-admin
+        run: |
+          echo "🔍 Checking Stage Admin API health..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --connect-timeout 10 \
+            --max-time 30 \
+            "${{ env.STAGE_ADMIN_URL }}/actuator/health" || echo "000")
+
+          if [ "$RESPONSE" == "200" ]; then
+            echo "✅ Stage Admin API is healthy (HTTP $RESPONSE)"
+            echo "status=healthy" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Stage Admin API returned HTTP $RESPONSE"
+            echo "status=unhealthy" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Stage Health Summary
+        run: |
+          echo "### 🏥 Stage Environment Health Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Service | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Legacy API | ${{ steps.stage-api.outputs.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Admin API | ${{ steps.stage-admin.outputs.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Stage environment is ready for Production promotion." >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # Terraform Plan (Production 인프라 변경 사항 확인)
+  # ============================================================================
+  terraform-plan:
+    name: Terraform Plan (Production)
+    needs: verify-stage-health
+    if: always() && (needs.verify-stage-health.result == 'success' || needs.verify-stage-health.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout stage branch
+        uses: actions/checkout@v4
+        with:
+          ref: stage
+          fetch-depth: 0
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ap-northeast-2
+          role-duration-seconds: 3600
+
+      - name: Terraform Plan - ECR
+        working-directory: terraform/ecr
+        run: |
+          terraform init -reconfigure
+          echo "### 📦 ECR Changes" >> $GITHUB_STEP_SUMMARY
+          terraform plan -no-color 2>&1 | tee plan.txt
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          grep -E "^(Plan:|No changes|~|+|-)" plan.txt >> $GITHUB_STEP_SUMMARY || echo "No significant changes" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Terraform Plan - ECS Cluster
+        working-directory: terraform/ecs-cluster
+        run: |
+          terraform init -reconfigure
+          echo "### 🏗️ ECS Cluster Changes" >> $GITHUB_STEP_SUMMARY
+          terraform plan -no-color 2>&1 | tee plan.txt
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          grep -E "^(Plan:|No changes|~|+|-)" plan.txt >> $GITHUB_STEP_SUMMARY || echo "No significant changes" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Terraform Plan - ECS Legacy API
+        working-directory: terraform/ecs-web-api-legacy
+        run: |
+          terraform init -reconfigure
+          echo "### 🚀 ECS Legacy API Changes" >> $GITHUB_STEP_SUMMARY
+          terraform plan -no-color 2>&1 | tee plan.txt
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          grep -E "^(Plan:|No changes|~|+|-)" plan.txt >> $GITHUB_STEP_SUMMARY || echo "No significant changes" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Terraform Plan - ECS Legacy Admin API
+        working-directory: terraform/ecs-web-api-legacy-admin
+        run: |
+          terraform init -reconfigure
+          echo "### 🚀 ECS Legacy Admin API Changes" >> $GITHUB_STEP_SUMMARY
+          terraform plan -no-color 2>&1 | tee plan.txt
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          grep -E "^(Plan:|No changes|~|+|-)" plan.txt >> $GITHUB_STEP_SUMMARY || echo "No significant changes" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Terraform Plan - ECS Batch
+        working-directory: terraform/ecs-batch
+        run: |
+          terraform init -reconfigure
+          echo "### ⏰ ECS Batch Changes" >> $GITHUB_STEP_SUMMARY
+          terraform plan -no-color 2>&1 | tee plan.txt
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          grep -E "^(Plan:|No changes|~|+|-)" plan.txt >> $GITHUB_STEP_SUMMARY || echo "No significant changes" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # Production 승인 게이트
+  # ============================================================================
+  approve-production:
+    name: Approve Production Deployment
+    needs: terraform-plan
+    runs-on: ubuntu-latest
+    environment: production
+    if: github.event.inputs.dry-run != 'true'
+
+    steps:
+      - name: Production Deployment Approved
+        run: |
+          echo "### ✅ Production Deployment Approved" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Approved by**: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Time**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Proceeding with Stage → Production promotion..." >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # Stage → Main 머지
+  # ============================================================================
+  merge-to-main:
+    name: Merge Stage to Main
+    needs: approve-production
+    runs-on: ubuntu-latest
+    outputs:
+      merge-commit: ${{ steps.merge.outputs.merge-commit }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge stage into main
+        id: merge
+        run: |
+          echo "🔄 Merging stage into main..."
+          git fetch origin stage
+          git merge origin/stage --no-edit -m "chore: promote stage to production
+
+          Automated promotion from stage environment.
+          Triggered by: @${{ github.actor }}
+          Workflow: ${{ github.workflow }}
+          Run ID: ${{ github.run_id }}"
+
+          MERGE_COMMIT=$(git rev-parse HEAD)
+          echo "merge-commit=$MERGE_COMMIT" >> $GITHUB_OUTPUT
+          echo "✅ Merge commit: $MERGE_COMMIT"
+
+      - name: Push to main
+        run: |
+          git push origin main
+          echo "✅ Pushed to main branch"
+
+      - name: Merge Summary
+        run: |
+          echo "### 🔀 Merge Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Source**: stage" >> $GITHUB_STEP_SUMMARY
+          echo "**Target**: main" >> $GITHUB_STEP_SUMMARY
+          echo "**Merge Commit**: ${{ steps.merge.outputs.merge-commit }}" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # 변경 감지
+  # ============================================================================
+  detect-changes:
+    name: Detect Changes
+    needs: merge-to-main
+    runs-on: ubuntu-latest
+    outputs:
+      legacy-api: ${{ steps.filter.outputs.legacy-api }}
+      legacy-api-admin: ${{ steps.filter.outputs.legacy-api-admin }}
+      legacy-batch: ${{ steps.filter.outputs.legacy-batch }}
+      shared: ${{ steps.filter.outputs.shared }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: filter
+        run: |
+          # main 브랜치에서 이전 커밋과 비교
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD || echo "")
+
+          # 각 컴포넌트별 변경 확인
+          if echo "$CHANGED_FILES" | grep -qE "^(gradle/|build.gradle|settings.gradle|libs.versions.toml|domain/|application/|adapter-out/)"; then
+            echo "shared=true" >> $GITHUB_OUTPUT
+          else
+            echo "shared=false" >> $GITHUB_OUTPUT
+          fi
+
+          if echo "$CHANGED_FILES" | grep -qE "^(bootstrap/bootstrap-legacy-web-api/|adapter-in/rest-api/)"; then
+            echo "legacy-api=true" >> $GITHUB_OUTPUT
+          else
+            echo "legacy-api=false" >> $GITHUB_OUTPUT
+          fi
+
+          if echo "$CHANGED_FILES" | grep -qE "^(bootstrap/bootstrap-legacy-web-api-admin/|adapter-in/rest-api-admin/)"; then
+            echo "legacy-api-admin=true" >> $GITHUB_OUTPUT
+          else
+            echo "legacy-api-admin=false" >> $GITHUB_OUTPUT
+          fi
+
+          if echo "$CHANGED_FILES" | grep -qE "^bootstrap/bootstrap-batch/"; then
+            echo "legacy-batch=true" >> $GITHUB_OUTPUT
+          else
+            echo "legacy-batch=false" >> $GITHUB_OUTPUT
+          fi
+
+          echo "### 🔍 Change Detection" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Changed files:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "$CHANGED_FILES" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # Production 빌드
+  # ============================================================================
+  build-legacy-api:
+    name: Build legacy-api (Prod)
+    needs: detect-changes
+    if: needs.detect-changes.outputs.shared == 'true' || needs.detect-changes.outputs.legacy-api == 'true'
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
+    with:
+      ecr-repository: setof-commerce-legacy-api-prod
+      component: legacy-api
+      dockerfile: bootstrap/bootstrap-legacy-web-api/Dockerfile
+      gradle-task: ":bootstrap:bootstrap-legacy-web-api:bootJar"
+      timeout-minutes: 30
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  build-legacy-api-admin:
+    name: Build legacy-api-admin (Prod)
+    needs: detect-changes
+    if: needs.detect-changes.outputs.shared == 'true' || needs.detect-changes.outputs.legacy-api-admin == 'true'
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
+    with:
+      ecr-repository: setof-commerce-legacy-api-admin-prod
+      component: legacy-api-admin
+      dockerfile: bootstrap/bootstrap-legacy-web-api-admin/Dockerfile
+      gradle-task: ":bootstrap:bootstrap-legacy-web-api-admin:bootJar"
+      timeout-minutes: 30
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  build-legacy-batch:
+    name: Build legacy-batch (Prod)
+    needs: detect-changes
+    if: needs.detect-changes.outputs.shared == 'true' || needs.detect-changes.outputs.legacy-batch == 'true'
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
+    with:
+      ecr-repository: setof-commerce-legacy-batch-prod
+      component: legacy-batch
+      dockerfile: bootstrap/bootstrap-batch/Dockerfile
+      gradle-task: ":bootstrap:bootstrap-batch:bootJar"
+      timeout-minutes: 30
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  # ============================================================================
+  # Production ECS 배포
+  # ============================================================================
+  deploy-legacy-api:
+    name: Deploy legacy-api (Prod)
+    needs: build-legacy-api
+    if: needs.build-legacy-api.result == 'success'
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
+    with:
+      ecs-cluster: setof-commerce-cluster-prod
+      ecs-service: setof-commerce-legacy-api-prod
+      image-uri: ${{ needs.build-legacy-api.outputs.image-uri }}
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  deploy-legacy-api-admin:
+    name: Deploy legacy-api-admin (Prod)
+    needs: build-legacy-api-admin
+    if: needs.build-legacy-api-admin.result == 'success'
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
+    with:
+      ecs-cluster: setof-commerce-cluster-prod
+      ecs-service: setof-commerce-legacy-admin-prod
+      image-uri: ${{ needs.build-legacy-api-admin.outputs.image-uri }}
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  # ============================================================================
+  # Terraform Apply (Production)
+  # ============================================================================
+  terraform-apply:
+    name: Terraform Apply (Prod)
+    needs: [build-legacy-api, build-legacy-api-admin, build-legacy-batch, deploy-legacy-api, deploy-legacy-api-admin]
+    if: always() && (needs.build-legacy-api.result == 'success' || needs.build-legacy-api-admin.result == 'success' || needs.build-legacy-batch.result == 'success')
+    uses: ./.github/workflows/terraform-apply.yml
+    with:
+      legacy-api-image-tag: ${{ needs.build-legacy-api.outputs.image-tag || '' }}
+      legacy-api-admin-image-tag: ${{ needs.build-legacy-api-admin.outputs.image-tag || '' }}
+      legacy-batch-image-tag: ${{ needs.build-legacy-batch.outputs.image-tag || '' }}
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  # ============================================================================
+  # Production 헬스체크
+  # ============================================================================
+  verify-production-health:
+    name: Verify Production Deployment
+    needs: [deploy-legacy-api, deploy-legacy-api-admin, terraform-apply]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: always() && (needs.deploy-legacy-api.result == 'success' || needs.deploy-legacy-api-admin.result == 'success')
+
+    steps:
+      - name: Wait for ECS deployment stabilization
+        run: |
+          echo "⏳ Waiting 60 seconds for ECS deployment to stabilize..."
+          sleep 60
+
+      - name: Check Production Legacy API Health
+        id: prod-api
+        continue-on-error: true
+        run: |
+          echo "🔍 Checking Production Legacy API health..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --connect-timeout 10 \
+            --max-time 30 \
+            "${{ env.PROD_API_URL }}/actuator/health" || echo "000")
+
+          if [ "$RESPONSE" == "200" ]; then
+            echo "✅ Production Legacy API is healthy (HTTP $RESPONSE)"
+            echo "status=healthy" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ Production Legacy API returned HTTP $RESPONSE"
+            echo "status=unhealthy" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check Production Admin API Health
+        id: prod-admin
+        continue-on-error: true
+        run: |
+          echo "🔍 Checking Production Admin API health..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --connect-timeout 10 \
+            --max-time 30 \
+            "${{ env.PROD_ADMIN_URL }}/actuator/health" || echo "000")
+
+          if [ "$RESPONSE" == "200" ]; then
+            echo "✅ Production Admin API is healthy (HTTP $RESPONSE)"
+            echo "status=healthy" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ Production Admin API returned HTTP $RESPONSE"
+            echo "status=unhealthy" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Production Health Summary
+        run: |
+          echo "### 🏥 Production Health Check (Post-Deployment)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Service | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Legacy API | ${{ steps.prod-api.outputs.status || 'not-deployed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Admin API | ${{ steps.prod-admin.outputs.status || 'not-deployed' }} |" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # 배포 완료 알림
+  # ============================================================================
+  notify:
+    name: Deployment Notification
+    needs: [verify-stage-health, terraform-plan, approve-production, merge-to-main, build-legacy-api, build-legacy-api-admin, build-legacy-batch, deploy-legacy-api, deploy-legacy-api-admin, terraform-apply, verify-production-health]
+    if: always()
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-notify-slack.yml@main
+    with:
+      project-name: SetOf Commerce
+      environment: prod
+      status: |
+        ${{
+          github.event.inputs.dry-run == 'true' && 'success' ||
+          (needs.verify-stage-health.result == 'failure') && 'failure' ||
+          (needs.approve-production.result == 'failure') && 'cancelled' ||
+          (needs.merge-to-main.result == 'failure') && 'failure' ||
+          (needs.deploy-legacy-api.result == 'success' || needs.deploy-legacy-api.result == 'skipped') &&
+          (needs.deploy-legacy-api-admin.result == 'success' || needs.deploy-legacy-api-admin.result == 'skipped') &&
+          'success' || 'failure'
+        }}
+      components: |
+        [
+          {"name": "stage-health", "status": "${{ needs.verify-stage-health.result }}"},
+          {"name": "terraform-plan", "status": "${{ needs.terraform-plan.result }}"},
+          {"name": "approval", "status": "${{ needs.approve-production.result }}"},
+          {"name": "merge-to-main", "status": "${{ needs.merge-to-main.result }}"},
+          {"name": "legacy-api", "status": "${{ needs.deploy-legacy-api.result }}"},
+          {"name": "legacy-api-admin", "status": "${{ needs.deploy-legacy-api-admin.result }}"},
+          {"name": "legacy-batch (build)", "status": "${{ needs.build-legacy-batch.result }}"},
+          {"name": "terraform-apply", "status": "${{ needs.terraform-apply.result }}"},
+          {"name": "prod-health", "status": "${{ needs.verify-production-health.result }}"}
+        ]
+      mention-on-failure: "@here"
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
