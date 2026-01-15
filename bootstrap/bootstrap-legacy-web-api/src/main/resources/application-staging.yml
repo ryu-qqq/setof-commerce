@@ -132,6 +132,9 @@ logging:
 # ============================================================
 # PortOne (iamport)
 # ============================================================
+portone:
+  enabled: ${PORTONE_ENABLED:true}  # Stage: false (외부 API 호출 비활성화)
+
 Import:
   import-restApi: ${PORTONE_API_KEY}
   import-restApiSecret: ${PORTONE_API_SECRET}
