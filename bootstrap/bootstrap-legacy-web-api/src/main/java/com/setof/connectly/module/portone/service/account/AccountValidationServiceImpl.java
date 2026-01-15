@@ -9,11 +9,13 @@ import com.setof.connectly.module.utils.SecurityUtils;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "portone.enabled", havingValue = "true", matchIfMissing = true)
 public class AccountValidationServiceImpl implements AccountValidationService {
 
     private final PortOneClient portOneClient;
