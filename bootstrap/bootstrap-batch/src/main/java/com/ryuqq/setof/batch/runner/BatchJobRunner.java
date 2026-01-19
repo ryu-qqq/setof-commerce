@@ -22,6 +22,8 @@ import org.springframework.stereotype.Component;
  *
  * <p>ECS RunTask + EventBridge 스케줄링 환경에서 사용 JOB_NAME 환경변수로 실행할 Job을 지정하면 해당 Job 실행 후 컨테이너 종료
  *
+ * <p>v1.1.0 - System.exit() 래핑으로 JVM 종료 보장
+ *
  * <p>사용 예시:
  *
  * <pre>
