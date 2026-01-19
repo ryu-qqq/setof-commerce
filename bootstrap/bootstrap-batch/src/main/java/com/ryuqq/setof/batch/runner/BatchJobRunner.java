@@ -68,7 +68,8 @@ public class BatchJobRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         if (jobName == null || jobName.isBlank()) {
-            log.info("JOB_NAME 환경변수가 설정되지 않음. 대기 모드로 실행됩니다.");
+            log.warn("JOB_NAME 환경변수가 설정되지 않음. 컨테이너를 종료합니다.");
+            SpringApplication.exit(applicationContext, () -> 1);
             return;
         }
 
