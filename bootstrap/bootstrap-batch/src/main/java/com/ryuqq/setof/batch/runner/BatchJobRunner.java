@@ -69,8 +69,7 @@ public class BatchJobRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         if (jobName == null || jobName.isBlank()) {
             log.warn("JOB_NAME 환경변수가 설정되지 않음. 컨테이너를 종료합니다.");
-            SpringApplication.exit(applicationContext, () -> 1);
-            return;
+            System.exit(SpringApplication.exit(applicationContext, () -> 1));
         }
 
         log.info("========================================");
@@ -124,7 +123,7 @@ public class BatchJobRunner implements ApplicationRunner {
             exitCode.set(1);
         } finally {
             log.info("컨테이너 종료 (exitCode={})", exitCode.get());
-            SpringApplication.exit(applicationContext, exitCode::get);
+            System.exit(SpringApplication.exit(applicationContext, exitCode::get));
         }
     }
 }
