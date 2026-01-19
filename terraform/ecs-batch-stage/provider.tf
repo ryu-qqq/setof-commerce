@@ -49,7 +49,7 @@ variable "project_name" {
 variable "environment" {
   description = "Environment name"
   type        = string
-  default     = "stage"
+  default     = "staging"
 }
 
 variable "aws_region" {
@@ -108,16 +108,16 @@ data "aws_ssm_parameter" "private_subnets" {
 # RDS Configuration (MySQL) - Stage DB
 # ========================================
 data "aws_secretsmanager_secret" "rds" {
-  name = "setof-commerce/rds/stage-credentials"
+  name = "setof-commerce/rds/staging-credentials"
 }
 
 data "aws_secretsmanager_secret_version" "rds" {
   secret_id = data.aws_secretsmanager_secret.rds.id
 }
 
-# Legacy-specific secrets (Stage)
+# Legacy-specific secrets (shared with prod - API keys are environment-agnostic)
 data "aws_secretsmanager_secret" "legacy" {
-  name = "setof-commerce/legacy/stage-credentials"
+  name = "setof-commerce/legacy/credentials"
 }
 
 data "aws_secretsmanager_secret_version" "legacy" {
@@ -139,11 +139,11 @@ data "aws_ssm_parameter" "amp_remote_write_url" {
 # Redis Configuration (Stage)
 # ========================================
 data "aws_ssm_parameter" "redis_endpoint" {
-  name = "/${var.project_name}/elasticache-stage/redis-endpoint"
+  name = "/${var.project_name}/elasticache/redis-endpoint"
 }
 
 data "aws_ssm_parameter" "redis_port" {
-  name = "/${var.project_name}/elasticache-stage/redis-port"
+  name = "/${var.project_name}/elasticache/redis-port"
 }
 
 # ========================================

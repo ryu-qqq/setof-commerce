@@ -39,14 +39,14 @@ locals {
 # ECR Repository Reference
 # ========================================
 data "aws_ecr_repository" "legacy_batch" {
-  name = "${var.project_name}-legacy-batch-${var.environment}"
+  name = "${var.project_name}-legacy-batch-stage"
 }
 
 # ========================================
 # ECS Cluster Reference (Stage)
 # ========================================
 data "aws_ecs_cluster" "main" {
-  cluster_name = "${var.project_name}-cluster-${var.environment}"
+  cluster_name = "${var.project_name}-cluster-stage"
 }
 
 data "aws_caller_identity" "current" {}

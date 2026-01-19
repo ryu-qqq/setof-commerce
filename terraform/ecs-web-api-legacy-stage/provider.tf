@@ -70,9 +70,9 @@ variable "legacy_api_memory" {
 }
 
 variable "legacy_api_desired_count" {
-  description = "Desired count for legacy-api service"
+  description = "Desired count for legacy-api service (0 = inactive)"
   type        = number
-  default     = 1
+  default     = 0
 }
 
 variable "image_tag" {

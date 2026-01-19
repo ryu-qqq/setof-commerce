@@ -1,7 +1,8 @@
 # ========================================
 # Terraform Provider Configuration
 # ========================================
-# Legacy Admin API - Staging Environment
+# Web API Admin Stage - Service Discovery Only (No ALB)
+# Access via: web-api-admin-stage.connectly.local:8081
 # ========================================
 
 terraform {
@@ -16,7 +17,7 @@ terraform {
 
   backend "s3" {
     bucket         = "prod-connectly"
-    key            = "setof-commerce/ecs-web-api-legacy-admin-stage/terraform.tfstate"
+    key            = "setof-commerce/ecs-web-api-admin-stage/terraform.tfstate"
     region         = "ap-northeast-2"
     dynamodb_table = "prod-connectly-tf-lock"
     encrypt        = true
@@ -57,20 +58,20 @@ variable "aws_region" {
   default     = "ap-northeast-2"
 }
 
-variable "legacy_admin_cpu" {
-  description = "CPU units for legacy-admin task"
+variable "web_api_admin_cpu" {
+  description = "CPU units for web-api-admin task"
   type        = number
   default     = 512
 }
 
-variable "legacy_admin_memory" {
-  description = "Memory for legacy-admin task"
+variable "web_api_admin_memory" {
+  description = "Memory for web-api-admin task"
   type        = number
   default     = 1024
 }
 
-variable "legacy_admin_desired_count" {
-  description = "Desired count for legacy-admin service (0 = inactive)"
+variable "web_api_admin_desired_count" {
+  description = "Desired count for web-api-admin service (0 = inactive)"
   type        = number
   default     = 0
 }
@@ -78,11 +79,11 @@ variable "legacy_admin_desired_count" {
 variable "image_tag" {
   description = "Docker image tag to deploy"
   type        = string
-  default     = "legacy-api-admin-76-8e792e3"
+  default     = "web-api-admin-stage-1-initial"
 
   validation {
-    condition     = can(regex("^legacy-api-admin-[0-9]+-[a-zA-Z0-9]+$", var.image_tag))
-    error_message = "Image tag must follow format: legacy-api-admin-{build-number}-{git-sha}"
+    condition     = can(regex("^web-api-admin-stage-[0-9]+-[a-zA-Z0-9]+$", var.image_tag))
+    error_message = "Image tag must follow format: web-api-admin-stage-{build-number}-{git-sha}"
   }
 }
 
@@ -97,45 +98,20 @@ data "aws_ssm_parameter" "private_subnets" {
   name = "/shared/network/private-subnets"
 }
 
-data "aws_ssm_parameter" "public_subnets" {
-  name = "/shared/network/public-subnets"
-}
-
-data "aws_ssm_parameter" "certificate_arn" {
-  name = "/shared/network/certificate-arn"
-}
-
-data "aws_ssm_parameter" "route53_zone_id" {
-  name = "/shared/network/route53-zone-id"
-}
-
 # ========================================
-# Staging RDS Configuration
+# Staging RDS Configuration (MySQL)
 # ========================================
-data "aws_secretsmanager_secret" "rds_staging" {
+data "aws_secretsmanager_secret" "rds" {
   name = "setof-commerce/rds/staging-credentials"
 }
 
-data "aws_secretsmanager_secret_version" "rds_staging" {
-  secret_id = data.aws_secretsmanager_secret.rds_staging.id
-}
-
-# Legacy-specific secrets (JWT, PortOne, Slack, AWS) - 같은 시크릿 사용
-data "aws_secretsmanager_secret" "legacy" {
-  name = "setof-commerce/legacy/credentials"
-}
-
-data "aws_secretsmanager_secret_version" "legacy" {
-  secret_id = data.aws_secretsmanager_secret.legacy.id
+data "aws_secretsmanager_secret_version" "rds" {
+  secret_id = data.aws_secretsmanager_secret.rds.id
 }
 
 # ========================================
-# Service Discovery Namespace
+# Service Token Secret (for internal service communication)
 # ========================================
-data "aws_ssm_parameter" "service_discovery_namespace_id" {
-  name = "/shared/service-discovery/namespace-id"
-}
-
 data "aws_ssm_parameter" "service_token_secret" {
   name = "/shared/security/service-token-secret"
 }
@@ -152,7 +128,7 @@ data "aws_ssm_parameter" "amp_remote_write_url" {
 }
 
 # ========================================
-# Redis Configuration
+# Redis Configuration (from ElastiCache - shared with prod)
 # ========================================
 data "aws_ssm_parameter" "redis_endpoint" {
   name = "/${var.project_name}/elasticache/redis-endpoint"
@@ -168,16 +144,13 @@ data "aws_ssm_parameter" "redis_port" {
 locals {
   vpc_id          = data.aws_ssm_parameter.vpc_id.value
   private_subnets = split(",", data.aws_ssm_parameter.private_subnets.value)
-  public_subnets  = split(",", data.aws_ssm_parameter.public_subnets.value)
-  certificate_arn = data.aws_ssm_parameter.certificate_arn.value
-  route53_zone_id = data.aws_ssm_parameter.route53_zone_id.value
-  fqdn            = "stage-commerce-admin.set-of.com"
 
   # Staging RDS Configuration
-  rds_credentials = jsondecode(data.aws_secretsmanager_secret_version.rds_staging.secret_string)
+  rds_credentials = jsondecode(data.aws_secretsmanager_secret_version.rds.secret_string)
   rds_host        = local.rds_credentials.host
   rds_port        = local.rds_credentials.port
   rds_dbname      = "luxurydb"
+  rds_username    = local.rds_credentials.username
 
   # Redis Configuration
   redis_host = data.aws_ssm_parameter.redis_endpoint.value
