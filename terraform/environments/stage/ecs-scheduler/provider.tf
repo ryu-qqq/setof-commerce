@@ -1,7 +1,7 @@
 # ========================================
 # Terraform Provider Configuration
 # ========================================
-# Legacy Web API Stage - Strangler Fig Pattern
+# Scheduler Stage - Outbox Processing
 # ========================================
 
 terraform {
@@ -16,7 +16,7 @@ terraform {
 
   backend "s3" {
     bucket         = "prod-connectly"
-    key            = "setof-commerce/ecs-web-api-legacy-stage/terraform.tfstate"
+    key            = "setof-commerce/ecs-scheduler-stage/terraform.tfstate"
     region         = "ap-northeast-2"
     dynamodb_table = "prod-connectly-tf-lock"
     encrypt        = true
@@ -48,7 +48,7 @@ variable "project_name" {
 variable "environment" {
   description = "Environment name"
   type        = string
-  default     = "staging"
+  default     = "stage"
 }
 
 variable "aws_region" {
@@ -57,20 +57,20 @@ variable "aws_region" {
   default     = "ap-northeast-2"
 }
 
-variable "legacy_api_cpu" {
-  description = "CPU units for legacy-api task"
+variable "scheduler_cpu" {
+  description = "CPU units for scheduler task"
+  type        = number
+  default     = 256
+}
+
+variable "scheduler_memory" {
+  description = "Memory for scheduler task"
   type        = number
   default     = 512
 }
 
-variable "legacy_api_memory" {
-  description = "Memory for legacy-api task"
-  type        = number
-  default     = 1024
-}
-
-variable "legacy_api_desired_count" {
-  description = "Desired count for legacy-api service (1 = Stage 고정)"
+variable "scheduler_desired_count" {
+  description = "Desired count for scheduler service (0 = inactive)"
   type        = number
   default     = 1
 }
@@ -78,7 +78,7 @@ variable "legacy_api_desired_count" {
 variable "image_tag" {
   description = "Docker image tag to deploy"
   type        = string
-  default     = "legacy-api-75-dd1e941"
+  default     = "scheduler-stage-1-initial"
 }
 
 # ========================================
@@ -92,23 +92,9 @@ data "aws_ssm_parameter" "private_subnets" {
   name = "/shared/network/private-subnets"
 }
 
-data "aws_ssm_parameter" "public_subnets" {
-  name = "/shared/network/public-subnets"
-}
-
-data "aws_ssm_parameter" "certificate_arn" {
-  name = "/shared/network/certificate-arn"
-}
-
-data "aws_ssm_parameter" "route53_zone_id" {
-  name = "/shared/network/route53-zone-id"
-}
-
 # ========================================
-# Staging RDS Configuration (MySQL - luxurydb)
+# Staging RDS Configuration
 # ========================================
-
-# Staging RDS Credentials
 data "aws_secretsmanager_secret" "rds" {
   name = "setof-commerce/rds/staging-credentials"
 }
@@ -117,7 +103,7 @@ data "aws_secretsmanager_secret_version" "rds" {
   secret_id = data.aws_secretsmanager_secret.rds.id
 }
 
-# Legacy-specific secrets (Kakao, JWT, PortOne, Slack, AWS)
+# Legacy-specific secrets
 data "aws_secretsmanager_secret" "legacy" {
   name = "setof-commerce/legacy/credentials"
 }
@@ -138,39 +124,29 @@ data "aws_ssm_parameter" "amp_remote_write_url" {
 }
 
 # ========================================
-# Redis Configuration (from ElastiCache module)
-# ========================================
-data "aws_ssm_parameter" "redis_endpoint" {
-  name = "/${var.project_name}/elasticache/redis-endpoint"
-}
-
-data "aws_ssm_parameter" "redis_port" {
-  name = "/${var.project_name}/elasticache/redis-port"
-}
-
-# ========================================
 # Locals
 # ========================================
 locals {
   vpc_id          = data.aws_ssm_parameter.vpc_id.value
   private_subnets = split(",", data.aws_ssm_parameter.private_subnets.value)
-  public_subnets  = split(",", data.aws_ssm_parameter.public_subnets.value)
-  certificate_arn = data.aws_ssm_parameter.certificate_arn.value
-  route53_zone_id = data.aws_ssm_parameter.route53_zone_id.value
-  fqdn            = "stage.set-of.com" # Stage server domain
 
-  # Staging RDS Configuration
+  # Stage RDS Configuration
   rds_credentials = jsondecode(data.aws_secretsmanager_secret_version.rds.secret_string)
   rds_host        = local.rds_credentials.host
   rds_port        = local.rds_credentials.port
   rds_dbname      = "luxurydb"
   rds_username    = local.rds_credentials.username
 
-  # Redis Configuration
-  redis_host = data.aws_ssm_parameter.redis_endpoint.value
-  redis_port = tonumber(data.aws_ssm_parameter.redis_port.value)
+  # Stage Redis Configuration (Shared Redis - No Auth, No TLS)
+  redis_host        = "stage-shared-redis.j9czrc.0001.apn2.cache.amazonaws.com"
+  redis_port        = 6379
+  redis_password    = ""
+  redis_ssl_enabled = "false"
 
   # AMP Configuration
   amp_workspace_arn    = data.aws_ssm_parameter.amp_workspace_arn.value
   amp_remote_write_url = data.aws_ssm_parameter.amp_remote_write_url.value
+
+  # Sentry DSN (Stage: disabled)
+  sentry_dsn = ""
 }

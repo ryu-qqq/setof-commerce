@@ -1,7 +1,8 @@
 # ========================================
 # Terraform Provider Configuration
 # ========================================
-# Legacy Web API Stage - Strangler Fig Pattern
+# Migration Service: Data sync & batch processing
+# Access via: migration.connectly.local:8082
 # ========================================
 
 terraform {
@@ -16,7 +17,7 @@ terraform {
 
   backend "s3" {
     bucket         = "prod-connectly"
-    key            = "setof-commerce/ecs-web-api-legacy-stage/terraform.tfstate"
+    key            = "setof-commerce/ecs-migration/terraform.tfstate"
     region         = "ap-northeast-2"
     dynamodb_table = "prod-connectly-tf-lock"
     encrypt        = true
@@ -48,7 +49,7 @@ variable "project_name" {
 variable "environment" {
   description = "Environment name"
   type        = string
-  default     = "staging"
+  default     = "prod"
 }
 
 variable "aws_region" {
@@ -57,28 +58,33 @@ variable "aws_region" {
   default     = "ap-northeast-2"
 }
 
-variable "legacy_api_cpu" {
-  description = "CPU units for legacy-api task"
+variable "migration_cpu" {
+  description = "CPU units for migration task"
   type        = number
   default     = 512
 }
 
-variable "legacy_api_memory" {
-  description = "Memory for legacy-api task"
+variable "migration_memory" {
+  description = "Memory for migration task"
   type        = number
   default     = 1024
 }
 
-variable "legacy_api_desired_count" {
-  description = "Desired count for legacy-api service (1 = Stage 고정)"
+variable "migration_desired_count" {
+  description = "Desired count for migration service (0 = inactive, dev in progress)"
   type        = number
-  default     = 1
+  default     = 0  # Set to 0: Migration service still in development
 }
 
 variable "image_tag" {
-  description = "Docker image tag to deploy"
+  description = "Docker image tag to deploy. Auto-set by GitHub Actions. Format: {component}-{build-number}-{git-sha}"
   type        = string
-  default     = "legacy-api-75-dd1e941"
+  default     = "migration-1-initial" # Fallback only - GitHub Actions will override this
+
+  validation {
+    condition     = can(regex("^migration-[0-9]+-[a-zA-Z0-9]+$", var.image_tag))
+    error_message = "Image tag must follow format: migration-{build-number}-{git-sha} (e.g., migration-1-abc1234)"
+  }
 }
 
 # ========================================
@@ -92,38 +98,30 @@ data "aws_ssm_parameter" "private_subnets" {
   name = "/shared/network/private-subnets"
 }
 
-data "aws_ssm_parameter" "public_subnets" {
-  name = "/shared/network/public-subnets"
-}
-
-data "aws_ssm_parameter" "certificate_arn" {
-  name = "/shared/network/certificate-arn"
-}
-
-data "aws_ssm_parameter" "route53_zone_id" {
-  name = "/shared/network/route53-zone-id"
-}
-
 # ========================================
-# Staging RDS Configuration (MySQL - luxurydb)
+# RDS Configuration (MySQL) - Primary (New Schema)
 # ========================================
+data "aws_ssm_parameter" "rds_proxy_endpoint" {
+  name = "/shared/rds/proxy-endpoint"
+}
 
-# Staging RDS Credentials
 data "aws_secretsmanager_secret" "rds" {
-  name = "setof-commerce/rds/staging-credentials"
+  name = "setof-commerce/rds/credentials"
 }
 
 data "aws_secretsmanager_secret_version" "rds" {
   secret_id = data.aws_secretsmanager_secret.rds.id
 }
 
-# Legacy-specific secrets (Kakao, JWT, PortOne, Slack, AWS)
-data "aws_secretsmanager_secret" "legacy" {
-  name = "setof-commerce/legacy/credentials"
+# ========================================
+# Legacy RDS Configuration (MySQL) - Legacy Schema
+# ========================================
+data "aws_secretsmanager_secret" "legacy_rds" {
+  name = "setof-commerce/legacy-rds/credentials"
 }
 
-data "aws_secretsmanager_secret_version" "legacy" {
-  secret_id = data.aws_secretsmanager_secret.legacy.id
+data "aws_secretsmanager_secret_version" "legacy_rds" {
+  secret_id = data.aws_secretsmanager_secret.legacy_rds.id
 }
 
 # ========================================
@@ -154,17 +152,20 @@ data "aws_ssm_parameter" "redis_port" {
 locals {
   vpc_id          = data.aws_ssm_parameter.vpc_id.value
   private_subnets = split(",", data.aws_ssm_parameter.private_subnets.value)
-  public_subnets  = split(",", data.aws_ssm_parameter.public_subnets.value)
-  certificate_arn = data.aws_ssm_parameter.certificate_arn.value
-  route53_zone_id = data.aws_ssm_parameter.route53_zone_id.value
-  fqdn            = "stage.set-of.com" # Stage server domain
 
-  # Staging RDS Configuration
+  # Primary RDS Configuration (New Schema)
   rds_credentials = jsondecode(data.aws_secretsmanager_secret_version.rds.secret_string)
-  rds_host        = local.rds_credentials.host
-  rds_port        = local.rds_credentials.port
-  rds_dbname      = "luxurydb"
+  rds_host        = data.aws_ssm_parameter.rds_proxy_endpoint.value
+  rds_port        = "3306"
+  rds_dbname      = "setof"
   rds_username    = local.rds_credentials.username
+
+  # Legacy RDS Configuration (Legacy Schema)
+  legacy_rds_credentials = jsondecode(data.aws_secretsmanager_secret_version.legacy_rds.secret_string)
+  legacy_rds_host        = local.legacy_rds_credentials.host
+  legacy_rds_port        = "3306"
+  legacy_rds_dbname      = local.legacy_rds_credentials.dbname
+  legacy_rds_username    = local.legacy_rds_credentials.username
 
   # Redis Configuration
   redis_host = data.aws_ssm_parameter.redis_endpoint.value

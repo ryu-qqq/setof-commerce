@@ -70,9 +70,9 @@ variable "legacy_admin_memory" {
 }
 
 variable "legacy_admin_desired_count" {
-  description = "Desired count for legacy-admin service (0 = inactive)"
+  description = "Desired count for legacy-admin service (1 = Stage 고정)"
   type        = number
-  default     = 0
+  default     = 1
 }
 
 variable "image_tag" {
