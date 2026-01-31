@@ -68,27 +68,27 @@ jobs:
       max-parallel: 1
       matrix:
         module:
-          # 의존성 순서대로 배치
+          # 의존성 순서대로 배치 - 모든 경로는 terraform/environments/stage/ 아래
           - name: ecr-stage
             dir: terraform/environments/stage/ecr
             order: 0
           - name: ecs-cluster-stage
-            dir: terraform/ecs-cluster-stage
+            dir: terraform/environments/stage/ecs-cluster
             order: 1
           - name: ecs-batch-stage
-            dir: terraform/ecs-batch-stage
+            dir: terraform/environments/stage/ecs-batch
             order: 2
           - name: ecs-web-api-legacy-stage
-            dir: terraform/ecs-web-api-legacy-stage
+            dir: terraform/environments/stage/ecs-web-api-legacy
             order: 3
           - name: ecs-web-api-legacy-admin-stage
-            dir: terraform/ecs-web-api-legacy-admin-stage
+            dir: terraform/environments/stage/ecs-web-api-legacy-admin
             order: 4
           - name: ecs-web-api-stage
-            dir: terraform/ecs-web-api-stage
+            dir: terraform/environments/stage/ecs-web-api
             order: 5
           - name: ecs-web-api-admin-stage
-            dir: terraform/ecs-web-api-admin-stage
+            dir: terraform/environments/stage/ecs-web-api-admin
             order: 6
           - name: ecs-scheduler-stage
             dir: terraform/environments/stage/ecs-scheduler
