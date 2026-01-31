@@ -401,12 +401,8 @@ module "ecs_service" {
   # ADOT Sidecar
   sidecars = [module.adot_sidecar.container_definition]
 
-  # Auto Scaling (Stage: conservative settings)
-  enable_autoscaling        = true
-  autoscaling_min_capacity  = 0
-  autoscaling_max_capacity  = 2
-  autoscaling_target_cpu    = 70
-  autoscaling_target_memory = 80
+  # Auto Scaling (Stage는 비활성화 - 고정 desired_count=1)
+  enable_autoscaling = false
 
   # Enable ECS Exec for debugging
   enable_execute_command = true

@@ -1,7 +1,7 @@
 # ========================================
 # Terraform Provider Configuration
 # ========================================
-# Legacy Web API Stage - Strangler Fig Pattern
+# Scheduler - Outbox Processing
 # ========================================
 
 terraform {
@@ -16,7 +16,7 @@ terraform {
 
   backend "s3" {
     bucket         = "prod-connectly"
-    key            = "setof-commerce/ecs-web-api-legacy-stage/terraform.tfstate"
+    key            = "setof-commerce/ecs-scheduler/terraform.tfstate"
     region         = "ap-northeast-2"
     dynamodb_table = "prod-connectly-tf-lock"
     encrypt        = true
@@ -48,7 +48,7 @@ variable "project_name" {
 variable "environment" {
   description = "Environment name"
   type        = string
-  default     = "staging"
+  default     = "prod"
 }
 
 variable "aws_region" {
@@ -57,28 +57,33 @@ variable "aws_region" {
   default     = "ap-northeast-2"
 }
 
-variable "legacy_api_cpu" {
-  description = "CPU units for legacy-api task"
+variable "scheduler_cpu" {
+  description = "CPU units for scheduler task"
+  type        = number
+  default     = 256
+}
+
+variable "scheduler_memory" {
+  description = "Memory for scheduler task"
   type        = number
   default     = 512
 }
 
-variable "legacy_api_memory" {
-  description = "Memory for legacy-api task"
-  type        = number
-  default     = 1024
-}
-
-variable "legacy_api_desired_count" {
-  description = "Desired count for legacy-api service (1 = Stage 고정)"
+variable "scheduler_desired_count" {
+  description = "Desired count for scheduler service"
   type        = number
   default     = 1
 }
 
 variable "image_tag" {
-  description = "Docker image tag to deploy"
+  description = "Docker image tag to deploy. Auto-set by GitHub Actions."
   type        = string
-  default     = "legacy-api-75-dd1e941"
+  default     = "scheduler-1-initial"
+
+  validation {
+    condition     = can(regex("^scheduler-[0-9]+-[a-zA-Z0-9]+$", var.image_tag))
+    error_message = "Image tag must follow format: scheduler-{build-number}-{git-sha} (e.g., scheduler-1-abc1234)"
+  }
 }
 
 # ========================================
@@ -92,32 +97,18 @@ data "aws_ssm_parameter" "private_subnets" {
   name = "/shared/network/private-subnets"
 }
 
-data "aws_ssm_parameter" "public_subnets" {
-  name = "/shared/network/public-subnets"
-}
-
-data "aws_ssm_parameter" "certificate_arn" {
-  name = "/shared/network/certificate-arn"
-}
-
-data "aws_ssm_parameter" "route53_zone_id" {
-  name = "/shared/network/route53-zone-id"
-}
-
 # ========================================
-# Staging RDS Configuration (MySQL - luxurydb)
+# RDS Configuration
 # ========================================
-
-# Staging RDS Credentials
 data "aws_secretsmanager_secret" "rds" {
-  name = "setof-commerce/rds/staging-credentials"
+  name = "setof-commerce/rds/credentials"
 }
 
 data "aws_secretsmanager_secret_version" "rds" {
   secret_id = data.aws_secretsmanager_secret.rds.id
 }
 
-# Legacy-specific secrets (Kakao, JWT, PortOne, Slack, AWS)
+# Legacy-specific secrets
 data "aws_secretsmanager_secret" "legacy" {
   name = "setof-commerce/legacy/credentials"
 }
@@ -149,20 +140,23 @@ data "aws_ssm_parameter" "redis_port" {
 }
 
 # ========================================
+# RDS Proxy Configuration
+# ========================================
+data "aws_ssm_parameter" "rds_proxy_endpoint" {
+  name = "/shared/rds/proxy-endpoint"
+}
+
+# ========================================
 # Locals
 # ========================================
 locals {
   vpc_id          = data.aws_ssm_parameter.vpc_id.value
   private_subnets = split(",", data.aws_ssm_parameter.private_subnets.value)
-  public_subnets  = split(",", data.aws_ssm_parameter.public_subnets.value)
-  certificate_arn = data.aws_ssm_parameter.certificate_arn.value
-  route53_zone_id = data.aws_ssm_parameter.route53_zone_id.value
-  fqdn            = "stage.set-of.com" # Stage server domain
 
-  # Staging RDS Configuration
+  # RDS Configuration (using RDS Proxy)
   rds_credentials = jsondecode(data.aws_secretsmanager_secret_version.rds.secret_string)
-  rds_host        = local.rds_credentials.host
-  rds_port        = local.rds_credentials.port
+  rds_host        = data.aws_ssm_parameter.rds_proxy_endpoint.value
+  rds_port        = "3306"
   rds_dbname      = "luxurydb"
   rds_username    = local.rds_credentials.username
 
