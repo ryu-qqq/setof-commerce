@@ -136,14 +136,22 @@ jobs:
         run: |
           echo "🔍 기존 리소스 확인 및 Import 중..."
 
-          # ECR Stage 모듈: 기존 리소스 import 시도
+          # ECR Stage 모듈: 기존 리소스 import 시도 (state에 없는 경우만)
           if [ "${{ matrix.module.name }}" == "ecr-stage" ]; then
             echo "📦 ECR Stage Repository 리소스 Import 중..."
-            for REPO in legacy-api legacy-api-admin web-api web-api-admin legacy-batch migration; do
+            for REPO in legacy-api legacy-api-admin web-api web-api-admin legacy-batch migration scheduler; do
               REPO_NAME="setof-commerce-${REPO}-stage"
+              MODULE_NAME="module.ecr_${REPO//-/_}.aws_ecr_repository.this"
+
+              # Skip if already in state
+              if terraform state list 2>/dev/null | grep -q "^${MODULE_NAME}$"; then
+                echo "  ✓ $REPO_NAME already in state - skipping import"
+                continue
+              fi
+
               if aws ecr describe-repositories --repository-names $REPO_NAME --region ap-northeast-2 >/dev/null 2>&1; then
                 echo "  → Importing $REPO_NAME ECR repository..."
-                terraform import -input=false "module.ecr_${REPO//-/_}.aws_ecr_repository.this" $REPO_NAME || echo "  ⚠️ Import failed or already in state"
+                terraform import -input=false "$MODULE_NAME" $REPO_NAME || echo "  ⚠️ Import failed"
               fi
             done
           fi
@@ -178,12 +186,17 @@ jobs:
             esac
 
             if [ -n "$SG_NAME" ]; then
-              SG_ID=$(aws ec2 describe-security-groups --filters "Name=group-name,Values=$SG_NAME" --query 'SecurityGroups[0].GroupId' --output text --region ap-northeast-2 2>/dev/null || echo "")
-              if [ -n "$SG_ID" ] && [ "$SG_ID" != "None" ]; then
-                echo "  → Importing Security Group: $SG_NAME ($SG_ID)"
-                terraform import -input=false 'module.ecs_security_group.aws_security_group.this' "$SG_ID" || echo "  ⚠️ Import failed or already in state"
+              # Skip if already in state
+              if terraform state list 2>/dev/null | grep -q "^module.ecs_security_group.aws_security_group.this$"; then
+                echo "  ✓ Security Group already in state - skipping import"
               else
-                echo "  ℹ️ Security Group $SG_NAME not found in AWS (will be created)"
+                SG_ID=$(aws ec2 describe-security-groups --filters "Name=group-name,Values=$SG_NAME" --query 'SecurityGroups[0].GroupId' --output text --region ap-northeast-2 2>/dev/null || echo "")
+                if [ -n "$SG_ID" ] && [ "$SG_ID" != "None" ]; then
+                  echo "  → Importing Security Group: $SG_NAME ($SG_ID)"
+                  terraform import -input=false 'module.ecs_security_group.aws_security_group.this' "$SG_ID" || echo "  ⚠️ Import failed"
+                else
+                  echo "  ℹ️ Security Group $SG_NAME not found in AWS (will be created)"
+                fi
               fi
             fi
           fi
