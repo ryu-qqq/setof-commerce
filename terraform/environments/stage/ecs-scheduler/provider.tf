@@ -78,7 +78,12 @@ variable "scheduler_desired_count" {
 variable "image_tag" {
   description = "Docker image tag to deploy"
   type        = string
-  default     = "scheduler-stage-1-initial"
+  default     = "scheduler-stage-13-56cfddd"
+
+  validation {
+    condition     = can(regex("^scheduler-stage-[0-9]+-[a-zA-Z0-9]+$", var.image_tag))
+    error_message = "Image tag must follow format: scheduler-stage-{build-number}-{git-sha}"
+  }
 }
 
 # ========================================
