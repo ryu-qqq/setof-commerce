@@ -110,7 +110,11 @@ class RestApiLayerArchTest {
         rule.allowEmptyShould(true).check(classes);
     }
 
-    /** 규칙 3: Common 패키지 구조 검증 */
+    /**
+     * 규칙 3: Common 패키지 구조 검증
+     *
+     * <p>버전별 DTO 패키지 허용 (v1, v2 등): common.v1.dto, common.v2.dto
+     */
     @Test
     @DisplayName("[필수] Common 패키지는 dto/controller/error/mapper/filter로 구성되어야 한다")
     void commonPackage_MustHaveStandardStructure() {
@@ -127,11 +131,14 @@ class RestApiLayerArchTest {
                         .should()
                         .resideInAnyPackage(
                                 "..common.dto..",
+                                "..common..dto..", // v1, v2 등 버전별 DTO 허용
                                 "..common.controller..",
                                 "..common.error..",
                                 "..common.mapper..",
                                 "..common.filter..")
-                        .because("Common 패키지는 dto, controller, error, mapper, filter로 구성되어야 합니다");
+                        .because(
+                                "Common 패키지는 dto, controller, error, mapper, filter로 구성되어야 합니다"
+                                        + " (버전별 dto 허용: v1, v2)");
 
         rule.allowEmptyShould(true).check(classes);
     }

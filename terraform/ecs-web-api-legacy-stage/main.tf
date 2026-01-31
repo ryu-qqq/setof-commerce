@@ -557,7 +557,7 @@ module "ecs_service" {
     { name = "REDIS_PORT", value = tostring(local.redis_port) },
     { name = "REDIS_DATABASE", value = "0" },
     # Kakao OAuth
-    { name = "KAKAO_CLIENT_ID", value = "a12a765b27dfd19e5c5fc5a5a88963aa" },
+    { name = "KAKAO_CLIENT_ID", value = "9fed0e8284cf39c688885c67c247cc89" },
     # Security Service Token
     { name = "SECURITY_SERVICE_TOKEN_ENABLED", value = "true" }
   ]

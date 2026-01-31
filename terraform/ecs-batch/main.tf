@@ -537,8 +537,9 @@ resource "aws_scheduler_schedule" "sellic_sync" {
     mode = "OFF"
   }
 
-  # KST 07,10,13,16,19,22시 05분 = UTC 22,01,04,07,10,13시 05분 (KST = UTC+9)
-  schedule_expression          = "cron(5 22,1,4,7,10,13 * * ? *)"
+  # KST 07,10,13,16,19,22시 05분 (3시간 간격)
+  # Note: timezone이 Asia/Seoul이므로 cron 시간은 KST 기준
+  schedule_expression          = "cron(5 7,10,13,16,19,22 * * ? *)"
   schedule_expression_timezone = "Asia/Seoul"
 
   target {
