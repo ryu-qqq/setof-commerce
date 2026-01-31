@@ -16,6 +16,11 @@ plugins {
     alias(libs.plugins.spring.dependency.management)
 }
 
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
     // ========================================
     // Core Modules
@@ -32,6 +37,10 @@ dependencies {
     // Outbound
     implementation project(':adapter-out:persistence-mysql')
     implementation project(':adapter-out:client:security-client')
+    implementation project(':adapter-out:client:authhub-client')
+
+    // AuthHub SDK (Auto-configuration for AuthHubClient, AuthApi, OnboardingApi)
+    implementation 'com.github.ryu-qqq.AuthHub:authhub-sdk-spring-boot-starter:v2.0.0'
 
     // ========================================
     // Spring Boot Starters

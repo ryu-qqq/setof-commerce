@@ -3,13 +3,18 @@
 // ========================================
 // Outbound adapter for AuthHub (Identity Service) API integration
 // Implements IdentityClient from application layer
-// Technology: RestClient
+// Technology: AuthHub SDK v2.0.0
 // NO Lombok allowed
 // ========================================
 
 plugins {
     id 'java-library'
     id 'java-test-fixtures'
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -20,9 +25,9 @@ dependencies {
     api project(':domain')
 
     // ========================================
-    // Spring Boot Web (for RestClient)
+    // AuthHub SDK
     // ========================================
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'com.github.ryu-qqq.AuthHub:authhub-sdk-core:v2.0.0'
 
     // ========================================
     // Spring Boot (for @Component, @ConfigurationProperties)
