@@ -1,35 +1,46 @@
 package com.ryuqq.setof.application.seller.dto.command;
 
 /**
- * Register Seller Command
+ * 셀러 등록 Command.
  *
- * <p>셀러 등록 요청 데이터를 담는 순수한 불변 객체
+ * <p>Seller + BusinessInfo + Address를 한번에 등록합니다. (모두 1:1 관계)
  *
- * @param sellerName 셀러명
- * @param logoUrl 로고 URL (nullable)
- * @param description 설명 (nullable)
- * @param registrationNumber 사업자 등록번호
- * @param saleReportNumber 통신판매업 신고번호 (nullable)
- * @param representative 대표자명
- * @param businessAddressLine1 사업장 주소 (기본)
- * @param businessAddressLine2 사업장 주소 (상세, nullable)
- * @param businessZipCode 사업장 우편번호
- * @param csEmail CS 이메일 (nullable)
- * @param csMobilePhone CS 휴대폰 (nullable)
- * @param csLandlinePhone CS 유선전화 (nullable)
- * @author development-team
- * @since 1.0.0
+ * @param seller 셀러 기본 정보
+ * @param businessInfo 사업자 정보
+ * @param address 주소 (출고지/반품지, 1:1)
  */
 public record RegisterSellerCommand(
-        String sellerName,
-        String logoUrl,
-        String description,
-        String registrationNumber,
-        String saleReportNumber,
-        String representative,
-        String businessAddressLine1,
-        String businessAddressLine2,
-        String businessZipCode,
-        String csEmail,
-        String csMobilePhone,
-        String csLandlinePhone) {}
+        SellerInfoCommand seller,
+        SellerBusinessInfoCommand businessInfo,
+        SellerAddressCommand address) {
+
+    /** 셀러 기본 정보 Command. */
+    public record SellerInfoCommand(
+            String sellerName, String displayName, String logoUrl, String description) {}
+
+    /** 사업자 정보 Command. */
+    public record SellerBusinessInfoCommand(
+            String registrationNumber,
+            String companyName,
+            String representative,
+            String saleReportNumber,
+            AddressCommand businessAddress,
+            CsContactCommand csContact) {}
+
+    /** 주소 Command. */
+    public record SellerAddressCommand(
+            String addressType,
+            String addressName,
+            AddressCommand address,
+            ContactInfoCommand contactInfo,
+            boolean defaultAddress) {}
+
+    /** 공통 주소 Command. */
+    public record AddressCommand(String zipCode, String line1, String line2) {}
+
+    /** CS 연락처 Command. */
+    public record CsContactCommand(String phone, String email, String mobile) {}
+
+    /** 담당자 연락처 Command. */
+    public record ContactInfoCommand(String name, String phone) {}
+}

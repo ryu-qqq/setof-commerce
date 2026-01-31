@@ -1,264 +1,197 @@
 package com.ryuqq.setof.domain.common.vo;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("CursorPageRequest")
+@Tag("unit")
+@DisplayName("CursorPageRequest Value Object 테스트")
 class CursorPageRequestTest {
 
     @Nested
     @DisplayName("생성 테스트")
-    class CreateTest {
+    class CreationTest {
 
         @Test
-        @DisplayName("정상 값으로 생성")
-        void shouldCreateWithValidValues() {
-            // When
-            CursorPageRequest request = CursorPageRequest.of("cursor-123", 30);
+        @DisplayName("of()로 CursorPageRequest를 생성한다")
+        void createWithOf() {
+            // when
+            CursorPageRequest<Long> request = CursorPageRequest.of(100L, 20);
 
-            // Then
-            assertEquals("cursor-123", request.cursor());
-            assertEquals(30, request.size());
+            // then
+            assertThat(request.cursor()).isEqualTo(100L);
+            assertThat(request.size()).isEqualTo(20);
         }
 
         @Test
-        @DisplayName("0 이하 size는 기본값으로 정규화")
-        void shouldNormalizeZeroSize() {
-            // When
-            CursorPageRequest request = CursorPageRequest.of("cursor", 0);
+        @DisplayName("first()로 첫 페이지 요청을 생성한다")
+        void createFirst() {
+            // when
+            CursorPageRequest<Long> request = CursorPageRequest.first(25);
 
-            // Then
-            assertEquals(CursorPageRequest.DEFAULT_SIZE, request.size());
+            // then
+            assertThat(request.cursor()).isNull();
+            assertThat(request.size()).isEqualTo(25);
+            assertThat(request.isFirstPage()).isTrue();
         }
 
         @Test
-        @DisplayName("음수 size는 기본값으로 정규화")
-        void shouldNormalizeNegativeSize() {
-            // When
-            CursorPageRequest request = CursorPageRequest.of("cursor", -10);
+        @DisplayName("defaultPage()로 기본 설정 요청을 생성한다")
+        void createDefaultPage() {
+            // when
+            CursorPageRequest<Long> request = CursorPageRequest.defaultPage();
 
-            // Then
-            assertEquals(CursorPageRequest.DEFAULT_SIZE, request.size());
+            // then
+            assertThat(request.cursor()).isNull();
+            assertThat(request.size()).isEqualTo(CursorPageRequest.DEFAULT_SIZE);
         }
 
         @Test
-        @DisplayName("MAX_SIZE 초과 size는 MAX_SIZE로 정규화")
-        void shouldNormalizeSizeExceedingMax() {
-            // When
-            CursorPageRequest request = CursorPageRequest.of("cursor", 200);
+        @DisplayName("afterId()로 Long ID 기반 커서 요청을 생성한다")
+        void createAfterId() {
+            // when
+            CursorPageRequest<Long> request = CursorPageRequest.afterId(50L, 30);
 
-            // Then
-            assertEquals(CursorPageRequest.MAX_SIZE, request.size());
+            // then
+            assertThat(request.cursor()).isEqualTo(50L);
+            assertThat(request.size()).isEqualTo(30);
         }
 
         @Test
-        @DisplayName("빈 문자열 cursor는 null로 정규화")
-        void shouldNormalizeEmptyCursorToNull() {
-            // When
-            CursorPageRequest request = CursorPageRequest.of("", 20);
+        @DisplayName("ofString()으로 String 기반 커서 요청을 생성한다")
+        void createOfString() {
+            // when
+            CursorPageRequest<String> request = CursorPageRequest.ofString("cursor-abc", 20);
 
-            // Then
-            assertNull(request.cursor());
-        }
-
-        @Test
-        @DisplayName("공백 문자열 cursor는 null로 정규화")
-        void shouldNormalizeBlankCursorToNull() {
-            // When
-            CursorPageRequest request = CursorPageRequest.of("   ", 20);
-
-            // Then
-            assertNull(request.cursor());
+            // then
+            assertThat(request.cursor()).isEqualTo("cursor-abc");
+            assertThat(request.size()).isEqualTo(20);
         }
     }
 
     @Nested
-    @DisplayName("팩토리 메서드 테스트")
-    class FactoryMethodTest {
+    @DisplayName("유효성 검증 테스트")
+    class ValidationTest {
 
         @Test
-        @DisplayName("first는 cursor=null로 생성")
-        void shouldCreateFirstPage() {
-            // When
-            CursorPageRequest request = CursorPageRequest.first(25);
+        @DisplayName("0 이하 size는 기본값으로 정규화된다")
+        void zeroSizeNormalizesToDefault() {
+            // when
+            CursorPageRequest<Long> request = CursorPageRequest.of(100L, 0);
 
-            // Then
-            assertNull(request.cursor());
-            assertEquals(25, request.size());
+            // then
+            assertThat(request.size()).isEqualTo(CursorPageRequest.DEFAULT_SIZE);
         }
 
         @Test
-        @DisplayName("defaultPage는 cursor=null, size=DEFAULT_SIZE로 생성")
-        void shouldCreateDefaultPage() {
-            // When
-            CursorPageRequest request = CursorPageRequest.defaultPage();
+        @DisplayName("음수 size는 기본값으로 정규화된다")
+        void negativeSizeNormalizesToDefault() {
+            // when
+            CursorPageRequest<Long> request = CursorPageRequest.of(100L, -10);
 
-            // Then
-            assertNull(request.cursor());
-            assertEquals(CursorPageRequest.DEFAULT_SIZE, request.size());
+            // then
+            assertThat(request.size()).isEqualTo(CursorPageRequest.DEFAULT_SIZE);
         }
 
         @Test
-        @DisplayName("afterId는 Long을 문자열 cursor로 변환")
-        void shouldCreateAfterId() {
-            // When
-            CursorPageRequest request = CursorPageRequest.afterId(12345L, 20);
+        @DisplayName("MAX_SIZE 초과 size는 MAX_SIZE로 정규화된다")
+        void exceedingMaxSizeNormalizesToMax() {
+            // when
+            CursorPageRequest<Long> request = CursorPageRequest.of(100L, 200);
 
-            // Then
-            assertEquals("12345", request.cursor());
-            assertEquals(20, request.size());
+            // then
+            assertThat(request.size()).isEqualTo(CursorPageRequest.MAX_SIZE);
         }
 
         @Test
-        @DisplayName("afterId에 null ID는 cursor=null")
-        void shouldCreateAfterIdWithNullId() {
-            // When
-            CursorPageRequest request = CursorPageRequest.afterId(null, 20);
+        @DisplayName("빈 문자열 커서는 null로 정규화된다")
+        void blankStringCursorNormalizesToNull() {
+            // when
+            CursorPageRequest<String> request = CursorPageRequest.ofString("   ", 20);
 
-            // Then
-            assertNull(request.cursor());
+            // then
+            assertThat(request.cursor()).isNull();
+            assertThat(request.isFirstPage()).isTrue();
         }
     }
 
     @Nested
-    @DisplayName("isFirstPage 테스트")
-    class IsFirstPageTest {
+    @DisplayName("상태 확인 테스트")
+    class StateCheckTest {
 
         @Test
-        @DisplayName("cursor가 null이면 true")
-        void shouldReturnTrueForNullCursor() {
-            // When
-            CursorPageRequest request = CursorPageRequest.first(20);
+        @DisplayName("isFirstPage()는 커서가 null이면 true를 반환한다")
+        void isFirstPageReturnsTrueWhenNoCursor() {
+            // given
+            CursorPageRequest<Long> request = CursorPageRequest.first(20);
 
-            // Then
-            assertTrue(request.isFirstPage());
+            // then
+            assertThat(request.isFirstPage()).isTrue();
         }
 
         @Test
-        @DisplayName("cursor가 있으면 false")
-        void shouldReturnFalseForNonNullCursor() {
-            // When
-            CursorPageRequest request = CursorPageRequest.of("cursor", 20);
+        @DisplayName("isFirstPage()는 커서가 있으면 false를 반환한다")
+        void isFirstPageReturnsFalseWhenCursorExists() {
+            // given
+            CursorPageRequest<Long> request = CursorPageRequest.afterId(100L, 20);
 
-            // Then
-            assertFalse(request.isFirstPage());
-        }
-    }
-
-    @Nested
-    @DisplayName("hasCursor 테스트")
-    class HasCursorTest {
-
-        @Test
-        @DisplayName("cursor가 있으면 true")
-        void shouldReturnTrueForNonNullCursor() {
-            // When
-            CursorPageRequest request = CursorPageRequest.of("cursor", 20);
-
-            // Then
-            assertTrue(request.hasCursor());
+            // then
+            assertThat(request.isFirstPage()).isFalse();
         }
 
         @Test
-        @DisplayName("cursor가 null이면 false")
-        void shouldReturnFalseForNullCursor() {
-            // When
-            CursorPageRequest request = CursorPageRequest.first(20);
+        @DisplayName("hasCursor()는 커서가 있으면 true를 반환한다")
+        void hasCursorReturnsTrueWhenCursorExists() {
+            // given
+            CursorPageRequest<Long> request = CursorPageRequest.of(100L, 20);
 
-            // Then
-            assertFalse(request.hasCursor());
+            // then
+            assertThat(request.hasCursor()).isTrue();
+        }
+
+        @Test
+        @DisplayName("hasCursor()는 커서가 없으면 false를 반환한다")
+        void hasCursorReturnsFalseWhenNoCursor() {
+            // given
+            CursorPageRequest<Long> request = CursorPageRequest.first(20);
+
+            // then
+            assertThat(request.hasCursor()).isFalse();
         }
     }
 
     @Nested
-    @DisplayName("cursorAsLong 테스트")
-    class CursorAsLongTest {
+    @DisplayName("네비게이션 테스트")
+    class NavigationTest {
 
         @Test
-        @DisplayName("숫자 문자열 cursor를 Long으로 변환")
-        void shouldParseCursorAsLong() {
-            // Given
-            CursorPageRequest request = CursorPageRequest.of("12345", 20);
+        @DisplayName("next()로 다음 페이지 요청을 생성한다")
+        void createsNextPage() {
+            // given
+            CursorPageRequest<Long> current = CursorPageRequest.afterId(100L, 20);
 
-            // Then
-            assertEquals(12345L, request.cursorAsLong());
+            // when
+            CursorPageRequest<Long> next = current.next(200L);
+
+            // then
+            assertThat(next.cursor()).isEqualTo(200L);
+            assertThat(next.size()).isEqualTo(20);
         }
 
         @Test
-        @DisplayName("null cursor는 null 반환")
-        void shouldReturnNullForNullCursor() {
-            // Given
-            CursorPageRequest request = CursorPageRequest.first(20);
+        @DisplayName("fetchSize()는 hasNext 판단용 +1 값을 반환한다")
+        void fetchSizeReturnsIncremented() {
+            // given
+            CursorPageRequest<Long> request = CursorPageRequest.of(100L, 20);
 
-            // Then
-            assertNull(request.cursorAsLong());
-        }
+            // when
+            int fetchSize = request.fetchSize();
 
-        @Test
-        @DisplayName("숫자가 아닌 cursor는 null 반환")
-        void shouldReturnNullForNonNumericCursor() {
-            // Given
-            CursorPageRequest request = CursorPageRequest.of("not-a-number", 20);
-
-            // Then
-            assertNull(request.cursorAsLong());
-        }
-    }
-
-    @Nested
-    @DisplayName("next 테스트")
-    class NextTest {
-
-        @Test
-        @DisplayName("다음 페이지 요청 생성")
-        void shouldCreateNextPage() {
-            // Given
-            CursorPageRequest request = CursorPageRequest.of("cursor-1", 20);
-
-            // When
-            CursorPageRequest next = request.next("cursor-2");
-
-            // Then
-            assertEquals("cursor-2", next.cursor());
-            assertEquals(20, next.size());
-        }
-    }
-
-    @Nested
-    @DisplayName("fetchSize 테스트")
-    class FetchSizeTest {
-
-        @Test
-        @DisplayName("size + 1 반환")
-        void shouldReturnSizePlusOne() {
-            // Given
-            CursorPageRequest request = CursorPageRequest.of("cursor", 20);
-
-            // Then
-            assertEquals(21, request.fetchSize());
-        }
-    }
-
-    @Nested
-    @DisplayName("상수 테스트")
-    class ConstantsTest {
-
-        @Test
-        @DisplayName("DEFAULT_SIZE는 20")
-        void shouldHaveDefaultSize20() {
-            assertEquals(20, CursorPageRequest.DEFAULT_SIZE);
-        }
-
-        @Test
-        @DisplayName("MAX_SIZE는 100")
-        void shouldHaveMaxSize100() {
-            assertEquals(100, CursorPageRequest.MAX_SIZE);
+            // then
+            assertThat(fetchSize).isEqualTo(21);
         }
     }
 }

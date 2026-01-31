@@ -97,14 +97,14 @@ springdoc:
     enabled: false
 
 ---
-# Staging 환경
+# Stage 환경
 spring:
   config:
     activate:
-      on-profile: staging
+      on-profile: stage
 
 springdoc:
-  # Staging에서는 Swagger UI 활성화 (내부 테스트용)
+  # Stage에서는 Swagger UI 활성화 (내부 테스트용)
   swagger-ui:
     enabled: true
   api-docs:

@@ -28,6 +28,7 @@ public class SettlementResponse {
 
 
     @QueryProjection
+
     public SettlementResponse(long orderCount, long ourMallOrderCount, long externalMallOrderCount,  String settlementDay, String settlementCompleteDay, BigDecimal totalCurrentPrice, BigDecimal totalDiscountAmount, BigDecimal sellerDiscountAmount,  BigDecimal totalMileageAmount, BigDecimal sellerMileageAmount,  BigDecimal totalFee) {
         BigDecimal settlementAmount = totalCurrentPrice
                 .subtract(sellerDiscountAmount)

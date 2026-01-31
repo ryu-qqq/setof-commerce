@@ -19,19 +19,19 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Member 마이그레이션 Job 실행 컨트롤러
  *
  * <p>Member 데이터 마이그레이션 Job을 실행하고 상태를 조회하는 REST API를 제공합니다.
  *
+ * <p><b>NOTE:</b> Member 기능이 아직 개발되지 않아 비활성화 상태입니다.
+ *
  * @author development-team
  * @since 1.0.0
  */
-@RestController
-@RequestMapping("/api/migration/member")
+// @RestController // TODO: Member 기능 개발 후 활성화
+// @RequestMapping("/api/migration/member")
 public class MemberMigrationJobController {
 
     private static final Logger log = LoggerFactory.getLogger(MemberMigrationJobController.class);

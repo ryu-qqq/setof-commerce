@@ -1,59 +1,47 @@
 package com.ryuqq.setof.application.shippingpolicy.port.out.query;
 
+import com.ryuqq.setof.domain.seller.id.SellerId;
 import com.ryuqq.setof.domain.shippingpolicy.aggregate.ShippingPolicy;
-import com.ryuqq.setof.domain.shippingpolicy.vo.ShippingPolicyId;
+import com.ryuqq.setof.domain.shippingpolicy.id.ShippingPolicyId;
+import com.ryuqq.setof.domain.shippingpolicy.query.ShippingPolicySearchCriteria;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * 배송 정책 Query Port (Port-Out)
- *
- * <p>배송 정책 Aggregate를 조회하는 읽기 전용 Port
- *
- * @author development-team
- * @since 1.0.0
- */
+/** 배송 정책 Query Port. */
 public interface ShippingPolicyQueryPort {
 
-    /**
-     * ID로 배송 정책 단건 조회
-     *
-     * @param id 배송 정책 ID (Value Object)
-     * @return 배송 정책 Domain (Optional)
-     */
     Optional<ShippingPolicy> findById(ShippingPolicyId id);
 
-    /**
-     * 셀러 ID로 배송 정책 목록 조회
-     *
-     * @param sellerId 셀러 ID
-     * @param includeDeleted 삭제된 정책 포함 여부
-     * @return 배송 정책 목록
-     */
-    List<ShippingPolicy> findBySellerId(Long sellerId, boolean includeDeleted);
+    List<ShippingPolicy> findByIds(List<ShippingPolicyId> ids);
 
     /**
-     * 셀러의 기본 배송 정책 조회
+     * 셀러의 기본 정책 조회.
      *
      * @param sellerId 셀러 ID
-     * @return 기본 배송 정책 (Optional)
+     * @return 기본 배송 정책 (없으면 empty)
      */
-    Optional<ShippingPolicy> findDefaultBySellerId(Long sellerId);
+    Optional<ShippingPolicy> findDefaultBySellerId(SellerId sellerId);
 
     /**
-     * 셀러의 배송 정책 개수 조회
+     * 셀러 ID와 정책 ID로 조회.
      *
      * @param sellerId 셀러 ID
-     * @param includeDeleted 삭제된 정책 포함 여부
-     * @return 배송 정책 개수
+     * @param policyId 정책 ID
+     * @return 배송 정책 (없으면 empty)
      */
-    long countBySellerId(Long sellerId, boolean includeDeleted);
+    Optional<ShippingPolicy> findBySellerIdAndId(SellerId sellerId, ShippingPolicyId policyId);
+
+    List<ShippingPolicy> findByCriteria(ShippingPolicySearchCriteria criteria);
+
+    long countByCriteria(ShippingPolicySearchCriteria criteria);
 
     /**
-     * 배송 정책 ID 존재 여부 확인
+     * 셀러의 활성 정책 개수 조회.
      *
-     * @param id 배송 정책 ID
-     * @return 존재 여부
+     * <p>POL-DEACT-002: 마지막 활성 정책 비활성화 검증에 사용
+     *
+     * @param sellerId 셀러 ID
+     * @return 활성 정책 개수
      */
-    boolean existsById(ShippingPolicyId id);
+    long countActiveBySellerId(SellerId sellerId);
 }

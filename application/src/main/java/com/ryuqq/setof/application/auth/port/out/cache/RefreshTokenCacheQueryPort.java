@@ -4,16 +4,9 @@ import com.ryuqq.setof.domain.auth.vo.RefreshTokenCacheKey;
 import java.util.Optional;
 
 /**
- * Refresh Token Cache Query Port
+ * Refresh Token 캐시 Query Port
  *
- * <p>Refresh Token 캐시(Redis) 조회를 담당하는 Port-Out 인터페이스
- *
- * <p><strong>조회 구조:</strong>
- *
- * <ul>
- *   <li>Key: cache:refresh-token:{token}
- *   <li>Value: memberId (UUID 문자열)
- * </ul>
+ * <p>Refresh Token 캐시의 읽기 작업을 위한 아웃바운드 포트입니다.
  *
  * @author development-team
  * @since 1.0.0
@@ -21,10 +14,10 @@ import java.util.Optional;
 public interface RefreshTokenCacheQueryPort {
 
     /**
-     * Refresh Token으로 회원 ID 조회
+     * Refresh Token으로 회원 ID를 조회합니다.
      *
-     * @param cacheKey 캐시 키 (token 기반)
-     * @return 회원 ID (UUID 문자열, Optional)
+     * @param cacheKey 캐시 키
+     * @return 회원 ID (Optional)
      */
     Optional<String> findMemberIdByToken(RefreshTokenCacheKey cacheKey);
 }

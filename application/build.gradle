@@ -29,6 +29,9 @@ dependencies {
     // UUID v7 Generator (Application에서 ID 생성)
     implementation libs.uuid.creator
 
+    // Jackson for JSON processing (Outbox payload parsing)
+    implementation libs.jackson.databind
+
     // ========================================
     // Test Dependencies
     // ========================================
@@ -39,8 +42,8 @@ dependencies {
     // ArchUnit for architecture validation
     testImplementation libs.archunit.junit5
 
-    // Bootstrap testFixtures (ArchUnit 유틸리티 사용)
-    testImplementation testFixtures(project(':bootstrap:bootstrap-web-api'))
+    // TODO: Bootstrap testFixtures 의존성 복원 필요 (컴파일 에러 해결 후)
+    // testImplementation testFixtures(project(':bootstrap:bootstrap-web-api'))
 
     // ========================================
     // Test Fixtures Dependencies

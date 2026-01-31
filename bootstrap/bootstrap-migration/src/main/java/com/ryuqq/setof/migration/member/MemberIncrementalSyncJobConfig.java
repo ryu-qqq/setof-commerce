@@ -21,7 +21,6 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
@@ -37,10 +36,12 @@ import org.springframework.transaction.PlatformTransactionManager;
  *   <li>실패 시 개별 레코드 스킵 (전체 롤백 아님)
  * </ul>
  *
+ * <p><b>NOTE:</b> Member 기능이 아직 개발되지 않아 비활성화 상태입니다.
+ *
  * @author development-team
  * @since 1.0.0
  */
-@Configuration
+// @Configuration // TODO: Member 기능 개발 후 활성화
 public class MemberIncrementalSyncJobConfig {
 
     private static final Logger log = LoggerFactory.getLogger(MemberIncrementalSyncJobConfig.class);

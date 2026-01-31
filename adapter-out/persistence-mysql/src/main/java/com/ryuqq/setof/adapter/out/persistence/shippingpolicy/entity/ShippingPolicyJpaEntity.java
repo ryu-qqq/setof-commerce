@@ -8,82 +8,92 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.time.LocalTime;
 
 /**
- * ShippingPolicyJpaEntity - ShippingPolicy JPA Entity
+ * ShippingPolicyJpaEntity - 배송 정책 JPA 엔티티.
  *
- * <p>Persistence Layer의 JPA Entity로서 seller_shipping_policies 테이블과 매핑됩니다.
+ * <p>PER-ENT-001: Entity는 @Entity, @Table 어노테이션 필수.
  *
- * <p><strong>SoftDeletableEntity 상속:</strong>
+ * <p>PER-ENT-002: JPA 관계 어노테이션 금지 (@OneToMany, @ManyToOne 등).
  *
- * <ul>
- *   <li>공통 감사 필드 상속: createdAt, updatedAt, deletedAt
- *   <li>Soft Delete 지원
- * </ul>
+ * <p>PER-ENT-003: ID 필드는 @GeneratedValue(strategy = IDENTITY).
  *
- * <p><strong>Long FK 전략:</strong>
+ * <p>PER-ENT-004: Lombok 사용 금지 - 수동 Getter/생성자.
  *
- * <ul>
- *   <li>sellerId: Long 타입으로 FK 관리
- *   <li>JPA 관계 어노테이션 사용 금지
- * </ul>
- *
- * @author development-team
+ * @author ryu-qqq
  * @since 1.0.0
  */
 @Entity
-@Table(name = "seller_shipping_policies")
+@Table(name = "shipping_policies")
 public class ShippingPolicyJpaEntity extends SoftDeletableEntity {
 
-    /** 기본 키 (Auto Increment) */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
 
-    /** 셀러 ID (Long FK) */
     @Column(name = "seller_id", nullable = false)
     private Long sellerId;
 
-    /** 정책명 */
-    @Column(name = "policy_name", nullable = false, length = 50)
+    @Column(name = "policy_name", nullable = false, length = 100)
     private String policyName;
 
-    /** 기본 배송비 */
-    @Column(name = "default_delivery_cost", nullable = false)
-    private Integer defaultDeliveryCost;
+    @Column(name = "is_default_policy", nullable = false)
+    private boolean defaultPolicy;
 
-    /** 무료배송 기준금액 */
-    @Column(name = "free_shipping_threshold")
-    private Integer freeShippingThreshold;
+    @Column(name = "is_active", nullable = false)
+    private boolean active;
 
-    /** 배송 안내 */
-    @Column(name = "delivery_guide", columnDefinition = "TEXT")
-    private String deliveryGuide;
+    @Column(name = "shipping_fee_type", nullable = false, length = 30)
+    private String shippingFeeType;
 
-    /** 기본 정책 여부 */
-    @Column(name = "is_default", nullable = false)
-    private Boolean isDefault;
+    @Column(name = "base_fee")
+    private Integer baseFee;
 
-    /** 표시 순서 */
-    @Column(name = "display_order", nullable = false)
-    private Integer displayOrder;
+    @Column(name = "free_threshold")
+    private Integer freeThreshold;
 
-    /** JPA 기본 생성자 (protected) */
+    @Column(name = "jeju_extra_fee")
+    private Integer jejuExtraFee;
+
+    @Column(name = "island_extra_fee")
+    private Integer islandExtraFee;
+
+    @Column(name = "return_fee")
+    private Integer returnFee;
+
+    @Column(name = "exchange_fee")
+    private Integer exchangeFee;
+
+    @Column(name = "lead_time_min_days")
+    private Integer leadTimeMinDays;
+
+    @Column(name = "lead_time_max_days")
+    private Integer leadTimeMaxDays;
+
+    @Column(name = "lead_time_cutoff_time")
+    private LocalTime leadTimeCutoffTime;
+
     protected ShippingPolicyJpaEntity() {
-        // JPA 기본 생성자
+        super();
     }
 
-    /** 전체 필드 생성자 (private) */
     private ShippingPolicyJpaEntity(
             Long id,
             Long sellerId,
             String policyName,
-            Integer defaultDeliveryCost,
-            Integer freeShippingThreshold,
-            String deliveryGuide,
-            Boolean isDefault,
-            Integer displayOrder,
+            boolean defaultPolicy,
+            boolean active,
+            String shippingFeeType,
+            Integer baseFee,
+            Integer freeThreshold,
+            Integer jejuExtraFee,
+            Integer islandExtraFee,
+            Integer returnFee,
+            Integer exchangeFee,
+            Integer leadTimeMinDays,
+            Integer leadTimeMaxDays,
+            LocalTime leadTimeCutoffTime,
             Instant createdAt,
             Instant updatedAt,
             Instant deletedAt) {
@@ -91,23 +101,36 @@ public class ShippingPolicyJpaEntity extends SoftDeletableEntity {
         this.id = id;
         this.sellerId = sellerId;
         this.policyName = policyName;
-        this.defaultDeliveryCost = defaultDeliveryCost;
-        this.freeShippingThreshold = freeShippingThreshold;
-        this.deliveryGuide = deliveryGuide;
-        this.isDefault = isDefault;
-        this.displayOrder = displayOrder;
+        this.defaultPolicy = defaultPolicy;
+        this.active = active;
+        this.shippingFeeType = shippingFeeType;
+        this.baseFee = baseFee;
+        this.freeThreshold = freeThreshold;
+        this.jejuExtraFee = jejuExtraFee;
+        this.islandExtraFee = islandExtraFee;
+        this.returnFee = returnFee;
+        this.exchangeFee = exchangeFee;
+        this.leadTimeMinDays = leadTimeMinDays;
+        this.leadTimeMaxDays = leadTimeMaxDays;
+        this.leadTimeCutoffTime = leadTimeCutoffTime;
     }
 
-    /** of() 스태틱 팩토리 메서드 */
-    public static ShippingPolicyJpaEntity of(
+    public static ShippingPolicyJpaEntity create(
             Long id,
             Long sellerId,
             String policyName,
-            Integer defaultDeliveryCost,
-            Integer freeShippingThreshold,
-            String deliveryGuide,
-            Boolean isDefault,
-            Integer displayOrder,
+            boolean defaultPolicy,
+            boolean active,
+            String shippingFeeType,
+            Integer baseFee,
+            Integer freeThreshold,
+            Integer jejuExtraFee,
+            Integer islandExtraFee,
+            Integer returnFee,
+            Integer exchangeFee,
+            Integer leadTimeMinDays,
+            Integer leadTimeMaxDays,
+            LocalTime leadTimeCutoffTime,
             Instant createdAt,
             Instant updatedAt,
             Instant deletedAt) {
@@ -115,17 +138,22 @@ public class ShippingPolicyJpaEntity extends SoftDeletableEntity {
                 id,
                 sellerId,
                 policyName,
-                defaultDeliveryCost,
-                freeShippingThreshold,
-                deliveryGuide,
-                isDefault,
-                displayOrder,
+                defaultPolicy,
+                active,
+                shippingFeeType,
+                baseFee,
+                freeThreshold,
+                jejuExtraFee,
+                islandExtraFee,
+                returnFee,
+                exchangeFee,
+                leadTimeMinDays,
+                leadTimeMaxDays,
+                leadTimeCutoffTime,
                 createdAt,
                 updatedAt,
                 deletedAt);
     }
-
-    // ===== Getters =====
 
     public Long getId() {
         return id;
@@ -139,23 +167,51 @@ public class ShippingPolicyJpaEntity extends SoftDeletableEntity {
         return policyName;
     }
 
-    public Integer getDefaultDeliveryCost() {
-        return defaultDeliveryCost;
+    public boolean isDefaultPolicy() {
+        return defaultPolicy;
     }
 
-    public Integer getFreeShippingThreshold() {
-        return freeShippingThreshold;
+    public boolean isActive() {
+        return active;
     }
 
-    public String getDeliveryGuide() {
-        return deliveryGuide;
+    public String getShippingFeeType() {
+        return shippingFeeType;
     }
 
-    public Boolean getIsDefault() {
-        return isDefault;
+    public Integer getBaseFee() {
+        return baseFee;
     }
 
-    public Integer getDisplayOrder() {
-        return displayOrder;
+    public Integer getFreeThreshold() {
+        return freeThreshold;
+    }
+
+    public Integer getJejuExtraFee() {
+        return jejuExtraFee;
+    }
+
+    public Integer getIslandExtraFee() {
+        return islandExtraFee;
+    }
+
+    public Integer getReturnFee() {
+        return returnFee;
+    }
+
+    public Integer getExchangeFee() {
+        return exchangeFee;
+    }
+
+    public Integer getLeadTimeMinDays() {
+        return leadTimeMinDays;
+    }
+
+    public Integer getLeadTimeMaxDays() {
+        return leadTimeMaxDays;
+    }
+
+    public LocalTime getLeadTimeCutoffTime() {
+        return leadTimeCutoffTime;
     }
 }

@@ -2,34 +2,29 @@ package com.ryuqq.setof.adapter.out.persistence.refundpolicy.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ryuqq.setof.adapter.out.persistence.common.MapperTestSupport;
+import com.ryuqq.setof.adapter.out.persistence.refundpolicy.RefundPolicyJpaEntityFixtures;
 import com.ryuqq.setof.adapter.out.persistence.refundpolicy.entity.RefundPolicyJpaEntity;
+import com.ryuqq.setof.domain.refundpolicy.RefundPolicyFixtures;
 import com.ryuqq.setof.domain.refundpolicy.aggregate.RefundPolicy;
-import com.ryuqq.setof.domain.refundpolicy.vo.PolicyName;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundDeliveryCost;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundGuide;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundPeriodDays;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundPolicyId;
-import com.ryuqq.setof.domain.refundpolicy.vo.ReturnAddress;
-import java.time.Instant;
+import com.ryuqq.setof.domain.refundpolicy.vo.NonReturnableCondition;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
- * RefundPolicyJpaEntityMapper 단위 테스트
+ * RefundPolicyJpaEntityMapperTest - 환불 정책 Mapper 단위 테스트.
  *
- * <p>RefundPolicy Domain ↔ RefundPolicyJpaEntity 간의 변환 로직을 검증합니다.
+ * <p>PER-MAP-002: toEntity(Domain) + toDomain(Entity) 메서드 검증.
  *
- * @author development-team
+ * @author ryu-qqq
  * @since 1.0.0
  */
+@Tag("unit")
 @DisplayName("RefundPolicyJpaEntityMapper 단위 테스트")
-class RefundPolicyJpaEntityMapperTest extends MapperTestSupport {
-
-    private static final Instant FIXED_TIME = Instant.parse("2025-01-01T00:00:00Z");
-    private static final Long TEST_SELLER_ID = 1L;
+class RefundPolicyJpaEntityMapperTest {
 
     private RefundPolicyJpaEntityMapper mapper;
 
@@ -38,296 +33,234 @@ class RefundPolicyJpaEntityMapperTest extends MapperTestSupport {
         mapper = new RefundPolicyJpaEntityMapper();
     }
 
+    // ========================================================================
+    // 1. toEntity 테스트
+    // ========================================================================
+
     @Nested
-    @DisplayName("toEntity 메서드")
-    class ToEntity {
+    @DisplayName("toEntity 변환 테스트")
+    class ToEntityTest {
 
         @Test
-        @DisplayName("성공 - RefundPolicy 도메인을 Entity로 변환한다")
-        void toEntity_success() {
-            // Given
-            RefundPolicy refundPolicy = createDefaultRefundPolicy();
+        @DisplayName("활성 상태 Domain을 Entity로 변환합니다")
+        void toEntity_WithActiveDomain_ReturnsValidEntity() {
+            // given
+            RefundPolicy domain = RefundPolicyFixtures.activeRefundPolicy();
 
-            // When
-            RefundPolicyJpaEntity entity = mapper.toEntity(refundPolicy);
+            // when
+            RefundPolicyJpaEntity entity = mapper.toEntity(domain);
 
-            // Then
-            assertThat(entity).isNotNull();
-            assertThat(entity.getId()).isEqualTo(refundPolicy.getIdValue());
-            assertThat(entity.getSellerId()).isEqualTo(refundPolicy.getSellerId());
-            assertThat(entity.getPolicyName()).isEqualTo(refundPolicy.getPolicyNameValue());
-            assertThat(entity.getReturnAddressLine1())
-                    .isEqualTo(refundPolicy.getReturnAddressLine1());
-            assertThat(entity.getReturnAddressLine2())
-                    .isEqualTo(refundPolicy.getReturnAddressLine2());
-            assertThat(entity.getReturnZipCode()).isEqualTo(refundPolicy.getReturnZipCode());
-            assertThat(entity.getRefundPeriodDays())
-                    .isEqualTo(refundPolicy.getRefundPeriodDaysValue());
-            assertThat(entity.getRefundDeliveryCost())
-                    .isEqualTo(refundPolicy.getRefundDeliveryCostValue());
-            assertThat(entity.getRefundGuide()).isEqualTo(refundPolicy.getRefundGuideValue());
-            assertThat(entity.getIsDefault()).isEqualTo(refundPolicy.isDefault());
-            assertThat(entity.getDisplayOrder()).isEqualTo(refundPolicy.getDisplayOrder());
+            // then
+            assertThat(entity.getId()).isEqualTo(domain.idValue());
+            assertThat(entity.getSellerId()).isEqualTo(domain.sellerIdValue());
+            assertThat(entity.getPolicyName()).isEqualTo(domain.policyNameValue());
+            assertThat(entity.isDefaultPolicy()).isEqualTo(domain.isDefaultPolicy());
+            assertThat(entity.isActive()).isEqualTo(domain.isActive());
+            assertThat(entity.getReturnPeriodDays()).isEqualTo(domain.returnPeriodDays());
+            assertThat(entity.getExchangePeriodDays()).isEqualTo(domain.exchangePeriodDays());
+            assertThat(entity.isPartialRefundEnabled()).isEqualTo(domain.isPartialRefundEnabled());
+            assertThat(entity.isInspectionRequired()).isEqualTo(domain.isInspectionRequired());
+            assertThat(entity.getInspectionPeriodDays()).isEqualTo(domain.inspectionPeriodDays());
+            assertThat(entity.getAdditionalInfo()).isEqualTo(domain.additionalInfo());
+            assertThat(entity.getCreatedAt()).isEqualTo(domain.createdAt());
+            assertThat(entity.getUpdatedAt()).isEqualTo(domain.updatedAt());
+            assertThat(entity.getDeletedAt()).isNull();
         }
 
         @Test
-        @DisplayName("성공 - 기본 정책이 아닌 도메인을 Entity로 변환한다")
-        void toEntity_nonDefault_success() {
-            // Given
-            RefundPolicy nonDefault = createNonDefaultRefundPolicy();
+        @DisplayName("신규 Domain을 Entity로 변환합니다")
+        void toEntity_WithNewDomain_ReturnsValidEntity() {
+            // given
+            RefundPolicy domain = RefundPolicyFixtures.newRefundPolicy();
 
-            // When
-            RefundPolicyJpaEntity entity = mapper.toEntity(nonDefault);
+            // when
+            RefundPolicyJpaEntity entity = mapper.toEntity(domain);
 
-            // Then
-            assertThat(entity).isNotNull();
-            assertThat(entity.getIsDefault()).isFalse();
-            assertThat(entity.getRefundGuide()).isNull();
+            // then
+            assertThat(entity.getId()).isNull();
+            assertThat(entity.getSellerId()).isEqualTo(domain.sellerIdValue());
+            assertThat(entity.getPolicyName()).isEqualTo(domain.policyNameValue());
+            assertThat(entity.isActive()).isTrue();
         }
 
         @Test
-        @DisplayName("성공 - 삭제된 도메인을 Entity로 변환한다")
-        void toEntity_deleted_success() {
-            // Given
-            RefundPolicy deleted = createDeletedRefundPolicy();
+        @DisplayName("비활성 상태 Domain을 Entity로 변환합니다")
+        void toEntity_WithInactiveDomain_ReturnsValidEntity() {
+            // given
+            RefundPolicy domain = RefundPolicyFixtures.inactiveRefundPolicy();
 
-            // When
-            RefundPolicyJpaEntity entity = mapper.toEntity(deleted);
+            // when
+            RefundPolicyJpaEntity entity = mapper.toEntity(domain);
 
-            // Then
-            assertThat(entity).isNotNull();
+            // then
+            assertThat(entity.isActive()).isFalse();
+            assertThat(entity.isDefaultPolicy()).isFalse();
+        }
+
+        @Test
+        @DisplayName("삭제된 Domain을 Entity로 변환합니다")
+        void toEntity_WithDeletedDomain_ReturnsEntityWithDeletedAt() {
+            // given
+            RefundPolicy domain = RefundPolicyFixtures.deletedRefundPolicy();
+
+            // when
+            RefundPolicyJpaEntity entity = mapper.toEntity(domain);
+
+            // then
             assertThat(entity.getDeletedAt()).isNotNull();
         }
+
+        @Test
+        @DisplayName("반품 불가 조건을 쉼표로 구분된 문자열로 변환합니다")
+        void toEntity_WithNonReturnableConditions_ReturnsCommaSeparatedString() {
+            // given
+            RefundPolicy domain = RefundPolicyFixtures.activeRefundPolicy();
+
+            // when
+            RefundPolicyJpaEntity entity = mapper.toEntity(domain);
+
+            // then
+            String conditions = entity.getNonReturnableConditions();
+            assertThat(conditions).isNotNull();
+            assertThat(conditions).contains("OPENED_PACKAGING");
+            assertThat(conditions).contains("USED_PRODUCT");
+        }
     }
+
+    // ========================================================================
+    // 2. toDomain 테스트
+    // ========================================================================
 
     @Nested
-    @DisplayName("toDomain 메서드")
-    class ToDomain {
+    @DisplayName("toDomain 변환 테스트")
+    class ToDomainTest {
 
         @Test
-        @DisplayName("성공 - Entity를 RefundPolicy 도메인으로 변환한다")
-        void toDomain_success() {
-            // Given
-            RefundPolicyJpaEntity entity =
-                    RefundPolicyJpaEntity.of(
-                            1L,
-                            TEST_SELLER_ID,
-                            "기본 환불",
-                            "서울시 강남구 테헤란로 123",
-                            "101동 1001호",
-                            "06234",
-                            7,
-                            3000,
-                            "상품 수령 후 7일 이내 환불 가능",
-                            true,
-                            1,
-                            FIXED_TIME,
-                            FIXED_TIME,
-                            null);
+        @DisplayName("활성 상태 Entity를 Domain으로 변환합니다")
+        void toDomain_WithActiveEntity_ReturnsValidDomain() {
+            // given
+            RefundPolicyJpaEntity entity = RefundPolicyJpaEntityFixtures.activeEntity();
 
-            // When
+            // when
             RefundPolicy domain = mapper.toDomain(entity);
 
-            // Then
-            assertThat(domain).isNotNull();
-            assertThat(domain.getIdValue()).isEqualTo(entity.getId());
-            assertThat(domain.getSellerId()).isEqualTo(entity.getSellerId());
-            assertThat(domain.getPolicyNameValue()).isEqualTo(entity.getPolicyName());
-            assertThat(domain.getReturnAddressLine1()).isEqualTo(entity.getReturnAddressLine1());
-            assertThat(domain.getReturnAddressLine2()).isEqualTo(entity.getReturnAddressLine2());
-            assertThat(domain.getReturnZipCode()).isEqualTo(entity.getReturnZipCode());
-            assertThat(domain.getRefundPeriodDaysValue()).isEqualTo(entity.getRefundPeriodDays());
-            assertThat(domain.getRefundDeliveryCostValue())
-                    .isEqualTo(entity.getRefundDeliveryCost());
-            assertThat(domain.getRefundGuideValue()).isEqualTo(entity.getRefundGuide());
-            assertThat(domain.isDefault()).isEqualTo(entity.getIsDefault());
-            assertThat(domain.getDisplayOrder()).isEqualTo(entity.getDisplayOrder());
+            // then
+            assertThat(domain.idValue()).isEqualTo(entity.getId());
+            assertThat(domain.sellerIdValue()).isEqualTo(entity.getSellerId());
+            assertThat(domain.policyNameValue()).isEqualTo(entity.getPolicyName());
+            assertThat(domain.isDefaultPolicy()).isEqualTo(entity.isDefaultPolicy());
+            assertThat(domain.isActive()).isEqualTo(entity.isActive());
+            assertThat(domain.returnPeriodDays()).isEqualTo(entity.getReturnPeriodDays());
+            assertThat(domain.exchangePeriodDays()).isEqualTo(entity.getExchangePeriodDays());
+            assertThat(domain.isPartialRefundEnabled()).isEqualTo(entity.isPartialRefundEnabled());
+            assertThat(domain.isInspectionRequired()).isEqualTo(entity.isInspectionRequired());
+            assertThat(domain.inspectionPeriodDays()).isEqualTo(entity.getInspectionPeriodDays());
+            assertThat(domain.additionalInfo()).isEqualTo(entity.getAdditionalInfo());
         }
 
         @Test
-        @DisplayName("성공 - 환불 안내가 없는 Entity를 도메인으로 변환한다")
-        void toDomain_withoutRefundGuide_success() {
-            // Given
-            RefundPolicyJpaEntity entity =
-                    RefundPolicyJpaEntity.of(
-                            2L,
-                            TEST_SELLER_ID,
-                            "심플 환불",
-                            "서울시 서초구 서초대로 456",
-                            null,
-                            "06789",
-                            14,
-                            5000,
-                            null,
-                            false,
-                            2,
-                            FIXED_TIME,
-                            FIXED_TIME,
-                            null);
+        @DisplayName("비활성 상태 Entity를 Domain으로 변환합니다")
+        void toDomain_WithInactiveEntity_ReturnsValidDomain() {
+            // given
+            RefundPolicyJpaEntity entity = RefundPolicyJpaEntityFixtures.inactiveEntity();
 
-            // When
+            // when
             RefundPolicy domain = mapper.toDomain(entity);
 
-            // Then
-            assertThat(domain).isNotNull();
-            assertThat(domain.getRefundGuideValue()).isNull();
-            assertThat(domain.getReturnAddressLine2()).isNull();
-            assertThat(domain.isDefault()).isFalse();
+            // then
+            assertThat(domain.isActive()).isFalse();
+            assertThat(domain.isDefaultPolicy()).isFalse();
         }
 
         @Test
-        @DisplayName("성공 - 삭제된 Entity를 도메인으로 변환한다")
-        void toDomain_deleted_success() {
-            // Given
-            RefundPolicyJpaEntity entity =
-                    RefundPolicyJpaEntity.of(
-                            3L,
-                            TEST_SELLER_ID,
-                            "이전 환불",
-                            "서울시 마포구 마포대로 789",
-                            null,
-                            "04001",
-                            7,
-                            3000,
-                            null,
-                            false,
-                            3,
-                            FIXED_TIME,
-                            FIXED_TIME,
-                            FIXED_TIME);
+        @DisplayName("삭제된 Entity를 Domain으로 변환합니다")
+        void toDomain_WithDeletedEntity_ReturnsDomainWithDeletedAt() {
+            // given
+            RefundPolicyJpaEntity entity = RefundPolicyJpaEntityFixtures.deletedEntity();
 
-            // When
+            // when
             RefundPolicy domain = mapper.toDomain(entity);
 
-            // Then
-            assertThat(domain).isNotNull();
-            assertThat(domain.getDeletedAt()).isNotNull();
-            assertThat(domain.isDeleted()).isTrue();
+            // then
+            assertThat(domain.deletedAt()).isNotNull();
+        }
+
+        @Test
+        @DisplayName("쉼표로 구분된 문자열을 반품 불가 조건 List로 변환합니다")
+        void toDomain_WithConditionsString_ReturnsConditionsList() {
+            // given
+            RefundPolicyJpaEntity entity = RefundPolicyJpaEntityFixtures.activeEntity();
+
+            // when
+            RefundPolicy domain = mapper.toDomain(entity);
+
+            // then
+            List<NonReturnableCondition> conditions = domain.nonReturnableConditions();
+            assertThat(conditions).isNotEmpty();
+            assertThat(conditions).contains(NonReturnableCondition.OPENED_PACKAGING);
+            assertThat(conditions).contains(NonReturnableCondition.USED_PRODUCT);
+        }
+
+        @Test
+        @DisplayName("반품 불가 조건이 null인 경우 빈 List를 반환합니다")
+        void toDomain_WithNullConditions_ReturnsEmptyList() {
+            // given
+            RefundPolicyJpaEntity entity = RefundPolicyJpaEntityFixtures.entityWithoutConditions();
+
+            // when
+            RefundPolicy domain = mapper.toDomain(entity);
+
+            // then
+            assertThat(domain.nonReturnableConditions()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("반품 불가 조건이 빈 문자열인 경우 빈 List를 반환합니다")
+        void toDomain_WithEmptyConditionsString_ReturnsEmptyList() {
+            // given
+            RefundPolicyJpaEntity entity =
+                    RefundPolicyJpaEntityFixtures.entityWithEmptyConditions();
+
+            // when
+            RefundPolicy domain = mapper.toDomain(entity);
+
+            // then
+            assertThat(domain.nonReturnableConditions()).isEmpty();
         }
     }
+
+    // ========================================================================
+    // 3. 양방향 변환 테스트
+    // ========================================================================
 
     @Nested
-    @DisplayName("양방향 변환 검증")
-    class RoundTrip {
+    @DisplayName("양방향 변환 테스트")
+    class BidirectionalConversionTest {
 
         @Test
-        @DisplayName("성공 - Domain -> Entity -> Domain 변환 시 데이터가 보존된다")
-        void roundTrip_domainToEntityToDomain_preservesData() {
-            // Given
-            RefundPolicy original = createDefaultRefundPolicy();
+        @DisplayName("Domain → Entity → Domain 변환 시 데이터가 보존됩니다")
+        void bidirectionalConversion_PreservesData() {
+            // given
+            RefundPolicy originalDomain = RefundPolicyFixtures.activeRefundPolicy();
 
-            // When
-            RefundPolicyJpaEntity entity = mapper.toEntity(original);
-            RefundPolicy converted = mapper.toDomain(entity);
+            // when
+            RefundPolicyJpaEntity entity = mapper.toEntity(originalDomain);
+            RefundPolicy convertedDomain = mapper.toDomain(entity);
 
-            // Then
-            assertThat(converted.getIdValue()).isEqualTo(original.getIdValue());
-            assertThat(converted.getSellerId()).isEqualTo(original.getSellerId());
-            assertThat(converted.getPolicyNameValue()).isEqualTo(original.getPolicyNameValue());
-            assertThat(converted.getReturnAddressLine1())
-                    .isEqualTo(original.getReturnAddressLine1());
-            assertThat(converted.getReturnAddressLine2())
-                    .isEqualTo(original.getReturnAddressLine2());
-            assertThat(converted.getReturnZipCode()).isEqualTo(original.getReturnZipCode());
-            assertThat(converted.getRefundPeriodDaysValue())
-                    .isEqualTo(original.getRefundPeriodDaysValue());
-            assertThat(converted.getRefundDeliveryCostValue())
-                    .isEqualTo(original.getRefundDeliveryCostValue());
-            assertThat(converted.getRefundGuideValue()).isEqualTo(original.getRefundGuideValue());
-            assertThat(converted.isDefault()).isEqualTo(original.isDefault());
-            assertThat(converted.getDisplayOrder()).isEqualTo(original.getDisplayOrder());
+            // then
+            assertThat(convertedDomain.idValue()).isEqualTo(originalDomain.idValue());
+            assertThat(convertedDomain.sellerIdValue()).isEqualTo(originalDomain.sellerIdValue());
+            assertThat(convertedDomain.policyNameValue())
+                    .isEqualTo(originalDomain.policyNameValue());
+            assertThat(convertedDomain.isDefaultPolicy())
+                    .isEqualTo(originalDomain.isDefaultPolicy());
+            assertThat(convertedDomain.isActive()).isEqualTo(originalDomain.isActive());
+            assertThat(convertedDomain.returnPeriodDays())
+                    .isEqualTo(originalDomain.returnPeriodDays());
+            assertThat(convertedDomain.exchangePeriodDays())
+                    .isEqualTo(originalDomain.exchangePeriodDays());
+            assertThat(convertedDomain.nonReturnableConditions())
+                    .containsExactlyInAnyOrderElementsOf(originalDomain.nonReturnableConditions());
         }
-
-        @Test
-        @DisplayName("성공 - Entity -> Domain -> Entity 변환 시 데이터가 보존된다")
-        void roundTrip_entityToDomainToEntity_preservesData() {
-            // Given
-            RefundPolicyJpaEntity original =
-                    RefundPolicyJpaEntity.of(
-                            5L,
-                            TEST_SELLER_ID,
-                            "라운드트립 환불",
-                            "서울시 송파구 올림픽로 300",
-                            "202동 505호",
-                            "12345",
-                            10,
-                            4000,
-                            "경비실에서 수령 가능",
-                            true,
-                            1,
-                            FIXED_TIME,
-                            FIXED_TIME,
-                            null);
-
-            // When
-            RefundPolicy domain = mapper.toDomain(original);
-            RefundPolicyJpaEntity converted = mapper.toEntity(domain);
-
-            // Then
-            assertThat(converted.getId()).isEqualTo(original.getId());
-            assertThat(converted.getSellerId()).isEqualTo(original.getSellerId());
-            assertThat(converted.getPolicyName()).isEqualTo(original.getPolicyName());
-            assertThat(converted.getReturnAddressLine1())
-                    .isEqualTo(original.getReturnAddressLine1());
-            assertThat(converted.getReturnAddressLine2())
-                    .isEqualTo(original.getReturnAddressLine2());
-            assertThat(converted.getReturnZipCode()).isEqualTo(original.getReturnZipCode());
-            assertThat(converted.getRefundPeriodDays()).isEqualTo(original.getRefundPeriodDays());
-            assertThat(converted.getRefundDeliveryCost())
-                    .isEqualTo(original.getRefundDeliveryCost());
-            assertThat(converted.getRefundGuide()).isEqualTo(original.getRefundGuide());
-            assertThat(converted.getIsDefault()).isEqualTo(original.getIsDefault());
-            assertThat(converted.getDisplayOrder()).isEqualTo(original.getDisplayOrder());
-        }
-    }
-
-    // ========== Helper Methods ==========
-
-    private RefundPolicy createDefaultRefundPolicy() {
-        return RefundPolicy.reconstitute(
-                RefundPolicyId.of(1L),
-                TEST_SELLER_ID,
-                PolicyName.of("기본 환불"),
-                ReturnAddress.of("서울시 강남구 테헤란로 123", "101동 1001호", "06234"),
-                RefundPeriodDays.of(7),
-                RefundDeliveryCost.of(3000),
-                RefundGuide.of("상품 수령 후 7일 이내 환불 가능"),
-                true,
-                1,
-                FIXED_TIME,
-                FIXED_TIME,
-                null);
-    }
-
-    private RefundPolicy createNonDefaultRefundPolicy() {
-        return RefundPolicy.reconstitute(
-                RefundPolicyId.of(2L),
-                TEST_SELLER_ID,
-                PolicyName.of("추가 환불"),
-                ReturnAddress.of("서울시 서초구 서초대로 456", null, "06789"),
-                RefundPeriodDays.of(14),
-                RefundDeliveryCost.of(5000),
-                null,
-                false,
-                2,
-                FIXED_TIME,
-                FIXED_TIME,
-                null);
-    }
-
-    private RefundPolicy createDeletedRefundPolicy() {
-        return RefundPolicy.reconstitute(
-                RefundPolicyId.of(3L),
-                TEST_SELLER_ID,
-                PolicyName.of("삭제된 환불"),
-                ReturnAddress.of("서울시 마포구 마포대로 789", null, "04001"),
-                RefundPeriodDays.of(7),
-                RefundDeliveryCost.of(3000),
-                null,
-                false,
-                3,
-                FIXED_TIME,
-                FIXED_TIME,
-                FIXED_TIME);
     }
 }

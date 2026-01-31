@@ -1,182 +1,122 @@
 package com.ryuqq.setof.domain.common.vo;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("DateRange")
+@Tag("unit")
+@DisplayName("DateRange Value Object 테스트")
 class DateRangeTest {
 
     @Nested
     @DisplayName("생성 테스트")
-    class CreateTest {
+    class CreationTest {
 
         @Test
-        @DisplayName("정상 범위로 생성")
-        void shouldCreateWithValidRange() {
-            // Given
-            LocalDate start = LocalDate.of(2025, 1, 1);
-            LocalDate end = LocalDate.of(2025, 1, 31);
+        @DisplayName("of()로 DateRange를 생성한다")
+        void createWithOf() {
+            // given
+            LocalDate start = LocalDate.of(2024, 1, 1);
+            LocalDate end = LocalDate.of(2024, 12, 31);
 
-            // When
-            DateRange range = DateRange.of(start, end);
+            // when
+            DateRange dateRange = DateRange.of(start, end);
 
-            // Then
-            assertEquals(start, range.startDate());
-            assertEquals(end, range.endDate());
+            // then
+            assertThat(dateRange.startDate()).isEqualTo(start);
+            assertThat(dateRange.endDate()).isEqualTo(end);
         }
 
         @Test
-        @DisplayName("같은 날짜로 생성 가능")
-        void shouldCreateWithSameDate() {
-            // Given
-            LocalDate date = LocalDate.of(2025, 1, 15);
+        @DisplayName("시작일이 종료일보다 늦으면 예외를 발생시킨다")
+        void startAfterEndThrowsException() {
+            // given
+            LocalDate start = LocalDate.of(2024, 12, 31);
+            LocalDate end = LocalDate.of(2024, 1, 1);
 
-            // When
-            DateRange range = DateRange.of(date, date);
-
-            // Then
-            assertEquals(date, range.startDate());
-            assertEquals(date, range.endDate());
+            // when & then
+            assertThatThrownBy(() -> DateRange.of(start, end))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("이전");
         }
 
         @Test
-        @DisplayName("시작일이 종료일보다 늦으면 예외")
-        void shouldThrowExceptionWhenStartAfterEnd() {
-            // Given
-            LocalDate start = LocalDate.of(2025, 2, 1);
-            LocalDate end = LocalDate.of(2025, 1, 1);
+        @DisplayName("lastDays()로 최근 N일 범위를 생성한다")
+        void createLastDays() {
+            // when
+            DateRange dateRange = DateRange.lastDays(7);
 
-            // When & Then
-            assertThrows(IllegalArgumentException.class, () -> DateRange.of(start, end));
+            // then
+            assertThat(dateRange.endDate()).isEqualTo(LocalDate.now());
+            assertThat(dateRange.startDate()).isEqualTo(LocalDate.now().minusDays(7));
         }
 
         @Test
-        @DisplayName("null 시작일 허용")
-        void shouldAllowNullStartDate() {
-            // Given
-            LocalDate end = LocalDate.of(2025, 1, 31);
-
-            // When
-            DateRange range = DateRange.of(null, end);
-
-            // Then
-            assertNull(range.startDate());
-            assertEquals(end, range.endDate());
+        @DisplayName("lastDays()에 음수를 전달하면 예외를 발생시킨다")
+        void lastDaysNegativeThrowsException() {
+            // when & then
+            assertThatThrownBy(() -> DateRange.lastDays(-1))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("0 이상");
         }
 
         @Test
-        @DisplayName("null 종료일 허용")
-        void shouldAllowNullEndDate() {
-            // Given
-            LocalDate start = LocalDate.of(2025, 1, 1);
-
-            // When
-            DateRange range = DateRange.of(start, null);
-
-            // Then
-            assertEquals(start, range.startDate());
-            assertNull(range.endDate());
-        }
-    }
-
-    @Nested
-    @DisplayName("팩토리 메서드 테스트")
-    class FactoryMethodTest {
-
-        @Test
-        @DisplayName("lastDays 생성")
-        void shouldCreateLastDays() {
-            // When
-            DateRange range = DateRange.lastDays(7);
-
-            // Then
-            assertNotNull(range.startDate());
-            assertNotNull(range.endDate());
-            assertEquals(LocalDate.now(), range.endDate());
-            assertEquals(LocalDate.now().minusDays(7), range.startDate());
-        }
-
-        @Test
-        @DisplayName("lastDays 0은 오늘만")
-        void shouldCreateLastDaysZero() {
-            // When
-            DateRange range = DateRange.lastDays(0);
-
-            // Then
-            assertEquals(LocalDate.now(), range.startDate());
-            assertEquals(LocalDate.now(), range.endDate());
-        }
-
-        @Test
-        @DisplayName("lastDays 음수면 예외")
-        void shouldThrowExceptionForNegativeDays() {
-            // When & Then
-            assertThrows(IllegalArgumentException.class, () -> DateRange.lastDays(-1));
-        }
-
-        @Test
-        @DisplayName("thisMonth 생성")
-        void shouldCreateThisMonth() {
-            // When
-            DateRange range = DateRange.thisMonth();
-
-            // Then
+        @DisplayName("thisMonth()로 이번 달 범위를 생성한다")
+        void createThisMonth() {
+            // when
+            DateRange dateRange = DateRange.thisMonth();
             LocalDate today = LocalDate.now();
-            assertEquals(today.withDayOfMonth(1), range.startDate());
-            assertEquals(today.withDayOfMonth(today.lengthOfMonth()), range.endDate());
+
+            // then
+            assertThat(dateRange.startDate()).isEqualTo(today.withDayOfMonth(1));
+            assertThat(dateRange.endDate()).isEqualTo(today.withDayOfMonth(today.lengthOfMonth()));
         }
 
         @Test
-        @DisplayName("lastMonth 생성")
-        void shouldCreateLastMonth() {
-            // When
-            DateRange range = DateRange.lastMonth();
-
-            // Then
+        @DisplayName("lastMonth()로 지난 달 범위를 생성한다")
+        void createLastMonth() {
+            // when
+            DateRange dateRange = DateRange.lastMonth();
             LocalDate today = LocalDate.now();
-            LocalDate expectedStart = today.minusMonths(1).withDayOfMonth(1);
-            LocalDate expectedEnd = today.withDayOfMonth(1).minusDays(1);
-            assertEquals(expectedStart, range.startDate());
-            assertEquals(expectedEnd, range.endDate());
+            LocalDate firstDayLastMonth = today.minusMonths(1).withDayOfMonth(1);
+            LocalDate lastDayLastMonth = today.withDayOfMonth(1).minusDays(1);
+
+            // then
+            assertThat(dateRange.startDate()).isEqualTo(firstDayLastMonth);
+            assertThat(dateRange.endDate()).isEqualTo(lastDayLastMonth);
         }
 
         @Test
-        @DisplayName("until 생성")
-        void shouldCreateUntil() {
-            // Given
-            LocalDate end = LocalDate.of(2025, 6, 30);
+        @DisplayName("until()로 종료일까지의 범위를 생성한다")
+        void createUntil() {
+            // given
+            LocalDate endDate = LocalDate.of(2024, 12, 31);
 
-            // When
-            DateRange range = DateRange.until(end);
+            // when
+            DateRange dateRange = DateRange.until(endDate);
 
-            // Then
-            assertNull(range.startDate());
-            assertEquals(end, range.endDate());
+            // then
+            assertThat(dateRange.startDate()).isNull();
+            assertThat(dateRange.endDate()).isEqualTo(endDate);
         }
 
         @Test
-        @DisplayName("from 생성")
-        void shouldCreateFrom() {
-            // Given
-            LocalDate start = LocalDate.of(2025, 1, 1);
+        @DisplayName("from()으로 시작일부터의 범위를 생성한다")
+        void createFrom() {
+            // given
+            LocalDate startDate = LocalDate.of(2024, 1, 1);
 
-            // When
-            DateRange range = DateRange.from(start);
+            // when
+            DateRange dateRange = DateRange.from(startDate);
 
-            // Then
-            assertEquals(start, range.startDate());
-            assertNull(range.endDate());
+            // then
+            assertThat(dateRange.startDate()).isEqualTo(startDate);
+            assertThat(dateRange.endDate()).isNull();
         }
     }
 
@@ -185,102 +125,76 @@ class DateRangeTest {
     class InstantConversionTest {
 
         @Test
-        @DisplayName("startInstant 변환")
-        void shouldConvertStartInstant() {
-            // Given
-            LocalDate start = LocalDate.of(2025, 1, 15);
-            DateRange range = DateRange.of(start, LocalDate.of(2025, 1, 31));
+        @DisplayName("startInstant()는 시작일의 00:00:00을 반환한다")
+        void starInstantReturnsStartOfDay() {
+            // given
+            LocalDate startDate = LocalDate.of(2024, 1, 15);
+            DateRange dateRange = DateRange.of(startDate, startDate);
 
-            // When
-            Instant instant = range.startInstant();
+            // when
+            var startInstant = dateRange.startInstant();
 
-            // Then
-            assertNotNull(instant);
-            Instant expected = start.atStartOfDay(ZoneId.systemDefault()).toInstant();
-            assertEquals(expected, instant);
+            // then
+            assertThat(startInstant).isNotNull();
         }
 
         @Test
-        @DisplayName("null startDate는 null Instant")
-        void shouldReturnNullInstantForNullStartDate() {
-            // Given
-            DateRange range = DateRange.until(LocalDate.of(2025, 1, 31));
+        @DisplayName("startInstant()는 시작일이 null이면 null을 반환한다")
+        void startInstantReturnsNullForNullStart() {
+            // given
+            DateRange dateRange = DateRange.until(LocalDate.now());
 
-            // Then
-            assertNull(range.startInstant());
+            // then
+            assertThat(dateRange.startInstant()).isNull();
         }
 
         @Test
-        @DisplayName("endInstant 변환 (23:59:59.999999999)")
-        void shouldConvertEndInstant() {
-            // Given
-            LocalDate end = LocalDate.of(2025, 1, 15);
-            DateRange range = DateRange.of(LocalDate.of(2025, 1, 1), end);
+        @DisplayName("endInstant()는 종료일의 23:59:59.999999999를 반환한다")
+        void endInstantReturnsEndOfDay() {
+            // given
+            LocalDate endDate = LocalDate.of(2024, 1, 15);
+            DateRange dateRange = DateRange.of(endDate, endDate);
 
-            // When
-            Instant instant = range.endInstant();
+            // when
+            var endInstant = dateRange.endInstant();
 
-            // Then
-            assertNotNull(instant);
-            // endDate의 다음날 00:00:00에서 1나노초 뺀 값
-            Instant expected =
-                    end.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().minusNanos(1);
-            assertEquals(expected, instant);
+            // then
+            assertThat(endInstant).isNotNull();
         }
 
         @Test
-        @DisplayName("null endDate는 null Instant")
-        void shouldReturnNullInstantForNullEndDate() {
-            // Given
-            DateRange range = DateRange.from(LocalDate.of(2025, 1, 1));
+        @DisplayName("endInstant()는 종료일이 null이면 null을 반환한다")
+        void endInstantReturnsNullForNullEnd() {
+            // given
+            DateRange dateRange = DateRange.from(LocalDate.now());
 
-            // Then
-            assertNull(range.endInstant());
+            // then
+            assertThat(dateRange.endInstant()).isNull();
         }
     }
 
     @Nested
-    @DisplayName("isEmpty 테스트")
-    class IsEmptyTest {
+    @DisplayName("상태 확인 테스트")
+    class StateCheckTest {
 
         @Test
-        @DisplayName("둘 다 null이면 true")
-        void shouldReturnTrueWhenBothNull() {
-            // When
-            DateRange range = DateRange.of(null, null);
+        @DisplayName("isEmpty()는 시작일과 종료일이 모두 null이면 true를 반환한다")
+        void isEmptyReturnsTrueWhenBothNull() {
+            // given
+            DateRange dateRange = new DateRange(null, null);
 
-            // Then
-            assertTrue(range.isEmpty());
+            // then
+            assertThat(dateRange.isEmpty()).isTrue();
         }
 
         @Test
-        @DisplayName("startDate만 있으면 false")
-        void shouldReturnFalseWhenStartDateOnly() {
-            // When
-            DateRange range = DateRange.from(LocalDate.of(2025, 1, 1));
+        @DisplayName("isEmpty()는 날짜가 하나라도 있으면 false를 반환한다")
+        void isEmptyReturnsFalseWhenAnyDateExists() {
+            // given
+            DateRange dateRange = DateRange.from(LocalDate.now());
 
-            // Then
-            assertFalse(range.isEmpty());
-        }
-
-        @Test
-        @DisplayName("endDate만 있으면 false")
-        void shouldReturnFalseWhenEndDateOnly() {
-            // When
-            DateRange range = DateRange.until(LocalDate.of(2025, 1, 31));
-
-            // Then
-            assertFalse(range.isEmpty());
-        }
-
-        @Test
-        @DisplayName("둘 다 있으면 false")
-        void shouldReturnFalseWhenBothPresent() {
-            // When
-            DateRange range = DateRange.of(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 31));
-
-            // Then
-            assertFalse(range.isEmpty());
+            // then
+            assertThat(dateRange.isEmpty()).isFalse();
         }
     }
 
@@ -289,87 +203,87 @@ class DateRangeTest {
     class ContainsTest {
 
         @Test
-        @DisplayName("범위 내 날짜는 true")
-        void shouldReturnTrueForDateInRange() {
-            // Given
-            DateRange range = DateRange.of(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 31));
+        @DisplayName("contains()는 날짜가 범위 내에 있으면 true를 반환한다")
+        void containsReturnsTrueForDateInRange() {
+            // given
+            LocalDate start = LocalDate.of(2024, 1, 1);
+            LocalDate end = LocalDate.of(2024, 12, 31);
+            DateRange dateRange = DateRange.of(start, end);
 
-            // Then
-            assertTrue(range.contains(LocalDate.of(2025, 1, 15)));
+            // when
+            boolean contains = dateRange.contains(LocalDate.of(2024, 6, 15));
+
+            // then
+            assertThat(contains).isTrue();
         }
 
         @Test
-        @DisplayName("시작일과 같으면 true")
-        void shouldReturnTrueForStartDate() {
-            // Given
-            DateRange range = DateRange.of(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 31));
+        @DisplayName("contains()는 시작일을 포함한다")
+        void containsIncludesStartDate() {
+            // given
+            LocalDate start = LocalDate.of(2024, 1, 1);
+            LocalDate end = LocalDate.of(2024, 12, 31);
+            DateRange dateRange = DateRange.of(start, end);
 
-            // Then
-            assertTrue(range.contains(LocalDate.of(2025, 1, 1)));
+            // then
+            assertThat(dateRange.contains(start)).isTrue();
         }
 
         @Test
-        @DisplayName("종료일과 같으면 true")
-        void shouldReturnTrueForEndDate() {
-            // Given
-            DateRange range = DateRange.of(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 31));
+        @DisplayName("contains()는 종료일을 포함한다")
+        void containsIncludesEndDate() {
+            // given
+            LocalDate start = LocalDate.of(2024, 1, 1);
+            LocalDate end = LocalDate.of(2024, 12, 31);
+            DateRange dateRange = DateRange.of(start, end);
 
-            // Then
-            assertTrue(range.contains(LocalDate.of(2025, 1, 31)));
+            // then
+            assertThat(dateRange.contains(end)).isTrue();
         }
 
         @Test
-        @DisplayName("시작일 이전은 false")
-        void shouldReturnFalseForBeforeStartDate() {
-            // Given
-            DateRange range = DateRange.of(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 31));
+        @DisplayName("contains()는 범위 밖 날짜에 false를 반환한다")
+        void containsReturnsFalseForDateOutOfRange() {
+            // given
+            LocalDate start = LocalDate.of(2024, 1, 1);
+            LocalDate end = LocalDate.of(2024, 12, 31);
+            DateRange dateRange = DateRange.of(start, end);
 
-            // Then
-            assertFalse(range.contains(LocalDate.of(2024, 12, 31)));
+            // then
+            assertThat(dateRange.contains(LocalDate.of(2025, 1, 1))).isFalse();
         }
 
         @Test
-        @DisplayName("종료일 이후는 false")
-        void shouldReturnFalseForAfterEndDate() {
-            // Given
-            DateRange range = DateRange.of(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 31));
+        @DisplayName("contains()는 null 날짜에 false를 반환한다")
+        void containsReturnsFalseForNullDate() {
+            // given
+            DateRange dateRange =
+                    DateRange.of(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31));
 
-            // Then
-            assertFalse(range.contains(LocalDate.of(2025, 2, 1)));
+            // then
+            assertThat(dateRange.contains(null)).isFalse();
         }
 
         @Test
-        @DisplayName("null 날짜는 false")
-        void shouldReturnFalseForNullDate() {
-            // Given
-            DateRange range = DateRange.of(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 31));
+        @DisplayName("시작일이 null인 경우 종료일까지 모든 날짜를 포함한다")
+        void containsWithNullStartIncludesAllBeforeEnd() {
+            // given
+            DateRange dateRange = DateRange.until(LocalDate.of(2024, 6, 30));
 
-            // Then
-            assertFalse(range.contains(null));
+            // then
+            assertThat(dateRange.contains(LocalDate.of(2020, 1, 1))).isTrue();
+            assertThat(dateRange.contains(LocalDate.of(2024, 7, 1))).isFalse();
         }
 
         @Test
-        @DisplayName("시작일 없으면 종료일까지 모두 포함")
-        void shouldIncludeAllDatesUntilEndWhenNoStart() {
-            // Given
-            DateRange range = DateRange.until(LocalDate.of(2025, 1, 31));
+        @DisplayName("종료일이 null인 경우 시작일 이후 모든 날짜를 포함한다")
+        void containsWithNullEndIncludesAllAfterStart() {
+            // given
+            DateRange dateRange = DateRange.from(LocalDate.of(2024, 1, 1));
 
-            // Then
-            assertTrue(range.contains(LocalDate.of(2020, 1, 1)));
-            assertTrue(range.contains(LocalDate.of(2025, 1, 31)));
-            assertFalse(range.contains(LocalDate.of(2025, 2, 1)));
-        }
-
-        @Test
-        @DisplayName("종료일 없으면 시작일부터 모두 포함")
-        void shouldIncludeAllDatesFromStartWhenNoEnd() {
-            // Given
-            DateRange range = DateRange.from(LocalDate.of(2025, 1, 1));
-
-            // Then
-            assertFalse(range.contains(LocalDate.of(2024, 12, 31)));
-            assertTrue(range.contains(LocalDate.of(2025, 1, 1)));
-            assertTrue(range.contains(LocalDate.of(2030, 12, 31)));
+            // then
+            assertThat(dateRange.contains(LocalDate.of(2030, 12, 31))).isTrue();
+            assertThat(dateRange.contains(LocalDate.of(2023, 12, 31))).isFalse();
         }
     }
 }

@@ -1,0 +1,103 @@
+= SETOF Commerce Admin API Documentation
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:stylesheet: custom-style.css
+
+[[overview]]
+== 개요
+
+SETOF Commerce Admin API V2 문서입니다.
+
+=== 공통 응답 형식
+
+[source,json]
+----
+{
+    "data": { ... },
+    "timestamp": "2025-01-27T10:30:00+09:00",
+    "requestId": "550e8400-e29b-41d4-a716-446655440000"
+}
+----
+
+=== 오프셋 기반 조회 응답
+
+[source,json]
+----
+{
+    "data": {
+        "content": [ ... ],
+        "page": 0,
+        "size": 20,
+        "totalElements": 100,
+        "totalPages": 5
+    },
+    "timestamp": "2025-01-27T10:30:00+09:00",
+    "requestId": "550e8400-e29b-41d4-a716-446655440000"
+}
+----
+
+=== 커서 기반 조회 응답
+
+[source,json]
+----
+{
+    "data": {
+        "content": [ ... ],
+        "nextCursor": "eyJpZCI6MTAwfQ==",
+        "hasNext": true,
+        "size": 20
+    },
+    "timestamp": "2025-01-27T10:30:00+09:00",
+    "requestId": "550e8400-e29b-41d4-a716-446655440000"
+}
+----
+
+=== 에러 응답
+
+[source,json]
+----
+{
+    "error": {
+        "code": "INVALID_REQUEST",
+        "message": "요청 파라미터가 유효하지 않습니다.",
+        "details": [
+            {
+                "field": "email",
+                "reason": "이메일 형식이 올바르지 않습니다."
+            }
+        ]
+    },
+    "timestamp": "2025-01-27T10:30:00+09:00",
+    "requestId": "550e8400-e29b-41d4-a716-446655440000"
+}
+----
+
+[[api-auth]]
+== 인증 API
+
+include::v2/token/token.adoc[leveloffset=+1]
+
+[[api-seller]]
+== 셀러 API
+
+include::v2/seller/seller.adoc[leveloffset=+1]
+
+include::v2/sellerapplication/sellerapplication.adoc[leveloffset=+1]
+
+[[api-policy]]
+== 정책 API
+
+include::v2/shippingpolicy/shipping-policy.adoc[leveloffset=+1]
+
+include::v2/refundpolicy/refund-policy.adoc[leveloffset=+1]
+
+[[api-commoncode]]
+== 공통코드 API
+
+include::v2/commoncodetype/common-code-type.adoc[leveloffset=+1]
+
+include::v2/commoncode/common-code.adoc[leveloffset=+1]

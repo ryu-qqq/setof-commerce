@@ -196,3 +196,18 @@ management:
     tags:
       application: ${spring.application.name}
       environment: ${spring.profiles.active:prod}
+
+# ============================================================
+# Sentry Configuration (Production)
+# ============================================================
+# DSN은 ECS Task Definition 환경변수로 주입
+sentry:
+  dsn: ${SENTRY_DSN:}
+  environment: prod
+  traces-sample-rate: 1.0
+  enable-tracing: true
+  send-default-pii: true
+  attach-stacktrace: true
+  logging:
+    minimum-event-level: error
+    minimum-breadcrumb-level: info

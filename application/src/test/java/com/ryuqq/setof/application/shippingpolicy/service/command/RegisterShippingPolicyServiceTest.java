@@ -1,119 +1,84 @@
 package com.ryuqq.setof.application.shippingpolicy.service.command;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
+import com.ryuqq.setof.application.shippingpolicy.ShippingPolicyCommandFixtures;
 import com.ryuqq.setof.application.shippingpolicy.dto.command.RegisterShippingPolicyCommand;
-import com.ryuqq.setof.application.shippingpolicy.factory.command.ShippingPolicyCommandFactory;
-import com.ryuqq.setof.application.shippingpolicy.manager.command.ShippingPolicyPersistenceManager;
+import com.ryuqq.setof.application.shippingpolicy.factory.ShippingPolicyCommandFactory;
+import com.ryuqq.setof.application.shippingpolicy.internal.DefaultShippingPolicyResolver;
+import com.ryuqq.setof.application.shippingpolicy.manager.ShippingPolicyCommandManager;
+import com.ryuqq.setof.domain.shippingpolicy.ShippingPolicyFixtures;
 import com.ryuqq.setof.domain.shippingpolicy.aggregate.ShippingPolicy;
-import com.ryuqq.setof.domain.shippingpolicy.vo.DeliveryCost;
-import com.ryuqq.setof.domain.shippingpolicy.vo.DeliveryGuide;
-import com.ryuqq.setof.domain.shippingpolicy.vo.DisplayOrder;
-import com.ryuqq.setof.domain.shippingpolicy.vo.FreeShippingThreshold;
-import com.ryuqq.setof.domain.shippingpolicy.vo.PolicyName;
-import com.ryuqq.setof.domain.shippingpolicy.vo.ShippingPolicyId;
-import java.time.Instant;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * RegisterShippingPolicyService 테스트
- *
- * <p>배송 정책 등록 서비스에 대한 단위 테스트
- */
-@DisplayName("RegisterShippingPolicyService")
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
+@DisplayName("RegisterShippingPolicyService 단위 테스트")
 class RegisterShippingPolicyServiceTest {
 
-    private static final Instant FIXED_TIME = Instant.parse("2025-01-01T00:00:00Z");
-    private static final Long TEST_SELLER_ID = 1L;
+    @InjectMocks private RegisterShippingPolicyService sut;
 
-    @Mock private ShippingPolicyCommandFactory shippingPolicyCommandFactory;
-    @Mock private ShippingPolicyPersistenceManager shippingPolicyPersistenceManager;
-
-    private RegisterShippingPolicyService registerShippingPolicyService;
-
-    @BeforeEach
-    void setUp() {
-        registerShippingPolicyService =
-                new RegisterShippingPolicyService(
-                        shippingPolicyCommandFactory, shippingPolicyPersistenceManager);
-    }
+    @Mock private ShippingPolicyCommandFactory commandFactory;
+    @Mock private ShippingPolicyCommandManager commandManager;
+    @Mock private DefaultShippingPolicyResolver defaultPolicyResolver;
 
     @Nested
-    @DisplayName("execute")
+    @DisplayName("execute() - 배송 정책 등록")
     class ExecuteTest {
 
         @Test
-        @DisplayName("배송 정책 등록 성공")
-        void shouldRegisterShippingPolicySuccessfully() {
-            // Given
-            RegisterShippingPolicyCommand command = createCommand();
-            ShippingPolicy shippingPolicy = createShippingPolicy();
-            ShippingPolicyId savedId = ShippingPolicyId.of(1L);
+        @DisplayName("배송 정책을 등록하고 ID를 반환한다")
+        void execute_RegistersPolicy_ReturnsId() {
+            // given
+            Long sellerId = 1L;
+            Long expectedPolicyId = 100L;
+            RegisterShippingPolicyCommand command =
+                    ShippingPolicyCommandFixtures.registerCommand(sellerId);
+            ShippingPolicy shippingPolicy = ShippingPolicyFixtures.newFreeShippingPolicy();
 
-            when(shippingPolicyCommandFactory.create(any())).thenReturn(shippingPolicy);
-            when(shippingPolicyPersistenceManager.persist(any())).thenReturn(savedId);
+            given(commandFactory.create(command)).willReturn(shippingPolicy);
+            given(commandManager.persist(shippingPolicy)).willReturn(expectedPolicyId);
 
-            // When
-            Long result = registerShippingPolicyService.execute(command);
+            // when
+            Long result = sut.execute(command);
 
-            // Then
-            assertNotNull(result);
-            assertEquals(1L, result);
-            verify(shippingPolicyCommandFactory).create(command);
-            verify(shippingPolicyPersistenceManager).persist(shippingPolicy);
+            // then
+            assertThat(result).isEqualTo(expectedPolicyId);
+            then(commandFactory).should().create(command);
+            then(defaultPolicyResolver)
+                    .should()
+                    .resolveForRegistration(
+                            shippingPolicy.sellerId(), shippingPolicy, shippingPolicy.createdAt());
+            then(commandManager).should().persist(shippingPolicy);
         }
 
         @Test
-        @DisplayName("Factory와 Manager가 순서대로 호출된다")
-        void shouldCallFactoryAndManagerInOrder() {
-            // Given
-            RegisterShippingPolicyCommand command = createCommand();
-            ShippingPolicy shippingPolicy = createShippingPolicy();
-            ShippingPolicyId savedId = ShippingPolicyId.of(100L);
+        @DisplayName("무료 배송 정책을 등록한다")
+        void execute_FreeShippingPolicy_RegistersSuccessfully() {
+            // given
+            Long sellerId = 1L;
+            Long expectedPolicyId = 101L;
+            RegisterShippingPolicyCommand command =
+                    ShippingPolicyCommandFixtures.freeShippingRegisterCommand(sellerId);
+            ShippingPolicy shippingPolicy = ShippingPolicyFixtures.newFreeShippingPolicy();
 
-            when(shippingPolicyCommandFactory.create(any())).thenReturn(shippingPolicy);
-            when(shippingPolicyPersistenceManager.persist(any())).thenReturn(savedId);
+            given(commandFactory.create(command)).willReturn(shippingPolicy);
+            given(commandManager.persist(shippingPolicy)).willReturn(expectedPolicyId);
 
-            // When
-            Long result = registerShippingPolicyService.execute(command);
+            // when
+            Long result = sut.execute(command);
 
-            // Then
-            assertEquals(100L, result);
-            verify(shippingPolicyCommandFactory).create(command);
-            verify(shippingPolicyPersistenceManager).persist(shippingPolicy);
+            // then
+            assertThat(result).isEqualTo(expectedPolicyId);
         }
-    }
-
-    // ========== Helper Methods ==========
-
-    private RegisterShippingPolicyCommand createCommand() {
-        return new RegisterShippingPolicyCommand(
-                TEST_SELLER_ID, "기본 배송", 3000, 50000, "주문 후 1-3일 이내 배송", true, 1);
-    }
-
-    private ShippingPolicy createShippingPolicy() {
-        return ShippingPolicy.reconstitute(
-                ShippingPolicyId.of(1L),
-                TEST_SELLER_ID,
-                PolicyName.of("기본 배송"),
-                DeliveryCost.of(3000),
-                FreeShippingThreshold.of(50000),
-                DeliveryGuide.of("주문 후 1-3일 이내 배송"),
-                true,
-                DisplayOrder.of(1),
-                FIXED_TIME,
-                FIXED_TIME,
-                null);
     }
 }

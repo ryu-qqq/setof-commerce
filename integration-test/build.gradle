@@ -44,8 +44,8 @@ dependencies {
     // Outbound
     testImplementation project(':adapter-out:persistence-mysql')
     testImplementation project(':adapter-out:persistence-redis')
-    testImplementation project(':adapter-out:security')
-    testImplementation project(':adapter-out:portone-client')
+    testImplementation project(':adapter-out:client:security-client')
+    testImplementation project(':adapter-out:client:portone-client')
 
     // ========================================
     // TestFixtures from all modules
@@ -82,6 +82,15 @@ dependencies {
     testImplementation libs.wiremock.standalone
 
     // ========================================
+    // QueryDSL for QueryDslRepository Tests
+    // ========================================
+    testImplementation(libs.querydsl.jpa) {
+        artifact {
+            classifier = 'jakarta'
+        }
+    }
+
+    // ========================================
     // Jackson for JSON processing
     // ========================================
     testImplementation libs.jackson.databind
@@ -109,6 +118,159 @@ tasks.test {
     maxParallelForks = 1
 
     // Report generation
+    reports {
+        html.required = true
+        junitXml.required = true
+    }
+}
+
+// ========================================
+// Tag-Based Test Tasks
+// ========================================
+// 참고: docs/INTEGRATION_TEST_GUIDE.md
+
+/**
+ * E2E 통합 테스트만 실행
+ * - Bootstrap 애플리케이션 전체 컨텍스트 로드
+ * - REST API -> Application -> Domain -> Repository -> DB
+ * - 실행: ./gradlew :integration-test:e2eTest
+ */
+tasks.register('e2eTest', Test) {
+    description = 'Full Stack E2E 통합 테스트 실행'
+    group = 'verification'
+
+    useJUnitPlatform {
+        includeTags 'e2e'
+    }
+
+    systemProperty 'spring.profiles.active', 'test'
+    maxParallelForks = 1  // 순차 실행 (포트 충돌 방지)
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        showExceptions true
+        showCauses true
+        showStackTraces true
+    }
+
+    reports {
+        html.required = true
+        junitXml.required = true
+    }
+}
+
+/**
+ * Repository 통합 테스트만 실행
+ * - JPA/Repository 레이어만 테스트
+ * - DB 연동 검증
+ * - 실행: ./gradlew :integration-test:repositoryTest
+ */
+tasks.register('repositoryTest', Test) {
+    description = 'Repository 통합 테스트 실행'
+    group = 'verification'
+
+    useJUnitPlatform {
+        includeTags 'repository'
+    }
+
+    systemProperty 'spring.profiles.active', 'test'
+    maxParallelForks = 4  // 병렬 실행 가능
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        showExceptions true
+        showCauses true
+        showStackTraces true
+    }
+
+    reports {
+        html.required = true
+        junitXml.required = true
+    }
+}
+
+/**
+ * CI용 빠른 테스트 (E2E 제외)
+ * - E2E와 느린 테스트 제외
+ * - 매 커밋마다 실행
+ * - 실행: ./gradlew :integration-test:fastTest
+ */
+tasks.register('fastTest', Test) {
+    description = 'E2E 제외 빠른 통합 테스트 실행'
+    group = 'verification'
+
+    useJUnitPlatform {
+        excludeTags 'e2e', 'slow'
+    }
+
+    systemProperty 'spring.profiles.active', 'test'
+    maxParallelForks = 4
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        showExceptions true
+        showCauses true
+        showStackTraces true
+    }
+
+    reports {
+        html.required = true
+        junitXml.required = true
+    }
+}
+
+/**
+ * Admin API E2E 테스트만 실행
+ * - web-api-admin 부트스트랩
+ * - 실행: ./gradlew :integration-test:adminE2ETest
+ */
+tasks.register('adminE2ETest', Test) {
+    description = 'Admin API E2E 테스트만 실행'
+    group = 'verification'
+
+    useJUnitPlatform {
+        includeTags 'e2e & admin'
+    }
+
+    systemProperty 'spring.profiles.active', 'test'
+    maxParallelForks = 1
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        showExceptions true
+        showCauses true
+        showStackTraces true
+    }
+
+    reports {
+        html.required = true
+        junitXml.required = true
+    }
+}
+
+/**
+ * 일반 API E2E 테스트만 실행
+ * - web-api 부트스트랩
+ * - 실행: ./gradlew :integration-test:apiE2ETest
+ */
+tasks.register('apiE2ETest', Test) {
+    description = '일반 API E2E 테스트만 실행'
+    group = 'verification'
+
+    useJUnitPlatform {
+        includeTags 'e2e & api'
+    }
+
+    systemProperty 'spring.profiles.active', 'test'
+    maxParallelForks = 1
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        showExceptions true
+        showCauses true
+        showStackTraces true
+    }
+
     reports {
         html.required = true
         junitXml.required = true

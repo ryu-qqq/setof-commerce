@@ -4,14 +4,15 @@ import com.ryuqq.setof.adapter.out.persistence.shippingpolicy.entity.ShippingPol
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * ShippingPolicyJpaRepository - ShippingPolicy JPA Repository
+ * ShippingPolicyJpaRepository - 배송 정책 JPA 레포지토리.
  *
- * <p>Spring Data JPA Repository로서 ShippingPolicy Entity의 기본 CRUD를 담당합니다.
+ * <p>Spring Data JPA를 통한 기본 CRUD를 제공합니다.
  *
- * @author development-team
+ * <p>PER-REP-001: JpaRepository는 save/saveAll만 사용.
+ *
+ * <p>PER-REP-003: 모든 조회는 QueryDslRepository에서 처리.
+ *
+ * @author ryu-qqq
  * @since 1.0.0
  */
-public interface ShippingPolicyJpaRepository extends JpaRepository<ShippingPolicyJpaEntity, Long> {
-    // Query Method 추가 금지
-    // @Query 추가 금지
-}
+public interface ShippingPolicyJpaRepository extends JpaRepository<ShippingPolicyJpaEntity, Long> {}

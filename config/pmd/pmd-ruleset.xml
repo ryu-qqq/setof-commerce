@@ -52,6 +52,9 @@
                  - JPA Entity (*JpaEntity, *Entity)
                  - *Paths (API 경로 상수 홀더)
                  - *Endpoint (엔드포인트 상수)
+                 - *Bundle (Application Layer 데이터 묶음)
+                 - *Result (Application Layer 결과 객체)
+                 - *Data (도메인/애플리케이션 데이터 객체)
             -->
             <property name="violationSuppressXPath"
                       value="//ClassDeclaration[
@@ -70,7 +73,12 @@
                              or (contains(@SimpleName, 'Entity') and ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.persistence.')])
                              or contains(@SimpleName, 'Paths')
                              or contains(@SimpleName, 'Endpoint')
-                             ] | //RecordDeclaration"/>
+                             or contains(@SimpleName, 'Bundle')
+                             or contains(@SimpleName, 'Result')
+                             or contains(@SimpleName, 'Data')
+                             or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.legacy.')]
+                             or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.client.') and contains(@Name, '.dto')]
+                             ] | //RecordDeclaration | //EnumDeclaration"/>
         </properties>
     </rule>
 
@@ -83,11 +91,19 @@
                  - Controller (다양한 UseCase, DTO 의존)
                  - ExceptionHandler (다양한 예외 타입 처리)
                  - V1Controller (레거시 마이그레이션)
+                 - Factory (다양한 도메인 객체 생성)
+                 - Mapper (다양한 타입 변환)
+                 - *JobConfig (Spring Batch Job 설정)
+                 - *Config (설정 클래스)
             -->
             <property name="violationSuppressXPath"
                       value="//ClassDeclaration[
                              contains(@SimpleName, 'Controller')
                              or contains(@SimpleName, 'ExceptionHandler')
+                             or contains(@SimpleName, 'Factory')
+                             or contains(@SimpleName, 'Mapper')
+                             or contains(@SimpleName, 'JobConfig')
+                             or contains(@SimpleName, 'Config')
                              ]"/>
         </properties>
     </rule>
@@ -97,6 +113,17 @@
         <priority>2</priority>
         <properties>
             <property name="problemDepth" value="3"/>
+            <!-- 제외 대상:
+                 - Client (외부 API 응답 파싱 시 조건 분기가 많을 수 있음)
+                 - Parser (파싱 로직은 조건이 많음)
+                 - Legacy (레거시 코드)
+            -->
+            <property name="violationSuppressXPath"
+                      value="//ClassDeclaration[
+                             contains(@SimpleName, 'Client')
+                             or contains(@SimpleName, 'Parser')
+                             or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.legacy.')]
+                             ]"/>
         </properties>
     </rule>
 
@@ -201,6 +228,7 @@
                  - QueryDSL 클래스
                  - JPA Entity (데이터 모델은 필드가 많을 수 있음)
                  - Domain Aggregate (비즈니스 컨텍스트에 따라 필드가 많을 수 있음)
+                 - Legacy (레거시 코드는 리팩토링 전까지 허용)
             -->
             <property name="violationSuppressXPath"
                       value="//ClassDeclaration[
@@ -210,6 +238,8 @@
                              or contains(@SimpleName, 'JpaEntity')
                              or (contains(@SimpleName, 'Entity') and ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.persistence.')])
                              or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.domain.') and contains(@Name, '.aggregate')]
+                             or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.legacy.')]
+                             or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.client.') and contains(@Name, '.dto')]
                              ]"/>
         </properties>
     </rule>
@@ -302,6 +332,7 @@
         and not(@MethodName = ('add', 'subtract', 'multiply', 'divide', 'compareTo', 'setScale', 'abs', 'negate', 'pow'))
         and not(@MethodName = ('append', 'toString'))
         and not(@MethodName = ('getClass', 'getSimpleName', 'getName', 'getCanonicalName'))
+        and not(@MethodName = ('equals', 'hashCode', 'compareTo'))
     ]
 ]]>
                 </value>

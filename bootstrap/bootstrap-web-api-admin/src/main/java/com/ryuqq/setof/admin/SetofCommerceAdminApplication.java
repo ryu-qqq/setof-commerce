@@ -16,7 +16,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  * <p>현재 web-api-admin 부트스트랩에서 스캔하는 모듈:
  *
  * <ul>
- *   <li>config - 공통 설정 (Clock, ClockHolder)
+ *   <li>config - 공통 설정 (Clock)
  *   <li>domain - 도메인 레이어 (Aggregate, VO, Event)
  *   <li>application - 애플리케이션 레이어 (UseCase, Service)
  *   <li>adapter-in:rest-api-admin - Admin REST API 어댑터 (Controller, DTO)

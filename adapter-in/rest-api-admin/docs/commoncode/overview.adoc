@@ -1,0 +1,128 @@
+[[commoncode-overview]]
+= 공통 코드 시스템 개요
+
+공통 코드(CommonCode)는 시스템 전반에서 사용되는 코드 값들을 중앙에서 관리하기 위한 시스템입니다.
+
+== 시스템 목적
+
+* 하드코딩된 코드 값 제거
+* 코드 값의 일관성 유지
+* 런타임에서 코드 값 변경 가능
+* 다국어 지원을 위한 기반 마련
+
+== 도메인 구조
+
+=== CommonCodeType (공통코드 타입)
+
+공통코드의 카테고리 역할을 합니다.
+
+[cols="2,2,4"]
+|===
+| 필드 | 타입 | 설명
+
+| id
+| Long
+| 고유 식별자
+
+| code
+| String
+| 코드 (영문 대문자, 언더스코어), 예: `PAYMENT_METHOD`
+
+| name
+| String
+| 이름, 예: `결제수단`
+
+| description
+| String
+| 설명
+
+| displayOrder
+| Integer
+| 표시 순서
+
+| active
+| Boolean
+| 활성화 상태
+|===
+
+=== CommonCode (공통코드)
+
+특정 타입에 속하는 개별 코드 값입니다.
+
+[cols="2,2,4"]
+|===
+| 필드 | 타입 | 설명
+
+| id
+| Long
+| 고유 식별자
+
+| commonCodeTypeId
+| Long
+| 소속 공통코드 타입 ID
+
+| code
+| String
+| 코드 (영문 대문자, 언더스코어), 예: `CREDIT_CARD`
+
+| displayName
+| String
+| 표시명, 예: `신용카드`
+
+| displayOrder
+| Integer
+| 표시 순서
+
+| active
+| Boolean
+| 활성화 상태
+|===
+
+== 계층 구조 예시
+
+[source]
+----
+CommonCodeType: PAYMENT_METHOD (결제수단)
+├── CommonCode: CREDIT_CARD (신용카드)
+├── CommonCode: BANK_TRANSFER (계좌이체)
+├── CommonCode: VIRTUAL_ACCOUNT (가상계좌)
+└── CommonCode: MOBILE_PAYMENT (휴대폰결제)
+
+CommonCodeType: ORDER_STATUS (주문상태)
+├── CommonCode: PENDING (대기)
+├── CommonCode: PAID (결제완료)
+├── CommonCode: SHIPPED (배송중)
+├── CommonCode: DELIVERED (배송완료)
+└── CommonCode: CANCELLED (취소)
+----
+
+== 사용 시나리오
+
+=== 1. 새로운 코드 타입 추가
+
+[source]
+----
+1. 공통코드 타입 등록 (PAYMENT_METHOD)
+2. 해당 타입에 속하는 공통코드 등록 (CREDIT_CARD, BANK_TRANSFER, ...)
+3. 클라이언트에서 해당 타입의 코드 목록 조회
+4. 선택 UI 구성 (드롭다운, 라디오버튼 등)
+----
+
+=== 2. 코드 값 변경
+
+[source]
+----
+1. 공통코드 목록 조회
+2. 특정 코드의 displayName 수정 (예: "신용카드" → "신용/체크카드")
+3. 변경 즉시 반영 (재배포 불필요)
+----
+
+=== 3. 코드 비활성화
+
+[source]
+----
+1. 더 이상 사용하지 않는 코드 비활성화
+2. 기존 데이터는 유지하되 신규 선택에서 제외
+3. 필요 시 다시 활성화 가능
+----
+

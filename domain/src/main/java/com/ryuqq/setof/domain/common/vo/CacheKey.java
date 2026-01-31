@@ -16,19 +16,19 @@ package com.ryuqq.setof.domain.common.vo;
  * <p><strong>구현 예시:</strong>
  *
  * <pre>{@code
- * public record RefreshTokenCacheKey(String token) implements CacheKey {
+ * public record ProductCacheKey(Long productId) implements CacheKey {
  *
- *     private static final String PREFIX = "cache:refresh-token:";
+ *     private static final String PREFIX = "cache:product:";
  *
- *     public RefreshTokenCacheKey {
- *         if (token == null || token.isBlank()) {
- *             throw new IllegalArgumentException("token must not be blank");
+ *     public ProductCacheKey {
+ *         if (productId == null || productId <= 0) {
+ *             throw new IllegalArgumentException("productId must be positive");
  *         }
  *     }
  *
  *     @Override
  *     public String value() {
- *         return PREFIX + token;
+ *         return PREFIX + productId;
  *     }
  * }
  * }</pre>
@@ -36,13 +36,14 @@ package com.ryuqq.setof.domain.common.vo;
  * <p><strong>사용 예시:</strong>
  *
  * <pre>{@code
- * RefreshTokenCacheKey cacheKey = new RefreshTokenCacheKey(token);
- * cachePort.set(cacheKey, memberId, Duration.ofDays(7));
+ * ProductCacheKey cacheKey = new ProductCacheKey(productId);
+ * cachePort.get(cacheKey, Product.class);
+ * cachePort.put(cacheKey, product, Duration.ofMinutes(30));
  * }</pre>
  *
  * @author Development Team
  * @since 1.0.0
- * @see LockKey
+ * @see com.ryuqq.application.common.port.out.CachePort
  */
 public interface CacheKey {
 
@@ -54,13 +55,15 @@ public interface CacheKey {
      * <pre>
      * cache:{domain}:{id}
      * cache:{domain}:{entity}:{id}
+     * cache:{domain}:{entity}:{id}:{sub-entity}:{sub-id}
      * </pre>
      *
      * <p><strong>예시:</strong>
      *
      * <ul>
-     *   <li>{@code cache:refresh-token:abc123}
-     *   <li>{@code cache:member:session:uuid-456}
+     *   <li>{@code cache:product:123}
+     *   <li>{@code cache:user:profile:456}
+     *   <li>{@code cache:order:item:789:stock:123}
      * </ul>
      *
      * @return Redis에서 사용할 Cache Key 문자열

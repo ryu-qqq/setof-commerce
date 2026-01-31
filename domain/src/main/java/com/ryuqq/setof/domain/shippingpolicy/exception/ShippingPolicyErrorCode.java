@@ -2,36 +2,18 @@ package com.ryuqq.setof.domain.shippingpolicy.exception;
 
 import com.ryuqq.setof.domain.common.exception.ErrorCode;
 
-/**
- * ShippingPolicy Bounded Context 에러 코드
- *
- * <p>배송 정책 도메인에서 발생하는 모든 비즈니스 예외의 에러 코드를 정의합니다.
- *
- * <p>코드 형식: SHP-XXX
- *
- * <ul>
- *   <li>SHP-001 ~ SHP-099: 배송 정책 조회 관련
- *   <li>SHP-100 ~ SHP-199: 배송 정책 정보 유효성 관련
- *   <li>SHP-200 ~ SHP-299: 배송 정책 비즈니스 규칙 관련
- * </ul>
- */
+/** 배송 정책 도메인 에러 코드. */
 public enum ShippingPolicyErrorCode implements ErrorCode {
+    SHIPPING_POLICY_NOT_FOUND("SHP-001", 404, "배송 정책을 찾을 수 없습니다"),
+    SHIPPING_POLICY_INACTIVE("SHP-002", 400, "비활성화된 배송 정책입니다"),
+    SHIPPING_POLICY_ALREADY_DEFAULT("SHP-003", 400, "이미 기본 배송 정책으로 설정되어 있습니다"),
+    INVALID_FREE_THRESHOLD("SHP-005", 400, "무료배송 기준금액이 유효하지 않습니다"),
 
-    // === 배송 정책 조회 관련 (SHP-001 ~ SHP-099) ===
-    SHIPPING_POLICY_NOT_FOUND("SHP-001", 404, "배송 정책을 찾을 수 없습니다."),
-
-    // === 배송 정책 정보 유효성 관련 (SHP-100 ~ SHP-199) ===
-    INVALID_SHIPPING_POLICY_ID("SHP-100", 400, "배송 정책 ID는 null이 아닌 양수여야 합니다."),
-    INVALID_POLICY_NAME("SHP-101", 400, "배송 정책명이 올바르지 않습니다."),
-    INVALID_DELIVERY_COST("SHP-102", 400, "배송비가 올바르지 않습니다."),
-    INVALID_FREE_SHIPPING_THRESHOLD("SHP-103", 400, "무료 배송 기준 금액이 올바르지 않습니다."),
-    INVALID_DELIVERY_GUIDE("SHP-104", 400, "배송 안내가 올바르지 않습니다."),
-    INVALID_DISPLAY_ORDER("SHP-105", 400, "표시 순서가 올바르지 않습니다."),
-
-    // === 배송 정책 비즈니스 규칙 관련 (SHP-200 ~ SHP-299) ===
-    DEFAULT_SHIPPING_POLICY_REQUIRED("SHP-200", 400, "기본 배송 정책이 반드시 1개 존재해야 합니다."),
-    LAST_SHIPPING_POLICY_CANNOT_BE_DELETED("SHP-201", 400, "마지막 배송 정책은 삭제할 수 없습니다."),
-    NOT_OWNER("SHP-202", 403, "해당 배송 정책에 대한 권한이 없습니다.");
+    // 기본 정책 관련 에러 코드
+    CANNOT_DEACTIVATE_DEFAULT_POLICY("SHP-011", 400, "기본 배송 정책은 비활성화할 수 없습니다"),
+    INACTIVE_POLICY_CANNOT_BE_DEFAULT("SHP-012", 400, "비활성화된 정책은 기본으로 지정할 수 없습니다"),
+    CANNOT_UNMARK_ONLY_DEFAULT_POLICY("SHP-013", 400, "유일한 기본 배송 정책은 해제할 수 없습니다"),
+    LAST_ACTIVE_POLICY_CANNOT_BE_DEACTIVATED("SHP-014", 400, "최소 1개의 활성 배송 정책이 필요합니다");
 
     private final String code;
     private final int httpStatus;

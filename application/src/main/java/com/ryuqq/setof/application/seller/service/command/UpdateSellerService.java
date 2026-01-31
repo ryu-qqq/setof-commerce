@@ -1,105 +1,127 @@
 package com.ryuqq.setof.application.seller.service.command;
 
+import com.ryuqq.setof.application.common.dto.command.UpdateContext;
 import com.ryuqq.setof.application.seller.dto.command.UpdateSellerCommand;
-import com.ryuqq.setof.application.seller.manager.command.SellerPersistenceManager;
-import com.ryuqq.setof.application.seller.manager.query.SellerReadManager;
+import com.ryuqq.setof.application.seller.factory.SellerCommandFactory;
+import com.ryuqq.setof.application.seller.manager.SellerAddressCommandManager;
+import com.ryuqq.setof.application.seller.manager.SellerAddressReadManager;
+import com.ryuqq.setof.application.seller.manager.SellerBusinessInfoCommandManager;
+import com.ryuqq.setof.application.seller.manager.SellerBusinessInfoReadManager;
+import com.ryuqq.setof.application.seller.manager.SellerCommandManager;
+import com.ryuqq.setof.application.seller.manager.SellerCsCommandManager;
+import com.ryuqq.setof.application.seller.manager.SellerCsReadManager;
 import com.ryuqq.setof.application.seller.port.in.command.UpdateSellerUseCase;
-import com.ryuqq.setof.domain.common.util.ClockHolder;
+import com.ryuqq.setof.application.seller.validator.SellerValidator;
 import com.ryuqq.setof.domain.seller.aggregate.Seller;
-import com.ryuqq.setof.domain.seller.vo.BusinessAddress;
-import com.ryuqq.setof.domain.seller.vo.BusinessInfo;
-import com.ryuqq.setof.domain.seller.vo.CsEmail;
-import com.ryuqq.setof.domain.seller.vo.CsLandlinePhone;
-import com.ryuqq.setof.domain.seller.vo.CsMobilePhone;
-import com.ryuqq.setof.domain.seller.vo.CustomerServiceInfo;
-import com.ryuqq.setof.domain.seller.vo.Description;
-import com.ryuqq.setof.domain.seller.vo.LogoUrl;
-import com.ryuqq.setof.domain.seller.vo.RegistrationNumber;
-import com.ryuqq.setof.domain.seller.vo.Representative;
-import com.ryuqq.setof.domain.seller.vo.SaleReportNumber;
-import com.ryuqq.setof.domain.seller.vo.SellerName;
+import com.ryuqq.setof.domain.seller.aggregate.SellerAddress;
+import com.ryuqq.setof.domain.seller.aggregate.SellerAddressUpdateData;
+import com.ryuqq.setof.domain.seller.aggregate.SellerBusinessInfo;
+import com.ryuqq.setof.domain.seller.aggregate.SellerBusinessInfoUpdateData;
+import com.ryuqq.setof.domain.seller.aggregate.SellerCs;
+import com.ryuqq.setof.domain.seller.aggregate.SellerCsUpdateData;
+import com.ryuqq.setof.domain.seller.aggregate.SellerUpdateData;
+import com.ryuqq.setof.domain.seller.id.SellerId;
 import java.time.Instant;
 import org.springframework.stereotype.Service;
 
 /**
- * 셀러 수정 서비스
+ * UpdateSellerService - 셀러 정보 수정 Service.
  *
- * <p>처리 순서:
+ * <p>Seller 기본정보 + Address + CS + BusinessInfo를 한번에 수정합니다.
  *
- * <ol>
- *   <li>SellerReadManager로 기존 셀러 조회
- *   <li>VO 생성 및 update 메서드 호출
- *   <li>SellerPersistenceManager로 저장
- * </ol>
+ * <p>APP-TIM-001: TimeProvider 직접 사용 금지 - Factory에서 처리
  *
- * @author development-team
- * @since 1.0.0
+ * <p>APP-VAL-001: 검증은 Validator에 위임
+ *
+ * @author ryu-qqq
  */
 @Service
 public class UpdateSellerService implements UpdateSellerUseCase {
 
-    private final SellerReadManager sellerReadManager;
-    private final SellerPersistenceManager sellerPersistenceManager;
-    private final ClockHolder clockHolder;
+    private final SellerCommandFactory commandFactory;
+    private final SellerCommandManager commandManager;
+    private final SellerValidator validator;
+    private final SellerAddressReadManager addressReadManager;
+    private final SellerAddressCommandManager addressCommandManager;
+    private final SellerCsReadManager csReadManager;
+    private final SellerCsCommandManager csCommandManager;
+    private final SellerBusinessInfoReadManager businessInfoReadManager;
+    private final SellerBusinessInfoCommandManager businessInfoCommandManager;
 
     public UpdateSellerService(
-            SellerReadManager sellerReadManager,
-            SellerPersistenceManager sellerPersistenceManager,
-            ClockHolder clockHolder) {
-        this.sellerReadManager = sellerReadManager;
-        this.sellerPersistenceManager = sellerPersistenceManager;
-        this.clockHolder = clockHolder;
+            SellerCommandFactory commandFactory,
+            SellerCommandManager commandManager,
+            SellerValidator validator,
+            SellerAddressReadManager addressReadManager,
+            SellerAddressCommandManager addressCommandManager,
+            SellerCsReadManager csReadManager,
+            SellerCsCommandManager csCommandManager,
+            SellerBusinessInfoReadManager businessInfoReadManager,
+            SellerBusinessInfoCommandManager businessInfoCommandManager) {
+        this.commandFactory = commandFactory;
+        this.commandManager = commandManager;
+        this.validator = validator;
+        this.addressReadManager = addressReadManager;
+        this.addressCommandManager = addressCommandManager;
+        this.csReadManager = csReadManager;
+        this.csCommandManager = csCommandManager;
+        this.businessInfoReadManager = businessInfoReadManager;
+        this.businessInfoCommandManager = businessInfoCommandManager;
     }
 
     @Override
     public void execute(UpdateSellerCommand command) {
-        Seller existingSeller = sellerReadManager.findById(command.sellerId());
+        UpdateContext<SellerId, SellerUpdateData> context =
+                commandFactory.createUpdateContext(command);
+        SellerId sellerId = context.id();
+        Instant changedAt = context.changedAt();
 
-        SellerName sellerName = SellerName.of(command.sellerName());
-        LogoUrl logoUrl = command.logoUrl() != null ? LogoUrl.of(command.logoUrl()) : null;
-        Description description =
-                command.description() != null ? Description.of(command.description()) : null;
-        BusinessInfo businessInfo = createBusinessInfo(command);
-        CustomerServiceInfo csInfo = createCustomerServiceInfo(command);
+        Seller seller = validator.findExistingOrThrow(sellerId);
+        seller.update(context.updateData(), changedAt);
+        commandManager.persist(seller);
 
-        Seller updatedSeller =
-                existingSeller.update(
-                        sellerName,
-                        logoUrl,
-                        description,
-                        businessInfo,
-                        csInfo,
-                        Instant.now(clockHolder.getClock()));
-
-        sellerPersistenceManager.persist(updatedSeller);
+        updateAddressIfPresent(command, sellerId, changedAt);
+        updateCsIfPresent(command, sellerId, changedAt);
+        updateBusinessInfoIfPresent(command, sellerId, changedAt);
     }
 
-    private BusinessInfo createBusinessInfo(UpdateSellerCommand command) {
-        RegistrationNumber registrationNumber = RegistrationNumber.of(command.registrationNumber());
-        SaleReportNumber saleReportNumber =
-                command.saleReportNumber() != null
-                        ? SaleReportNumber.of(command.saleReportNumber())
-                        : null;
-        Representative representative = Representative.of(command.representative());
-        BusinessAddress businessAddress =
-                BusinessAddress.of(
-                        command.businessAddressLine1(),
-                        command.businessAddressLine2(),
-                        command.businessZipCode());
-
-        return BusinessInfo.of(
-                registrationNumber, saleReportNumber, representative, businessAddress);
+    private void updateAddressIfPresent(
+            UpdateSellerCommand command, SellerId sellerId, Instant changedAt) {
+        if (command.address() == null) {
+            return;
+        }
+        SellerAddressUpdateData addressUpdateData =
+                commandFactory.createAddressUpdateData(command.address());
+        SellerAddress address = addressReadManager.getBySellerId(sellerId);
+        address.update(addressUpdateData, changedAt);
+        addressCommandManager.persist(address);
     }
 
-    private CustomerServiceInfo createCustomerServiceInfo(UpdateSellerCommand command) {
-        CsEmail csEmail = command.csEmail() != null ? CsEmail.of(command.csEmail()) : null;
-        CsMobilePhone csMobilePhone =
-                command.csMobilePhone() != null ? CsMobilePhone.of(command.csMobilePhone()) : null;
-        CsLandlinePhone csLandlinePhone =
-                command.csLandlinePhone() != null
-                        ? CsLandlinePhone.of(command.csLandlinePhone())
-                        : null;
+    private void updateCsIfPresent(
+            UpdateSellerCommand command, SellerId sellerId, Instant changedAt) {
+        if (command.csInfo() == null) {
+            return;
+        }
+        SellerCsUpdateData csUpdateData = commandFactory.createCsUpdateData(command.csInfo());
+        SellerCs cs = csReadManager.getBySellerId(sellerId);
+        cs.update(
+                csUpdateData.csContact(),
+                csUpdateData.operatingHours(),
+                csUpdateData.operatingDays(),
+                csUpdateData.kakaoChannelUrl(),
+                changedAt);
+        csCommandManager.persist(cs);
+    }
 
-        return CustomerServiceInfo.of(csEmail, csMobilePhone, csLandlinePhone);
+    private void updateBusinessInfoIfPresent(
+            UpdateSellerCommand command, SellerId sellerId, Instant changedAt) {
+        if (command.businessInfo() == null) {
+            return;
+        }
+        SellerBusinessInfoUpdateData businessInfoUpdateData =
+                commandFactory.createBusinessInfoUpdateData(command.businessInfo());
+        SellerBusinessInfo businessInfo = businessInfoReadManager.getBySellerId(sellerId);
+        businessInfo.update(businessInfoUpdateData, changedAt);
+        businessInfoCommandManager.persist(businessInfo);
     }
 }

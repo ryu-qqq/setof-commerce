@@ -1,43 +1,52 @@
 package com.ryuqq.setof.application.refundpolicy.service.command;
 
 import com.ryuqq.setof.application.refundpolicy.dto.command.RegisterRefundPolicyCommand;
-import com.ryuqq.setof.application.refundpolicy.factory.command.RefundPolicyCommandFactory;
-import com.ryuqq.setof.application.refundpolicy.manager.command.RefundPolicyPersistenceManager;
+import com.ryuqq.setof.application.refundpolicy.factory.RefundPolicyCommandFactory;
+import com.ryuqq.setof.application.refundpolicy.internal.DefaultRefundPolicyResolver;
+import com.ryuqq.setof.application.refundpolicy.manager.RefundPolicyCommandManager;
 import com.ryuqq.setof.application.refundpolicy.port.in.command.RegisterRefundPolicyUseCase;
 import com.ryuqq.setof.domain.refundpolicy.aggregate.RefundPolicy;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundPolicyId;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 환불 정책 등록 서비스
+ * RegisterRefundPolicyService - 환불 정책 등록 Service
  *
- * <p>처리 순서:
+ * <p>APP-TIM-001: TimeProvider 직접 사용 금지 - Factory에서 처리
  *
- * <ol>
- *   <li>RefundPolicyCommandFactory로 RefundPolicy 도메인 생성 (VO 검증 포함)
- *   <li>RefundPolicyPersistenceManager로 저장
- * </ol>
+ * <p>비즈니스 로직:
  *
- * @author development-team
- * @since 1.0.0
+ * <ul>
+ *   <li>기본 정책으로 등록 시 기존 기본 정책 해제
+ *   <li>첫 번째 정책 등록 시 자동으로 기본 정책 설정
+ * </ul>
+ *
+ * @author ryu-qqq
  */
 @Service
 public class RegisterRefundPolicyService implements RegisterRefundPolicyUseCase {
 
-    private final RefundPolicyCommandFactory refundPolicyCommandFactory;
-    private final RefundPolicyPersistenceManager refundPolicyPersistenceManager;
+    private final RefundPolicyCommandFactory commandFactory;
+    private final RefundPolicyCommandManager commandManager;
+    private final DefaultRefundPolicyResolver defaultPolicyResolver;
 
     public RegisterRefundPolicyService(
-            RefundPolicyCommandFactory refundPolicyCommandFactory,
-            RefundPolicyPersistenceManager refundPolicyPersistenceManager) {
-        this.refundPolicyCommandFactory = refundPolicyCommandFactory;
-        this.refundPolicyPersistenceManager = refundPolicyPersistenceManager;
+            RefundPolicyCommandFactory commandFactory,
+            RefundPolicyCommandManager commandManager,
+            DefaultRefundPolicyResolver defaultPolicyResolver) {
+        this.commandFactory = commandFactory;
+        this.commandManager = commandManager;
+        this.defaultPolicyResolver = defaultPolicyResolver;
     }
 
     @Override
+    @Transactional
     public Long execute(RegisterRefundPolicyCommand command) {
-        RefundPolicy refundPolicy = refundPolicyCommandFactory.create(command);
-        RefundPolicyId refundPolicyId = refundPolicyPersistenceManager.persist(refundPolicy);
-        return refundPolicyId.value();
+        RefundPolicy refundPolicy = commandFactory.create(command);
+
+        defaultPolicyResolver.resolveForRegistration(
+                refundPolicy.sellerId(), refundPolicy, refundPolicy.createdAt());
+
+        return commandManager.persist(refundPolicy);
     }
 }

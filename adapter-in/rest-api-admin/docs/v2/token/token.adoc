@@ -1,0 +1,33 @@
+[[token-api]]
+= 인증 토큰
+
+`/api/v2/admin/auth`
+
+[[token-login]]
+== POST 로그인
+
+사용자 인증 후 액세스 토큰을 발급합니다.
+
+include::{snippets}/login-test/login_-success/http-request.adoc[]
+
+=== Request Fields
+include::{snippets}/login-test/login_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/login-test/login_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/login-test/login_-success/response-fields.adoc[]
+
+[[token-logout]]
+== POST 로그아웃
+
+현재 세션의 토큰을 무효화합니다.
+
+include::{snippets}/logout-test/logout_-success/http-request.adoc[]
+
+=== Response
+include::{snippets}/logout-test/logout_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/logout-test/logout_-success/response-fields.adoc[]

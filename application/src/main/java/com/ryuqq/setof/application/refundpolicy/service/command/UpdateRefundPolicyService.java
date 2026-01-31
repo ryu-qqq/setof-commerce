@@ -1,79 +1,70 @@
 package com.ryuqq.setof.application.refundpolicy.service.command;
 
+import com.ryuqq.setof.application.common.dto.command.UpdateContext;
 import com.ryuqq.setof.application.refundpolicy.dto.command.UpdateRefundPolicyCommand;
-import com.ryuqq.setof.application.refundpolicy.manager.command.RefundPolicyPersistenceManager;
-import com.ryuqq.setof.application.refundpolicy.manager.query.RefundPolicyReadManager;
+import com.ryuqq.setof.application.refundpolicy.factory.RefundPolicyCommandFactory;
+import com.ryuqq.setof.application.refundpolicy.internal.DefaultRefundPolicyResolver;
+import com.ryuqq.setof.application.refundpolicy.manager.RefundPolicyCommandManager;
 import com.ryuqq.setof.application.refundpolicy.port.in.command.UpdateRefundPolicyUseCase;
-import com.ryuqq.setof.domain.common.util.ClockHolder;
+import com.ryuqq.setof.application.refundpolicy.validator.RefundPolicyValidator;
 import com.ryuqq.setof.domain.refundpolicy.aggregate.RefundPolicy;
-import com.ryuqq.setof.domain.refundpolicy.exception.RefundPolicyNotOwnerException;
-import com.ryuqq.setof.domain.refundpolicy.vo.PolicyName;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundDeliveryCost;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundGuide;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundPeriodDays;
-import com.ryuqq.setof.domain.refundpolicy.vo.ReturnAddress;
-import java.time.Instant;
+import com.ryuqq.setof.domain.refundpolicy.aggregate.RefundPolicyUpdateData;
+import com.ryuqq.setof.domain.refundpolicy.id.RefundPolicyId;
+import com.ryuqq.setof.domain.seller.id.SellerId;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 환불 정책 수정 서비스
+ * UpdateRefundPolicyService - 환불 정책 수정 Service
  *
- * <p>처리 순서:
+ * <p>APP-TIM-001: TimeProvider 직접 사용 금지 - Factory에서 처리
  *
- * <ol>
- *   <li>RefundPolicyReadManager로 기존 환불 정책 조회
- *   <li>VO 생성 및 update 메서드 호출
- *   <li>RefundPolicyPersistenceManager로 저장
- * </ol>
+ * <p>APP-VAL-001: 검증 + Domain 조회는 Validator.findExistingOrThrow()로 처리
  *
- * @author development-team
- * @since 1.0.0
+ * <p>비즈니스 규칙:
+ *
+ * <ul>
+ *   <li>기본 정책이 아닌 정책을 기본 정책으로 변경 시 기존 기본 정책 해제
+ *   <li>유일한 기본 정책은 해제 불가
+ * </ul>
+ *
+ * @author ryu-qqq
  */
 @Service
 public class UpdateRefundPolicyService implements UpdateRefundPolicyUseCase {
 
-    private final RefundPolicyReadManager refundPolicyReadManager;
-    private final RefundPolicyPersistenceManager refundPolicyPersistenceManager;
-    private final ClockHolder clockHolder;
+    private final RefundPolicyCommandFactory commandFactory;
+    private final RefundPolicyCommandManager commandManager;
+    private final RefundPolicyValidator validator;
+    private final DefaultRefundPolicyResolver defaultPolicyResolver;
 
     public UpdateRefundPolicyService(
-            RefundPolicyReadManager refundPolicyReadManager,
-            RefundPolicyPersistenceManager refundPolicyPersistenceManager,
-            ClockHolder clockHolder) {
-        this.refundPolicyReadManager = refundPolicyReadManager;
-        this.refundPolicyPersistenceManager = refundPolicyPersistenceManager;
-        this.clockHolder = clockHolder;
+            RefundPolicyCommandFactory commandFactory,
+            RefundPolicyCommandManager commandManager,
+            RefundPolicyValidator validator,
+            DefaultRefundPolicyResolver defaultPolicyResolver) {
+        this.commandFactory = commandFactory;
+        this.commandManager = commandManager;
+        this.validator = validator;
+        this.defaultPolicyResolver = defaultPolicyResolver;
     }
 
     @Override
+    @Transactional
     public void execute(UpdateRefundPolicyCommand command) {
-        RefundPolicy existingPolicy = refundPolicyReadManager.findById(command.refundPolicyId());
+        UpdateContext<RefundPolicyId, RefundPolicyUpdateData> context =
+                commandFactory.createUpdateContext(command);
 
-        // 소유권 검증: 요청한 sellerId와 정책의 sellerId가 일치하는지 확인
-        if (!existingPolicy.getSellerId().equals(command.sellerId())) {
-            throw new RefundPolicyNotOwnerException(command.refundPolicyId(), command.sellerId());
-        }
+        SellerId sellerId = SellerId.of(command.sellerId());
+        RefundPolicy refundPolicy = validator.findExistingBySellerOrThrow(sellerId, context.id());
 
-        PolicyName policyName = PolicyName.of(command.policyName());
-        ReturnAddress returnAddress =
-                ReturnAddress.of(
-                        command.returnAddressLine1(),
-                        command.returnAddressLine2(),
-                        command.returnZipCode());
-        RefundPeriodDays refundPeriodDays = RefundPeriodDays.of(command.refundPeriodDays());
-        RefundDeliveryCost refundDeliveryCost = RefundDeliveryCost.of(command.refundDeliveryCost());
-        RefundGuide refundGuide =
-                command.refundGuide() != null ? RefundGuide.of(command.refundGuide()) : null;
+        // 기본 정책 변경 처리
+        defaultPolicyResolver.resolveForUpdate(
+                sellerId, refundPolicy, command.defaultPolicy(), context.changedAt());
 
-        RefundPolicy updatedPolicy =
-                existingPolicy.update(
-                        policyName,
-                        returnAddress,
-                        refundPeriodDays,
-                        refundDeliveryCost,
-                        refundGuide,
-                        Instant.now(clockHolder.getClock()));
+        // 정책 정보 업데이트
+        refundPolicy.update(context.updateData(), context.changedAt());
 
-        refundPolicyPersistenceManager.persist(updatedPolicy);
+        commandManager.persist(refundPolicy);
     }
 }

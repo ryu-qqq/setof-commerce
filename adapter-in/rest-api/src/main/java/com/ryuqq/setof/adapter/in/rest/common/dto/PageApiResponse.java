@@ -1,13 +1,12 @@
-package com.ryuqq.setof.adapter.in.rest.common.dto;
+package com.ryuqq.adapter.in.rest.common.dto;
 
-import com.ryuqq.setof.application.common.response.PageResponse;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * PageApiResponse - 페이지 조회 REST API 응답 DTO (Offset 기반)
  *
- * <p>REST API Layer 전용 응답 DTO로, Application Layer의 PageResponse를 변환하여 사용합니다.
+ * <p>REST API Layer 전용 응답 DTO입니다.
  *
  * <p><strong>Offset 기반 페이지네이션:</strong>
  *
@@ -31,99 +30,57 @@ import java.util.function.Function;
  * }
  * }</pre>
  *
- * <p><strong>사용 예시:</strong>
- *
- * <pre>{@code
- * // Application Layer PageResponse를 API 응답으로 변환
- * PageResponse<TenantDto> appResponse = tenantQueryUseCase.findAll(query);
- * PageApiResponse<TenantApiResponse> apiResponse =
- *     PageApiResponse.from(appResponse, TenantApiResponse::from);
- *
- * return ResponseEntity.ok(ApiResponse.ofSuccess(apiResponse));
- * }</pre>
- *
  * @param <T> 콘텐츠 타입
  * @param content 현재 페이지의 데이터 목록
  * @param page 현재 페이지 번호 (0부터 시작)
- * @param size 페이지 크기 (한 페이지당 항목 수)
+ * @param size 페이지 크기
  * @param totalElements 전체 데이터 개수
  * @param totalPages 전체 페이지 수
  * @param first 첫 페이지 여부
  * @param last 마지막 페이지 여부
- * @author ryu-qqq
- * @since 2025-10-23
+ * @author windsurf
+ * @since 1.0.0
  */
+@Schema(description = "페이지 조회 응답 (Offset 기반)")
 public record PageApiResponse<T>(
-        List<T> content,
-        int page,
-        int size,
-        long totalElements,
-        int totalPages,
-        boolean first,
-        boolean last) {
+        @Schema(description = "현재 페이지의 데이터 목록") List<T> content,
+        @Schema(description = "현재 페이지 번호 (0부터 시작)", example = "0") int page,
+        @Schema(description = "페이지 크기", example = "20") int size,
+        @Schema(description = "전체 데이터 개수", example = "100") long totalElements,
+        @Schema(description = "전체 페이지 수", example = "5") int totalPages,
+        @Schema(description = "첫 페이지 여부", example = "true") boolean first,
+        @Schema(description = "마지막 페이지 여부", example = "false") boolean last) {
+
+    /** Compact Constructor - Defensive Copy */
+    public PageApiResponse {
+        content = List.copyOf(content);
+    }
 
     /**
-     * Application Layer PageResponse를 API 응답으로 변환 (타입 동일)
+     * 개별 파라미터를 사용하여 PageApiResponse 생성
      *
-     * <p>Application Layer의 DTO와 API Layer의 DTO가 동일한 경우 사용
+     * <p>REST API Layer에서 Domain Layer 의존 없이 응답을 생성합니다.
      *
-     * @param appPageResponse Application Layer PageResponse
      * @param <T> 콘텐츠 타입
-     * @return PageApiResponse
-     * @author ryu-qqq
-     * @since 2025-10-23
-     */
-    public static <T> PageApiResponse<T> from(PageResponse<T> appPageResponse) {
-        return new PageApiResponse<>(
-                appPageResponse.content(),
-                appPageResponse.page(),
-                appPageResponse.size(),
-                appPageResponse.totalElements(),
-                appPageResponse.totalPages(),
-                appPageResponse.first(),
-                appPageResponse.last());
-    }
-
-    /**
-     * Application Layer PageResponse를 API 응답으로 변환 (타입 변환)
-     *
-     * <p>Application Layer의 DTO를 API Layer의 DTO로 변환하면서 PageApiResponse 생성
-     *
-     * <p>예시: PageResponse&lt;TenantDto&gt; → PageApiResponse&lt;TenantApiResponse&gt;
-     *
-     * @param appPageResponse Application Layer PageResponse
-     * @param mapper 콘텐츠 변환 함수 (S → T)
-     * @param <S> Application Layer 콘텐츠 타입
-     * @param <T> API Layer 콘텐츠 타입
-     * @return PageApiResponse
-     * @author ryu-qqq
-     * @since 2025-10-23
-     */
-    public static <S, T> PageApiResponse<T> from(
-            PageResponse<S> appPageResponse, Function<S, T> mapper) {
-        List<T> mappedContent = appPageResponse.content().stream().map(mapper).toList();
-
-        return new PageApiResponse<>(
-                mappedContent,
-                appPageResponse.page(),
-                appPageResponse.size(),
-                appPageResponse.totalElements(),
-                appPageResponse.totalPages(),
-                appPageResponse.first(),
-                appPageResponse.last());
-    }
-
-    /**
-     * 빈 PageApiResponse 생성
-     *
-     * @param page 현재 페이지 번호
+     * @param content 콘텐츠 목록
+     * @param page 현재 페이지 번호 (0부터 시작)
      * @param size 페이지 크기
-     * @param <T> 콘텐츠 타입
-     * @return 빈 PageApiResponse
-     * @author ryu-qqq
-     * @since 2025-10-23
+     * @param totalElements 전체 데이터 개수
+     * @param totalPages 전체 페이지 수
+     * @param first 첫 페이지 여부
+     * @param last 마지막 페이지 여부
+     * @return REST API Layer의 PageApiResponse
+     * @author development-team
+     * @since 1.0.0
      */
-    public static <T> PageApiResponse<T> empty(int page, int size) {
-        return new PageApiResponse<>(List.of(), page, size, 0L, 0, true, true);
+    public static <T> PageApiResponse<T> of(
+            List<T> content,
+            int page,
+            int size,
+            long totalElements,
+            int totalPages,
+            boolean first,
+            boolean last) {
+        return new PageApiResponse<>(content, page, size, totalElements, totalPages, first, last);
     }
 }

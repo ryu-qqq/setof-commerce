@@ -44,21 +44,6 @@ public class GlobalExceptionHandler {
         this.errorMapperRegistry = errorMapperRegistry;
     }
 
-    // ======= 에러 코드 상수 (RFC 7807 + 표준화) =======
-    private static final String VALIDATION_FAILED = "VALIDATION_FAILED";
-    private static final String BINDING_FAILED = "BINDING_FAILED";
-    private static final String CONSTRAINT_VIOLATION = "CONSTRAINT_VIOLATION";
-    private static final String INVALID_ARGUMENT = "INVALID_ARGUMENT";
-    private static final String INVALID_FORMAT = "INVALID_FORMAT";
-    private static final String TYPE_MISMATCH = "TYPE_MISMATCH";
-    private static final String MISSING_PARAMETER = "MISSING_PARAMETER";
-    private static final String RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND";
-    private static final String METHOD_NOT_ALLOWED = "METHOD_NOT_ALLOWED";
-    private static final String STATE_CONFLICT = "STATE_CONFLICT";
-    private static final String INTERNAL_ERROR = "INTERNAL_ERROR";
-
-    private static final String ERROR_CODE_HEADER = "x-error-code";
-
     // ======= Common builder (RFC 7807 완전 준수) =======
     private ResponseEntity<ProblemDetail> build(
             HttpStatus status,
@@ -68,6 +53,8 @@ public class GlobalExceptionHandler {
             HttpServletRequest req) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(status, detail);
         pd.setTitle(title != null ? title : status.getReasonPhrase());
+
+        // 에러 타입 URI - 문서화된 URL 권장 (현재는 about:blank 유지, 추후 문서 URL로 교체)
         pd.setType(URI.create("about:blank"));
 
         // RFC 7807 확장 필드
@@ -83,7 +70,7 @@ public class GlobalExceptionHandler {
             pd.setInstance(URI.create(uri));
         }
 
-        // Tracing 정보 (MDC에서)
+        // tracing(id 존재 시) — Micrometer/Logback MDC 키 관례
         String traceId = MDC.get("traceId");
         String spanId = MDC.get("spanId");
         if (traceId != null) {
@@ -93,19 +80,23 @@ public class GlobalExceptionHandler {
             pd.setProperty("spanId", spanId);
         }
 
-        // RFC 7807: Content-Type + x-error-code 헤더
+        // RFC 7807: Content-Type: application/problem+json
+        // x-error-code 헤더 추가 (클라이언트 에러 분기 용이)
         return ResponseEntity.status(status)
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON)
-                .header(ERROR_CODE_HEADER, errorCode)
+                .header("x-error-code", errorCode)
                 .body(pd);
     }
 
     // ======= 400 - Validation (@RequestBody) =======
+    private static final String VALIDATION_FAILED = "VALIDATION_FAILED";
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ProblemDetail> handleValidationException(
             MethodArgumentNotValidException ex, HttpServletRequest req) {
         Map<String, String> errors = new LinkedHashMap<>();
         for (FieldError fe : ex.getBindingResult().getFieldErrors()) {
+            // 동일 필드에 여러 에러가 있을 때 마지막 메시지로 덮어씀 (필요 시 join)
             errors.put(fe.getField(), fe.getDefaultMessage());
         }
 
@@ -123,6 +114,8 @@ public class GlobalExceptionHandler {
     }
 
     // ======= 400 - Validation (@ModelAttribute, 바인딩 단계) =======
+    private static final String BINDING_FAILED = "BINDING_FAILED";
+
     @ExceptionHandler(BindException.class)
     public ResponseEntity<ProblemDetail> handleBindException(
             BindException ex, HttpServletRequest req) {
@@ -144,6 +137,8 @@ public class GlobalExceptionHandler {
     }
 
     // ======= 400 - Method-level validation (@Validated on params) =======
+    private static final String CONSTRAINT_VIOLATION = "CONSTRAINT_VIOLATION";
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ProblemDetail> handleConstraintViolation(
             ConstraintViolationException ex, HttpServletRequest req) {
@@ -166,6 +161,8 @@ public class GlobalExceptionHandler {
     }
 
     // ======= 400 - 잘못된 인자 =======
+    private static final String INVALID_ARGUMENT = "INVALID_ARGUMENT";
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ProblemDetail> handleIllegalArgumentException(
             IllegalArgumentException ex, HttpServletRequest req) {
@@ -179,9 +176,12 @@ public class GlobalExceptionHandler {
     }
 
     // ======= 400 - 본문 파싱 실패 =======
+    private static final String INVALID_FORMAT = "INVALID_FORMAT";
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ProblemDetail> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex, HttpServletRequest req) {
+        // 과도한 내부 파서 메시지 노출 방지 (보안/UX)
         log.warn(
                 "HttpMessageNotReadable: code={}, cause={}",
                 INVALID_FORMAT,
@@ -195,6 +195,8 @@ public class GlobalExceptionHandler {
     }
 
     // ======= 400 - 파라미터 타입 불일치 =======
+    private static final String TYPE_MISMATCH = "TYPE_MISMATCH";
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ProblemDetail> handleTypeMismatch(
             MethodArgumentTypeMismatchException ex, HttpServletRequest req) {
@@ -218,6 +220,8 @@ public class GlobalExceptionHandler {
     }
 
     // ======= 400 - 필수 파라미터 누락 =======
+    private static final String MISSING_PARAMETER = "MISSING_PARAMETER";
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ProblemDetail> handleMissingParam(
             MissingServletRequestParameterException ex, HttpServletRequest req) {
@@ -233,6 +237,8 @@ public class GlobalExceptionHandler {
     }
 
     // ======= 404 - 리소스 없음 =======
+    private static final String RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND";
+
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ProblemDetail> handleNoResource(
             NoResourceFoundException ex, HttpServletRequest req) {
@@ -245,11 +251,14 @@ public class GlobalExceptionHandler {
     }
 
     // ======= 405 - 지원하지 않는 메서드 (Allow 헤더 포함) =======
+    private static final String METHOD_NOT_ALLOWED = "METHOD_NOT_ALLOWED";
+
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ProblemDetail> handleMethodNotAllowed(
             HttpRequestMethodNotSupportedException ex, HttpServletRequest req) {
         String method = Optional.of(ex.getMethod()).orElse("UNKNOWN");
 
+        // Set<HttpMethod>가 더 안전 (null 가능)
         Set<HttpMethod> supported =
                 Optional.ofNullable(ex.getSupportedHttpMethods()).orElse(Collections.emptySet());
 
@@ -262,6 +271,7 @@ public class GlobalExceptionHandler {
 
         String message = "%s 메서드는 지원하지 않습니다. 지원되는 메서드: %s".formatted(method, supportedStr);
 
+        // ProblemDetail 생성 (build 메서드의 헤더 설정을 재사용하지 않고 직접 구성)
         var entity =
                 build(
                         HttpStatus.METHOD_NOT_ALLOWED,
@@ -272,7 +282,7 @@ public class GlobalExceptionHandler {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON);
-        headers.add(ERROR_CODE_HEADER, METHOD_NOT_ALLOWED);
+        headers.add("x-error-code", METHOD_NOT_ALLOWED);
         if (!supported.isEmpty()) {
             headers.setAllow(supported);
         }
@@ -288,6 +298,8 @@ public class GlobalExceptionHandler {
     }
 
     // ======= 409 - 상태 충돌 =======
+    private static final String STATE_CONFLICT = "STATE_CONFLICT";
+
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ProblemDetail> handleIllegalState(
             IllegalStateException ex, HttpServletRequest req) {
@@ -297,6 +309,8 @@ public class GlobalExceptionHandler {
     }
 
     // ======= 500 - 나머지 잡기 =======
+    private static final String INTERNAL_ERROR = "INTERNAL_ERROR";
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ProblemDetail> handleGlobal(Exception ex, HttpServletRequest req) {
         log.error("Unexpected error occurred: code={}", INTERNAL_ERROR, ex);
@@ -336,62 +350,47 @@ public class GlobalExceptionHandler {
                         .map(ex, locale)
                         .orElseGet(() -> errorMapperRegistry.defaultMapping(ex));
 
-        // DomainException 클래스명에서 에러 코드 추출
-        String errorCode = errorMapperRegistry.extractErrorCode(ex);
+        var res = build(mapped.status(), mapped.title(), mapped.detail(), ex.code(), req);
+        var pd = res.getBody();
 
-        ProblemDetail pd = ProblemDetail.forStatusAndDetail(mapped.status(), mapped.detail());
-        pd.setTitle(mapped.title());
+        assert pd != null;
         pd.setType(mapped.type());
-
-        // RFC 7807 확장 필드
-        pd.setProperty("timestamp", Instant.now().toString());
-        pd.setProperty("code", errorCode);
-
-        // 요청 경로를 instance로
-        if (req != null) {
-            String uri = req.getRequestURI();
-            if (req.getQueryString() != null && !req.getQueryString().isBlank()) {
-                uri = uri + "?" + req.getQueryString();
-            }
-            pd.setInstance(URI.create(uri));
-        }
-
-        // Tracing 정보 (MDC에서)
-        String traceId = MDC.get("traceId");
-        String spanId = MDC.get("spanId");
-        if (traceId != null) {
-            pd.setProperty("traceId", traceId);
-        }
-        if (spanId != null) {
-            pd.setProperty("spanId", spanId);
+        if (!ex.args().isEmpty()) {
+            pd.setProperty("args", ex.args());
         }
 
         // HTTP 상태 코드에 따라 로깅 레벨 구분
         if (mapped.status().is5xxServerError()) {
+            // 5xx: 서버 에러 - ERROR 레벨 (스택트레이스 포함)
             log.error(
-                    "DomainException (Server Error): code={}, status={}, detail={}",
-                    errorCode,
+                    "DomainException (Server Error): code={}, status={}, detail={}, args={}",
+                    ex.code(),
                     mapped.status().value(),
                     mapped.detail(),
+                    ex.args(),
                     ex);
         } else if (mapped.status() == HttpStatus.NOT_FOUND) {
+            // 404: 찾을 수 없음 - DEBUG 레벨 (정상 흐름, 로그 노이즈 방지)
             log.debug(
-                    "DomainException (Not Found): code={}, status={}, detail={}",
-                    errorCode,
+                    "DomainException (Not Found): code={}, status={}, detail={}, args={}",
+                    ex.code(),
                     mapped.status().value(),
-                    mapped.detail());
+                    mapped.detail(),
+                    ex.args());
         } else {
+            // 기타 4xx: 클라이언트 에러 - WARN 레벨
             log.warn(
-                    "DomainException (Client Error): code={}, status={}, detail={}",
-                    errorCode,
+                    "DomainException (Client Error): code={}, status={}, detail={}, args={}",
+                    ex.code(),
                     mapped.status().value(),
-                    mapped.detail());
+                    mapped.detail(),
+                    ex.args());
         }
 
         // RFC 7807: Content-Type + x-error-code 헤더
         return ResponseEntity.status(mapped.status())
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON)
-                .header(ERROR_CODE_HEADER, errorCode)
+                .header("x-error-code", ex.code())
                 .body(pd);
     }
 }

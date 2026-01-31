@@ -123,5 +123,25 @@ tasks.jacocoTestCoverageVerification {
 }
 
 tasks.test {
+    outputs.dir snippetsDir
     finalizedBy tasks.jacocoTestCoverageVerification
+}
+
+// ========================================
+// Asciidoctor Configuration
+// ========================================
+tasks.asciidoctor {
+    inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
+    dependsOn tasks.test
+
+    sourceDir = file('docs')
+    sources {
+        include 'index.adoc'
+    }
+    attributes 'snippets': snippetsDir,
+               'stylesdir': file('docs').absolutePath,
+               'stylesheet': 'custom-style.css'
+    // linkcss 미설정 = CSS가 HTML에 임베드됨
+    baseDirFollowsSourceFile()
 }

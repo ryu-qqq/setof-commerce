@@ -1,0 +1,61 @@
+[[common-code-type-api]]
+= 공통코드 타입
+
+`/api/v2/admin/common-code-types`
+
+[[common-code-type-register]]
+== POST 공통코드 타입 등록
+
+include::{snippets}/register-common-code-type-test/register-common-code-type_-success/http-request.adoc[]
+
+=== Request Fields
+include::{snippets}/register-common-code-type-test/register-common-code-type_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/register-common-code-type-test/register-common-code-type_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/register-common-code-type-test/register-common-code-type_-success/response-fields.adoc[]
+
+[[common-code-type-update]]
+== PUT 공통코드 타입 수정
+
+`PUT /api/v2/admin/common-code-types/{commonCodeTypeId}`
+
+include::{snippets}/update-common-code-type-test/update-common-code-type_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/update-common-code-type-test/update-common-code-type_-success/path-parameters.adoc[]
+
+=== Request Fields
+include::{snippets}/update-common-code-type-test/update-common-code-type_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/update-common-code-type-test/update-common-code-type_-success/http-response.adoc[]
+
+[[common-code-type-change-status]]
+== PATCH 공통코드 타입 상태 변경
+
+`PATCH /api/v2/admin/common-code-types/active-status`
+
+include::{snippets}/change-active-status-test/change-active-status_-success/http-request.adoc[]
+
+=== Request Fields
+include::{snippets}/change-active-status-test/change-active-status_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/change-active-status-test/change-active-status_-success/http-response.adoc[]
+
+[[common-code-type-search]]
+== GET 공통코드 타입 목록 조회
+
+include::{snippets}/search-common-code-types-test/search-common-code-types_-success/http-request.adoc[]
+
+=== Query Parameters
+include::{snippets}/search-common-code-types-test/search-common-code-types_-success/query-parameters.adoc[]
+
+=== Response
+include::{snippets}/search-common-code-types-test/search-common-code-types_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/search-common-code-types-test/search-common-code-types_-success/response-fields.adoc[]

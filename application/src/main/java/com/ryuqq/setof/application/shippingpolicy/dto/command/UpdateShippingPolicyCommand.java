@@ -1,23 +1,31 @@
 package com.ryuqq.setof.application.shippingpolicy.dto.command;
 
 /**
- * 배송 정책 수정 Command DTO
+ * 배송정책 수정 Command.
  *
- * @param shippingPolicyId 배송 정책 ID
- * @param sellerId 셀러 ID (권한 검증용)
+ * @param sellerId 셀러 ID
+ * @param policyId 정책 ID
  * @param policyName 정책명
- * @param defaultDeliveryCost 기본 배송비
- * @param freeShippingThreshold 무료 배송 기준 금액 (nullable)
- * @param deliveryGuide 배송 안내 (nullable)
- * @param displayOrder 표시 순서
- * @author development-team
- * @since 1.0.0
+ * @param defaultPolicy 기본 정책 여부
+ * @param shippingFeeType 배송비 유형
+ * @param baseFee 기본 배송비
+ * @param freeThreshold 무료배송 기준금액
+ * @param jejuExtraFee 제주 추가 배송비
+ * @param islandExtraFee 도서산간 추가 배송비
+ * @param returnFee 반품 배송비
+ * @param exchangeFee 교환 배송비
+ * @param leadTime 발송 소요일 정보
  */
 public record UpdateShippingPolicyCommand(
-        Long shippingPolicyId,
         Long sellerId,
+        Long policyId,
         String policyName,
-        int defaultDeliveryCost,
-        Integer freeShippingThreshold,
-        String deliveryGuide,
-        int displayOrder) {}
+        Boolean defaultPolicy,
+        String shippingFeeType,
+        Long baseFee,
+        Long freeThreshold,
+        Long jejuExtraFee,
+        Long islandExtraFee,
+        Long returnFee,
+        Long exchangeFee,
+        LeadTimeCommand leadTime) {}

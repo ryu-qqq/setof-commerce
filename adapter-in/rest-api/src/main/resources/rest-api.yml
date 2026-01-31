@@ -182,14 +182,14 @@ security:
     same-site: strict  # 더 엄격한 CSRF 보호
 
 ---
-# Staging 환경
+# Stage 환경
 spring:
   config:
     activate:
-      on-profile: staging
+      on-profile: stage
 
 springdoc:
-  # Staging에서는 Swagger UI 활성화 (내부 테스트용)
+  # Stage에서는 Swagger UI 활성화 (내부 테스트용)
   swagger-ui:
     enabled: true
   api-docs:
@@ -198,3 +198,8 @@ springdoc:
 security:
   cookie:
     secure: true
+    domain: ${COOKIE_DOMAIN}
+
+  cors:
+    allowed-origins:
+      - ${CORS_ALLOWED_ORIGINS:https://stage.setof.io}

@@ -1,59 +1,47 @@
 package com.ryuqq.setof.application.refundpolicy.port.out.query;
 
 import com.ryuqq.setof.domain.refundpolicy.aggregate.RefundPolicy;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundPolicyId;
+import com.ryuqq.setof.domain.refundpolicy.id.RefundPolicyId;
+import com.ryuqq.setof.domain.refundpolicy.query.RefundPolicySearchCriteria;
+import com.ryuqq.setof.domain.seller.id.SellerId;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * 환불 정책 Query Port (Port-Out)
- *
- * <p>환불 정책 Aggregate를 조회하는 읽기 전용 Port
- *
- * @author development-team
- * @since 1.0.0
- */
+/** 환불 정책 Query Port. */
 public interface RefundPolicyQueryPort {
 
-    /**
-     * ID로 환불 정책 단건 조회
-     *
-     * @param id 환불 정책 ID (Value Object)
-     * @return 환불 정책 Domain (Optional)
-     */
     Optional<RefundPolicy> findById(RefundPolicyId id);
 
-    /**
-     * 셀러 ID로 환불 정책 목록 조회
-     *
-     * @param sellerId 셀러 ID
-     * @param includeDeleted 삭제된 정책 포함 여부
-     * @return 환불 정책 목록
-     */
-    List<RefundPolicy> findBySellerId(Long sellerId, boolean includeDeleted);
+    List<RefundPolicy> findByIds(List<RefundPolicyId> ids);
 
     /**
-     * 셀러의 기본 환불 정책 조회
+     * 셀러의 기본 정책 조회.
      *
      * @param sellerId 셀러 ID
-     * @return 기본 환불 정책 (Optional)
+     * @return 기본 환불 정책 (없으면 empty)
      */
-    Optional<RefundPolicy> findDefaultBySellerId(Long sellerId);
+    Optional<RefundPolicy> findDefaultBySellerId(SellerId sellerId);
 
     /**
-     * 셀러의 환불 정책 개수 조회
+     * 셀러 ID와 정책 ID로 조회.
      *
      * @param sellerId 셀러 ID
-     * @param includeDeleted 삭제된 정책 포함 여부
-     * @return 환불 정책 개수
+     * @param policyId 정책 ID
+     * @return 환불 정책 (없으면 empty)
      */
-    long countBySellerId(Long sellerId, boolean includeDeleted);
+    Optional<RefundPolicy> findBySellerIdAndId(SellerId sellerId, RefundPolicyId policyId);
+
+    List<RefundPolicy> findByCriteria(RefundPolicySearchCriteria criteria);
+
+    long countByCriteria(RefundPolicySearchCriteria criteria);
 
     /**
-     * 환불 정책 ID 존재 여부 확인
+     * 셀러의 활성 정책 개수 조회.
      *
-     * @param id 환불 정책 ID
-     * @return 존재 여부
+     * <p>POL-DEACT-002: 마지막 활성 정책 비활성화 검증에 사용
+     *
+     * @param sellerId 셀러 ID
+     * @return 활성 정책 개수
      */
-    boolean existsById(RefundPolicyId id);
+    long countActiveBySellerId(SellerId sellerId);
 }

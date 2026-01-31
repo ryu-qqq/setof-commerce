@@ -1,0 +1,66 @@
+[[seller-api]]
+= 셀러 관리
+
+`/api/v2/admin/sellers`
+
+[[seller-register]]
+== POST 셀러 등록
+
+include::{snippets}/register-seller-test/register-seller_-success/http-request.adoc[]
+
+=== Request Fields
+include::{snippets}/register-seller-test/register-seller_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/register-seller-test/register-seller_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/register-seller-test/register-seller_-success/response-fields.adoc[]
+
+[[seller-update]]
+== PATCH 셀러 수정
+
+`PATCH /api/v2/admin/sellers/{sellerId}`
+
+include::{snippets}/update-seller-test/update-seller_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/update-seller-test/update-seller_-success/path-parameters.adoc[]
+
+=== Request Fields
+include::{snippets}/update-seller-test/update-seller_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/update-seller-test/update-seller_-success/http-response.adoc[]
+
+[[seller-get]]
+== GET 셀러 상세 조회
+
+`GET /api/v2/admin/sellers/{sellerId}`
+
+include::{snippets}/get-seller-test/get-seller_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/get-seller-test/get-seller_-success/path-parameters.adoc[]
+
+=== Response
+include::{snippets}/get-seller-test/get-seller_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/get-seller-test/get-seller_-success/response-fields.adoc[]
+
+[[seller-search]]
+== GET 셀러 목록 검색
+
+`GET /api/v2/admin/sellers`
+
+include::{snippets}/search-sellers-test/search-sellers_-success/http-request.adoc[]
+
+=== Query Parameters
+include::{snippets}/search-sellers-test/search-sellers_-success/query-parameters.adoc[]
+
+=== Response
+include::{snippets}/search-sellers-test/search-sellers_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/search-sellers-test/search-sellers_-success/response-fields.adoc[]

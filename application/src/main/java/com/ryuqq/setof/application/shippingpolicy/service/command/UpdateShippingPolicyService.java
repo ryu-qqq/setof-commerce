@@ -1,80 +1,71 @@
 package com.ryuqq.setof.application.shippingpolicy.service.command;
 
+import com.ryuqq.setof.application.common.dto.command.UpdateContext;
 import com.ryuqq.setof.application.shippingpolicy.dto.command.UpdateShippingPolicyCommand;
-import com.ryuqq.setof.application.shippingpolicy.manager.command.ShippingPolicyPersistenceManager;
-import com.ryuqq.setof.application.shippingpolicy.manager.query.ShippingPolicyReadManager;
+import com.ryuqq.setof.application.shippingpolicy.factory.ShippingPolicyCommandFactory;
+import com.ryuqq.setof.application.shippingpolicy.internal.DefaultShippingPolicyResolver;
+import com.ryuqq.setof.application.shippingpolicy.manager.ShippingPolicyCommandManager;
 import com.ryuqq.setof.application.shippingpolicy.port.in.command.UpdateShippingPolicyUseCase;
-import com.ryuqq.setof.domain.common.util.ClockHolder;
+import com.ryuqq.setof.application.shippingpolicy.validator.ShippingPolicyValidator;
+import com.ryuqq.setof.domain.seller.id.SellerId;
 import com.ryuqq.setof.domain.shippingpolicy.aggregate.ShippingPolicy;
-import com.ryuqq.setof.domain.shippingpolicy.exception.ShippingPolicyNotOwnerException;
-import com.ryuqq.setof.domain.shippingpolicy.vo.DeliveryCost;
-import com.ryuqq.setof.domain.shippingpolicy.vo.DeliveryGuide;
-import com.ryuqq.setof.domain.shippingpolicy.vo.DisplayOrder;
-import com.ryuqq.setof.domain.shippingpolicy.vo.FreeShippingThreshold;
-import com.ryuqq.setof.domain.shippingpolicy.vo.PolicyName;
-import java.time.Instant;
+import com.ryuqq.setof.domain.shippingpolicy.aggregate.ShippingPolicyUpdateData;
+import com.ryuqq.setof.domain.shippingpolicy.id.ShippingPolicyId;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 배송 정책 수정 서비스
+ * UpdateShippingPolicyService - 배송 정책 수정 Service
  *
- * <p>처리 순서:
+ * <p>APP-TIM-001: TimeProvider 직접 사용 금지 - Factory에서 처리
  *
- * <ol>
- *   <li>ShippingPolicyReadManager로 기존 배송 정책 조회
- *   <li>VO 생성 및 update 메서드 호출
- *   <li>ShippingPolicyPersistenceManager로 저장
- * </ol>
+ * <p>APP-VAL-001: 검증 + Domain 조회는 Validator.findExistingOrThrow()로 처리
  *
- * @author development-team
- * @since 1.0.0
+ * <p>비즈니스 규칙:
+ *
+ * <ul>
+ *   <li>기본 정책이 아닌 정책을 기본 정책으로 변경 시 기존 기본 정책 해제
+ *   <li>유일한 기본 정책은 해제 불가
+ * </ul>
+ *
+ * @author ryu-qqq
  */
 @Service
 public class UpdateShippingPolicyService implements UpdateShippingPolicyUseCase {
 
-    private final ShippingPolicyReadManager shippingPolicyReadManager;
-    private final ShippingPolicyPersistenceManager shippingPolicyPersistenceManager;
-    private final ClockHolder clockHolder;
+    private final ShippingPolicyCommandFactory commandFactory;
+    private final ShippingPolicyCommandManager commandManager;
+    private final ShippingPolicyValidator validator;
+    private final DefaultShippingPolicyResolver defaultPolicyResolver;
 
     public UpdateShippingPolicyService(
-            ShippingPolicyReadManager shippingPolicyReadManager,
-            ShippingPolicyPersistenceManager shippingPolicyPersistenceManager,
-            ClockHolder clockHolder) {
-        this.shippingPolicyReadManager = shippingPolicyReadManager;
-        this.shippingPolicyPersistenceManager = shippingPolicyPersistenceManager;
-        this.clockHolder = clockHolder;
+            ShippingPolicyCommandFactory commandFactory,
+            ShippingPolicyCommandManager commandManager,
+            ShippingPolicyValidator validator,
+            DefaultShippingPolicyResolver defaultPolicyResolver) {
+        this.commandFactory = commandFactory;
+        this.commandManager = commandManager;
+        this.validator = validator;
+        this.defaultPolicyResolver = defaultPolicyResolver;
     }
 
     @Override
+    @Transactional
     public void execute(UpdateShippingPolicyCommand command) {
-        ShippingPolicy existingPolicy =
-                shippingPolicyReadManager.findById(command.shippingPolicyId());
+        UpdateContext<ShippingPolicyId, ShippingPolicyUpdateData> context =
+                commandFactory.createUpdateContext(command);
 
-        // 소유권 검증: 요청한 sellerId와 정책의 sellerId가 일치하는지 확인
-        if (!existingPolicy.getSellerId().equals(command.sellerId())) {
-            throw new ShippingPolicyNotOwnerException(
-                    command.shippingPolicyId(), command.sellerId());
-        }
+        SellerId sellerId = SellerId.of(command.sellerId());
+        ShippingPolicy shippingPolicy =
+                validator.findExistingBySellerOrThrow(sellerId, context.id());
 
-        PolicyName policyName = PolicyName.of(command.policyName());
-        DeliveryCost defaultDeliveryCost = DeliveryCost.of(command.defaultDeliveryCost());
-        FreeShippingThreshold freeShippingThreshold =
-                command.freeShippingThreshold() != null
-                        ? FreeShippingThreshold.of(command.freeShippingThreshold())
-                        : null;
-        DeliveryGuide deliveryGuide =
-                command.deliveryGuide() != null ? DeliveryGuide.of(command.deliveryGuide()) : null;
-        DisplayOrder displayOrder = DisplayOrder.of(command.displayOrder());
+        // 기본 정책 변경 처리
+        defaultPolicyResolver.resolveForUpdate(
+                sellerId, shippingPolicy, command.defaultPolicy(), context.changedAt());
 
-        ShippingPolicy updatedPolicy =
-                existingPolicy.update(
-                        policyName,
-                        defaultDeliveryCost,
-                        freeShippingThreshold,
-                        deliveryGuide,
-                        displayOrder,
-                        Instant.now(clockHolder.getClock()));
+        // 정책 정보 업데이트
+        shippingPolicy.update(context.updateData(), context.changedAt());
 
-        shippingPolicyPersistenceManager.persist(updatedPolicy);
+        commandManager.persist(shippingPolicy);
     }
 }

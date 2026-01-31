@@ -18,7 +18,6 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
@@ -26,10 +25,13 @@ import org.springframework.transaction.PlatformTransactionManager;
  *
  * <p>레거시 USERS 테이블 → 신규 members 테이블 마이그레이션
  *
+ * <p><b>NOTE:</b> Member 기능이 아직 개발되지 않아 비활성화 상태입니다. Member 기능 개발 완료 후 @Configuration 주석 해제하여
+ * 활성화하세요.
+ *
  * @author development-team
  * @since 1.0.0
  */
-@Configuration
+// @Configuration // TODO: Member 기능 개발 후 활성화
 public class MemberMigrationJobConfig {
 
     private static final Logger log = LoggerFactory.getLogger(MemberMigrationJobConfig.class);

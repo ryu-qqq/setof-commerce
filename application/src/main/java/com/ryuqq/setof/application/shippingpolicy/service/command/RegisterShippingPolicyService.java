@@ -1,44 +1,52 @@
 package com.ryuqq.setof.application.shippingpolicy.service.command;
 
 import com.ryuqq.setof.application.shippingpolicy.dto.command.RegisterShippingPolicyCommand;
-import com.ryuqq.setof.application.shippingpolicy.factory.command.ShippingPolicyCommandFactory;
-import com.ryuqq.setof.application.shippingpolicy.manager.command.ShippingPolicyPersistenceManager;
+import com.ryuqq.setof.application.shippingpolicy.factory.ShippingPolicyCommandFactory;
+import com.ryuqq.setof.application.shippingpolicy.internal.DefaultShippingPolicyResolver;
+import com.ryuqq.setof.application.shippingpolicy.manager.ShippingPolicyCommandManager;
 import com.ryuqq.setof.application.shippingpolicy.port.in.command.RegisterShippingPolicyUseCase;
 import com.ryuqq.setof.domain.shippingpolicy.aggregate.ShippingPolicy;
-import com.ryuqq.setof.domain.shippingpolicy.vo.ShippingPolicyId;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 배송 정책 등록 서비스
+ * RegisterShippingPolicyService - 배송 정책 등록 Service
  *
- * <p>처리 순서:
+ * <p>APP-TIM-001: TimeProvider 직접 사용 금지 - Factory에서 처리
  *
- * <ol>
- *   <li>ShippingPolicyCommandFactory로 ShippingPolicy 도메인 생성 (VO 검증 포함)
- *   <li>ShippingPolicyPersistenceManager로 저장
- * </ol>
+ * <p>비즈니스 로직:
  *
- * @author development-team
- * @since 1.0.0
+ * <ul>
+ *   <li>기본 정책으로 등록 시 기존 기본 정책 해제
+ *   <li>첫 번째 정책 등록 시 자동으로 기본 정책 설정
+ * </ul>
+ *
+ * @author ryu-qqq
  */
 @Service
 public class RegisterShippingPolicyService implements RegisterShippingPolicyUseCase {
 
-    private final ShippingPolicyCommandFactory shippingPolicyCommandFactory;
-    private final ShippingPolicyPersistenceManager shippingPolicyPersistenceManager;
+    private final ShippingPolicyCommandFactory commandFactory;
+    private final ShippingPolicyCommandManager commandManager;
+    private final DefaultShippingPolicyResolver defaultPolicyResolver;
 
     public RegisterShippingPolicyService(
-            ShippingPolicyCommandFactory shippingPolicyCommandFactory,
-            ShippingPolicyPersistenceManager shippingPolicyPersistenceManager) {
-        this.shippingPolicyCommandFactory = shippingPolicyCommandFactory;
-        this.shippingPolicyPersistenceManager = shippingPolicyPersistenceManager;
+            ShippingPolicyCommandFactory commandFactory,
+            ShippingPolicyCommandManager commandManager,
+            DefaultShippingPolicyResolver defaultPolicyResolver) {
+        this.commandFactory = commandFactory;
+        this.commandManager = commandManager;
+        this.defaultPolicyResolver = defaultPolicyResolver;
     }
 
     @Override
+    @Transactional
     public Long execute(RegisterShippingPolicyCommand command) {
-        ShippingPolicy shippingPolicy = shippingPolicyCommandFactory.create(command);
-        ShippingPolicyId shippingPolicyId =
-                shippingPolicyPersistenceManager.persist(shippingPolicy);
-        return shippingPolicyId.value();
+        ShippingPolicy shippingPolicy = commandFactory.create(command);
+
+        defaultPolicyResolver.resolveForRegistration(
+                shippingPolicy.sellerId(), shippingPolicy, shippingPolicy.createdAt());
+
+        return commandManager.persist(shippingPolicy);
     }
 }

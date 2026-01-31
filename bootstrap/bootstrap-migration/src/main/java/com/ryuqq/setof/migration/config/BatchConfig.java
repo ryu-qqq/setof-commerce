@@ -36,9 +36,9 @@ public class BatchConfig {
     /**
      * Batch 전용 TransactionManager
      *
-     * <p>Spring Batch 메타 테이블 관리용 트랜잭션 매니저입니다.
+     * <p>Spring Batch 메타 테이블 관리용 트랜잭션 매니저입니다. 기본 transactionManager로도 사용됩니다.
      */
-    @Bean(name = "batchTransactionManager")
+    @Bean(name = {"batchTransactionManager", "transactionManager"})
     public PlatformTransactionManager batchTransactionManager() {
         return new DataSourceTransactionManager(migrationDataSource);
     }
@@ -69,6 +69,7 @@ public class BatchConfig {
     public JobExplorer jobExplorer() throws Exception {
         JobExplorerFactoryBean factory = new JobExplorerFactoryBean();
         factory.setDataSource(migrationDataSource);
+        factory.setTransactionManager(batchTransactionManager());
         factory.setTablePrefix("BATCH_");
         factory.afterPropertiesSet();
         return factory.getObject();

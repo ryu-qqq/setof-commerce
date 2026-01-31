@@ -1,43 +1,36 @@
 package com.ryuqq.setof.application.seller.service.command;
 
+import com.ryuqq.setof.application.seller.dto.bundle.SellerRegistrationBundle;
 import com.ryuqq.setof.application.seller.dto.command.RegisterSellerCommand;
-import com.ryuqq.setof.application.seller.factory.command.SellerCommandFactory;
-import com.ryuqq.setof.application.seller.manager.command.SellerPersistenceManager;
+import com.ryuqq.setof.application.seller.factory.SellerCommandFactory;
+import com.ryuqq.setof.application.seller.internal.SellerRegistrationCoordinator;
 import com.ryuqq.setof.application.seller.port.in.command.RegisterSellerUseCase;
-import com.ryuqq.setof.domain.seller.aggregate.Seller;
-import com.ryuqq.setof.domain.seller.vo.SellerId;
 import org.springframework.stereotype.Service;
 
 /**
- * 셀러 등록 서비스
+ * RegisterSellerService - 셀러 등록 Service.
  *
- * <p>처리 순서:
+ * <p>Seller + BusinessInfo + Addresses 한번에 등록
  *
- * <ol>
- *   <li>SellerCommandFactory로 Seller 도메인 생성 (VO 검증 포함)
- *   <li>SellerPersistenceManager로 저장
- * </ol>
+ * <p>Factory에서 번들 생성 → Coordinator를 통해 검증 및 저장
  *
- * @author development-team
- * @since 1.0.0
+ * @author ryu-qqq
  */
 @Service
 public class RegisterSellerService implements RegisterSellerUseCase {
 
-    private final SellerCommandFactory sellerCommandFactory;
-    private final SellerPersistenceManager sellerPersistenceManager;
+    private final SellerCommandFactory commandFactory;
+    private final SellerRegistrationCoordinator coordinator;
 
     public RegisterSellerService(
-            SellerCommandFactory sellerCommandFactory,
-            SellerPersistenceManager sellerPersistenceManager) {
-        this.sellerCommandFactory = sellerCommandFactory;
-        this.sellerPersistenceManager = sellerPersistenceManager;
+            SellerCommandFactory commandFactory, SellerRegistrationCoordinator coordinator) {
+        this.commandFactory = commandFactory;
+        this.coordinator = coordinator;
     }
 
     @Override
     public Long execute(RegisterSellerCommand command) {
-        Seller seller = sellerCommandFactory.create(command);
-        SellerId sellerId = sellerPersistenceManager.persist(seller);
-        return sellerId.value();
+        SellerRegistrationBundle bundle = commandFactory.createRegistrationBundle(command);
+        return coordinator.register(bundle);
     }
 }

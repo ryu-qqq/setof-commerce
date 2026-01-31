@@ -1,139 +1,137 @@
 package com.ryuqq.setof.domain.shippingpolicy.aggregate;
 
-import com.ryuqq.setof.domain.shippingpolicy.vo.DeliveryCost;
-import com.ryuqq.setof.domain.shippingpolicy.vo.DeliveryGuide;
-import com.ryuqq.setof.domain.shippingpolicy.vo.DisplayOrder;
-import com.ryuqq.setof.domain.shippingpolicy.vo.FreeShippingThreshold;
-import com.ryuqq.setof.domain.shippingpolicy.vo.PolicyName;
-import com.ryuqq.setof.domain.shippingpolicy.vo.ShippingPolicyId;
+import com.ryuqq.setof.domain.common.vo.Money;
+import com.ryuqq.setof.domain.seller.id.SellerId;
+import com.ryuqq.setof.domain.shippingpolicy.exception.CannotDeactivateDefaultShippingPolicyException;
+import com.ryuqq.setof.domain.shippingpolicy.exception.InvalidFreeThresholdException;
+import com.ryuqq.setof.domain.shippingpolicy.id.ShippingPolicyId;
+import com.ryuqq.setof.domain.shippingpolicy.vo.LeadTime;
+import com.ryuqq.setof.domain.shippingpolicy.vo.ShippingFeeType;
+import com.ryuqq.setof.domain.shippingpolicy.vo.ShippingPolicyName;
 import java.time.Instant;
+import java.time.LocalTime;
 
 /**
- * ShippingPolicy Aggregate Root
+ * 배송 정책 Aggregate.
  *
- * <p>배송 정책을 나타내는 도메인 엔티티입니다.
- *
- * <p>비즈니스 규칙:
+ * <h2>비즈니스 규칙</h2>
  *
  * <ul>
- *   <li>셀러당 최소 1개의 배송 정책이 필수
- *   <li>기본 정책(isDefault)은 반드시 1개 존재
- *   <li>기본 정책 삭제 시 가장 최근 정책이 자동 승격
- *   <li>마지막 정책은 삭제 불가
+ *   <li><b>POL-DEF-001</b>: 셀러당 기본 정책은 정확히 1개만 존재해야 함
+ *   <li><b>POL-DEF-002</b>: 기본 정책은 활성화 상태여야 함
+ *   <li><b>POL-DEACT-001</b>: 기본 정책은 비활성화 불가
+ *   <li><b>POL-DEACT-002</b>: 마지막 활성 정책은 비활성화 불가
  * </ul>
  *
- * <p>Domain Layer Zero-Tolerance 규칙:
- *
- * <ul>
- *   <li>Lombok 금지 - Pure Java 사용
- *   <li>불변성 보장 - final 필드
- *   <li>Private 생성자 + Static Factory - 외부 직접 생성 금지
- *   <li>Law of Demeter - Helper 메서드로 내부 객체 접근 제공
- * </ul>
+ * @see <a href="docs/business-rules/POLICY_RULES.md">정책 비즈니스 규칙 문서</a>
  */
 public class ShippingPolicy {
 
     private final ShippingPolicyId id;
-    private final Long sellerId;
-    private final PolicyName policyName;
-    private final DeliveryCost defaultDeliveryCost;
-    private final FreeShippingThreshold freeShippingThreshold;
-    private final DeliveryGuide deliveryGuide;
-    private final boolean isDefault;
-    private final DisplayOrder displayOrder;
-    private final Instant createdAt;
-    private final Instant updatedAt;
-    private final Instant deletedAt;
+    private final SellerId sellerId;
+    private ShippingPolicyName policyName;
+    private boolean defaultPolicy;
+    private boolean active;
 
-    /** Private 생성자 - 외부 직접 생성 금지 */
+    private ShippingFeeType shippingFeeType;
+    private Money baseFee;
+    private Money freeThreshold;
+
+    private Money jejuExtraFee;
+    private Money islandExtraFee;
+
+    private Money returnFee;
+    private Money exchangeFee;
+
+    private LeadTime leadTime;
+
+    private final Instant createdAt;
+    private Instant updatedAt;
+    private Instant deletedAt;
+
     private ShippingPolicy(
             ShippingPolicyId id,
-            Long sellerId,
-            PolicyName policyName,
-            DeliveryCost defaultDeliveryCost,
-            FreeShippingThreshold freeShippingThreshold,
-            DeliveryGuide deliveryGuide,
-            boolean isDefault,
-            DisplayOrder displayOrder,
+            SellerId sellerId,
+            ShippingPolicyName policyName,
+            boolean defaultPolicy,
+            boolean active,
+            ShippingFeeType shippingFeeType,
+            Money baseFee,
+            Money freeThreshold,
+            Money jejuExtraFee,
+            Money islandExtraFee,
+            Money returnFee,
+            Money exchangeFee,
+            LeadTime leadTime,
             Instant createdAt,
             Instant updatedAt,
             Instant deletedAt) {
         this.id = id;
         this.sellerId = sellerId;
         this.policyName = policyName;
-        this.defaultDeliveryCost = defaultDeliveryCost;
-        this.freeShippingThreshold = freeShippingThreshold;
-        this.deliveryGuide = deliveryGuide;
-        this.isDefault = isDefault;
-        this.displayOrder = displayOrder;
+        this.defaultPolicy = defaultPolicy;
+        this.active = active;
+        this.shippingFeeType = shippingFeeType;
+        this.baseFee = baseFee;
+        this.freeThreshold = freeThreshold;
+        this.jejuExtraFee = jejuExtraFee;
+        this.islandExtraFee = islandExtraFee;
+        this.returnFee = returnFee;
+        this.exchangeFee = exchangeFee;
+        this.leadTime = leadTime;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
     }
 
-    /**
-     * 신규 배송 정책 생성용 Static Factory Method
-     *
-     * @param sellerId 셀러 ID
-     * @param policyName 정책명
-     * @param defaultDeliveryCost 기본 배송비
-     * @param freeShippingThreshold 무료 배송 기준 금액 (nullable)
-     * @param deliveryGuide 배송 안내 (nullable)
-     * @param isDefault 기본 정책 여부
-     * @param displayOrder 표시 순서
-     * @param createdAt 생성일시
-     * @return ShippingPolicy 인스턴스
-     */
-    public static ShippingPolicy create(
-            Long sellerId,
-            PolicyName policyName,
-            DeliveryCost defaultDeliveryCost,
-            FreeShippingThreshold freeShippingThreshold,
-            DeliveryGuide deliveryGuide,
-            boolean isDefault,
-            DisplayOrder displayOrder,
-            Instant createdAt) {
+    public static ShippingPolicy forNew(
+            SellerId sellerId,
+            ShippingPolicyName policyName,
+            boolean defaultPolicy,
+            ShippingFeeType shippingFeeType,
+            Money baseFee,
+            Money freeThreshold,
+            Money jejuExtraFee,
+            Money islandExtraFee,
+            Money returnFee,
+            Money exchangeFee,
+            LeadTime leadTime,
+            Instant now) {
+        validateFeeSettings(shippingFeeType, freeThreshold);
+
         return new ShippingPolicy(
-                null,
+                ShippingPolicyId.forNew(),
                 sellerId,
                 policyName,
-                defaultDeliveryCost,
-                freeShippingThreshold,
-                deliveryGuide,
-                isDefault,
-                displayOrder,
-                createdAt,
-                createdAt,
+                defaultPolicy,
+                true,
+                shippingFeeType,
+                baseFee,
+                freeThreshold,
+                jejuExtraFee,
+                islandExtraFee,
+                returnFee,
+                exchangeFee,
+                leadTime,
+                now,
+                now,
                 null);
     }
 
-    /**
-     * Persistence에서 복원용 Static Factory Method
-     *
-     * <p>검증 없이 모든 필드를 그대로 복원
-     *
-     * @param id 배송 정책 ID
-     * @param sellerId 셀러 ID
-     * @param policyName 정책명
-     * @param defaultDeliveryCost 기본 배송비
-     * @param freeShippingThreshold 무료 배송 기준 금액 (nullable)
-     * @param deliveryGuide 배송 안내 (nullable)
-     * @param isDefault 기본 정책 여부
-     * @param displayOrder 표시 순서
-     * @param createdAt 생성일시
-     * @param updatedAt 수정일시
-     * @param deletedAt 삭제일시 (nullable)
-     * @return ShippingPolicy 인스턴스
-     */
     public static ShippingPolicy reconstitute(
             ShippingPolicyId id,
-            Long sellerId,
-            PolicyName policyName,
-            DeliveryCost defaultDeliveryCost,
-            FreeShippingThreshold freeShippingThreshold,
-            DeliveryGuide deliveryGuide,
-            boolean isDefault,
-            DisplayOrder displayOrder,
+            SellerId sellerId,
+            ShippingPolicyName policyName,
+            boolean defaultPolicy,
+            boolean active,
+            ShippingFeeType shippingFeeType,
+            Money baseFee,
+            Money freeThreshold,
+            Money jejuExtraFee,
+            Money islandExtraFee,
+            Money returnFee,
+            Money exchangeFee,
+            LeadTime leadTime,
             Instant createdAt,
             Instant updatedAt,
             Instant deletedAt) {
@@ -141,243 +139,243 @@ public class ShippingPolicy {
                 id,
                 sellerId,
                 policyName,
-                defaultDeliveryCost,
-                freeShippingThreshold,
-                deliveryGuide,
-                isDefault,
-                displayOrder,
+                defaultPolicy,
+                active,
+                shippingFeeType,
+                baseFee,
+                freeThreshold,
+                jejuExtraFee,
+                islandExtraFee,
+                returnFee,
+                exchangeFee,
+                leadTime,
                 createdAt,
                 updatedAt,
                 deletedAt);
     }
 
-    // ========== 비즈니스 메서드 ==========
-
-    /**
-     * 배송 정책 업데이트
-     *
-     * @param policyName 새로운 정책명
-     * @param defaultDeliveryCost 새로운 기본 배송비
-     * @param freeShippingThreshold 새로운 무료 배송 기준 금액
-     * @param deliveryGuide 새로운 배송 안내
-     * @param displayOrder 새로운 표시 순서
-     * @param updatedAt 수정일시
-     * @return 업데이트된 ShippingPolicy 인스턴스
-     */
-    public ShippingPolicy update(
-            PolicyName policyName,
-            DeliveryCost defaultDeliveryCost,
-            FreeShippingThreshold freeShippingThreshold,
-            DeliveryGuide deliveryGuide,
-            DisplayOrder displayOrder,
-            Instant updatedAt) {
-        return new ShippingPolicy(
-                this.id,
-                this.sellerId,
-                policyName,
-                defaultDeliveryCost,
-                freeShippingThreshold,
-                deliveryGuide,
-                this.isDefault,
-                displayOrder,
-                this.createdAt,
-                updatedAt,
-                this.deletedAt);
-    }
-
-    /**
-     * 기본 정책으로 설정
-     *
-     * @param updatedAt 수정일시
-     * @return 기본 정책으로 설정된 ShippingPolicy 인스턴스
-     */
-    public ShippingPolicy setAsDefault(Instant updatedAt) {
-        return new ShippingPolicy(
-                this.id,
-                this.sellerId,
-                this.policyName,
-                this.defaultDeliveryCost,
-                this.freeShippingThreshold,
-                this.deliveryGuide,
-                true,
-                this.displayOrder,
-                this.createdAt,
-                updatedAt,
-                this.deletedAt);
-    }
-
-    /**
-     * 기본 정책 해제
-     *
-     * @param updatedAt 수정일시
-     * @return 기본 정책이 해제된 ShippingPolicy 인스턴스
-     */
-    public ShippingPolicy unsetDefault(Instant updatedAt) {
-        return new ShippingPolicy(
-                this.id,
-                this.sellerId,
-                this.policyName,
-                this.defaultDeliveryCost,
-                this.freeShippingThreshold,
-                this.deliveryGuide,
-                false,
-                this.displayOrder,
-                this.createdAt,
-                updatedAt,
-                this.deletedAt);
-    }
-
-    /**
-     * 삭제 처리 (Soft Delete)
-     *
-     * @param deletedAt 삭제일시
-     * @return 삭제된 ShippingPolicy 인스턴스
-     */
-    public ShippingPolicy delete(Instant deletedAt) {
-        return new ShippingPolicy(
-                this.id,
-                this.sellerId,
-                this.policyName,
-                this.defaultDeliveryCost,
-                this.freeShippingThreshold,
-                this.deliveryGuide,
-                false, // 삭제 시 기본 정책 해제
-                this.displayOrder,
-                this.createdAt,
-                deletedAt,
-                deletedAt);
-    }
-
-    /**
-     * 배송비 계산
-     *
-     * @param orderAmount 주문 금액
-     * @return 적용될 배송비
-     */
-    public int calculateDeliveryCost(int orderAmount) {
-        if (freeShippingThreshold != null && freeShippingThreshold.isFreeShipping(orderAmount)) {
-            return 0;
+    private static void validateFeeSettings(ShippingFeeType feeType, Money freeThreshold) {
+        if (feeType.isConditionalFree() && (freeThreshold == null || freeThreshold.isZero())) {
+            throw new InvalidFreeThresholdException();
         }
-        return defaultDeliveryCost.value();
+    }
+
+    public boolean isNew() {
+        return id.isNew();
+    }
+
+    public void updatePolicy(
+            ShippingPolicyName policyName,
+            ShippingFeeType shippingFeeType,
+            Money baseFee,
+            Money freeThreshold,
+            Money jejuExtraFee,
+            Money islandExtraFee,
+            Money returnFee,
+            Money exchangeFee,
+            LeadTime leadTime,
+            Instant now) {
+        validateFeeSettings(shippingFeeType, freeThreshold);
+
+        this.policyName = policyName;
+        this.shippingFeeType = shippingFeeType;
+        this.baseFee = baseFee;
+        this.freeThreshold = freeThreshold;
+        this.jejuExtraFee = jejuExtraFee;
+        this.islandExtraFee = islandExtraFee;
+        this.returnFee = returnFee;
+        this.exchangeFee = exchangeFee;
+        this.leadTime = leadTime;
+        this.updatedAt = now;
     }
 
     /**
-     * 삭제 여부 확인
+     * UpdateData를 사용한 정책 수정.
      *
-     * @return 삭제되었으면 true
+     * @param updateData 수정 데이터
+     * @param now 수정 시간
      */
-    public boolean isDeleted() {
-        return deletedAt != null;
+    public void update(ShippingPolicyUpdateData updateData, Instant now) {
+        updatePolicy(
+                updateData.policyName(),
+                updateData.shippingFeeType(),
+                updateData.baseFee(),
+                updateData.freeThreshold(),
+                updateData.jejuExtraFee(),
+                updateData.islandExtraFee(),
+                updateData.returnFee(),
+                updateData.exchangeFee(),
+                updateData.leadTime(),
+                now);
+    }
+
+    public void markAsDefault(Instant now) {
+        this.defaultPolicy = true;
+        this.updatedAt = now;
+    }
+
+    public void unmarkDefault(Instant now) {
+        this.defaultPolicy = false;
+        this.updatedAt = now;
+    }
+
+    public void activate(Instant now) {
+        this.active = true;
+        this.updatedAt = now;
     }
 
     /**
-     * ID 존재 여부 확인 (영속화 여부)
+     * 정책 비활성화.
      *
-     * @return ID가 있으면 true
+     * <p><b>POL-DEACT-001</b>: 기본 정책은 비활성화 불가
+     *
+     * @param now 변경 시간
+     * @throws CannotDeactivateDefaultShippingPolicyException 기본 정책인 경우
      */
-    public boolean hasId() {
-        return id != null;
+    public void deactivate(Instant now) {
+        if (this.defaultPolicy) {
+            throw new CannotDeactivateDefaultShippingPolicyException();
+        }
+        this.active = false;
+        this.updatedAt = now;
     }
 
-    // ========== Law of Demeter Helper Methods ==========
-
-    /**
-     * 배송 정책 ID 값 반환 (Law of Demeter 준수)
-     *
-     * @return 배송 정책 ID Long 값, ID가 없으면 null
-     */
-    public Long getIdValue() {
-        return id != null ? id.value() : null;
+    public Money calculateShippingFee(Money orderAmount) {
+        return switch (shippingFeeType) {
+            case FREE -> Money.zero();
+            case PAID -> baseFee;
+            case CONDITIONAL_FREE -> {
+                if (orderAmount.isGreaterThanOrEqual(freeThreshold)) {
+                    yield Money.zero();
+                }
+                yield baseFee;
+            }
+            case QUANTITY_BASED -> baseFee;
+        };
     }
 
-    /**
-     * 정책명 값 반환 (Law of Demeter 준수)
-     *
-     * @return 정책명 문자열
-     */
-    public String getPolicyNameValue() {
-        return policyName.value();
+    public Money calculateShippingFeeWithJeju(Money orderAmount) {
+        return calculateShippingFee(orderAmount).add(jejuExtraFee);
     }
 
-    /**
-     * 기본 배송비 값 반환 (Law of Demeter 준수)
-     *
-     * @return 기본 배송비 (원)
-     */
-    public Integer getDefaultDeliveryCostValue() {
-        return defaultDeliveryCost.value();
+    public Money calculateShippingFeeWithIsland(Money orderAmount) {
+        return calculateShippingFee(orderAmount).add(islandExtraFee);
     }
 
-    /**
-     * 무료 배송 기준 금액 값 반환 (Law of Demeter 준수)
-     *
-     * @return 무료 배송 기준 금액 (원), 없으면 null
-     */
-    public Integer getFreeShippingThresholdValue() {
-        return freeShippingThreshold != null ? freeShippingThreshold.value() : null;
-    }
-
-    /**
-     * 배송 안내 값 반환 (Law of Demeter 준수)
-     *
-     * @return 배송 안내 문구, 없으면 null
-     */
-    public String getDeliveryGuideValue() {
-        return deliveryGuide != null ? deliveryGuide.value() : null;
-    }
-
-    /**
-     * 표시 순서 값 반환 (Law of Demeter 준수)
-     *
-     * @return 표시 순서
-     */
-    public Integer getDisplayOrderValue() {
-        return displayOrder.value();
-    }
-
-    // ========== Getter 메서드 (Lombok 금지) ==========
-
-    public ShippingPolicyId getId() {
+    // VO Getters
+    public ShippingPolicyId id() {
         return id;
     }
 
-    public Long getSellerId() {
+    public Long idValue() {
+        return id.value();
+    }
+
+    public SellerId sellerId() {
         return sellerId;
     }
 
-    public PolicyName getPolicyName() {
+    public Long sellerIdValue() {
+        return sellerId.value();
+    }
+
+    public ShippingPolicyName policyName() {
         return policyName;
     }
 
-    public DeliveryCost getDefaultDeliveryCost() {
-        return defaultDeliveryCost;
+    public String policyNameValue() {
+        return policyName.value();
     }
 
-    public FreeShippingThreshold getFreeShippingThreshold() {
-        return freeShippingThreshold;
+    public boolean isDefaultPolicy() {
+        return defaultPolicy;
     }
 
-    public DeliveryGuide getDeliveryGuide() {
-        return deliveryGuide;
+    public boolean isActive() {
+        return active;
     }
 
-    public boolean isDefault() {
-        return isDefault;
+    public ShippingFeeType shippingFeeType() {
+        return shippingFeeType;
     }
 
-    public DisplayOrder getDisplayOrder() {
-        return displayOrder;
+    public Money baseFee() {
+        return baseFee;
     }
 
-    public Instant getCreatedAt() {
+    public Integer baseFeeValue() {
+        return baseFee != null ? baseFee.value() : null;
+    }
+
+    public Money freeThreshold() {
+        return freeThreshold;
+    }
+
+    public Integer freeThresholdValue() {
+        return freeThreshold != null ? freeThreshold.value() : null;
+    }
+
+    public Money jejuExtraFee() {
+        return jejuExtraFee;
+    }
+
+    public Integer jejuExtraFeeValue() {
+        return jejuExtraFee != null ? jejuExtraFee.value() : null;
+    }
+
+    public Money islandExtraFee() {
+        return islandExtraFee;
+    }
+
+    public Integer islandExtraFeeValue() {
+        return islandExtraFee != null ? islandExtraFee.value() : null;
+    }
+
+    public Money returnFee() {
+        return returnFee;
+    }
+
+    public Integer returnFeeValue() {
+        return returnFee != null ? returnFee.value() : null;
+    }
+
+    public Money exchangeFee() {
+        return exchangeFee;
+    }
+
+    public Integer exchangeFeeValue() {
+        return exchangeFee != null ? exchangeFee.value() : null;
+    }
+
+    public LeadTime leadTime() {
+        return leadTime;
+    }
+
+    public int leadTimeMinDays() {
+        return leadTime != null ? leadTime.minDays() : 0;
+    }
+
+    public int leadTimeMaxDays() {
+        return leadTime != null ? leadTime.maxDays() : 0;
+    }
+
+    public LocalTime leadTimeCutoffTime() {
+        return leadTime != null ? leadTime.cutoffTime() : null;
+    }
+
+    public Instant createdAt() {
         return createdAt;
     }
 
-    public Instant getUpdatedAt() {
+    public Instant updatedAt() {
         return updatedAt;
     }
 
-    public Instant getDeletedAt() {
+    public Instant deletedAt() {
         return deletedAt;
+    }
+
+    public boolean isDeleted() {
+        return deletedAt != null;
     }
 }

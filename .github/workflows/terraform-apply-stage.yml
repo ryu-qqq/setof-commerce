@@ -10,6 +10,7 @@
 # - ecs-web-api-legacy-stage: Stage Legacy API
 # - ecs-web-api-legacy-admin-stage: Stage Legacy Admin API
 # - ecs-batch-stage: Stage Batch Jobs
+# - ecs-scheduler-stage: Stage Scheduler (Outbox processing)
 # ============================================================================
 
 name: Terraform Apply (Stage)
@@ -28,6 +29,14 @@ on:
         type: string
       legacy-batch-image-tag:
         description: 'Legacy Batch Docker image tag (e.g., legacy-batch-stage-1-abc1234)'
+        required: false
+        type: string
+      migration-image-tag:
+        description: 'Migration Docker image tag (e.g., migration-stage-1-abc1234)'
+        required: false
+        type: string
+      scheduler-image-tag:
+        description: 'Scheduler Docker image tag (e.g., scheduler-stage-1-abc1234)'
         required: false
         type: string
     secrets:
@@ -54,20 +63,26 @@ jobs:
         module:
           # 의존성 순서대로 배치
           - name: ecr-stage
-            dir: terraform/ecr-stage
+            dir: terraform/environments/stage/ecr
             order: 0
           - name: ecs-cluster-stage
-            dir: terraform/ecs-cluster-stage
+            dir: terraform/environments/stage/ecs-cluster
             order: 1
           - name: ecs-web-api-legacy-stage
-            dir: terraform/ecs-web-api-legacy-stage
+            dir: terraform/environments/stage/ecs-web-api-legacy
             order: 2
           - name: ecs-web-api-legacy-admin-stage
-            dir: terraform/ecs-web-api-legacy-admin-stage
+            dir: terraform/environments/stage/ecs-web-api-legacy-admin
             order: 3
           - name: ecs-batch-stage
-            dir: terraform/ecs-batch-stage
+            dir: terraform/environments/stage/ecs-batch
             order: 4
+          - name: ecs-migration-stage
+            dir: terraform/environments/stage/ecs-migration
+            order: 5
+          - name: ecs-scheduler-stage
+            dir: terraform/environments/stage/ecs-scheduler
+            order: 6
 
     steps:
       - name: Checkout code
@@ -113,15 +128,19 @@ jobs:
             echo "📦 ECR Stage Repository 리소스 Import 중..."
             if aws ecr describe-repositories --repository-names setof-commerce-legacy-api-stage --region ap-northeast-2 >/dev/null 2>&1; then
               echo "  → Importing setof-commerce-legacy-api-stage ECR repository..."
-              terraform import -input=false 'module.ecr_legacy_api_stage.aws_ecr_repository.this' setof-commerce-legacy-api-stage || echo "  ⚠️ Import failed or already in state"
+              terraform import -input=false 'module.ecr_legacy_api.aws_ecr_repository.this' setof-commerce-legacy-api-stage || echo "  ⚠️ Import failed or already in state"
             fi
             if aws ecr describe-repositories --repository-names setof-commerce-legacy-api-admin-stage --region ap-northeast-2 >/dev/null 2>&1; then
               echo "  → Importing setof-commerce-legacy-api-admin-stage ECR repository..."
-              terraform import -input=false 'module.ecr_legacy_api_admin_stage.aws_ecr_repository.this' setof-commerce-legacy-api-admin-stage || echo "  ⚠️ Import failed or already in state"
+              terraform import -input=false 'module.ecr_legacy_api_admin.aws_ecr_repository.this' setof-commerce-legacy-api-admin-stage || echo "  ⚠️ Import failed or already in state"
             fi
             if aws ecr describe-repositories --repository-names setof-commerce-legacy-batch-stage --region ap-northeast-2 >/dev/null 2>&1; then
               echo "  → Importing setof-commerce-legacy-batch-stage ECR repository..."
-              terraform import -input=false 'module.ecr_legacy_batch_stage.aws_ecr_repository.this' setof-commerce-legacy-batch-stage || echo "  ⚠️ Import failed or already in state"
+              terraform import -input=false 'module.ecr_legacy_batch.aws_ecr_repository.this' setof-commerce-legacy-batch-stage || echo "  ⚠️ Import failed or already in state"
+            fi
+            if aws ecr describe-repositories --repository-names setof-commerce-scheduler-stage --region ap-northeast-2 >/dev/null 2>&1; then
+              echo "  → Importing setof-commerce-scheduler-stage ECR repository..."
+              terraform import -input=false 'module.ecr_scheduler.aws_ecr_repository.this' setof-commerce-scheduler-stage || echo "  ⚠️ Import failed or already in state"
             fi
           fi
 
@@ -139,6 +158,12 @@ jobs:
                 ;;
               "ecs-batch-stage")
                 SG_NAME="setof-commerce-legacy-batch-sg-stage"
+                ;;
+              "ecs-scheduler-stage")
+                SG_NAME="setof-commerce-scheduler-sg-stage"
+                ;;
+              "ecs-migration-stage")
+                SG_NAME="setof-commerce-migration-sg-stage"
                 ;;
               *)
                 SG_NAME=""
@@ -246,6 +271,12 @@ jobs:
           elif [ "${{ matrix.module.name }}" == "ecs-batch-stage" ] && [ -n "${{ inputs.legacy-batch-image-tag }}" ]; then
             echo "📦 Using Legacy Batch Stage image tag: ${{ inputs.legacy-batch-image-tag }}"
             EXTRA_VARS="-var=image_tag=${{ inputs.legacy-batch-image-tag }}"
+          elif [ "${{ matrix.module.name }}" == "ecs-migration-stage" ] && [ -n "${{ inputs.migration-image-tag }}" ]; then
+            echo "📦 Using Migration Stage image tag: ${{ inputs.migration-image-tag }}"
+            EXTRA_VARS="-var=image_tag=${{ inputs.migration-image-tag }}"
+          elif [ "${{ matrix.module.name }}" == "ecs-scheduler-stage" ] && [ -n "${{ inputs.scheduler-image-tag }}" ]; then
+            echo "📦 Using Scheduler Stage image tag: ${{ inputs.scheduler-image-tag }}"
+            EXTRA_VARS="-var=image_tag=${{ inputs.scheduler-image-tag }}"
           else
             echo "ℹ️ No image tag provided for ${{ matrix.module.name }}, using default from provider.tf"
           fi
@@ -295,11 +326,13 @@ jobs:
           echo "- ✅ ECS Legacy API (Stage)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ ECS Legacy Admin API (Stage)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ ECS Batch (Stage - RunTask only)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ ECS Scheduler (Stage - Outbox processing)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Stage Application URLs**:" >> $GITHUB_STEP_SUMMARY
           echo "- Legacy API: https://stage-server.set-of.com" >> $GITHUB_STEP_SUMMARY
           echo "- Legacy Admin API: https://stage-partner.set-of.com" >> $GITHUB_STEP_SUMMARY
           echo "- Batch: EventBridge scheduled (no public endpoint)" >> $GITHUB_STEP_SUMMARY
+          echo "- Scheduler: Internal service (Outbox processing)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Next Steps**:" >> $GITHUB_STEP_SUMMARY
           echo "1. Verify infrastructure in AWS Console" >> $GITHUB_STEP_SUMMARY

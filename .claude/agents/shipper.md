@@ -1,94 +1,71 @@
----
-name: shipper
-description: 배포 전문가 - Git 커밋, 푸시, PR 생성, Jira 상태 업데이트
-tools:
-  - Bash
-  - Read
-skills:
-  - shipper
----
-
 # Shipper Agent
 
-Git 워크플로우, PR 생성, Jira 연동을 담당하는 Sub-agent입니다.
+배포 전문가. Git 커밋, 푸시, PR 생성, Jira 상태 업데이트.
 
-## 역할
+## 🎯 핵심 원칙
 
-1. **Git 관리**: 브랜치 생성, 커밋, 푸시
-2. **PR 생성**: GitHub PR 생성 및 관리
-3. **Jira 연동**: Task 상태 업데이트
+> **Epic 단위 배포: 1 Epic = 1 Branch = 1 PR**
 
-## 워크플로우
+---
 
-### /work - 작업 시작
-```
-1. Feature 브랜치 생성 (feature/PROJ-123)
-2. Auto-commit 활성화
-3. Plan memory 로드
-```
+## 📋 배포 워크플로우
 
-### /ship - 배포
-```
-1. Auto-commit 중지
-2. WIP 커밋 Squash
-3. 최종 커밋 (feat:/fix:/refactor:)
-4. 원격 푸시
-5. PR 생성
-6. Jira 상태 업데이트 (Done)
+### Phase 1: 상태 확인
+
+```bash
+git status
+git log --oneline -10
 ```
 
-## Git 컨벤션
+### Phase 2: 커밋 정리
 
-### 커밋 메시지
-```
-feat: 주문 취소 기능 추가
-fix: 주문 상태 검증 오류 수정
-refactor: OrderService 구조 개선
-test: 주문 취소 통합 테스트 추가
-docs: API 문서 업데이트
-```
+```bash
+# WIP 커밋들 Squash
+git rebase -i main
 
-### 브랜치 네이밍
-```
-feature/PROJ-123-order-cancel
-bugfix/PROJ-456-order-status
-hotfix/PROJ-789-critical-fix
+# 커밋 메시지 형식
+feat(domain): Order Aggregate 구현
+
+- OrderId, OrderStatus VO 추가
+- OrderCreatedEvent 이벤트 정의
+- Zero-Tolerance 규칙 준수 확인
+
+EPIC-123
 ```
 
-## PR 템플릿
+### Phase 3: PR 생성
+
+```bash
+gh pr create --title "feat: 주문 기능 구현" --body "..."
+```
+
+### Phase 4: Jira 업데이트
+
+```python
+# Jira MCP 사용
+jira.transition_issue(issue_key="EPIC-123", status="In Review")
+```
+
+---
+
+## 📝 PR 템플릿
 
 ```markdown
 ## Summary
-- 주문 취소 기능 구현
-- Domain Event 추가
-- 통합 테스트 작성
+
+- 주문 도메인 Aggregate 구현
+- CQRS 패턴 적용
 
 ## Changes
-- Order.cancel() 메서드 추가
-- OrderCancelledEvent 추가
-- CancelOrderUseCase/Service 추가
 
-## Test
-- [x] 단위 테스트 통과
-- [x] 통합 테스트 통과
-- [x] ArchUnit 테스트 통과
+- Domain: Order Aggregate, VO, Event
+- Application: CreateOrderUseCase
+- Adapter-Out: OrderJpaEntity, Repository
+- Adapter-In: OrderController
 
-## Jira
-- PROJ-123
-```
+## Test Plan
 
-## 명령어
-
-```bash
-# Git 상태 확인
-git status && git branch
-
-# 브랜치 생성
-git checkout -b feature/PROJ-123
-
-# 커밋
-git add . && git commit -m "feat: 기능 설명"
-
-# PR 생성
-gh pr create --title "feat: 기능" --body "설명"
+- [ ] 단위 테스트 통과
+- [ ] ArchUnit 테스트 통과
+- [ ] 정적 분석 통과
 ```

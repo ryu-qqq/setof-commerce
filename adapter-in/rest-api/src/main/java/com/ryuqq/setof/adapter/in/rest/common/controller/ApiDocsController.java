@@ -1,74 +1,60 @@
 package com.ryuqq.setof.adapter.in.rest.common.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
- * API Documentation Controller
+ * API 문서 접근용 Controller
  *
- * <p>Spring REST Docs로 생성된 API 문서를 제공합니다.
+ * <p>Spring REST Docs로 생성된 HTML 문서를 서빙합니다.
  *
- * <p>빌드 시 asciidoctor 태스크가 생성한 HTML 문서를 static resource로 제공합니다.
- *
- * <p>접근 경로:
+ * <p><strong>API Gateway 라우팅 패턴:</strong>
  *
  * <ul>
- *   <li>/docs - 메인 API 문서
- *   <li>/docs/v2/auth/auth.html - Auth API 문서
- *   <li>/docs/v2/member/member.html - Member API 문서
+ *   <li>Gateway: /api/v1/templates/** → 이 서버 (prefix strip 없음)
+ *   <li>REST Docs: /api/v1/templates/docs → 문서 메인 페이지
  * </ul>
  *
- * @author development-team
+ * <p><strong>접근 경로:</strong>
+ *
+ * <ul>
+ *   <li>{@code /api/v1/templates/docs} - API 문서 메인 페이지
+ *   <li>{@code /api/v1/templates/docs/index.html} - API 문서 메인 페이지 (직접 접근)
+ * </ul>
+ *
+ * <p><strong>문서 위치:</strong>
+ *
+ * <ul>
+ *   <li>소스: {@code src/docs/asciidoc/}
+ *   <li>빌드 결과: {@code build/docs/asciidoc/}
+ *   <li>배포 위치: {@code static/docs/} (bootJar 내)
+ * </ul>
+ *
+ * <p><strong>빌드 방법:</strong>
+ *
+ * <pre>{@code
+ * ./gradlew :bootstrap:bootstrap-web-api:asciidoctor
+ * }</pre>
+ *
+ * @author Development Team
  * @since 1.0.0
+ * @see <a href="https://docs.spring.io/spring-restdocs/docs/current/reference/htmlsingle/">Spring
+ *     REST Docs</a>
  */
-@Tag(name = "API Documentation", description = "API 문서 제공")
-@RestController
+@Controller
 public class ApiDocsController {
 
-    private static final String DOCS_BASE_PATH = "static/docs/";
+    private static final String DOCS_PATH = "/api/v1/templates/docs";
 
     /**
-     * API 문서 메인 페이지 제공
+     * API 문서 메인 페이지로 리다이렉트
      *
-     * <p>Spring REST Docs로 생성된 index.html을 반환합니다.
+     * <p>{@code /api/v1/templates/docs} 접근 시 {@code /api/v1/templates/docs/index.html}로 리다이렉트합니다.
      *
-     * @return API 문서 HTML
+     * @return 리다이렉트 경로
      */
-    @Operation(
-            summary = "API 문서 메인 페이지",
-            description = "Spring REST Docs로 생성된 API 문서 메인 페이지를 제공합니다.")
-    @GetMapping(value = "/docs", produces = MediaType.TEXT_HTML_VALUE)
-    public ResponseEntity<Resource> getApiDocs() {
-        Resource resource = new ClassPathResource(DOCS_BASE_PATH + "index.html");
-        return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(resource);
-    }
-
-    /**
-     * API 버전별/도메인별 문서 페이지 제공
-     *
-     * <p>예시: /docs/v2/auth/auth.html
-     *
-     * @param version API 버전 (v2)
-     * @param domain 도메인 (auth, member 등)
-     * @param file 파일명 (auth.html, member.html)
-     * @return API 문서 HTML
-     */
-    @Operation(summary = "API 도메인별 문서 페이지", description = "버전별/도메인별 API 문서를 제공합니다.")
-    @GetMapping(value = "/docs/{version}/{domain}/{file}", produces = MediaType.TEXT_HTML_VALUE)
-    public ResponseEntity<Resource> getApiDocsByDomain(
-            @Parameter(description = "API 버전 (예: v2)") @PathVariable String version,
-            @Parameter(description = "도메인 (예: auth, member)") @PathVariable String domain,
-            @Parameter(description = "파일명 (예: auth.html)") @PathVariable String file) {
-        String path = DOCS_BASE_PATH + version + "/" + domain + "/" + file;
-        Resource resource = new ClassPathResource(path);
-        return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(resource);
+    @GetMapping(DOCS_PATH)
+    public String redirectToApiDocs() {
+        return "redirect:" + DOCS_PATH + "/index.html";
     }
 }

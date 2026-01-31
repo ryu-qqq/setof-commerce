@@ -2,34 +2,28 @@ package com.ryuqq.setof.adapter.out.persistence.shippingpolicy.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ryuqq.setof.adapter.out.persistence.common.MapperTestSupport;
+import com.ryuqq.setof.adapter.out.persistence.shippingpolicy.ShippingPolicyJpaEntityFixtures;
 import com.ryuqq.setof.adapter.out.persistence.shippingpolicy.entity.ShippingPolicyJpaEntity;
+import com.ryuqq.setof.domain.shippingpolicy.ShippingPolicyFixtures;
 import com.ryuqq.setof.domain.shippingpolicy.aggregate.ShippingPolicy;
-import com.ryuqq.setof.domain.shippingpolicy.vo.DeliveryCost;
-import com.ryuqq.setof.domain.shippingpolicy.vo.DeliveryGuide;
-import com.ryuqq.setof.domain.shippingpolicy.vo.DisplayOrder;
-import com.ryuqq.setof.domain.shippingpolicy.vo.FreeShippingThreshold;
-import com.ryuqq.setof.domain.shippingpolicy.vo.PolicyName;
-import com.ryuqq.setof.domain.shippingpolicy.vo.ShippingPolicyId;
-import java.time.Instant;
+import com.ryuqq.setof.domain.shippingpolicy.vo.ShippingFeeType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
- * ShippingPolicyJpaEntityMapper 단위 테스트
+ * ShippingPolicyJpaEntityMapperTest - 배송 정책 Mapper 단위 테스트.
  *
- * <p>ShippingPolicy Domain ↔ ShippingPolicyJpaEntity 간의 변환 로직을 검증합니다.
+ * <p>PER-MAP-002: toEntity(Domain) + toDomain(Entity) 메서드 검증.
  *
- * @author development-team
+ * @author ryu-qqq
  * @since 1.0.0
  */
+@Tag("unit")
 @DisplayName("ShippingPolicyJpaEntityMapper 단위 테스트")
-class ShippingPolicyJpaEntityMapperTest extends MapperTestSupport {
-
-    private static final Instant FIXED_TIME = Instant.parse("2025-01-01T00:00:00Z");
-    private static final Long TEST_SELLER_ID = 1L;
+class ShippingPolicyJpaEntityMapperTest {
 
     private ShippingPolicyJpaEntityMapper mapper;
 
@@ -38,267 +32,243 @@ class ShippingPolicyJpaEntityMapperTest extends MapperTestSupport {
         mapper = new ShippingPolicyJpaEntityMapper();
     }
 
+    // ========================================================================
+    // 1. toEntity 테스트
+    // ========================================================================
+
     @Nested
-    @DisplayName("toEntity 메서드")
-    class ToEntity {
+    @DisplayName("toEntity 변환 테스트")
+    class ToEntityTest {
 
         @Test
-        @DisplayName("성공 - ShippingPolicy 도메인을 Entity로 변환한다")
-        void toEntity_success() {
-            // Given
-            ShippingPolicy shippingPolicy = createDefaultShippingPolicy();
+        @DisplayName("조건부 무료배송 Domain을 Entity로 변환합니다")
+        void toEntity_WithConditionalFreeDomain_ReturnsValidEntity() {
+            // given
+            ShippingPolicy domain = ShippingPolicyFixtures.activeShippingPolicy();
 
-            // When
-            ShippingPolicyJpaEntity entity = mapper.toEntity(shippingPolicy);
+            // when
+            ShippingPolicyJpaEntity entity = mapper.toEntity(domain);
 
-            // Then
-            assertThat(entity).isNotNull();
-            assertThat(entity.getId()).isEqualTo(shippingPolicy.getIdValue());
-            assertThat(entity.getSellerId()).isEqualTo(shippingPolicy.getSellerId());
-            assertThat(entity.getPolicyName()).isEqualTo(shippingPolicy.getPolicyNameValue());
-            assertThat(entity.getDefaultDeliveryCost())
-                    .isEqualTo(shippingPolicy.getDefaultDeliveryCostValue());
-            assertThat(entity.getFreeShippingThreshold())
-                    .isEqualTo(shippingPolicy.getFreeShippingThresholdValue());
-            assertThat(entity.getDeliveryGuide()).isEqualTo(shippingPolicy.getDeliveryGuideValue());
-            assertThat(entity.getIsDefault()).isEqualTo(shippingPolicy.isDefault());
-            assertThat(entity.getDisplayOrder()).isEqualTo(shippingPolicy.getDisplayOrderValue());
+            // then
+            assertThat(entity.getId()).isEqualTo(domain.idValue());
+            assertThat(entity.getSellerId()).isEqualTo(domain.sellerIdValue());
+            assertThat(entity.getPolicyName()).isEqualTo(domain.policyNameValue());
+            assertThat(entity.isDefaultPolicy()).isEqualTo(domain.isDefaultPolicy());
+            assertThat(entity.isActive()).isEqualTo(domain.isActive());
+            assertThat(entity.getShippingFeeType()).isEqualTo(domain.shippingFeeType().name());
+            assertThat(entity.getBaseFee()).isEqualTo(domain.baseFeeValue());
+            assertThat(entity.getFreeThreshold()).isEqualTo(domain.freeThresholdValue());
+            assertThat(entity.getJejuExtraFee()).isEqualTo(domain.jejuExtraFeeValue());
+            assertThat(entity.getIslandExtraFee()).isEqualTo(domain.islandExtraFeeValue());
+            assertThat(entity.getReturnFee()).isEqualTo(domain.returnFeeValue());
+            assertThat(entity.getExchangeFee()).isEqualTo(domain.exchangeFeeValue());
+            assertThat(entity.getLeadTimeMinDays()).isEqualTo(domain.leadTimeMinDays());
+            assertThat(entity.getLeadTimeMaxDays()).isEqualTo(domain.leadTimeMaxDays());
+            assertThat(entity.getLeadTimeCutoffTime()).isEqualTo(domain.leadTimeCutoffTime());
         }
 
         @Test
-        @DisplayName("성공 - 기본 정책이 아닌 도메인을 Entity로 변환한다")
-        void toEntity_nonDefault_success() {
-            // Given
-            ShippingPolicy nonDefault = createNonDefaultShippingPolicy();
+        @DisplayName("무료배송 Domain을 Entity로 변환합니다")
+        void toEntity_WithFreeShippingDomain_ReturnsValidEntity() {
+            // given
+            ShippingPolicy domain = ShippingPolicyFixtures.newFreeShippingPolicy();
 
-            // When
-            ShippingPolicyJpaEntity entity = mapper.toEntity(nonDefault);
+            // when
+            ShippingPolicyJpaEntity entity = mapper.toEntity(domain);
 
-            // Then
-            assertThat(entity).isNotNull();
-            assertThat(entity.getIsDefault()).isFalse();
-            assertThat(entity.getDeliveryGuide()).isNull();
-            assertThat(entity.getFreeShippingThreshold()).isNull();
+            // then
+            assertThat(entity.getShippingFeeType()).isEqualTo(ShippingFeeType.FREE.name());
+            assertThat(entity.getBaseFee()).isEqualTo(0);
+            assertThat(entity.getFreeThreshold()).isNull();
         }
 
         @Test
-        @DisplayName("성공 - 삭제된 도메인을 Entity로 변환한다")
-        void toEntity_deleted_success() {
-            // Given
-            ShippingPolicy deleted = createDeletedShippingPolicy();
+        @DisplayName("유료배송 Domain을 Entity로 변환합니다")
+        void toEntity_WithPaidShippingDomain_ReturnsValidEntity() {
+            // given
+            ShippingPolicy domain = ShippingPolicyFixtures.newPaidShippingPolicy();
 
-            // When
-            ShippingPolicyJpaEntity entity = mapper.toEntity(deleted);
+            // when
+            ShippingPolicyJpaEntity entity = mapper.toEntity(domain);
 
-            // Then
-            assertThat(entity).isNotNull();
+            // then
+            assertThat(entity.getShippingFeeType()).isEqualTo(ShippingFeeType.PAID.name());
+            assertThat(entity.getBaseFee()).isNotNull();
+            assertThat(entity.getFreeThreshold()).isNull();
+        }
+
+        @Test
+        @DisplayName("비활성 상태 Domain을 Entity로 변환합니다")
+        void toEntity_WithInactiveDomain_ReturnsValidEntity() {
+            // given
+            ShippingPolicy domain = ShippingPolicyFixtures.inactiveShippingPolicy();
+
+            // when
+            ShippingPolicyJpaEntity entity = mapper.toEntity(domain);
+
+            // then
+            assertThat(entity.isActive()).isFalse();
+            assertThat(entity.isDefaultPolicy()).isFalse();
+        }
+
+        @Test
+        @DisplayName("삭제된 Domain을 Entity로 변환합니다")
+        void toEntity_WithDeletedDomain_ReturnsEntityWithDeletedAt() {
+            // given
+            ShippingPolicy domain = ShippingPolicyFixtures.deletedShippingPolicy();
+
+            // when
+            ShippingPolicyJpaEntity entity = mapper.toEntity(domain);
+
+            // then
             assertThat(entity.getDeletedAt()).isNotNull();
         }
     }
 
-    @Nested
-    @DisplayName("toDomain 메서드")
-    class ToDomain {
-
-        @Test
-        @DisplayName("성공 - Entity를 ShippingPolicy 도메인으로 변환한다")
-        void toDomain_success() {
-            // Given
-            ShippingPolicyJpaEntity entity =
-                    ShippingPolicyJpaEntity.of(
-                            1L,
-                            TEST_SELLER_ID,
-                            "기본 배송",
-                            3000,
-                            50000,
-                            "평일 1~2일 내 발송",
-                            true,
-                            1,
-                            FIXED_TIME,
-                            FIXED_TIME,
-                            null);
-
-            // When
-            ShippingPolicy domain = mapper.toDomain(entity);
-
-            // Then
-            assertThat(domain).isNotNull();
-            assertThat(domain.getIdValue()).isEqualTo(entity.getId());
-            assertThat(domain.getSellerId()).isEqualTo(entity.getSellerId());
-            assertThat(domain.getPolicyNameValue()).isEqualTo(entity.getPolicyName());
-            assertThat(domain.getDefaultDeliveryCostValue())
-                    .isEqualTo(entity.getDefaultDeliveryCost());
-            assertThat(domain.getFreeShippingThresholdValue())
-                    .isEqualTo(entity.getFreeShippingThreshold());
-            assertThat(domain.getDeliveryGuideValue()).isEqualTo(entity.getDeliveryGuide());
-            assertThat(domain.isDefault()).isEqualTo(entity.getIsDefault());
-            assertThat(domain.getDisplayOrderValue()).isEqualTo(entity.getDisplayOrder());
-        }
-
-        @Test
-        @DisplayName("성공 - 무료배송 기준금액이 없는 Entity를 도메인으로 변환한다")
-        void toDomain_withoutFreeShippingThreshold_success() {
-            // Given
-            ShippingPolicyJpaEntity entity =
-                    ShippingPolicyJpaEntity.of(
-                            2L,
-                            TEST_SELLER_ID,
-                            "유료 배송",
-                            5000,
-                            null,
-                            null,
-                            false,
-                            2,
-                            FIXED_TIME,
-                            FIXED_TIME,
-                            null);
-
-            // When
-            ShippingPolicy domain = mapper.toDomain(entity);
-
-            // Then
-            assertThat(domain).isNotNull();
-            assertThat(domain.getFreeShippingThresholdValue()).isNull();
-            assertThat(domain.getDeliveryGuideValue()).isNull();
-            assertThat(domain.isDefault()).isFalse();
-        }
-
-        @Test
-        @DisplayName("성공 - 삭제된 Entity를 도메인으로 변환한다")
-        void toDomain_deleted_success() {
-            // Given
-            ShippingPolicyJpaEntity entity =
-                    ShippingPolicyJpaEntity.of(
-                            3L,
-                            TEST_SELLER_ID,
-                            "이전 배송",
-                            3000,
-                            null,
-                            null,
-                            false,
-                            3,
-                            FIXED_TIME,
-                            FIXED_TIME,
-                            FIXED_TIME);
-
-            // When
-            ShippingPolicy domain = mapper.toDomain(entity);
-
-            // Then
-            assertThat(domain).isNotNull();
-            assertThat(domain.getDeletedAt()).isNotNull();
-            assertThat(domain.isDeleted()).isTrue();
-        }
-    }
+    // ========================================================================
+    // 2. toDomain 테스트
+    // ========================================================================
 
     @Nested
-    @DisplayName("양방향 변환 검증")
-    class RoundTrip {
+    @DisplayName("toDomain 변환 테스트")
+    class ToDomainTest {
 
         @Test
-        @DisplayName("성공 - Domain -> Entity -> Domain 변환 시 데이터가 보존된다")
-        void roundTrip_domainToEntityToDomain_preservesData() {
-            // Given
-            ShippingPolicy original = createDefaultShippingPolicy();
+        @DisplayName("조건부 무료배송 Entity를 Domain으로 변환합니다")
+        void toDomain_WithConditionalFreeEntity_ReturnsValidDomain() {
+            // given
+            ShippingPolicyJpaEntity entity =
+                    ShippingPolicyJpaEntityFixtures.activeConditionalFreeEntity();
 
-            // When
-            ShippingPolicyJpaEntity entity = mapper.toEntity(original);
-            ShippingPolicy converted = mapper.toDomain(entity);
+            // when
+            ShippingPolicy domain = mapper.toDomain(entity);
 
-            // Then
-            assertThat(converted.getIdValue()).isEqualTo(original.getIdValue());
-            assertThat(converted.getSellerId()).isEqualTo(original.getSellerId());
-            assertThat(converted.getPolicyNameValue()).isEqualTo(original.getPolicyNameValue());
-            assertThat(converted.getDefaultDeliveryCostValue())
-                    .isEqualTo(original.getDefaultDeliveryCostValue());
-            assertThat(converted.getFreeShippingThresholdValue())
-                    .isEqualTo(original.getFreeShippingThresholdValue());
-            assertThat(converted.getDeliveryGuideValue())
-                    .isEqualTo(original.getDeliveryGuideValue());
-            assertThat(converted.isDefault()).isEqualTo(original.isDefault());
-            assertThat(converted.getDisplayOrderValue()).isEqualTo(original.getDisplayOrderValue());
+            // then
+            assertThat(domain.idValue()).isEqualTo(entity.getId());
+            assertThat(domain.sellerIdValue()).isEqualTo(entity.getSellerId());
+            assertThat(domain.policyNameValue()).isEqualTo(entity.getPolicyName());
+            assertThat(domain.isDefaultPolicy()).isEqualTo(entity.isDefaultPolicy());
+            assertThat(domain.isActive()).isEqualTo(entity.isActive());
+            assertThat(domain.shippingFeeType())
+                    .isEqualTo(ShippingFeeType.valueOf(entity.getShippingFeeType()));
+            assertThat(domain.baseFeeValue()).isEqualTo(entity.getBaseFee());
+            assertThat(domain.freeThresholdValue()).isEqualTo(entity.getFreeThreshold());
+            assertThat(domain.jejuExtraFeeValue()).isEqualTo(entity.getJejuExtraFee());
+            assertThat(domain.islandExtraFeeValue()).isEqualTo(entity.getIslandExtraFee());
+            assertThat(domain.returnFeeValue()).isEqualTo(entity.getReturnFee());
+            assertThat(domain.exchangeFeeValue()).isEqualTo(entity.getExchangeFee());
+            assertThat(domain.leadTimeMinDays()).isEqualTo(entity.getLeadTimeMinDays());
+            assertThat(domain.leadTimeMaxDays()).isEqualTo(entity.getLeadTimeMaxDays());
+            assertThat(domain.leadTimeCutoffTime()).isEqualTo(entity.getLeadTimeCutoffTime());
         }
 
         @Test
-        @DisplayName("성공 - Entity -> Domain -> Entity 변환 시 데이터가 보존된다")
-        void roundTrip_entityToDomainToEntity_preservesData() {
-            // Given
-            ShippingPolicyJpaEntity original =
-                    ShippingPolicyJpaEntity.of(
-                            5L,
-                            TEST_SELLER_ID,
-                            "라운드트립 배송",
-                            3500,
-                            70000,
-                            "빠른 배송 가능",
-                            true,
-                            1,
-                            FIXED_TIME,
-                            FIXED_TIME,
-                            null);
+        @DisplayName("무료배송 Entity를 Domain으로 변환합니다")
+        void toDomain_WithFreeShippingEntity_ReturnsValidDomain() {
+            // given
+            ShippingPolicyJpaEntity entity = ShippingPolicyJpaEntityFixtures.freeShippingEntity();
 
-            // When
-            ShippingPolicy domain = mapper.toDomain(original);
-            ShippingPolicyJpaEntity converted = mapper.toEntity(domain);
+            // when
+            ShippingPolicy domain = mapper.toDomain(entity);
 
-            // Then
-            assertThat(converted.getId()).isEqualTo(original.getId());
-            assertThat(converted.getSellerId()).isEqualTo(original.getSellerId());
-            assertThat(converted.getPolicyName()).isEqualTo(original.getPolicyName());
-            assertThat(converted.getDefaultDeliveryCost())
-                    .isEqualTo(original.getDefaultDeliveryCost());
-            assertThat(converted.getFreeShippingThreshold())
-                    .isEqualTo(original.getFreeShippingThreshold());
-            assertThat(converted.getDeliveryGuide()).isEqualTo(original.getDeliveryGuide());
-            assertThat(converted.getIsDefault()).isEqualTo(original.getIsDefault());
-            assertThat(converted.getDisplayOrder()).isEqualTo(original.getDisplayOrder());
+            // then
+            assertThat(domain.shippingFeeType()).isEqualTo(ShippingFeeType.FREE);
+        }
+
+        @Test
+        @DisplayName("유료배송 Entity를 Domain으로 변환합니다")
+        void toDomain_WithPaidShippingEntity_ReturnsValidDomain() {
+            // given
+            ShippingPolicyJpaEntity entity = ShippingPolicyJpaEntityFixtures.paidShippingEntity();
+
+            // when
+            ShippingPolicy domain = mapper.toDomain(entity);
+
+            // then
+            assertThat(domain.shippingFeeType()).isEqualTo(ShippingFeeType.PAID);
+            assertThat(domain.freeThresholdValue()).isNull();
+        }
+
+        @Test
+        @DisplayName("비활성 상태 Entity를 Domain으로 변환합니다")
+        void toDomain_WithInactiveEntity_ReturnsValidDomain() {
+            // given
+            ShippingPolicyJpaEntity entity = ShippingPolicyJpaEntityFixtures.inactiveEntity();
+
+            // when
+            ShippingPolicy domain = mapper.toDomain(entity);
+
+            // then
+            assertThat(domain.isActive()).isFalse();
+            assertThat(domain.isDefaultPolicy()).isFalse();
+        }
+
+        @Test
+        @DisplayName("삭제된 Entity를 Domain으로 변환합니다")
+        void toDomain_WithDeletedEntity_ReturnsDomainWithDeletedAt() {
+            // given
+            ShippingPolicyJpaEntity entity = ShippingPolicyJpaEntityFixtures.deletedEntity();
+
+            // when
+            ShippingPolicy domain = mapper.toDomain(entity);
+
+            // then
+            assertThat(domain.deletedAt()).isNotNull();
+        }
+
+        @Test
+        @DisplayName("LeadTime이 없는 Entity를 Domain으로 변환합니다")
+        void toDomain_WithoutLeadTime_ReturnsZeroLeadTime() {
+            // given
+            ShippingPolicyJpaEntity entity =
+                    ShippingPolicyJpaEntityFixtures.entityWithoutLeadTime();
+
+            // when
+            ShippingPolicy domain = mapper.toDomain(entity);
+
+            // then
+            // LeadTime이 null일 때, Domain의 leadTimeMinDays/MaxDays는 기본값 0을 반환
+            assertThat(domain.leadTimeMinDays()).isZero();
+            assertThat(domain.leadTimeMaxDays()).isZero();
+            assertThat(domain.leadTimeCutoffTime()).isNull();
         }
     }
 
-    // ========== Helper Methods ==========
+    // ========================================================================
+    // 3. 양방향 변환 테스트
+    // ========================================================================
 
-    private ShippingPolicy createDefaultShippingPolicy() {
-        return ShippingPolicy.reconstitute(
-                ShippingPolicyId.of(1L),
-                TEST_SELLER_ID,
-                PolicyName.of("기본 배송"),
-                DeliveryCost.of(3000),
-                FreeShippingThreshold.of(50000),
-                DeliveryGuide.of("평일 1~2일 내 발송"),
-                true,
-                DisplayOrder.of(1),
-                FIXED_TIME,
-                FIXED_TIME,
-                null);
-    }
+    @Nested
+    @DisplayName("양방향 변환 테스트")
+    class BidirectionalConversionTest {
 
-    private ShippingPolicy createNonDefaultShippingPolicy() {
-        return ShippingPolicy.reconstitute(
-                ShippingPolicyId.of(2L),
-                TEST_SELLER_ID,
-                PolicyName.of("추가 배송"),
-                DeliveryCost.of(5000),
-                null,
-                null,
-                false,
-                DisplayOrder.of(2),
-                FIXED_TIME,
-                FIXED_TIME,
-                null);
-    }
+        @Test
+        @DisplayName("Domain → Entity → Domain 변환 시 데이터가 보존됩니다")
+        void bidirectionalConversion_PreservesData() {
+            // given
+            ShippingPolicy originalDomain = ShippingPolicyFixtures.activeShippingPolicy();
 
-    private ShippingPolicy createDeletedShippingPolicy() {
-        return ShippingPolicy.reconstitute(
-                ShippingPolicyId.of(3L),
-                TEST_SELLER_ID,
-                PolicyName.of("삭제된 배송"),
-                DeliveryCost.of(3000),
-                null,
-                null,
-                false,
-                DisplayOrder.of(3),
-                FIXED_TIME,
-                FIXED_TIME,
-                FIXED_TIME);
+            // when
+            ShippingPolicyJpaEntity entity = mapper.toEntity(originalDomain);
+            ShippingPolicy convertedDomain = mapper.toDomain(entity);
+
+            // then
+            assertThat(convertedDomain.idValue()).isEqualTo(originalDomain.idValue());
+            assertThat(convertedDomain.sellerIdValue()).isEqualTo(originalDomain.sellerIdValue());
+            assertThat(convertedDomain.policyNameValue())
+                    .isEqualTo(originalDomain.policyNameValue());
+            assertThat(convertedDomain.isDefaultPolicy())
+                    .isEqualTo(originalDomain.isDefaultPolicy());
+            assertThat(convertedDomain.isActive()).isEqualTo(originalDomain.isActive());
+            assertThat(convertedDomain.shippingFeeType())
+                    .isEqualTo(originalDomain.shippingFeeType());
+            assertThat(convertedDomain.baseFeeValue()).isEqualTo(originalDomain.baseFeeValue());
+            assertThat(convertedDomain.freeThresholdValue())
+                    .isEqualTo(originalDomain.freeThresholdValue());
+            assertThat(convertedDomain.leadTimeMinDays())
+                    .isEqualTo(originalDomain.leadTimeMinDays());
+            assertThat(convertedDomain.leadTimeMaxDays())
+                    .isEqualTo(originalDomain.leadTimeMaxDays());
+        }
     }
 }

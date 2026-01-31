@@ -1,0 +1,70 @@
+[[refund-policy-api]]
+= 환불정책
+
+`/api/v2/sellers/{sellerId}/refund-policies`
+
+[[refund-policy-register]]
+== POST 환불정책 등록
+
+include::{snippets}/register-refund-policy-test/register-refund-policy_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/register-refund-policy-test/register-refund-policy_-success/path-parameters.adoc[]
+
+=== Request Fields
+include::{snippets}/register-refund-policy-test/register-refund-policy_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/register-refund-policy-test/register-refund-policy_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/register-refund-policy-test/register-refund-policy_-success/response-fields.adoc[]
+
+[[refund-policy-update]]
+== PUT 환불정책 수정
+
+`PUT /api/v2/sellers/{sellerId}/refund-policies/{policyId}`
+
+include::{snippets}/update-refund-policy-test/update-refund-policy_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/update-refund-policy-test/update-refund-policy_-success/path-parameters.adoc[]
+
+=== Request Fields
+include::{snippets}/update-refund-policy-test/update-refund-policy_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/update-refund-policy-test/update-refund-policy_-success/http-response.adoc[]
+
+[[refund-policy-change-status]]
+== PATCH 환불정책 상태 변경
+
+`PATCH /api/v2/sellers/{sellerId}/refund-policies/status`
+
+include::{snippets}/change-refund-policy-status-test/change-refund-policy-status_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/change-refund-policy-status-test/change-refund-policy-status_-success/path-parameters.adoc[]
+
+=== Request Fields
+include::{snippets}/change-refund-policy-status-test/change-refund-policy-status_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/change-refund-policy-status-test/change-refund-policy-status_-success/http-response.adoc[]
+
+[[refund-policy-search]]
+== GET 환불정책 목록 조회
+
+include::{snippets}/search-refund-policies-test/search-refund-policies_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/search-refund-policies-test/search-refund-policies_-success/path-parameters.adoc[]
+
+=== Query Parameters
+include::{snippets}/search-refund-policies-test/search-refund-policies_-success/query-parameters.adoc[]
+
+=== Response
+include::{snippets}/search-refund-policies-test/search-refund-policies_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/search-refund-policies-test/search-refund-policies_-success/response-fields.adoc[]

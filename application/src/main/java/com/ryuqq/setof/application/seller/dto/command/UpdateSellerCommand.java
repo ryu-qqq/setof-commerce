@@ -1,37 +1,50 @@
 package com.ryuqq.setof.application.seller.dto.command;
 
 /**
- * Update Seller Command
+ * 셀러 정보 수정 Command.
  *
- * <p>셀러 수정 요청 데이터를 담는 순수한 불변 객체
+ * <p>Seller 기본정보 + Address + CS + BusinessInfo를 한번에 수정합니다.
  *
- * @param sellerId 수정할 셀러 ID
+ * @param sellerId 셀러 ID
  * @param sellerName 셀러명
- * @param logoUrl 로고 URL (nullable)
- * @param description 설명 (nullable)
- * @param registrationNumber 사업자 등록번호
- * @param saleReportNumber 통신판매업 신고번호 (nullable)
- * @param representative 대표자명
- * @param businessAddressLine1 사업장 주소 (기본)
- * @param businessAddressLine2 사업장 주소 (상세, nullable)
- * @param businessZipCode 사업장 우편번호
- * @param csEmail CS 이메일 (nullable)
- * @param csMobilePhone CS 휴대폰 (nullable)
- * @param csLandlinePhone CS 유선전화 (nullable)
- * @author development-team
- * @since 1.0.0
+ * @param displayName 표시명
+ * @param logoUrl 로고 URL
+ * @param description 설명
+ * @param address 주소 정보 (nullable)
+ * @param csInfo CS 정보 (nullable)
+ * @param businessInfo 사업자 정보 (nullable)
  */
 public record UpdateSellerCommand(
         Long sellerId,
         String sellerName,
+        String displayName,
         String logoUrl,
         String description,
-        String registrationNumber,
-        String saleReportNumber,
-        String representative,
-        String businessAddressLine1,
-        String businessAddressLine2,
-        String businessZipCode,
-        String csEmail,
-        String csMobilePhone,
-        String csLandlinePhone) {}
+        AddressCommand address,
+        CsInfoCommand csInfo,
+        BusinessInfoCommand businessInfo) {
+
+    /** 기본 정보만 수정하는 생성자 (하위 호환). */
+    public UpdateSellerCommand(
+            Long sellerId,
+            String sellerName,
+            String displayName,
+            String logoUrl,
+            String description) {
+        this(sellerId, sellerName, displayName, logoUrl, description, null, null, null);
+    }
+
+    /** 주소 정보 Command. */
+    public record AddressCommand(String zipCode, String line1, String line2) {}
+
+    /** CS 정보 Command. */
+    public record CsInfoCommand(String phone, String email, String mobile) {}
+
+    /** 사업자 정보 Command. */
+    public record BusinessInfoCommand(
+            String registrationNumber,
+            String companyName,
+            String representative,
+            String saleReportNumber,
+            AddressCommand businessAddress) {}
+}

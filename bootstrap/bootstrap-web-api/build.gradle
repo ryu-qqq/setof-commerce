@@ -32,8 +32,8 @@ dependencies {
     // Outbound
     implementation project(':adapter-out:persistence-mysql')
     implementation project(':adapter-out:persistence-redis')
-    implementation project(':adapter-out:security')
-    implementation project(':adapter-out:portone-client')
+    implementation project(':adapter-out:client:security-client')
+    implementation project(':adapter-out:client:portone-client')
 
     // ========================================
     // Spring Boot Starters

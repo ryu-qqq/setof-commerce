@@ -8,17 +8,18 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
 
 /**
  * 레거시 Users 테이블 조회 Repository
  *
  * <p>레거시 DB의 Users 테이블에서 데이터를 조회합니다. 조회 전용이며 쓰기 작업은 수행하지 않습니다.
  *
+ * <p><b>NOTE:</b> Member 기능이 아직 개발되지 않아 비활성화 상태입니다.
+ *
  * @author development-team
  * @since 1.0.0
  */
-@Repository
+// @Repository // TODO: Member 기능 개발 후 활성화
 public class LegacyUserRepository {
 
     private final JdbcTemplate legacyJdbcTemplate;

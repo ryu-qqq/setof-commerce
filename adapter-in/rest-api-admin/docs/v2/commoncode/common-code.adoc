@@ -1,0 +1,48 @@
+[[common-code-api]]
+= 공통코드
+
+`/api/v2/admin/common-codes`
+
+[[common-code-register]]
+== POST 공통코드 등록
+
+include::{snippets}/register-common-code-test/register-common-code_-success/http-request.adoc[]
+
+=== Request Fields
+include::{snippets}/register-common-code-test/register-common-code_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/register-common-code-test/register-common-code_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/register-common-code-test/register-common-code_-success/response-fields.adoc[]
+
+[[common-code-update]]
+== PUT 공통코드 수정
+
+`PUT /api/v2/admin/common-codes/{id}`
+
+include::{snippets}/update-common-code-test/update-common-code_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/update-common-code-test/update-common-code_-success/path-parameters.adoc[]
+
+=== Request Fields
+include::{snippets}/update-common-code-test/update-common-code_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/update-common-code-test/update-common-code_-success/http-response.adoc[]
+
+[[common-code-search]]
+== GET 공통코드 목록 조회
+
+include::{snippets}/search-common-codes-test/search-common-codes_-success/http-request.adoc[]
+
+=== Query Parameters
+include::{snippets}/search-common-codes-test/search-common-codes_-success/query-parameters.adoc[]
+
+=== Response
+include::{snippets}/search-common-codes-test/search-common-codes_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/search-common-codes-test/search-common-codes_-success/response-fields.adoc[]

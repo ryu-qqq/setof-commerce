@@ -1,87 +1,58 @@
 package com.ryuqq.setof.application.refundpolicy.assembler;
 
-import com.ryuqq.setof.application.refundpolicy.dto.command.RegisterRefundPolicyCommand;
-import com.ryuqq.setof.application.refundpolicy.dto.response.RefundPolicyResponse;
+import com.ryuqq.setof.application.refundpolicy.dto.response.RefundPolicyPageResult;
+import com.ryuqq.setof.application.refundpolicy.dto.response.RefundPolicyResult;
 import com.ryuqq.setof.domain.refundpolicy.aggregate.RefundPolicy;
-import com.ryuqq.setof.domain.refundpolicy.vo.PolicyName;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundDeliveryCost;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundGuide;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundPeriodDays;
-import com.ryuqq.setof.domain.refundpolicy.vo.ReturnAddress;
-import java.time.Instant;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
- * RefundPolicy Assembler
+ * RefundPolicyAssembler - 환불 정책 Assembler.
  *
- * <p>Command DTO와 Domain 객체, Response DTO 간 변환을 담당
+ * <p>Domain → Result 변환 및 PageResult 생성을 담당합니다.
  *
- * @author development-team
+ * <p>APP-ASM-001: 도메인별 구체 Result 클래스 사용.
+ *
+ * @author ryu-qqq
  * @since 1.0.0
  */
 @Component
 public class RefundPolicyAssembler {
 
     /**
-     * RegisterRefundPolicyCommand를 RefundPolicy 도메인으로 변환
+     * Domain → Result 변환.
      *
-     * @param command 등록 커맨드
-     * @param now 현재 시각
-     * @return RefundPolicy 도메인 객체
+     * @param domain RefundPolicy 도메인 객체
+     * @return RefundPolicyResult
      */
-    public RefundPolicy toDomain(RegisterRefundPolicyCommand command, Instant now) {
-        PolicyName policyName = PolicyName.of(command.policyName());
-        ReturnAddress returnAddress =
-                ReturnAddress.of(
-                        command.returnAddressLine1(),
-                        command.returnAddressLine2(),
-                        command.returnZipCode());
-        RefundPeriodDays refundPeriodDays = RefundPeriodDays.of(command.refundPeriodDays());
-        RefundDeliveryCost refundDeliveryCost = RefundDeliveryCost.of(command.refundDeliveryCost());
-        RefundGuide refundGuide =
-                command.refundGuide() != null ? RefundGuide.of(command.refundGuide()) : null;
-
-        return RefundPolicy.create(
-                command.sellerId(),
-                policyName,
-                returnAddress,
-                refundPeriodDays,
-                refundDeliveryCost,
-                refundGuide,
-                command.isDefault(),
-                command.displayOrder(),
-                now);
+    public RefundPolicyResult toResult(RefundPolicy domain) {
+        return RefundPolicyResult.from(domain);
     }
 
     /**
-     * RefundPolicy 도메인을 RefundPolicyResponse로 변환
+     * Domain List → Result List 변환.
      *
-     * @param refundPolicy RefundPolicy 도메인 객체
-     * @return RefundPolicyResponse
+     * @param domains RefundPolicy 도메인 객체 목록
+     * @return RefundPolicyResult 목록
      */
-    public RefundPolicyResponse toResponse(RefundPolicy refundPolicy) {
-        return RefundPolicyResponse.of(
-                refundPolicy.getIdValue(),
-                refundPolicy.getSellerId(),
-                refundPolicy.getPolicyNameValue(),
-                refundPolicy.getReturnAddressLine1(),
-                refundPolicy.getReturnAddressLine2(),
-                refundPolicy.getReturnZipCode(),
-                refundPolicy.getRefundPeriodDaysValue(),
-                refundPolicy.getRefundDeliveryCostValue(),
-                refundPolicy.getRefundGuideValue(),
-                refundPolicy.isDefault(),
-                refundPolicy.getDisplayOrder());
+    public List<RefundPolicyResult> toResults(List<RefundPolicy> domains) {
+        return domains.stream().map(this::toResult).toList();
     }
 
     /**
-     * RefundPolicy 도메인 목록을 RefundPolicyResponse 목록으로 변환
+     * Domain List → RefundPolicyPageResult 생성.
      *
-     * @param refundPolicies RefundPolicy 도메인 목록
-     * @return RefundPolicyResponse 목록
+     * <p>Domain 객체를 Result로 변환하여 PageResult를 생성합니다.
+     *
+     * @param domains 도메인 객체 목록
+     * @param page 페이지 번호
+     * @param size 페이지 크기
+     * @param totalElements 전체 요소 수
+     * @return RefundPolicyPageResult
      */
-    public List<RefundPolicyResponse> toResponses(List<RefundPolicy> refundPolicies) {
-        return refundPolicies.stream().map(this::toResponse).toList();
+    public RefundPolicyPageResult toPageResult(
+            List<RefundPolicy> domains, int page, int size, long totalElements) {
+        List<RefundPolicyResult> results = toResults(domains);
+        return RefundPolicyPageResult.of(results, page, size, totalElements);
     }
 }

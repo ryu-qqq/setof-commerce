@@ -1,0 +1,67 @@
+[[seller-application-api]]
+= 셀러 입점 신청
+
+`/api/v2/admin/seller-applications`
+
+[[seller-application-apply]]
+== POST 입점 신청
+
+include::{snippets}/apply-test/apply_-success/http-request.adoc[]
+
+=== Request Fields
+include::{snippets}/apply-test/apply_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/apply-test/apply_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/apply-test/apply_-success/response-fields.adoc[]
+
+[[seller-application-approve]]
+== POST 입점 승인
+
+`POST /api/v2/admin/seller-applications/{applicationId}/approve`
+
+include::{snippets}/approve-test/approve_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/approve-test/approve_-success/path-parameters.adoc[]
+
+=== Request Fields
+include::{snippets}/approve-test/approve_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/approve-test/approve_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/approve-test/approve_-success/response-fields.adoc[]
+
+[[seller-application-reject]]
+== POST 입점 거절
+
+`POST /api/v2/admin/seller-applications/{applicationId}/reject`
+
+include::{snippets}/reject-test/reject_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/reject-test/reject_-success/path-parameters.adoc[]
+
+=== Request Fields
+include::{snippets}/reject-test/reject_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/reject-test/reject_-success/http-response.adoc[]
+
+[[seller-application-search]]
+== GET 입점 신청 목록 조회
+
+include::{snippets}/search-test/search_-success/http-request.adoc[]
+
+=== Query Parameters
+include::{snippets}/search-test/search_-success/query-parameters.adoc[]
+
+=== Response
+include::{snippets}/search-test/search_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/search-test/search_-success/response-fields.adoc[]

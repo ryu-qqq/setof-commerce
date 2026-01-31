@@ -6,112 +6,86 @@ import java.net.URI;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 /**
- * ErrorMapperRegistry - 도메인 예외를 HTTP 응답으로 매핑하는 레지스트리
+ * ErrorMapper 구현체들을 관리하고 적절한 매퍼를 선택하는 레지스트리
  *
- * <p>등록된 ErrorMapper들을 순회하며 예외를 HTTP 응답으로 변환합니다.
+ * <p>Spring이 모든 ErrorMapper 빈들을 자동으로 수집하여 주입합니다.
  *
- * <p>동작 방식:
+ * <p><strong>매칭 우선순위:</strong>
  *
- * <ol>
- *   <li>예외 클래스명을 에러 코드로 사용 (e.g., MemberNotFoundException → MEMBER_NOT_FOUND)
- *   <li>등록된 ErrorMapper 중 해당 코드를 지원하는 매퍼를 찾음
- *   <li>매퍼가 없으면 기본 매핑 적용 (400 Bad Request)
- * </ol>
+ * <ul>
+ *   <li>첫 번째로 {@code supports(ex)}가 true를 반환하는 매퍼 사용
+ *   <li>매칭되는 매퍼가 없으면 defaultMapping 사용
+ * </ul>
  *
  * @author development-team
  * @since 1.0.0
+ * @see ErrorMapper
  */
 @Component
 public class ErrorMapperRegistry {
 
+    private static final Logger log = LoggerFactory.getLogger(ErrorMapperRegistry.class);
     private final List<ErrorMapper> mappers;
 
     public ErrorMapperRegistry(List<ErrorMapper> mappers) {
         this.mappers = mappers;
+        log.info(
+                "ErrorMapperRegistry initialized with {} mappers: {}",
+                mappers.size(),
+                mappers.stream().map(m -> m.getClass().getSimpleName()).toList());
     }
 
     /**
-     * 도메인 예외를 HTTP 응답으로 매핑
+     * DomainException에 맞는 매퍼를 찾아 에러 응답으로 변환
      *
      * @param ex 도메인 예외
-     * @param locale 로케일 (국제화 지원)
-     * @return 매핑 결과 (없으면 Optional.empty)
+     * @param locale 다국어 지원을 위한 로케일
+     * @return 매핑된 에러 (매칭 매퍼가 없으면 empty)
      */
     public Optional<ErrorMapper.MappedError> map(DomainException ex, Locale locale) {
-        String code = extractErrorCode(ex);
+        Optional<ErrorMapper> matchingMapper =
+                mappers.stream().filter(mapper -> mapper.supports(ex)).findFirst();
 
-        return mappers.stream()
-                .filter(m -> m.supports(code))
-                .findFirst()
-                .map(m -> m.map(ex, locale));
+        if (matchingMapper.isPresent()) {
+            log.debug(
+                    "Found matching ErrorMapper: {} for code={}",
+                    matchingMapper.get().getClass().getSimpleName(),
+                    ex.code());
+        } else {
+            log.debug(
+                    "No matching ErrorMapper found for code={}, will use defaultMapping",
+                    ex.code());
+        }
+
+        return matchingMapper.map(mapper -> mapper.map(ex, locale));
     }
 
     /**
-     * 기본 매핑 적용
+     * 기본 에러 매핑 (매칭되는 ErrorMapper가 없을 때 사용)
      *
-     * <p>등록된 매퍼가 없을 때 사용
+     * <p>DomainException의 ErrorCode에 설정된 httpStatus를 사용하여 적절한 HTTP 상태 코드를 반환합니다.
      *
      * @param ex 도메인 예외
-     * @return 기본 매핑 결과 (400 Bad Request)
+     * @return RFC 7807 호환 기본 에러 응답
      */
     public ErrorMapper.MappedError defaultMapping(DomainException ex) {
+        int rawStatus = ex.httpStatus();
+        HttpStatus status = HttpStatus.valueOf(rawStatus);
+        log.debug(
+                "defaultMapping called: code={}, rawHttpStatus={}, resolvedStatus={}",
+                ex.code(),
+                rawStatus,
+                status);
         return new ErrorMapper.MappedError(
-                HttpStatus.BAD_REQUEST,
-                "Bad Request",
+                status,
+                status.getReasonPhrase(),
                 ex.getMessage() != null ? ex.getMessage() : "Invalid request",
                 URI.create("about:blank"));
-    }
-
-    /**
-     * 예외 클래스명에서 에러 코드 추출
-     *
-     * <p>클래스명을 UPPER_SNAKE_CASE로 변환
-     *
-     * <p>예시:
-     *
-     * <ul>
-     *   <li>MemberNotFoundException → MEMBER_NOT_FOUND
-     *   <li>InvalidEmailException → INVALID_EMAIL
-     * </ul>
-     *
-     * @param ex 도메인 예외
-     * @return 에러 코드
-     */
-    public String extractErrorCode(DomainException ex) {
-        String className = ex.getClass().getSimpleName();
-
-        // "Exception" 접미사 제거
-        if (className.endsWith("Exception")) {
-            className = className.substring(0, className.length() - "Exception".length());
-        }
-
-        // CamelCase → UPPER_SNAKE_CASE
-        return camelToUpperSnake(className);
-    }
-
-    /**
-     * CamelCase를 UPPER_SNAKE_CASE로 변환
-     *
-     * @param str CamelCase 문자열
-     * @return UPPER_SNAKE_CASE 문자열
-     */
-    private String camelToUpperSnake(String str) {
-        if (str == null || str.isEmpty()) {
-            return str;
-        }
-
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < str.length(); i++) {
-            char c = str.charAt(i);
-            if (Character.isUpperCase(c) && i > 0) {
-                result.append('_');
-            }
-            result.append(Character.toUpperCase(c));
-        }
-        return result.toString();
     }
 }

@@ -1,182 +1,169 @@
 package com.ryuqq.setof.domain.common.vo;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("SortDirection")
+@Tag("unit")
+@DisplayName("SortDirection Value Object 테스트")
 class SortDirectionTest {
 
     @Nested
-    @DisplayName("defaultDirection")
-    class DefaultDirectionTest {
+    @DisplayName("기본 메서드 테스트")
+    class BasicMethodTest {
 
         @Test
-        @DisplayName("기본 방향은 DESC")
-        void shouldReturnDescAsDefault() {
-            // When
-            SortDirection result = SortDirection.defaultDirection();
+        @DisplayName("defaultDirection()은 DESC를 반환한다")
+        void defaultDirectionReturnsDesc() {
+            // when
+            SortDirection direction = SortDirection.defaultDirection();
 
-            // Then
-            assertEquals(SortDirection.DESC, result);
+            // then
+            assertThat(direction).isEqualTo(SortDirection.DESC);
+        }
+
+        @Test
+        @DisplayName("ASC.isAscending()은 true를 반환한다")
+        void ascIsAscendingReturnsTrue() {
+            assertThat(SortDirection.ASC.isAscending()).isTrue();
+        }
+
+        @Test
+        @DisplayName("DESC.isAscending()은 false를 반환한다")
+        void descIsAscendingReturnsFalse() {
+            assertThat(SortDirection.DESC.isAscending()).isFalse();
+        }
+
+        @Test
+        @DisplayName("ASC.isDescending()은 false를 반환한다")
+        void ascIsDescendingReturnsFalse() {
+            assertThat(SortDirection.ASC.isDescending()).isFalse();
+        }
+
+        @Test
+        @DisplayName("DESC.isDescending()은 true를 반환한다")
+        void descIsDescendingReturnsTrue() {
+            assertThat(SortDirection.DESC.isDescending()).isTrue();
         }
     }
 
     @Nested
-    @DisplayName("isAscending")
-    class IsAscendingTest {
-
-        @Test
-        @DisplayName("ASC는 true 반환")
-        void shouldReturnTrueForAsc() {
-            // Then
-            assertTrue(SortDirection.ASC.isAscending());
-        }
-
-        @Test
-        @DisplayName("DESC는 false 반환")
-        void shouldReturnFalseForDesc() {
-            // Then
-            assertFalse(SortDirection.DESC.isAscending());
-        }
-    }
-
-    @Nested
-    @DisplayName("isDescending")
-    class IsDescendingTest {
-
-        @Test
-        @DisplayName("DESC는 true 반환")
-        void shouldReturnTrueForDesc() {
-            // Then
-            assertTrue(SortDirection.DESC.isDescending());
-        }
-
-        @Test
-        @DisplayName("ASC는 false 반환")
-        void shouldReturnFalseForAsc() {
-            // Then
-            assertFalse(SortDirection.ASC.isDescending());
-        }
-    }
-
-    @Nested
-    @DisplayName("reverse")
+    @DisplayName("reverse 테스트")
     class ReverseTest {
 
         @Test
-        @DisplayName("ASC의 reverse는 DESC")
-        void shouldReturnDescForAsc() {
-            // Then
-            assertEquals(SortDirection.DESC, SortDirection.ASC.reverse());
+        @DisplayName("ASC.reverse()는 DESC를 반환한다")
+        void ascReverseReturnsDesc() {
+            // when
+            SortDirection reversed = SortDirection.ASC.reverse();
+
+            // then
+            assertThat(reversed).isEqualTo(SortDirection.DESC);
         }
 
         @Test
-        @DisplayName("DESC의 reverse는 ASC")
-        void shouldReturnAscForDesc() {
-            // Then
-            assertEquals(SortDirection.ASC, SortDirection.DESC.reverse());
+        @DisplayName("DESC.reverse()는 ASC를 반환한다")
+        void descReverseReturnsAsc() {
+            // when
+            SortDirection reversed = SortDirection.DESC.reverse();
+
+            // then
+            assertThat(reversed).isEqualTo(SortDirection.ASC);
         }
     }
 
     @Nested
-    @DisplayName("fromString")
-    class FromStringTest {
-
-        @Test
-        @DisplayName("asc 문자열 파싱")
-        void shouldParseAscLowercase() {
-            // Then
-            assertEquals(SortDirection.ASC, SortDirection.fromString("asc"));
-        }
-
-        @Test
-        @DisplayName("ASC 대문자 파싱")
-        void shouldParseAscUppercase() {
-            // Then
-            assertEquals(SortDirection.ASC, SortDirection.fromString("ASC"));
-        }
-
-        @Test
-        @DisplayName("desc 문자열 파싱")
-        void shouldParseDescLowercase() {
-            // Then
-            assertEquals(SortDirection.DESC, SortDirection.fromString("desc"));
-        }
-
-        @Test
-        @DisplayName("DESC 대문자 파싱")
-        void shouldParseDescUppercase() {
-            // Then
-            assertEquals(SortDirection.DESC, SortDirection.fromString("DESC"));
-        }
-
-        @Test
-        @DisplayName("null은 기본값 DESC 반환")
-        void shouldReturnDefaultForNull() {
-            // Then
-            assertEquals(SortDirection.DESC, SortDirection.fromString(null));
-        }
-
-        @Test
-        @DisplayName("빈 문자열은 기본값 DESC 반환")
-        void shouldReturnDefaultForEmpty() {
-            // Then
-            assertEquals(SortDirection.DESC, SortDirection.fromString(""));
-        }
-
-        @Test
-        @DisplayName("공백 문자열은 기본값 DESC 반환")
-        void shouldReturnDefaultForBlank() {
-            // Then
-            assertEquals(SortDirection.DESC, SortDirection.fromString("   "));
-        }
-
-        @Test
-        @DisplayName("유효하지 않은 값은 기본값 DESC 반환")
-        void shouldReturnDefaultForInvalidValue() {
-            // Then
-            assertEquals(SortDirection.DESC, SortDirection.fromString("invalid"));
-        }
-
-        @Test
-        @DisplayName("공백 포함 문자열 트림 후 파싱")
-        void shouldTrimAndParse() {
-            // Then
-            assertEquals(SortDirection.ASC, SortDirection.fromString("  asc  "));
-        }
-    }
-
-    @Nested
-    @DisplayName("enum values")
-    class EnumValuesTest {
-
-        @Test
-        @DisplayName("2개의 enum 값이 존재")
-        void shouldHaveTwoValues() {
-            // Then
-            assertEquals(2, SortDirection.values().length);
-        }
-    }
-
-    @Nested
-    @DisplayName("displayName")
+    @DisplayName("displayName 테스트")
     class DisplayNameTest {
 
         @Test
-        @DisplayName("ASC는 오름차순 반환")
-        void shouldReturnDisplayNameForAsc() {
-            assertEquals("오름차순", SortDirection.ASC.displayName());
+        @DisplayName("ASC.displayName()은 '오름차순'을 반환한다")
+        void ascDisplayName() {
+            assertThat(SortDirection.ASC.displayName()).isEqualTo("오름차순");
         }
 
         @Test
-        @DisplayName("DESC는 내림차순 반환")
-        void shouldReturnDisplayNameForDesc() {
-            assertEquals("내림차순", SortDirection.DESC.displayName());
+        @DisplayName("DESC.displayName()은 '내림차순'을 반환한다")
+        void descDisplayName() {
+            assertThat(SortDirection.DESC.displayName()).isEqualTo("내림차순");
+        }
+    }
+
+    @Nested
+    @DisplayName("fromString 테스트")
+    class FromStringTest {
+
+        @Test
+        @DisplayName("'asc' 문자열을 ASC로 파싱한다")
+        void parsesLowercaseAsc() {
+            // when
+            SortDirection direction = SortDirection.fromString("asc");
+
+            // then
+            assertThat(direction).isEqualTo(SortDirection.ASC);
+        }
+
+        @Test
+        @DisplayName("'DESC' 문자열을 DESC로 파싱한다")
+        void parsesUppercaseDesc() {
+            // when
+            SortDirection direction = SortDirection.fromString("DESC");
+
+            // then
+            assertThat(direction).isEqualTo(SortDirection.DESC);
+        }
+
+        @Test
+        @DisplayName("공백이 포함된 문자열도 처리한다")
+        void handlesWhitespace() {
+            // when
+            SortDirection direction = SortDirection.fromString("  asc  ");
+
+            // then
+            assertThat(direction).isEqualTo(SortDirection.ASC);
+        }
+
+        @Test
+        @DisplayName("null 입력은 기본값(DESC)을 반환한다")
+        void nullReturnsDefault() {
+            // when
+            SortDirection direction = SortDirection.fromString(null);
+
+            // then
+            assertThat(direction).isEqualTo(SortDirection.DESC);
+        }
+
+        @Test
+        @DisplayName("빈 문자열은 기본값(DESC)을 반환한다")
+        void emptyStringReturnsDefault() {
+            // when
+            SortDirection direction = SortDirection.fromString("");
+
+            // then
+            assertThat(direction).isEqualTo(SortDirection.DESC);
+        }
+
+        @Test
+        @DisplayName("공백 문자열은 기본값(DESC)을 반환한다")
+        void blankStringReturnsDefault() {
+            // when
+            SortDirection direction = SortDirection.fromString("   ");
+
+            // then
+            assertThat(direction).isEqualTo(SortDirection.DESC);
+        }
+
+        @Test
+        @DisplayName("유효하지 않은 값은 기본값(DESC)을 반환한다")
+        void invalidValueReturnsDefault() {
+            // when
+            SortDirection direction = SortDirection.fromString("invalid");
+
+            // then
+            assertThat(direction).isEqualTo(SortDirection.DESC);
         }
     }
 }

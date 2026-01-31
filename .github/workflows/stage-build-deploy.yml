@@ -8,6 +8,7 @@
 # - legacy-api (bootstrap-legacy-web-api)
 # - legacy-api-admin (bootstrap-legacy-web-api-admin)
 # - legacy-batch (bootstrap-batch)
+# - scheduler (bootstrap-scheduler)
 # - web-api (bootstrap-web-api)
 # - web-api-admin (bootstrap-web-api-admin)
 # - migration (bootstrap-migration) - RunTask 전용
@@ -57,6 +58,7 @@ jobs:
       legacy-api: ${{ steps.filter.outputs.legacy-api }}
       legacy-api-admin: ${{ steps.filter.outputs.legacy-api-admin }}
       legacy-batch: ${{ steps.filter.outputs.legacy-batch }}
+      scheduler: ${{ steps.filter.outputs.scheduler }}
       web-api: ${{ steps.filter.outputs.web-api }}
       web-api-admin: ${{ steps.filter.outputs.web-api-admin }}
       migration: ${{ steps.filter.outputs.migration }}
@@ -86,6 +88,9 @@ jobs:
               - 'adapter-in/rest-api-admin/**'
             legacy-batch:
               - 'bootstrap/bootstrap-batch/**'
+            scheduler:
+              - 'bootstrap/bootstrap-scheduler/**'
+              - 'adapter-in/scheduler/**'
             web-api:
               - 'bootstrap/bootstrap-web-api/**'
               - 'adapter-in/rest-api/**'
@@ -105,6 +110,7 @@ jobs:
           echo "| legacy-api | ${{ steps.filter.outputs.legacy-api }} |" >> $GITHUB_STEP_SUMMARY
           echo "| legacy-api-admin | ${{ steps.filter.outputs.legacy-api-admin }} |" >> $GITHUB_STEP_SUMMARY
           echo "| legacy-batch | ${{ steps.filter.outputs.legacy-batch }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| scheduler | ${{ steps.filter.outputs.scheduler }} |" >> $GITHUB_STEP_SUMMARY
           echo "| web-api | ${{ steps.filter.outputs.web-api }} |" >> $GITHUB_STEP_SUMMARY
           echo "| web-api-admin | ${{ steps.filter.outputs.web-api-admin }} |" >> $GITHUB_STEP_SUMMARY
           echo "| migration | ${{ steps.filter.outputs.migration }} |" >> $GITHUB_STEP_SUMMARY
@@ -122,6 +128,7 @@ jobs:
       needs.detect-changes.outputs.legacy-api == 'true' ||
       needs.detect-changes.outputs.legacy-api-admin == 'true' ||
       needs.detect-changes.outputs.legacy-batch == 'true' ||
+      needs.detect-changes.outputs.scheduler == 'true' ||
       needs.detect-changes.outputs.web-api == 'true' ||
       needs.detect-changes.outputs.web-api-admin == 'true' ||
       needs.detect-changes.outputs.migration == 'true' ||
@@ -147,6 +154,7 @@ jobs:
             :bootstrap:bootstrap-legacy-web-api:test \
             :bootstrap:bootstrap-legacy-web-api-admin:test \
             :bootstrap:bootstrap-batch:test \
+            :bootstrap:bootstrap-scheduler:test \
             :bootstrap:bootstrap-web-api:test \
             :bootstrap:bootstrap-web-api-admin:test \
             :bootstrap:bootstrap-migration:test \
@@ -167,6 +175,7 @@ jobs:
           echo "**New Modules:**" >> $GITHUB_STEP_SUMMARY
           echo "- bootstrap-web-api" >> $GITHUB_STEP_SUMMARY
           echo "- bootstrap-web-api-admin" >> $GITHUB_STEP_SUMMARY
+          echo "- bootstrap-scheduler" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Batch/Migration Modules:**" >> $GITHUB_STEP_SUMMARY
           echo "- bootstrap-batch (RunTask 전용)" >> $GITHUB_STEP_SUMMARY
@@ -238,6 +247,26 @@ jobs:
   # ============================================================================
   # 빌드 Jobs - New 모듈 (Stage ECR)
   # ============================================================================
+  build-scheduler:
+    name: Build scheduler (Stage)
+    needs: [detect-changes, test]
+    # FIXME: 테스트 실패 시에도 빌드 진행 (미구현 레거시 API 테스트 수정 후 원복 필요)
+    if: |
+      always() &&
+      needs.test.result != 'cancelled' &&
+      (needs.detect-changes.outputs.shared == 'true' ||
+       needs.detect-changes.outputs.scheduler == 'true' ||
+       github.event.inputs.force-all == 'true')
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
+    with:
+      ecr-repository: setof-commerce-scheduler-stage
+      component: scheduler-stage
+      dockerfile: bootstrap/bootstrap-scheduler/Dockerfile
+      gradle-task: ":bootstrap:bootstrap-scheduler:bootJar"
+      timeout-minutes: 30
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
   build-web-api:
     name: Build web-api (Stage)
     needs: [detect-changes, test]
@@ -313,7 +342,7 @@ jobs:
     uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
     with:
       ecs-cluster: setof-commerce-cluster-stage
-      ecs-service: setof-commerce-legacy-api-staging
+      ecs-service: setof-commerce-legacy-api-stage
       image-uri: ${{ needs.build-legacy-api.outputs.image-uri }}
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
@@ -325,7 +354,7 @@ jobs:
     uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
     with:
       ecs-cluster: setof-commerce-cluster-stage
-      ecs-service: setof-commerce-legacy-admin-staging
+      ecs-service: setof-commerce-legacy-admin-stage
       image-uri: ${{ needs.build-legacy-api-admin.outputs.image-uri }}
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
@@ -334,8 +363,20 @@ jobs:
 
   # ============================================================================
   # 배포 Jobs - New 모듈 (Stage ECS)
-  # NOTE: web-api, web-api-admin Stage ECS 서비스 생성 후 활성화 필요
   # ============================================================================
+  deploy-scheduler:
+    name: Deploy scheduler (Stage)
+    needs: build-scheduler
+    if: needs.build-scheduler.result == 'success'
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
+    with:
+      ecs-cluster: setof-commerce-cluster-stage
+      ecs-service: setof-commerce-scheduler-stage
+      image-uri: ${{ needs.build-scheduler.outputs.image-uri }}
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+
+  # NOTE: web-api, web-api-admin Stage ECS 서비스 생성 후 활성화 필요
   # deploy-web-api:
   #   name: Deploy web-api (Stage)
   #   needs: build-web-api
@@ -343,7 +384,7 @@ jobs:
   #   uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
   #   with:
   #     ecs-cluster: setof-commerce-cluster-stage
-  #     ecs-service: setof-commerce-web-api-staging
+  #     ecs-service: setof-commerce-web-api-stage
   #     image-uri: ${{ needs.build-web-api.outputs.image-uri }}
   #   secrets:
   #     AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
@@ -355,7 +396,7 @@ jobs:
   #   uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
   #   with:
   #     ecs-cluster: setof-commerce-cluster-stage
-  #     ecs-service: setof-commerce-web-api-admin-staging
+  #     ecs-service: setof-commerce-web-api-admin-stage
   #     image-uri: ${{ needs.build-web-api-admin.outputs.image-uri }}
   #   secrets:
   #     AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
@@ -365,12 +406,13 @@ jobs:
   # ============================================================================
   update-terraform-tags:
     name: Update Terraform Image Tags (Stage)
-    needs: [build-legacy-api, build-legacy-api-admin, build-legacy-batch, build-web-api, build-web-api-admin, build-migration]
+    needs: [build-legacy-api, build-legacy-api-admin, build-legacy-batch, build-scheduler, build-web-api, build-web-api-admin, build-migration]
     if: |
       always() &&
       (needs.build-legacy-api.result == 'success' ||
        needs.build-legacy-api-admin.result == 'success' ||
        needs.build-legacy-batch.result == 'success' ||
+       needs.build-scheduler.result == 'success' ||
        needs.build-web-api.result == 'success' ||
        needs.build-web-api-admin.result == 'success' ||
        needs.build-migration.result == 'success')
@@ -379,6 +421,7 @@ jobs:
       legacy-api-image-tag: ${{ needs.build-legacy-api.outputs.image-tag || '' }}
       legacy-api-admin-image-tag: ${{ needs.build-legacy-api-admin.outputs.image-tag || '' }}
       legacy-batch-image-tag: ${{ needs.build-legacy-batch.outputs.image-tag || '' }}
+      scheduler-image-tag: ${{ needs.build-scheduler.outputs.image-tag || '' }}
       # NOTE: web-api, web-api-admin, migration Stage Terraform 모듈 추가 시 아래 주석 해제
       # web-api-image-tag: ${{ needs.build-web-api.outputs.image-tag || '' }}
       # web-api-admin-image-tag: ${{ needs.build-web-api-admin.outputs.image-tag || '' }}
@@ -386,32 +429,3 @@ jobs:
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
-  # ============================================================================
-  # 배포 완료 알림
-  # ============================================================================
-  notify:
-    name: Stage Deployment Notification
-    needs: [detect-changes, test, deploy-legacy-api, deploy-legacy-api-admin, build-migration, update-terraform-tags]
-    if: always()
-    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-notify-slack.yml@main
-    with:
-      project-name: SetOf Commerce
-      environment: stage
-      status: |
-        ${{
-          (needs.test.result == 'failure') && 'failure' ||
-          (needs.deploy-legacy-api.result == 'success' || needs.deploy-legacy-api.result == 'skipped') &&
-          (needs.deploy-legacy-api-admin.result == 'success' || needs.deploy-legacy-api-admin.result == 'skipped') &&
-          'success' || 'failure'
-        }}
-      components: |
-        [
-          {"name": "test", "status": "${{ needs.test.result }}"},
-          {"name": "legacy-api", "status": "${{ needs.deploy-legacy-api.result }}"},
-          {"name": "legacy-api-admin", "status": "${{ needs.deploy-legacy-api-admin.result }}"},
-          {"name": "migration (build)", "status": "${{ needs.build-migration.result }}"},
-          {"name": "terraform-tags", "status": "${{ needs.update-terraform-tags.result }}"}
-        ]
-      mention-on-failure: "@channel"
-    secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

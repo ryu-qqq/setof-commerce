@@ -172,8 +172,11 @@ management:
 # ===============================================
 # Sentry Configuration (Error Tracking)
 # ===============================================
+# DSN은 환경변수로 주입 (ECS Task Definition)
+# local/dev: 비워두면 Sentry 비활성화
+# prod: SENTRY_DSN 환경변수로 주입
 sentry:
-  dsn: ${SENTRY_DSN:https://93171c7ddb8ad90ef418b7aa0b2b0efc@o4510661281644544.ingest.us.sentry.io/4510678108012544}
+  dsn: ${SENTRY_DSN:}
   environment: ${spring.profiles.active:local}
   release: ${APP_VERSION:unknown}
   # TraceId 연동 (OpenTelemetry 연계)
@@ -252,3 +255,12 @@ management:
       exposure:
         # 프로덕션: health, metrics, prometheus만 노출
         include: health,metrics,prometheus
+
+# Sentry (Production)
+# DSN은 ECS Task Definition 환경변수로 주입
+sentry:
+  send-default-pii: true
+  attach-stacktrace: true
+  logging:
+    minimum-event-level: error
+    minimum-breadcrumb-level: info

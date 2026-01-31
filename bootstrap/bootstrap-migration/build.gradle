@@ -17,11 +17,12 @@ plugins {
 
 dependencies {
     // ========================================
-    // Core Modules (신규 스키마 접근용)
+    // Core Modules
+    // 마이그레이션은 JdbcTemplate만 사용하므로 persistence-mysql 불필요
     // ========================================
-    implementation project(':domain')
-    implementation project(':application')
-    implementation project(':adapter-out:persistence-mysql')
+    // implementation project(':domain')
+    // implementation project(':application')
+    // implementation project(':adapter-out:persistence-mysql')
 
     // ========================================
     // Spring Boot Starters

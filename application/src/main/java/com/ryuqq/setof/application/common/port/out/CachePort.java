@@ -4,83 +4,73 @@ import java.time.Duration;
 import java.util.Optional;
 
 /**
- * Cache Port (출력 포트)
+ * Cache Port
  *
- * <p>캐시 저장/조회/무효화를 위한 포트입니다.
+ * <p>캐시 작업을 위한 아웃바운드 포트입니다.
  *
- * <p><strong>Cache-Aside 패턴:</strong>
+ * <p><strong>구현체:</strong>
  *
- * <ol>
- *   <li>Cache 조회 (CachePort.get)
- *   <li>Cache Miss → DB 조회 (QueryPort)
- *   <li>Cache 저장 (CachePort.set)
- * </ol>
+ * <ul>
+ *   <li>ObjectCacheAdapter - 객체 타입 Redis 캐시
+ *   <li>StringCacheAdapter - 문자열 타입 Redis 캐시
+ * </ul>
  *
- * <p><strong>Key Naming Convention:</strong>
- *
- * <pre>
- * {namespace}::{entity}::{id}
- * 예: cache::orders::123
- * </pre>
- *
- * @param <T> 캐시 대상 타입
- * @author Development Team
+ * @param <T> 캐시 값 타입
+ * @author development-team
  * @since 1.0.0
  */
 public interface CachePort<T> {
 
     /**
-     * 캐시 저장 (기본 TTL)
+     * 기본 TTL로 캐시를 저장합니다.
      *
      * @param key 캐시 키
-     * @param value 저장할 값
+     * @param value 캐시 값
      */
     void set(String key, T value);
 
     /**
-     * 캐시 저장 (TTL 지정)
+     * 지정된 TTL로 캐시를 저장합니다.
      *
      * @param key 캐시 키
-     * @param value 저장할 값
-     * @param ttl Time-To-Live
+     * @param value 캐시 값
+     * @param ttl 만료 시간
      */
     void set(String key, T value, Duration ttl);
 
     /**
-     * 캐시 조회
+     * 캐시를 조회합니다.
      *
      * @param key 캐시 키
-     * @return Optional<T> (Cache Hit 시 값, Miss 시 Empty)
+     * @return 캐시 값 (Optional)
      */
     Optional<T> get(String key);
 
     /**
-     * 캐시 조회 (타입 지정)
+     * 캐시를 지정된 타입으로 조회합니다.
      *
      * @param key 캐시 키
-     * @param clazz 타입 클래스
-     * @return Optional<T> (Cache Hit 시 값, Miss 시 Empty)
+     * @param clazz 대상 타입
+     * @return 캐시 값 (Optional)
      */
     Optional<T> get(String key, Class<T> clazz);
 
     /**
-     * 캐시 무효화
+     * 캐시를 삭제합니다.
      *
      * @param key 캐시 키
      */
     void evict(String key);
 
     /**
-     * 패턴 기반 캐시 무효화
+     * 패턴에 매칭되는 모든 캐시를 삭제합니다.
      *
-     * <p><strong>주의:</strong> KEYS 명령어 사용 금지, SCAN 사용
-     *
-     * @param pattern 키 패턴 (예: "cache::orders::*")
+     * @param pattern 키 패턴 (glob 스타일)
      */
     void evictByPattern(String pattern);
 
     /**
-     * 캐시 존재 여부 확인
+     * 캐시 존재 여부를 확인합니다.
      *
      * @param key 캐시 키
      * @return 존재 여부
@@ -88,10 +78,10 @@ public interface CachePort<T> {
     boolean exists(String key);
 
     /**
-     * TTL 조회
+     * 캐시의 남은 TTL을 조회합니다.
      *
      * @param key 캐시 키
-     * @return TTL (Duration), 키가 없거나 TTL 없으면 null
+     * @return 남은 TTL (키가 없거나 TTL이 없으면 null)
      */
     Duration getTtl(String key);
 }

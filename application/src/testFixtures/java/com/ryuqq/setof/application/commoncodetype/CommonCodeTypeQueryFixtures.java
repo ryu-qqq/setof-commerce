@@ -1,0 +1,50 @@
+package com.ryuqq.setof.application.commoncodetype;
+
+import com.ryuqq.setof.application.common.dto.query.CommonSearchParams;
+import com.ryuqq.setof.application.commoncodetype.dto.query.CommonCodeTypeSearchParams;
+
+/**
+ * CommonCodeType Query DTO 테스트 Fixtures.
+ *
+ * <p>Application Layer 테스트에서 Query 파라미터 생성에 사용됩니다.
+ */
+public final class CommonCodeTypeQueryFixtures {
+
+    private CommonCodeTypeQueryFixtures() {}
+
+    // ===== 상수 =====
+    public static final int DEFAULT_PAGE = 0;
+    public static final int DEFAULT_SIZE = 20;
+
+    // ===== CommonCodeTypeSearchParams Fixtures =====
+
+    public static CommonCodeTypeSearchParams searchParams() {
+        return new CommonCodeTypeSearchParams(null, null, defaultCommonSearchParams());
+    }
+
+    public static CommonCodeTypeSearchParams searchParams(String keyword) {
+        return new CommonCodeTypeSearchParams(null, keyword, defaultCommonSearchParams());
+    }
+
+    public static CommonCodeTypeSearchParams searchParams(Boolean active) {
+        return new CommonCodeTypeSearchParams(active, null, defaultCommonSearchParams());
+    }
+
+    public static CommonCodeTypeSearchParams searchParams(Boolean active, String keyword) {
+        return new CommonCodeTypeSearchParams(active, keyword, defaultCommonSearchParams());
+    }
+
+    public static CommonCodeTypeSearchParams searchParams(int page, int size) {
+        return new CommonCodeTypeSearchParams(null, null, commonSearchParams(page, size));
+    }
+
+    // ===== CommonSearchParams Fixtures =====
+
+    public static CommonSearchParams defaultCommonSearchParams() {
+        return commonSearchParams(DEFAULT_PAGE, DEFAULT_SIZE);
+    }
+
+    public static CommonSearchParams commonSearchParams(int page, int size) {
+        return new CommonSearchParams(null, null, null, null, null, page, size);
+    }
+}

@@ -1,0 +1,70 @@
+[[shipping-policy-api]]
+= 배송정책
+
+`/api/v2/sellers/{sellerId}/shipping-policies`
+
+[[shipping-policy-register]]
+== POST 배송정책 등록
+
+include::{snippets}/register-shipping-policy-test/register-shipping-policy_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/register-shipping-policy-test/register-shipping-policy_-success/path-parameters.adoc[]
+
+=== Request Fields
+include::{snippets}/register-shipping-policy-test/register-shipping-policy_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/register-shipping-policy-test/register-shipping-policy_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/register-shipping-policy-test/register-shipping-policy_-success/response-fields.adoc[]
+
+[[shipping-policy-update]]
+== PUT 배송정책 수정
+
+`PUT /api/v2/sellers/{sellerId}/shipping-policies/{policyId}`
+
+include::{snippets}/update-shipping-policy-test/update-shipping-policy_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/update-shipping-policy-test/update-shipping-policy_-success/path-parameters.adoc[]
+
+=== Request Fields
+include::{snippets}/update-shipping-policy-test/update-shipping-policy_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/update-shipping-policy-test/update-shipping-policy_-success/http-response.adoc[]
+
+[[shipping-policy-change-status]]
+== PATCH 배송정책 상태 변경
+
+`PATCH /api/v2/sellers/{sellerId}/shipping-policies/status`
+
+include::{snippets}/change-shipping-policy-status-test/change-shipping-policy-status_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/change-shipping-policy-status-test/change-shipping-policy-status_-success/path-parameters.adoc[]
+
+=== Request Fields
+include::{snippets}/change-shipping-policy-status-test/change-shipping-policy-status_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/change-shipping-policy-status-test/change-shipping-policy-status_-success/http-response.adoc[]
+
+[[shipping-policy-search]]
+== GET 배송정책 목록 조회
+
+include::{snippets}/search-shipping-policies-test/search-shipping-policies_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/search-shipping-policies-test/search-shipping-policies_-success/path-parameters.adoc[]
+
+=== Query Parameters
+include::{snippets}/search-shipping-policies-test/search-shipping-policies_-success/query-parameters.adoc[]
+
+=== Response
+include::{snippets}/search-shipping-policies-test/search-shipping-policies_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/search-shipping-policies-test/search-shipping-policies_-success/response-fields.adoc[]

@@ -2,36 +2,21 @@ package com.ryuqq.setof.domain.refundpolicy.exception;
 
 import com.ryuqq.setof.domain.common.exception.ErrorCode;
 
-/**
- * RefundPolicy Bounded Context 에러 코드
- *
- * <p>반품 정책 도메인에서 발생하는 모든 비즈니스 예외의 에러 코드를 정의합니다.
- *
- * <p>코드 형식: RFD-XXX
- *
- * <ul>
- *   <li>RFD-001 ~ RFD-099: 반품 정책 조회 관련
- *   <li>RFD-100 ~ RFD-199: 반품 정책 정보 유효성 관련
- *   <li>RFD-200 ~ RFD-299: 반품 정책 비즈니스 규칙 관련
- * </ul>
- */
+/** 환불 정책 도메인 에러 코드. */
 public enum RefundPolicyErrorCode implements ErrorCode {
+    REFUND_POLICY_NOT_FOUND("RFP-001", 404, "환불 정책을 찾을 수 없습니다"),
+    REFUND_POLICY_INACTIVE("RFP-002", 400, "비활성화된 환불 정책입니다"),
+    REFUND_POLICY_ALREADY_DEFAULT("RFP-003", 400, "이미 기본 환불 정책으로 설정되어 있습니다"),
+    INVALID_RETURN_PERIOD("RFP-005", 400, "반품 기간이 유효하지 않습니다"),
+    INVALID_EXCHANGE_PERIOD("RFP-006", 400, "교환 기간이 유효하지 않습니다"),
+    RETURN_PERIOD_EXPIRED("RFP-007", 400, "반품 가능 기간이 만료되었습니다"),
+    EXCHANGE_PERIOD_EXPIRED("RFP-008", 400, "교환 가능 기간이 만료되었습니다"),
 
-    // === 반품 정책 조회 관련 (RFD-001 ~ RFD-099) ===
-    REFUND_POLICY_NOT_FOUND("RFD-001", 404, "반품 정책을 찾을 수 없습니다."),
-
-    // === 반품 정책 정보 유효성 관련 (RFD-100 ~ RFD-199) ===
-    INVALID_REFUND_POLICY_ID("RFD-100", 400, "반품 정책 ID는 null이 아닌 양수여야 합니다."),
-    INVALID_RETURN_ADDRESS("RFD-101", 400, "반품 주소가 올바르지 않습니다."),
-    INVALID_REFUND_PERIOD_DAYS("RFD-102", 400, "반품 기간이 올바르지 않습니다."),
-    INVALID_REFUND_DELIVERY_COST("RFD-103", 400, "반품 배송비가 올바르지 않습니다."),
-    INVALID_REFUND_GUIDE("RFD-104", 400, "반품 안내가 올바르지 않습니다."),
-    INVALID_POLICY_NAME("RFD-105", 400, "정책명이 올바르지 않습니다."),
-
-    // === 반품 정책 비즈니스 규칙 관련 (RFD-200 ~ RFD-299) ===
-    DEFAULT_REFUND_POLICY_REQUIRED("RFD-200", 400, "기본 반품 정책이 반드시 1개 존재해야 합니다."),
-    LAST_REFUND_POLICY_CANNOT_BE_DELETED("RFD-201", 400, "마지막 반품 정책은 삭제할 수 없습니다."),
-    NOT_OWNER("RFD-202", 403, "해당 반품 정책에 대한 권한이 없습니다.");
+    // 기본 정책 관련 에러 코드
+    CANNOT_DEACTIVATE_DEFAULT_POLICY("RFP-011", 400, "기본 환불 정책은 비활성화할 수 없습니다"),
+    INACTIVE_POLICY_CANNOT_BE_DEFAULT("RFP-012", 400, "비활성화된 정책은 기본으로 지정할 수 없습니다"),
+    CANNOT_UNMARK_ONLY_DEFAULT_POLICY("RFP-013", 400, "유일한 기본 환불 정책은 해제할 수 없습니다"),
+    LAST_ACTIVE_POLICY_CANNOT_BE_DEACTIVATED("RFP-014", 400, "최소 1개의 활성 환불 정책이 필요합니다");
 
     private final String code;
     private final int httpStatus;

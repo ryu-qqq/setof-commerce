@@ -1,129 +1,84 @@
 package com.ryuqq.setof.application.refundpolicy.service.command;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
+import com.ryuqq.setof.application.refundpolicy.RefundPolicyCommandFixtures;
 import com.ryuqq.setof.application.refundpolicy.dto.command.RegisterRefundPolicyCommand;
-import com.ryuqq.setof.application.refundpolicy.factory.command.RefundPolicyCommandFactory;
-import com.ryuqq.setof.application.refundpolicy.manager.command.RefundPolicyPersistenceManager;
+import com.ryuqq.setof.application.refundpolicy.factory.RefundPolicyCommandFactory;
+import com.ryuqq.setof.application.refundpolicy.internal.DefaultRefundPolicyResolver;
+import com.ryuqq.setof.application.refundpolicy.manager.RefundPolicyCommandManager;
+import com.ryuqq.setof.domain.refundpolicy.RefundPolicyFixtures;
 import com.ryuqq.setof.domain.refundpolicy.aggregate.RefundPolicy;
-import com.ryuqq.setof.domain.refundpolicy.vo.PolicyName;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundDeliveryCost;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundGuide;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundPeriodDays;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundPolicyId;
-import com.ryuqq.setof.domain.refundpolicy.vo.ReturnAddress;
-import java.time.Instant;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * RegisterRefundPolicyService 테스트
- *
- * <p>환불 정책 등록 서비스에 대한 단위 테스트
- */
-@DisplayName("RegisterRefundPolicyService")
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
+@DisplayName("RegisterRefundPolicyService 단위 테스트")
 class RegisterRefundPolicyServiceTest {
 
-    private static final Instant FIXED_TIME = Instant.parse("2025-01-01T00:00:00Z");
-    private static final Long TEST_SELLER_ID = 1L;
+    @InjectMocks private RegisterRefundPolicyService sut;
 
-    @Mock private RefundPolicyCommandFactory refundPolicyCommandFactory;
-    @Mock private RefundPolicyPersistenceManager refundPolicyPersistenceManager;
-
-    private RegisterRefundPolicyService registerRefundPolicyService;
-
-    @BeforeEach
-    void setUp() {
-        registerRefundPolicyService =
-                new RegisterRefundPolicyService(
-                        refundPolicyCommandFactory, refundPolicyPersistenceManager);
-    }
+    @Mock private RefundPolicyCommandFactory commandFactory;
+    @Mock private RefundPolicyCommandManager commandManager;
+    @Mock private DefaultRefundPolicyResolver defaultPolicyResolver;
 
     @Nested
-    @DisplayName("execute")
+    @DisplayName("execute() - 환불 정책 등록")
     class ExecuteTest {
 
         @Test
-        @DisplayName("환불 정책 등록 성공")
-        void shouldRegisterRefundPolicySuccessfully() {
-            // Given
-            RegisterRefundPolicyCommand command = createCommand();
-            RefundPolicy refundPolicy = createRefundPolicy();
-            RefundPolicyId savedId = RefundPolicyId.of(1L);
+        @DisplayName("환불 정책을 등록하고 ID를 반환한다")
+        void execute_RegistersPolicy_ReturnsId() {
+            // given
+            Long sellerId = 1L;
+            Long expectedPolicyId = 100L;
+            RegisterRefundPolicyCommand command =
+                    RefundPolicyCommandFixtures.registerCommand(sellerId);
+            RefundPolicy refundPolicy = RefundPolicyFixtures.newRefundPolicy();
 
-            when(refundPolicyCommandFactory.create(any())).thenReturn(refundPolicy);
-            when(refundPolicyPersistenceManager.persist(any())).thenReturn(savedId);
+            given(commandFactory.create(command)).willReturn(refundPolicy);
+            given(commandManager.persist(refundPolicy)).willReturn(expectedPolicyId);
 
-            // When
-            Long result = registerRefundPolicyService.execute(command);
+            // when
+            Long result = sut.execute(command);
 
-            // Then
-            assertNotNull(result);
-            assertEquals(1L, result);
-            verify(refundPolicyCommandFactory).create(command);
-            verify(refundPolicyPersistenceManager).persist(refundPolicy);
+            // then
+            assertThat(result).isEqualTo(expectedPolicyId);
+            then(commandFactory).should().create(command);
+            then(defaultPolicyResolver)
+                    .should()
+                    .resolveForRegistration(
+                            refundPolicy.sellerId(), refundPolicy, refundPolicy.createdAt());
+            then(commandManager).should().persist(refundPolicy);
         }
 
         @Test
-        @DisplayName("Factory와 Manager가 순서대로 호출된다")
-        void shouldCallFactoryAndManagerInOrder() {
-            // Given
-            RegisterRefundPolicyCommand command = createCommand();
-            RefundPolicy refundPolicy = createRefundPolicy();
-            RefundPolicyId savedId = RefundPolicyId.of(100L);
+        @DisplayName("간편 환불 정책을 등록한다")
+        void execute_SimplePolicy_RegistersSuccessfully() {
+            // given
+            Long sellerId = 1L;
+            Long expectedPolicyId = 101L;
+            RegisterRefundPolicyCommand command =
+                    RefundPolicyCommandFixtures.simpleRegisterCommand(sellerId);
+            RefundPolicy refundPolicy = RefundPolicyFixtures.newRefundPolicy(7, 14);
 
-            when(refundPolicyCommandFactory.create(any())).thenReturn(refundPolicy);
-            when(refundPolicyPersistenceManager.persist(any())).thenReturn(savedId);
+            given(commandFactory.create(command)).willReturn(refundPolicy);
+            given(commandManager.persist(refundPolicy)).willReturn(expectedPolicyId);
 
-            // When
-            Long result = registerRefundPolicyService.execute(command);
+            // when
+            Long result = sut.execute(command);
 
-            // Then
-            assertEquals(100L, result);
-            verify(refundPolicyCommandFactory).create(command);
-            verify(refundPolicyPersistenceManager).persist(refundPolicy);
+            // then
+            assertThat(result).isEqualTo(expectedPolicyId);
         }
-    }
-
-    // ========== Helper Methods ==========
-
-    private RegisterRefundPolicyCommand createCommand() {
-        return new RegisterRefundPolicyCommand(
-                TEST_SELLER_ID,
-                "기본 환불",
-                "서울시 강남구",
-                "테헤란로 123",
-                "06234",
-                7,
-                3000,
-                "상품 수령 후 7일 이내 환불 가능",
-                true,
-                1);
-    }
-
-    private RefundPolicy createRefundPolicy() {
-        return RefundPolicy.reconstitute(
-                RefundPolicyId.of(1L),
-                TEST_SELLER_ID,
-                PolicyName.of("기본 환불"),
-                ReturnAddress.of("서울시 강남구", "테헤란로 123", "06234"),
-                RefundPeriodDays.of(7),
-                RefundDeliveryCost.of(3000),
-                RefundGuide.of("상품 수령 후 7일 이내 환불 가능"),
-                true,
-                1,
-                FIXED_TIME,
-                FIXED_TIME,
-                null);
     }
 }

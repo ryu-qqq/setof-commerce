@@ -298,7 +298,7 @@
   @Component
   public class DiscountUsageHistoryCommandFactory {
 
-      private final ClockHolder clockHolder;
+      private final TimeProvider timeProvider;
 
       public List<DiscountUsageHistory> createFromCheckout(
           Checkout checkout,
@@ -307,7 +307,7 @@
           Map<DiscountGroup, Long> discountsByGroup
       ) {
           List<DiscountUsageHistory> histories = new ArrayList<>();
-          Instant now = Instant.now(clockHolder.getClock());
+          Instant now = timeProvider.now();
 
           for (DiscountPolicy policy : appliedPolicies) {
               Long amount = discountsByGroup.get(policy.getDiscountGroup());
@@ -346,12 +346,12 @@
       private final DiscountReadManager discountReadManager;
       private final DiscountCalculator discountCalculator;
       private final DiscountEligibilityChecker eligibilityChecker;
-      private final ClockHolder clockHolder;
+      private final TimeProvider timeProvider;
 
       public Checkout createCheckout(CreateCheckoutCommand command) {
           List<CheckoutItem> items = toCheckoutItems(command.items());
           ShippingAddressSnapshot shippingAddress = toShippingAddressSnapshot(command);
-          Instant now = Instant.now(clockHolder.getClock());
+          Instant now = timeProvider.now();
 
           // 1. 총 주문 금액 계산
           long totalAmount = calculateTotalAmount(items);
@@ -557,10 +557,10 @@
   @Component
   public class OrderCommandFactory {
 
-      private final ClockHolder clockHolder;
+      private final TimeProvider timeProvider;
 
       public Order createOrder(CreateOrderCommand command) {
-          Instant now = Instant.now(clockHolder.getClock());
+          Instant now = timeProvider.now();
 
           // 1. CheckoutItem → OrderItem 변환
           List<OrderItem> items = command.items().stream()

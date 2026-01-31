@@ -1,35 +1,60 @@
 package com.ryuqq.setof.adapter.in.rest.admin.common.controller;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
- * API Documentation Controller
+ * API 문서 접근용 Controller
  *
- * <p>Spring REST Docs로 생성된 API 문서를 제공합니다.
+ * <p>Spring REST Docs로 생성된 HTML 문서를 서빙합니다.
  *
- * <p>빌드 시 asciidoctor 태스크가 생성한 HTML 문서를 static resource로 제공합니다.
+ * <p><strong>API Gateway 라우팅 패턴:</strong>
  *
- * @author development-team
+ * <ul>
+ *   <li>Gateway: /api/admin/** → 이 서버 (prefix strip 없음)
+ *   <li>REST Docs: /api/admin/docs → 문서 메인 페이지
+ * </ul>
+ *
+ * <p><strong>접근 경로:</strong>
+ *
+ * <ul>
+ *   <li>{@code /api/admin/docs} - API 문서 메인 페이지
+ *   <li>{@code /api/admin/docs/index.html} - API 문서 메인 페이지 (직접 접근)
+ * </ul>
+ *
+ * <p><strong>문서 위치:</strong>
+ *
+ * <ul>
+ *   <li>소스: {@code src/docs/asciidoc/}
+ *   <li>빌드 결과: {@code build/docs/asciidoc/}
+ *   <li>배포 위치: {@code static/docs/} (bootJar 내)
+ * </ul>
+ *
+ * <p><strong>빌드 방법:</strong>
+ *
+ * <pre>{@code
+ * ./gradlew :bootstrap:bootstrap-admin-api:asciidoctor
+ * }</pre>
+ *
+ * @author Development Team
  * @since 1.0.0
+ * @see <a href="https://docs.spring.io/spring-restdocs/docs/current/reference/htmlsingle/">Spring
+ *     REST Docs</a>
  */
-@RestController
+@Controller
 public class ApiDocsController {
 
+    private static final String DOCS_PATH = "/api/admin/docs";
+
     /**
-     * API 문서 페이지 제공
+     * API 문서 메인 페이지로 리다이렉트
      *
-     * <p>Spring REST Docs로 생성된 index.html을 반환합니다.
+     * <p>{@code /api/admin/docs} 접근 시 {@code /api/admin/docs/index.html}로 리다이렉트합니다.
      *
-     * @return API 문서 HTML
+     * @return 리다이렉트 경로
      */
-    @GetMapping(value = "/docs", produces = MediaType.TEXT_HTML_VALUE)
-    public ResponseEntity<Resource> getApiDocs() {
-        Resource resource = new ClassPathResource("static/docs/index.html");
-        return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(resource);
+    @GetMapping(DOCS_PATH)
+    public String redirectToApiDocs() {
+        return "redirect:" + DOCS_PATH + "/index.html";
     }
 }

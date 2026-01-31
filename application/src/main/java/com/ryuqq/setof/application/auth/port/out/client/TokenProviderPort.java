@@ -5,20 +5,12 @@ import com.ryuqq.setof.application.auth.dto.response.TokenPairResponse;
 /**
  * Token Provider Port
  *
- * <p>JWT 토큰 생성을 담당하는 Port-Out 인터페이스
+ * <p>토큰 생성 및 검증을 위한 아웃바운드 포트입니다.
  *
  * <p><strong>구현체:</strong>
  *
  * <ul>
- *   <li>infrastructure: JwtTokenProvider
- * </ul>
- *
- * <p><strong>책임:</strong>
- *
- * <ul>
- *   <li>Access Token 생성
- *   <li>Refresh Token 생성
- *   <li>토큰 검증
+ *   <li>JwtTokenProviderAdapter - jjwt 기반 JWT 토큰 제공자
  * </ul>
  *
  * @author development-team
@@ -27,52 +19,50 @@ import com.ryuqq.setof.application.auth.dto.response.TokenPairResponse;
 public interface TokenProviderPort {
 
     /**
-     * 토큰 쌍 생성
+     * Access Token과 Refresh Token 쌍을 생성합니다.
      *
-     * @param memberId 회원 ID (UUID 문자열)
-     * @return Access Token + Refresh Token 쌍
+     * @param memberId 회원 ID
+     * @return 토큰 쌍 응답
      */
     TokenPairResponse generateTokenPair(String memberId);
 
     /**
-     * Access Token 유효성 검증
+     * Access Token에서 회원 ID를 추출합니다.
      *
-     * @param accessToken Access Token 값
+     * @param accessToken Access Token
+     * @return 회원 ID
+     */
+    String extractMemberId(String accessToken);
+
+    /**
+     * Access Token의 유효성을 검증합니다.
+     *
+     * @param accessToken Access Token
      * @return 유효 여부
      */
     boolean validateAccessToken(String accessToken);
 
     /**
-     * Access Token에서 회원 ID 추출
+     * Refresh Token의 유효성을 검증합니다.
      *
-     * @param accessToken Access Token 값
-     * @return 회원 ID (UUID 문자열)
-     */
-    String extractMemberId(String accessToken);
-
-    /**
-     * Access Token 만료 여부 확인
-     *
-     * <p>토큰이 만료되었지만 서명이 유효한 경우 true 반환 (Silent Refresh 대상 판단용)
-     *
-     * @param accessToken Access Token 값
-     * @return 만료 여부
-     */
-    boolean isAccessTokenExpired(String accessToken);
-
-    /**
-     * Refresh Token 유효성 검증
-     *
-     * @param refreshToken Refresh Token 값
+     * @param refreshToken Refresh Token
      * @return 유효 여부
      */
     boolean validateRefreshToken(String refreshToken);
 
     /**
-     * Refresh Token에서 회원 ID 추출
+     * Refresh Token에서 회원 ID를 추출합니다.
      *
-     * @param refreshToken Refresh Token 값
-     * @return 회원 ID (UUID 문자열)
+     * @param refreshToken Refresh Token
+     * @return 회원 ID
      */
     String extractMemberIdFromRefreshToken(String refreshToken);
+
+    /**
+     * Access Token이 만료되었는지 확인합니다.
+     *
+     * @param accessToken Access Token
+     * @return 만료 여부
+     */
+    boolean isAccessTokenExpired(String accessToken);
 }

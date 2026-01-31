@@ -1,139 +1,105 @@
 package com.ryuqq.setof.application.seller.assembler;
 
-import com.ryuqq.setof.application.seller.dto.command.RegisterSellerCommand;
-import com.ryuqq.setof.application.seller.dto.response.BusinessInfoResponse;
-import com.ryuqq.setof.application.seller.dto.response.CsInfoResponse;
-import com.ryuqq.setof.application.seller.dto.response.SellerResponse;
-import com.ryuqq.setof.application.seller.dto.response.SellerSummaryResponse;
+import com.ryuqq.setof.application.seller.dto.response.SellerAddressResult;
+import com.ryuqq.setof.application.seller.dto.response.SellerAdminResult;
+import com.ryuqq.setof.application.seller.dto.response.SellerBusinessInfoResult;
+import com.ryuqq.setof.application.seller.dto.response.SellerCustomerResult;
+import com.ryuqq.setof.application.seller.dto.response.SellerPageResult;
+import com.ryuqq.setof.application.seller.dto.response.SellerResult;
 import com.ryuqq.setof.domain.seller.aggregate.Seller;
-import com.ryuqq.setof.domain.seller.vo.BusinessAddress;
-import com.ryuqq.setof.domain.seller.vo.BusinessInfo;
-import com.ryuqq.setof.domain.seller.vo.CsEmail;
-import com.ryuqq.setof.domain.seller.vo.CsLandlinePhone;
-import com.ryuqq.setof.domain.seller.vo.CsMobilePhone;
-import com.ryuqq.setof.domain.seller.vo.CustomerServiceInfo;
-import com.ryuqq.setof.domain.seller.vo.Description;
-import com.ryuqq.setof.domain.seller.vo.LogoUrl;
-import com.ryuqq.setof.domain.seller.vo.RegistrationNumber;
-import com.ryuqq.setof.domain.seller.vo.Representative;
-import com.ryuqq.setof.domain.seller.vo.SaleReportNumber;
-import com.ryuqq.setof.domain.seller.vo.SellerName;
-import java.time.Instant;
+import com.ryuqq.setof.domain.seller.aggregate.SellerAddress;
+import com.ryuqq.setof.domain.seller.aggregate.SellerBusinessInfo;
+import com.ryuqq.setof.domain.seller.aggregate.SellerCs;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
- * Seller Assembler
+ * Seller Assembler.
  *
- * <p>Command DTO와 Domain 객체, Response DTO 간 변환을 담당
- *
- * @author development-team
- * @since 1.0.0
+ * <p>Domain → Result 변환 및 PageResult 생성을 담당합니다.
  */
 @Component
 public class SellerAssembler {
 
     /**
-     * RegisterSellerCommand를 Seller 도메인으로 변환
-     *
-     * @param command 등록 커맨드
-     * @param now 현재 시각
-     * @return Seller 도메인 객체
-     */
-    public Seller toDomain(RegisterSellerCommand command, Instant now) {
-        SellerName sellerName = SellerName.of(command.sellerName());
-        LogoUrl logoUrl = command.logoUrl() != null ? LogoUrl.of(command.logoUrl()) : null;
-        Description description =
-                command.description() != null ? Description.of(command.description()) : null;
-
-        BusinessInfo businessInfo = createBusinessInfo(command);
-        CustomerServiceInfo csInfo = createCustomerServiceInfo(command);
-
-        return Seller.create(sellerName, logoUrl, description, businessInfo, csInfo, now);
-    }
-
-    private BusinessInfo createBusinessInfo(RegisterSellerCommand command) {
-        RegistrationNumber registrationNumber = RegistrationNumber.of(command.registrationNumber());
-        SaleReportNumber saleReportNumber =
-                command.saleReportNumber() != null
-                        ? SaleReportNumber.of(command.saleReportNumber())
-                        : null;
-        Representative representative = Representative.of(command.representative());
-        BusinessAddress businessAddress =
-                BusinessAddress.of(
-                        command.businessAddressLine1(),
-                        command.businessAddressLine2(),
-                        command.businessZipCode());
-
-        return BusinessInfo.of(
-                registrationNumber, saleReportNumber, representative, businessAddress);
-    }
-
-    private CustomerServiceInfo createCustomerServiceInfo(RegisterSellerCommand command) {
-        CsEmail csEmail = command.csEmail() != null ? CsEmail.of(command.csEmail()) : null;
-        CsMobilePhone csMobilePhone =
-                command.csMobilePhone() != null ? CsMobilePhone.of(command.csMobilePhone()) : null;
-        CsLandlinePhone csLandlinePhone =
-                command.csLandlinePhone() != null
-                        ? CsLandlinePhone.of(command.csLandlinePhone())
-                        : null;
-
-        return CustomerServiceInfo.of(csEmail, csMobilePhone, csLandlinePhone);
-    }
-
-    /**
-     * Seller 도메인을 SellerResponse로 변환
+     * Domain → SellerResult 변환.
      *
      * @param seller Seller 도메인 객체
-     * @return SellerResponse
+     * @return SellerResult
      */
-    public SellerResponse toSellerResponse(Seller seller) {
-        BusinessInfoResponse businessInfo =
-                BusinessInfoResponse.of(
-                        seller.getRegistrationNumber(),
-                        seller.getSaleReportNumber(),
-                        seller.getRepresentative(),
-                        seller.getBusinessAddressLine1(),
-                        seller.getBusinessAddressLine2(),
-                        seller.getBusinessZipCode());
-
-        CsInfoResponse csInfo =
-                CsInfoResponse.of(
-                        seller.getCsEmail(),
-                        seller.getCsMobilePhone(),
-                        seller.getCsLandlinePhone());
-
-        return SellerResponse.of(
-                seller.getIdValue(),
-                seller.getNameValue(),
-                seller.getLogoUrlValue(),
-                seller.getDescriptionValue(),
-                seller.getApprovalStatusValue(),
-                businessInfo,
-                csInfo);
+    public SellerResult toResult(Seller seller) {
+        return SellerResult.from(seller);
     }
 
     /**
-     * Seller 도메인을 SellerSummaryResponse로 변환
+     * Domain List → SellerResult List 변환.
+     *
+     * @param sellers Seller 도메인 객체 목록
+     * @return SellerResult 목록
+     */
+    public List<SellerResult> toResults(List<Seller> sellers) {
+        return sellers.stream().map(this::toResult).toList();
+    }
+
+    /**
+     * Domain → SellerBusinessInfoResult 변환.
+     *
+     * @param businessInfo SellerBusinessInfo 도메인 객체
+     * @return SellerBusinessInfoResult
+     */
+    public SellerBusinessInfoResult toBusinessInfoResult(SellerBusinessInfo businessInfo) {
+        return SellerBusinessInfoResult.from(businessInfo);
+    }
+
+    /**
+     * Domain → SellerAddressResult 변환.
+     *
+     * @param address SellerAddress 도메인 객체
+     * @return SellerAddressResult
+     */
+    public SellerAddressResult toAddressResult(SellerAddress address) {
+        return SellerAddressResult.from(address);
+    }
+
+    /**
+     * 어드민용 상세 조회 결과 생성. (모두 1:1 관계)
      *
      * @param seller Seller 도메인 객체
-     * @return SellerSummaryResponse
+     * @param businessInfo SellerBusinessInfo 도메인 객체
+     * @param address SellerAddress 도메인 객체
+     * @return SellerAdminResult
      */
-    public SellerSummaryResponse toSellerSummaryResponse(Seller seller) {
-        return SellerSummaryResponse.of(
-                seller.getIdValue(),
-                seller.getNameValue(),
-                seller.getLogoUrlValue(),
-                seller.getApprovalStatusValue());
+    public SellerAdminResult toAdminResult(
+            Seller seller, SellerBusinessInfo businessInfo, SellerAddress address) {
+        return SellerAdminResult.of(
+                toResult(seller), toBusinessInfoResult(businessInfo), toAddressResult(address));
     }
 
     /**
-     * Seller 도메인 목록을 SellerSummaryResponse 목록으로 변환
+     * 고객용 조회 결과 생성.
      *
-     * @param sellers Seller 도메인 목록
-     * @return SellerSummaryResponse 목록
+     * @param seller Seller 도메인 객체
+     * @param businessInfo SellerBusinessInfo 도메인 객체
+     * @param sellerCs SellerCs 도메인 객체
+     * @return SellerCustomerResult
      */
-    public List<SellerSummaryResponse> toSellerSummaryResponses(List<Seller> sellers) {
-        return sellers.stream().map(this::toSellerSummaryResponse).toList();
+    public SellerCustomerResult toCustomerResult(
+            Seller seller, SellerBusinessInfo businessInfo, SellerCs sellerCs) {
+        return SellerCustomerResult.of(seller, businessInfo, sellerCs);
+    }
+
+    /**
+     * 페이지 결과 생성.
+     *
+     * @param sellers Seller 도메인 객체 목록
+     * @param page 페이지 번호
+     * @param size 페이지 크기
+     * @param totalCount 전체 개수
+     * @return SellerPageResult
+     */
+    public SellerPageResult toPageResult(
+            List<Seller> sellers, int page, int size, long totalCount) {
+        List<SellerResult> results = toResults(sellers);
+        return SellerPageResult.of(results, totalCount, page, size);
     }
 }

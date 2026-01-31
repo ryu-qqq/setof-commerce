@@ -1,20 +1,31 @@
 package com.ryuqq.setof.adapter.out.persistence.shippingpolicy.adapter;
 
+import com.ryuqq.setof.adapter.out.persistence.shippingpolicy.entity.ShippingPolicyJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.shippingpolicy.mapper.ShippingPolicyJpaEntityMapper;
 import com.ryuqq.setof.adapter.out.persistence.shippingpolicy.repository.ShippingPolicyQueryDslRepository;
 import com.ryuqq.setof.application.shippingpolicy.port.out.query.ShippingPolicyQueryPort;
+import com.ryuqq.setof.domain.seller.id.SellerId;
 import com.ryuqq.setof.domain.shippingpolicy.aggregate.ShippingPolicy;
-import com.ryuqq.setof.domain.shippingpolicy.vo.ShippingPolicyId;
+import com.ryuqq.setof.domain.shippingpolicy.id.ShippingPolicyId;
+import com.ryuqq.setof.domain.shippingpolicy.query.ShippingPolicySearchCriteria;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 /**
- * ShippingPolicyQueryAdapter - ShippingPolicy Query Adapter
+ * ShippingPolicyQueryAdapter - 배송 정책 Query 어댑터.
  *
- * <p>CQRS의 Query(읽기) 담당으로, ShippingPolicy 조회 요청을 QueryDslRepository에 위임합니다.
+ * <p>ShippingPolicyQueryPort를 구현하여 영속성 계층과 연결합니다.
  *
- * @author development-team
+ * <p>PER-ADP-004: QueryAdapter는 QueryDslRepository만 사용.
+ *
+ * <p>PER-ADP-002: Adapter에서 @Transactional 금지.
+ *
+ * <p>PER-ADP-003: Domain 반환 (DTO 반환 금지).
+ *
+ * <p>PER-ADP-005: Entity -> Domain 변환 (Mapper 사용).
+ *
+ * @author ryu-qqq
  * @since 1.0.0
  */
 @Component
@@ -23,6 +34,14 @@ public class ShippingPolicyQueryAdapter implements ShippingPolicyQueryPort {
     private final ShippingPolicyQueryDslRepository queryDslRepository;
     private final ShippingPolicyJpaEntityMapper mapper;
 
+    /**
+     * 생성자 주입.
+     *
+     * <p>PER-ADP-006: Mapper + QueryDslRepository 의존.
+     *
+     * @param queryDslRepository QueryDSL 레포지토리
+     * @param mapper Entity-Domain 매퍼
+     */
     public ShippingPolicyQueryAdapter(
             ShippingPolicyQueryDslRepository queryDslRepository,
             ShippingPolicyJpaEntityMapper mapper) {
@@ -30,35 +49,89 @@ public class ShippingPolicyQueryAdapter implements ShippingPolicyQueryPort {
         this.mapper = mapper;
     }
 
-    /** ID로 ShippingPolicy 단건 조회 */
+    /**
+     * ID로 배송 정책 조회.
+     *
+     * @param id 배송 정책 ID
+     * @return 배송 정책 Optional
+     */
     @Override
     public Optional<ShippingPolicy> findById(ShippingPolicyId id) {
         return queryDslRepository.findById(id.value()).map(mapper::toDomain);
     }
 
-    /** 셀러 ID로 ShippingPolicy 목록 조회 */
+    /**
+     * ID 목록으로 배송 정책 목록 조회.
+     *
+     * @param ids 배송 정책 ID 목록
+     * @return 배송 정책 목록
+     */
     @Override
-    public List<ShippingPolicy> findBySellerId(Long sellerId, boolean includeDeleted) {
-        return queryDslRepository.findBySellerId(sellerId, includeDeleted).stream()
-                .map(mapper::toDomain)
-                .toList();
+    public List<ShippingPolicy> findByIds(List<ShippingPolicyId> ids) {
+        List<Long> idValues = ids.stream().map(ShippingPolicyId::value).toList();
+        List<ShippingPolicyJpaEntity> entities = queryDslRepository.findByIds(idValues);
+        return entities.stream().map(mapper::toDomain).toList();
     }
 
-    /** 셀러의 기본 정책 조회 */
+    /**
+     * 셀러의 기본 정책 조회.
+     *
+     * @param sellerId 셀러 ID
+     * @return 기본 배송 정책 Optional
+     */
     @Override
-    public Optional<ShippingPolicy> findDefaultBySellerId(Long sellerId) {
-        return queryDslRepository.findDefaultBySellerId(sellerId).map(mapper::toDomain);
+    public Optional<ShippingPolicy> findDefaultBySellerId(SellerId sellerId) {
+        return queryDslRepository.findDefaultBySellerId(sellerId.value()).map(mapper::toDomain);
     }
 
-    /** 셀러의 정책 개수 조회 */
+    /**
+     * 셀러 ID와 정책 ID로 조회.
+     *
+     * @param sellerId 셀러 ID
+     * @param policyId 정책 ID
+     * @return 배송 정책 Optional
+     */
     @Override
-    public long countBySellerId(Long sellerId, boolean includeDeleted) {
-        return queryDslRepository.countBySellerId(sellerId, includeDeleted);
+    public Optional<ShippingPolicy> findBySellerIdAndId(
+            SellerId sellerId, ShippingPolicyId policyId) {
+        return queryDslRepository
+                .findBySellerIdAndId(sellerId.value(), policyId.value())
+                .map(mapper::toDomain);
     }
 
-    /** ID로 존재 여부 확인 */
+    /**
+     * 검색 조건으로 배송 정책 목록 조회.
+     *
+     * @param criteria 검색 조건
+     * @return 배송 정책 목록
+     */
     @Override
-    public boolean existsById(ShippingPolicyId id) {
-        return queryDslRepository.existsById(id.value());
+    public List<ShippingPolicy> findByCriteria(ShippingPolicySearchCriteria criteria) {
+        List<ShippingPolicyJpaEntity> entities = queryDslRepository.findByCriteria(criteria);
+        return entities.stream().map(mapper::toDomain).toList();
+    }
+
+    /**
+     * 검색 조건으로 배송 정책 개수 조회.
+     *
+     * @param criteria 검색 조건
+     * @return 배송 정책 개수
+     */
+    @Override
+    public long countByCriteria(ShippingPolicySearchCriteria criteria) {
+        return queryDslRepository.countByCriteria(criteria);
+    }
+
+    /**
+     * 셀러의 활성 정책 개수 조회.
+     *
+     * <p>POL-DEACT-002: 마지막 활성 정책 비활성화 검증에 사용
+     *
+     * @param sellerId 셀러 ID
+     * @return 활성 정책 개수
+     */
+    @Override
+    public long countActiveBySellerId(SellerId sellerId) {
+        return queryDslRepository.countActiveBySellerId(sellerId.value());
     }
 }

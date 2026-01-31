@@ -1,118 +1,70 @@
 package com.ryuqq.setof.adapter.out.persistence.seller.adapter;
 
-import com.ryuqq.setof.adapter.out.persistence.seller.entity.SellerCsInfoJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.seller.entity.SellerJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.seller.mapper.SellerJpaEntityMapper;
 import com.ryuqq.setof.adapter.out.persistence.seller.repository.SellerQueryDslRepository;
 import com.ryuqq.setof.application.seller.port.out.query.SellerQueryPort;
 import com.ryuqq.setof.domain.seller.aggregate.Seller;
-import com.ryuqq.setof.domain.seller.vo.SellerId;
+import com.ryuqq.setof.domain.seller.id.SellerId;
+import com.ryuqq.setof.domain.seller.query.SellerSearchCriteria;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 /**
- * SellerQueryAdapter - Seller Query Adapter
+ * SellerQueryAdapter - 셀러 조회 어댑터.
  *
- * <p>CQRS의 Query(읽기) 담당으로, Seller 조회 요청을 QueryDslRepository에 위임하고 Mapper를 통해 Domain으로 변환하여 반환합니다.
+ * <p>SellerQueryPort를 구현하여 영속성 계층과 연결합니다.
  *
- * <p><strong>책임:</strong>
+ * <p>PER-ADP-004: QueryAdapter는 QueryDslRepository만 사용.
  *
- * <ul>
- *   <li>ID로 단건 조회 (findById)
- *   <li>검색 조건으로 목록 조회 (findByConditions)
- *   <li>총 개수 조회 (countByConditions)
- *   <li>존재 여부 확인 (existsById, existsActiveById)
- * </ul>
+ * <p>PER-ADP-002: Adapter에서 @Transactional 금지.
  *
- * <p><strong>금지 사항:</strong>
+ * <p>PER-ADP-003: Domain 반환 (DTO 반환 금지).
  *
- * <ul>
- *   <li>비즈니스 로직 금지
- *   <li>저장/수정/삭제 금지 (PersistenceAdapter로 분리)
- * </ul>
- *
- * @author development-team
- * @since 1.0.0
+ * <p>PER-ADP-005: Entity -> Domain 변환 (Mapper 사용).
  */
 @Component
 public class SellerQueryAdapter implements SellerQueryPort {
 
     private final SellerQueryDslRepository queryDslRepository;
-    private final SellerJpaEntityMapper sellerJpaEntityMapper;
+    private final SellerJpaEntityMapper mapper;
 
     public SellerQueryAdapter(
-            SellerQueryDslRepository queryDslRepository,
-            SellerJpaEntityMapper sellerJpaEntityMapper) {
+            SellerQueryDslRepository queryDslRepository, SellerJpaEntityMapper mapper) {
         this.queryDslRepository = queryDslRepository;
-        this.sellerJpaEntityMapper = sellerJpaEntityMapper;
+        this.mapper = mapper;
     }
 
     /**
-     * ID로 Seller 단건 조회
+     * ID로 셀러 조회.
      *
-     * @param id Seller ID (Value Object)
-     * @return Seller Domain (Optional)
+     * @param id 셀러 ID
+     * @return 셀러 Optional
      */
     @Override
     public Optional<Seller> findById(SellerId id) {
-        Optional<SellerJpaEntity> sellerEntity = queryDslRepository.findById(id.value());
-
-        if (sellerEntity.isEmpty()) {
-            return Optional.empty();
-        }
-
-        SellerCsInfoJpaEntity csInfoEntity =
-                queryDslRepository.findCsInfoBySellerId(id.value()).orElse(null);
-
-        return Optional.of(sellerJpaEntityMapper.toDomain(sellerEntity.get(), csInfoEntity));
+        return queryDslRepository.findById(id.value()).map(mapper::toDomain);
     }
 
     /**
-     * 셀러명으로 검색
+     * ID 목록으로 셀러 목록 조회.
      *
-     * @param sellerName 셀러명 (LIKE 검색)
-     * @param approvalStatus 승인 상태 (nullable)
-     * @param offset 오프셋
-     * @param limit 개수 제한
-     * @return Seller 목록
+     * @param ids 셀러 ID 목록
+     * @return 셀러 목록
      */
     @Override
-    public List<Seller> findByConditions(
-            String sellerName, String approvalStatus, int offset, int limit) {
-        List<SellerJpaEntity> sellerEntities =
-                queryDslRepository.findByCondition(
-                        sellerName, approvalStatus, false, offset, limit);
-
-        return sellerEntities.stream()
-                .map(
-                        sellerEntity -> {
-                            SellerCsInfoJpaEntity csInfoEntity =
-                                    queryDslRepository
-                                            .findCsInfoBySellerId(sellerEntity.getId())
-                                            .orElse(null);
-                            return sellerJpaEntityMapper.toDomain(sellerEntity, csInfoEntity);
-                        })
-                .toList();
+    public List<Seller> findByIds(List<SellerId> ids) {
+        List<Long> idValues = ids.stream().map(SellerId::value).toList();
+        List<SellerJpaEntity> entities = queryDslRepository.findByIds(idValues);
+        return entities.stream().map(mapper::toDomain).toList();
     }
 
     /**
-     * 검색 조건에 맞는 셀러 총 개수 조회
+     * ID 존재 여부 확인.
      *
-     * @param sellerName 셀러명 (LIKE 검색)
-     * @param approvalStatus 승인 상태 (nullable)
-     * @return 셀러 총 개수
-     */
-    @Override
-    public long countByConditions(String sellerName, String approvalStatus) {
-        return queryDslRepository.countByCondition(sellerName, approvalStatus, false);
-    }
-
-    /**
-     * ID로 Seller 존재 여부 확인
-     *
-     * @param id Seller ID (Value Object)
-     * @return 존재 여부
+     * @param id 셀러 ID
+     * @return 존재하면 true
      */
     @Override
     public boolean existsById(SellerId id) {
@@ -120,13 +72,48 @@ public class SellerQueryAdapter implements SellerQueryPort {
     }
 
     /**
-     * 활성 셀러 존재 여부 확인
+     * 셀러명 존재 여부 확인.
      *
-     * @param sellerId Seller ID (Long)
-     * @return 존재 여부
+     * @param sellerName 셀러명
+     * @return 존재하면 true
      */
     @Override
-    public boolean existsActiveById(Long sellerId) {
-        return queryDslRepository.existsById(sellerId);
+    public boolean existsBySellerName(String sellerName) {
+        return queryDslRepository.existsBySellerName(sellerName);
+    }
+
+    /**
+     * 셀러명 존재 여부 확인 (특정 ID 제외).
+     *
+     * @param sellerName 셀러명
+     * @param excludeId 제외할 셀러 ID
+     * @return 존재하면 true
+     */
+    @Override
+    public boolean existsBySellerNameExcluding(String sellerName, SellerId excludeId) {
+        return queryDslRepository.existsBySellerNameExcluding(sellerName, excludeId.value());
+    }
+
+    /**
+     * 검색 조건으로 셀러 목록 조회.
+     *
+     * @param criteria 검색 조건
+     * @return 셀러 목록
+     */
+    @Override
+    public List<Seller> findByCriteria(SellerSearchCriteria criteria) {
+        List<SellerJpaEntity> entities = queryDslRepository.findByCriteria(criteria);
+        return entities.stream().map(mapper::toDomain).toList();
+    }
+
+    /**
+     * 검색 조건으로 셀러 개수 조회.
+     *
+     * @param criteria 검색 조건
+     * @return 셀러 개수
+     */
+    @Override
+    public long countByCriteria(SellerSearchCriteria criteria) {
+        return queryDslRepository.countByCriteria(criteria);
     }
 }

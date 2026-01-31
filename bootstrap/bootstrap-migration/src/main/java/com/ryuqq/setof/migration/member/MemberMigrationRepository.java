@@ -6,7 +6,6 @@ import java.time.ZoneId;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 
 /**
  * Member 마이그레이션 전용 Repository
@@ -17,10 +16,12 @@ import org.springframework.stereotype.Repository;
  * <p><strong>Domain VO 검증 우회:</strong> 레거시 데이터가 현재 도메인 규칙을 위반할 수 있으므로, Domain 객체를 거치지 않고 직접
  * INSERT합니다.
  *
+ * <p><b>NOTE:</b> Member 기능이 아직 개발되지 않아 비활성화 상태입니다.
+ *
  * @author development-team
  * @since 1.0.0
  */
-@Repository
+// @Repository // TODO: Member 기능 개발 후 활성화
 public class MemberMigrationRepository {
 
     private static final ZoneId KST = ZoneId.of("Asia/Seoul");

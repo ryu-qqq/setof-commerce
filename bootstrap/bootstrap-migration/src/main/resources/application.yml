@@ -55,15 +55,10 @@ spring:
 
   # ========================================
   # Flyway Configuration (Migration 스키마용)
+  # 테이블은 수동 또는 별도 스크립트로 생성
   # ========================================
   flyway:
-    enabled: true
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/setof_migration?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
-    user: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root}
-    locations: classpath:db/migration
-    baseline-on-migrate: true
-    validate-on-migrate: true
+    enabled: false
 
 # ========================================
 # Multi-DataSource Configuration
@@ -71,7 +66,7 @@ spring:
 datasource:
   # Legacy DB (읽기 전용)
   legacy:
-    url: jdbc:mysql://${LEGACY_DB_HOST:localhost}:${LEGACY_DB_PORT:3306}/${LEGACY_DB_NAME:connectly}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&rewriteBatchedStatements=true
+    url: jdbc:mysql://${LEGACY_DB_HOST:localhost}:${LEGACY_DB_PORT:3306}/${LEGACY_DB_NAME:luxurydb}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&rewriteBatchedStatements=true
     username: ${LEGACY_DB_USERNAME:root}
     password: ${LEGACY_DB_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver

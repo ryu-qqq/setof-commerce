@@ -1,82 +1,58 @@
 package com.ryuqq.setof.application.shippingpolicy.assembler;
 
-import com.ryuqq.setof.application.shippingpolicy.dto.command.RegisterShippingPolicyCommand;
-import com.ryuqq.setof.application.shippingpolicy.dto.response.ShippingPolicyResponse;
+import com.ryuqq.setof.application.shippingpolicy.dto.response.ShippingPolicyPageResult;
+import com.ryuqq.setof.application.shippingpolicy.dto.response.ShippingPolicyResult;
 import com.ryuqq.setof.domain.shippingpolicy.aggregate.ShippingPolicy;
-import com.ryuqq.setof.domain.shippingpolicy.vo.DeliveryCost;
-import com.ryuqq.setof.domain.shippingpolicy.vo.DeliveryGuide;
-import com.ryuqq.setof.domain.shippingpolicy.vo.DisplayOrder;
-import com.ryuqq.setof.domain.shippingpolicy.vo.FreeShippingThreshold;
-import com.ryuqq.setof.domain.shippingpolicy.vo.PolicyName;
-import java.time.Instant;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
- * ShippingPolicy Assembler
+ * ShippingPolicyAssembler - 배송 정책 Assembler.
  *
- * <p>Command DTO와 Domain 객체, Response DTO 간 변환을 담당
+ * <p>Domain → Result 변환 및 PageResult 생성을 담당합니다.
  *
- * @author development-team
+ * <p>APP-ASM-001: 도메인별 구체 Result 클래스 사용.
+ *
+ * @author ryu-qqq
  * @since 1.0.0
  */
 @Component
 public class ShippingPolicyAssembler {
 
     /**
-     * RegisterShippingPolicyCommand를 ShippingPolicy 도메인으로 변환
+     * Domain → Result 변환.
      *
-     * @param command 등록 커맨드
-     * @param now 현재 시각
-     * @return ShippingPolicy 도메인 객체
+     * @param domain ShippingPolicy 도메인 객체
+     * @return ShippingPolicyResult
      */
-    public ShippingPolicy toDomain(RegisterShippingPolicyCommand command, Instant now) {
-        PolicyName policyName = PolicyName.of(command.policyName());
-        DeliveryCost defaultDeliveryCost = DeliveryCost.of(command.defaultDeliveryCost());
-        FreeShippingThreshold freeShippingThreshold =
-                command.freeShippingThreshold() != null
-                        ? FreeShippingThreshold.of(command.freeShippingThreshold())
-                        : null;
-        DeliveryGuide deliveryGuide =
-                command.deliveryGuide() != null ? DeliveryGuide.of(command.deliveryGuide()) : null;
-        DisplayOrder displayOrder = DisplayOrder.of(command.displayOrder());
-
-        return ShippingPolicy.create(
-                command.sellerId(),
-                policyName,
-                defaultDeliveryCost,
-                freeShippingThreshold,
-                deliveryGuide,
-                command.isDefault(),
-                displayOrder,
-                now);
+    public ShippingPolicyResult toResult(ShippingPolicy domain) {
+        return ShippingPolicyResult.from(domain);
     }
 
     /**
-     * ShippingPolicy 도메인을 ShippingPolicyResponse로 변환
+     * Domain List → Result List 변환.
      *
-     * @param shippingPolicy ShippingPolicy 도메인 객체
-     * @return ShippingPolicyResponse
+     * @param domains ShippingPolicy 도메인 객체 목록
+     * @return ShippingPolicyResult 목록
      */
-    public ShippingPolicyResponse toResponse(ShippingPolicy shippingPolicy) {
-        return ShippingPolicyResponse.of(
-                shippingPolicy.getIdValue(),
-                shippingPolicy.getSellerId(),
-                shippingPolicy.getPolicyNameValue(),
-                shippingPolicy.getDefaultDeliveryCostValue(),
-                shippingPolicy.getFreeShippingThresholdValue(),
-                shippingPolicy.getDeliveryGuideValue(),
-                shippingPolicy.isDefault(),
-                shippingPolicy.getDisplayOrderValue());
+    public List<ShippingPolicyResult> toResults(List<ShippingPolicy> domains) {
+        return domains.stream().map(this::toResult).toList();
     }
 
     /**
-     * ShippingPolicy 도메인 목록을 ShippingPolicyResponse 목록으로 변환
+     * Domain List → ShippingPolicyPageResult 생성.
      *
-     * @param shippingPolicies ShippingPolicy 도메인 목록
-     * @return ShippingPolicyResponse 목록
+     * <p>Domain 객체를 Result로 변환하여 PageResult를 생성합니다.
+     *
+     * @param domains 도메인 객체 목록
+     * @param page 페이지 번호
+     * @param size 페이지 크기
+     * @param totalElements 전체 요소 수
+     * @return ShippingPolicyPageResult
      */
-    public List<ShippingPolicyResponse> toResponses(List<ShippingPolicy> shippingPolicies) {
-        return shippingPolicies.stream().map(this::toResponse).toList();
+    public ShippingPolicyPageResult toPageResult(
+            List<ShippingPolicy> domains, int page, int size, long totalElements) {
+        List<ShippingPolicyResult> results = toResults(domains);
+        return ShippingPolicyPageResult.of(results, page, size, totalElements);
     }
 }

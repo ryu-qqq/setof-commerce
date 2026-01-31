@@ -1,0 +1,51 @@
+package com.ryuqq.setof.application.seller.service.command;
+
+import com.ryuqq.setof.application.common.dto.BatchProcessingResult;
+import com.ryuqq.setof.application.seller.dto.command.ProcessPendingOutboxCommand;
+import com.ryuqq.setof.application.seller.internal.SellerAuthOutboxProcessor;
+import com.ryuqq.setof.application.seller.manager.SellerAuthOutboxReadManager;
+import com.ryuqq.setof.application.seller.port.in.command.ProcessPendingOutboxUseCase;
+import com.ryuqq.setof.domain.seller.aggregate.SellerAuthOutbox;
+import java.util.List;
+import org.springframework.stereotype.Service;
+
+/**
+ * ProcessPendingOutboxService - 대기 중인 Outbox 처리 서비스.
+ *
+ * <p>각 Outbox 처리는 SellerAuthOutboxProcessor에서 수행됩니다.
+ */
+@Service
+public class ProcessPendingOutboxService implements ProcessPendingOutboxUseCase {
+
+    private final SellerAuthOutboxReadManager outboxReadManager;
+    private final SellerAuthOutboxProcessor outboxProcessor;
+
+    public ProcessPendingOutboxService(
+            SellerAuthOutboxReadManager outboxReadManager,
+            SellerAuthOutboxProcessor outboxProcessor) {
+        this.outboxReadManager = outboxReadManager;
+        this.outboxProcessor = outboxProcessor;
+    }
+
+    @Override
+    public BatchProcessingResult execute(ProcessPendingOutboxCommand command) {
+        List<SellerAuthOutbox> outboxes =
+                outboxReadManager.findPendingOutboxesForRetry(
+                        command.beforeTime(), command.batchSize());
+
+        int total = outboxes.size();
+        int successCount = 0;
+        int failedCount = 0;
+
+        for (SellerAuthOutbox outbox : outboxes) {
+            boolean success = outboxProcessor.processOutbox(outbox);
+            if (success) {
+                successCount++;
+            } else {
+                failedCount++;
+            }
+        }
+
+        return BatchProcessingResult.of(total, successCount, failedCount);
+    }
+}

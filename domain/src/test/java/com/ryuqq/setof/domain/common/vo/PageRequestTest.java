@@ -1,300 +1,231 @@
 package com.ryuqq.setof.domain.common.vo;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("PageRequest")
+@Tag("unit")
+@DisplayName("PageRequest Value Object 테스트")
 class PageRequestTest {
 
     @Nested
     @DisplayName("생성 테스트")
-    class CreateTest {
+    class CreationTest {
 
         @Test
-        @DisplayName("정상 값으로 생성")
-        void shouldCreateWithValidValues() {
-            // When
-            PageRequest request = PageRequest.of(2, 30);
+        @DisplayName("of()로 PageRequest를 생성한다")
+        void createWithOf() {
+            // when
+            PageRequest pageRequest = PageRequest.of(2, 30);
 
-            // Then
-            assertEquals(2, request.page());
-            assertEquals(30, request.size());
+            // then
+            assertThat(pageRequest.page()).isEqualTo(2);
+            assertThat(pageRequest.size()).isEqualTo(30);
         }
 
         @Test
-        @DisplayName("음수 페이지는 0으로 정규화")
-        void shouldNormalizeNegativePage() {
-            // When
-            PageRequest request = PageRequest.of(-1, 20);
+        @DisplayName("first()로 첫 페이지 요청을 생성한다")
+        void createFirstPage() {
+            // when
+            PageRequest pageRequest = PageRequest.first(25);
 
-            // Then
-            assertEquals(0, request.page());
+            // then
+            assertThat(pageRequest.page()).isZero();
+            assertThat(pageRequest.size()).isEqualTo(25);
         }
 
         @Test
-        @DisplayName("0 이하 size는 기본값으로 정규화")
-        void shouldNormalizeZeroSize() {
-            // When
-            PageRequest request = PageRequest.of(0, 0);
+        @DisplayName("defaultPage()로 기본 설정 요청을 생성한다")
+        void createDefaultPage() {
+            // when
+            PageRequest pageRequest = PageRequest.defaultPage();
 
-            // Then
-            assertEquals(PageRequest.DEFAULT_SIZE, request.size());
-        }
-
-        @Test
-        @DisplayName("음수 size는 기본값으로 정규화")
-        void shouldNormalizeNegativeSize() {
-            // When
-            PageRequest request = PageRequest.of(0, -10);
-
-            // Then
-            assertEquals(PageRequest.DEFAULT_SIZE, request.size());
-        }
-
-        @Test
-        @DisplayName("MAX_SIZE 초과 size는 MAX_SIZE로 정규화")
-        void shouldNormalizeSizeExceedingMax() {
-            // When
-            PageRequest request = PageRequest.of(0, 200);
-
-            // Then
-            assertEquals(PageRequest.MAX_SIZE, request.size());
+            // then
+            assertThat(pageRequest.page()).isZero();
+            assertThat(pageRequest.size()).isEqualTo(PageRequest.DEFAULT_SIZE);
         }
     }
 
     @Nested
-    @DisplayName("팩토리 메서드 테스트")
-    class FactoryMethodTest {
+    @DisplayName("유효성 검증 테스트")
+    class ValidationTest {
 
         @Test
-        @DisplayName("first는 page=0으로 생성")
-        void shouldCreateFirstPage() {
-            // When
-            PageRequest request = PageRequest.first(25);
+        @DisplayName("음수 페이지는 0으로 정규화된다")
+        void negativePageNormalizesToZero() {
+            // when
+            PageRequest pageRequest = PageRequest.of(-5, 20);
 
-            // Then
-            assertEquals(0, request.page());
-            assertEquals(25, request.size());
+            // then
+            assertThat(pageRequest.page()).isZero();
         }
 
         @Test
-        @DisplayName("defaultPage는 page=0, size=DEFAULT_SIZE로 생성")
-        void shouldCreateDefaultPage() {
-            // When
-            PageRequest request = PageRequest.defaultPage();
+        @DisplayName("0 이하 size는 기본값으로 정규화된다")
+        void zeroSizeNormalizesToDefault() {
+            // when
+            PageRequest pageRequest = PageRequest.of(0, 0);
 
-            // Then
-            assertEquals(0, request.page());
-            assertEquals(PageRequest.DEFAULT_SIZE, request.size());
+            // then
+            assertThat(pageRequest.size()).isEqualTo(PageRequest.DEFAULT_SIZE);
+        }
+
+        @Test
+        @DisplayName("음수 size는 기본값으로 정규화된다")
+        void negativeSizeNormalizesToDefault() {
+            // when
+            PageRequest pageRequest = PageRequest.of(0, -10);
+
+            // then
+            assertThat(pageRequest.size()).isEqualTo(PageRequest.DEFAULT_SIZE);
+        }
+
+        @Test
+        @DisplayName("MAX_SIZE 초과 size는 MAX_SIZE로 정규화된다")
+        void exceedingMaxSizeNormalizesToMax() {
+            // when
+            PageRequest pageRequest = PageRequest.of(0, 200);
+
+            // then
+            assertThat(pageRequest.size()).isEqualTo(PageRequest.MAX_SIZE);
         }
     }
 
     @Nested
-    @DisplayName("offset 계산 테스트")
+    @DisplayName("오프셋 계산 테스트")
     class OffsetTest {
 
         @Test
-        @DisplayName("page=0이면 offset=0")
-        void shouldReturnZeroOffsetForFirstPage() {
-            // When
-            PageRequest request = PageRequest.of(0, 20);
+        @DisplayName("오프셋을 올바르게 계산한다")
+        void calculatesOffset() {
+            // given
+            PageRequest pageRequest = PageRequest.of(3, 20);
 
-            // Then
-            assertEquals(0L, request.offset());
+            // when
+            long offset = pageRequest.offset();
+
+            // then
+            assertThat(offset).isEqualTo(60L);
         }
 
         @Test
-        @DisplayName("page=2, size=20이면 offset=40")
-        void shouldCalculateOffsetCorrectly() {
-            // When
-            PageRequest request = PageRequest.of(2, 20);
+        @DisplayName("첫 페이지 오프셋은 0이다")
+        void firstPageOffsetIsZero() {
+            // given
+            PageRequest pageRequest = PageRequest.first(20);
 
-            // Then
-            assertEquals(40L, request.offset());
-        }
+            // when
+            long offset = pageRequest.offset();
 
-        @Test
-        @DisplayName("큰 페이지 번호에서도 정확히 계산")
-        void shouldCalculateOffsetForLargePage() {
-            // When
-            PageRequest request = PageRequest.of(1000, 100);
-
-            // Then
-            assertEquals(100000L, request.offset());
+            // then
+            assertThat(offset).isZero();
         }
     }
 
     @Nested
-    @DisplayName("페이지 네비게이션 테스트")
+    @DisplayName("네비게이션 테스트")
     class NavigationTest {
 
         @Test
-        @DisplayName("next는 다음 페이지 반환")
-        void shouldReturnNextPage() {
-            // Given
-            PageRequest request = PageRequest.of(3, 20);
+        @DisplayName("next()로 다음 페이지 요청을 생성한다")
+        void createsNextPage() {
+            // given
+            PageRequest current = PageRequest.of(2, 20);
 
-            // When
-            PageRequest next = request.next();
+            // when
+            PageRequest next = current.next();
 
-            // Then
-            assertEquals(4, next.page());
-            assertEquals(20, next.size());
+            // then
+            assertThat(next.page()).isEqualTo(3);
+            assertThat(next.size()).isEqualTo(20);
         }
 
         @Test
-        @DisplayName("previous는 이전 페이지 반환")
-        void shouldReturnPreviousPage() {
-            // Given
-            PageRequest request = PageRequest.of(3, 20);
+        @DisplayName("previous()로 이전 페이지 요청을 생성한다")
+        void createsPreviousPage() {
+            // given
+            PageRequest current = PageRequest.of(3, 20);
 
-            // When
-            PageRequest previous = request.previous();
+            // when
+            PageRequest previous = current.previous();
 
-            // Then
-            assertEquals(2, previous.page());
-            assertEquals(20, previous.size());
+            // then
+            assertThat(previous.page()).isEqualTo(2);
+            assertThat(previous.size()).isEqualTo(20);
         }
 
         @Test
-        @DisplayName("첫 페이지에서 previous는 자기 자신 반환")
-        void shouldReturnSameWhenPreviousOnFirstPage() {
-            // Given
-            PageRequest request = PageRequest.of(0, 20);
+        @DisplayName("첫 페이지에서 previous()는 그대로 반환한다")
+        void previousOnFirstPageReturnsSame() {
+            // given
+            PageRequest firstPage = PageRequest.first(20);
 
-            // When
-            PageRequest previous = request.previous();
+            // when
+            PageRequest previous = firstPage.previous();
 
-            // Then
-            assertSame(request, previous);
-        }
-    }
-
-    @Nested
-    @DisplayName("isFirst 테스트")
-    class IsFirstTest {
-
-        @Test
-        @DisplayName("page=0이면 true")
-        void shouldReturnTrueForFirstPage() {
-            // When
-            PageRequest request = PageRequest.of(0, 20);
-
-            // Then
-            assertTrue(request.isFirst());
-        }
-
-        @Test
-        @DisplayName("page>0이면 false")
-        void shouldReturnFalseForNonFirstPage() {
-            // When
-            PageRequest request = PageRequest.of(1, 20);
-
-            // Then
-            assertFalse(request.isFirst());
+            // then
+            assertThat(previous).isSameAs(firstPage);
         }
     }
 
     @Nested
-    @DisplayName("totalPages 계산 테스트")
-    class TotalPagesTest {
+    @DisplayName("상태 확인 테스트")
+    class StateCheckTest {
 
         @Test
-        @DisplayName("전체 항목이 size와 같으면 1페이지")
-        void shouldReturnOnePageForExactSize() {
-            // Given
-            PageRequest request = PageRequest.of(0, 20);
+        @DisplayName("isFirst()는 첫 페이지에서 true를 반환한다")
+        void isFirstReturnsTrueForFirstPage() {
+            // given
+            PageRequest firstPage = PageRequest.first(20);
 
-            // Then
-            assertEquals(1, request.totalPages(20));
+            // then
+            assertThat(firstPage.isFirst()).isTrue();
         }
 
         @Test
-        @DisplayName("전체 항목이 size보다 작으면 1페이지")
-        void shouldReturnOnePageForLessThanSize() {
-            // Given
-            PageRequest request = PageRequest.of(0, 20);
+        @DisplayName("isFirst()는 첫 페이지가 아니면 false를 반환한다")
+        void isFirstReturnsFalseForNonFirstPage() {
+            // given
+            PageRequest page = PageRequest.of(2, 20);
 
-            // Then
-            assertEquals(1, request.totalPages(10));
+            // then
+            assertThat(page.isFirst()).isFalse();
         }
 
         @Test
-        @DisplayName("전체 항목이 size보다 크면 올림 처리")
-        void shouldCeilTotalPages() {
-            // Given
-            PageRequest request = PageRequest.of(0, 20);
+        @DisplayName("totalPages()로 전체 페이지 수를 계산한다")
+        void calculatesTotalPages() {
+            // given
+            PageRequest pageRequest = PageRequest.of(0, 20);
 
-            // Then
-            assertEquals(3, request.totalPages(41));
+            // when
+            int totalPages = pageRequest.totalPages(95);
+
+            // then
+            assertThat(totalPages).isEqualTo(5);
         }
 
         @Test
-        @DisplayName("전체 항목이 0이면 0페이지")
-        void shouldReturnZeroPagesForZeroElements() {
-            // Given
-            PageRequest request = PageRequest.of(0, 20);
+        @DisplayName("isLast()는 마지막 페이지에서 true를 반환한다")
+        void isLastReturnsTrueForLastPage() {
+            // given
+            PageRequest pageRequest = PageRequest.of(4, 20);
 
-            // Then
-            assertEquals(0, request.totalPages(0));
-        }
-    }
-
-    @Nested
-    @DisplayName("isLast 테스트")
-    class IsLastTest {
-
-        @Test
-        @DisplayName("마지막 페이지면 true")
-        void shouldReturnTrueForLastPage() {
-            // Given
-            PageRequest request = PageRequest.of(2, 20);
-
-            // Then - 50 items = 3 pages (0,1,2), page 2 is last
-            assertTrue(request.isLast(50));
+            // then
+            assertThat(pageRequest.isLast(100)).isTrue();
         }
 
         @Test
-        @DisplayName("마지막 페이지가 아니면 false")
-        void shouldReturnFalseForNonLastPage() {
-            // Given
-            PageRequest request = PageRequest.of(1, 20);
+        @DisplayName("isLast()는 마지막 페이지가 아니면 false를 반환한다")
+        void isLastReturnsFalseForNonLastPage() {
+            // given
+            PageRequest pageRequest = PageRequest.of(2, 20);
 
-            // Then
-            assertFalse(request.isLast(50));
-        }
-
-        @Test
-        @DisplayName("현재 페이지가 totalPages를 초과해도 true")
-        void shouldReturnTrueWhenPageExceedsTotalPages() {
-            // Given
-            PageRequest request = PageRequest.of(10, 20);
-
-            // Then - 50 items = 3 pages, page 10 > 2
-            assertTrue(request.isLast(50));
-        }
-    }
-
-    @Nested
-    @DisplayName("상수 테스트")
-    class ConstantsTest {
-
-        @Test
-        @DisplayName("DEFAULT_SIZE는 20")
-        void shouldHaveDefaultSize20() {
-            assertEquals(20, PageRequest.DEFAULT_SIZE);
-        }
-
-        @Test
-        @DisplayName("MAX_SIZE는 100")
-        void shouldHaveMaxSize100() {
-            assertEquals(100, PageRequest.MAX_SIZE);
+            // then
+            assertThat(pageRequest.isLast(100)).isFalse();
         }
     }
 }

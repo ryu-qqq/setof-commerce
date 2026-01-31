@@ -1,191 +1,117 @@
 package com.ryuqq.setof.application.refundpolicy.assembler;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ryuqq.setof.application.refundpolicy.dto.command.RegisterRefundPolicyCommand;
-import com.ryuqq.setof.application.refundpolicy.dto.response.RefundPolicyResponse;
+import com.ryuqq.setof.application.refundpolicy.dto.response.RefundPolicyPageResult;
+import com.ryuqq.setof.application.refundpolicy.dto.response.RefundPolicyResult;
+import com.ryuqq.setof.domain.refundpolicy.RefundPolicyFixtures;
 import com.ryuqq.setof.domain.refundpolicy.aggregate.RefundPolicy;
-import com.ryuqq.setof.domain.refundpolicy.vo.PolicyName;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundDeliveryCost;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundGuide;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundPeriodDays;
-import com.ryuqq.setof.domain.refundpolicy.vo.RefundPolicyId;
-import com.ryuqq.setof.domain.refundpolicy.vo.ReturnAddress;
-import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-/**
- * RefundPolicyAssembler 테스트
- *
- * <p>Command ↔ Domain ↔ Response 변환에 대한 단위 테스트
- */
-@DisplayName("RefundPolicyAssembler")
+@Tag("unit")
+@DisplayName("RefundPolicyAssembler 단위 테스트")
 class RefundPolicyAssemblerTest {
 
-    private static final Instant FIXED_TIME = Instant.parse("2025-01-01T00:00:00Z");
-    private static final Long TEST_SELLER_ID = 1L;
-
-    private RefundPolicyAssembler refundPolicyAssembler;
-
-    @BeforeEach
-    void setUp() {
-        refundPolicyAssembler = new RefundPolicyAssembler();
-    }
+    private final RefundPolicyAssembler sut = new RefundPolicyAssembler();
 
     @Nested
-    @DisplayName("toDomain")
-    class ToDomainTest {
+    @DisplayName("toResult() - Domain → Result 변환")
+    class ToResultTest {
 
         @Test
-        @DisplayName("모든 필드가 있는 Command를 Domain으로 변환")
-        void shouldConvertFullCommandToDomain() {
-            // Given
-            RegisterRefundPolicyCommand command = createFullCommand();
+        @DisplayName("RefundPolicy를 RefundPolicyResult로 변환한다")
+        void toResult_ConvertsToResult() {
+            // given
+            RefundPolicy domain = RefundPolicyFixtures.activeRefundPolicy();
 
-            // When
-            RefundPolicy refundPolicy = refundPolicyAssembler.toDomain(command, FIXED_TIME);
+            // when
+            RefundPolicyResult result = sut.toResult(domain);
 
-            // Then
-            assertNotNull(refundPolicy);
-            assertEquals("기본 환불", refundPolicy.getPolicyNameValue());
-            assertEquals("서울시 강남구", refundPolicy.getReturnAddressLine1());
-            assertEquals("테헤란로 123", refundPolicy.getReturnAddressLine2());
-            assertEquals("06234", refundPolicy.getReturnZipCode());
-            assertEquals(7, refundPolicy.getRefundPeriodDaysValue());
-            assertEquals(3000, refundPolicy.getRefundDeliveryCostValue());
-            assertEquals("상품 수령 후 7일 이내 환불 가능", refundPolicy.getRefundGuideValue());
-            assertTrue(refundPolicy.isDefault());
-            assertEquals(1, refundPolicy.getDisplayOrder());
-            assertFalse(refundPolicy.isDeleted());
-        }
-
-        @Test
-        @DisplayName("선택 필드가 없는 Command를 Domain으로 변환")
-        void shouldConvertMinimalCommandToDomain() {
-            // Given
-            RegisterRefundPolicyCommand command = createMinimalCommand();
-
-            // When
-            RefundPolicy refundPolicy = refundPolicyAssembler.toDomain(command, FIXED_TIME);
-
-            // Then
-            assertNotNull(refundPolicy);
-            assertEquals("심플 환불", refundPolicy.getPolicyNameValue());
-            assertEquals(14, refundPolicy.getRefundPeriodDaysValue());
-            assertNull(refundPolicy.getReturnAddressLine2());
-            assertNull(refundPolicy.getRefundGuideValue());
-            assertFalse(refundPolicy.isDefault());
+            // then
+            assertThat(result).isNotNull();
+            assertThat(result.policyId()).isEqualTo(domain.id().value());
+            assertThat(result.policyName()).isEqualTo(domain.policyName().value());
         }
     }
 
     @Nested
-    @DisplayName("toResponse")
-    class ToResponseTest {
+    @DisplayName("toResults() - Domain List → Result List 변환")
+    class ToResultsTest {
 
         @Test
-        @DisplayName("Domain을 Response로 변환")
-        void shouldConvertDomainToResponse() {
-            // Given
-            RefundPolicy refundPolicy = createDefaultPolicy();
+        @DisplayName("RefundPolicy 목록을 RefundPolicyResult 목록으로 변환한다")
+        void toResults_ConvertsAllToResults() {
+            // given
+            List<RefundPolicy> domains =
+                    List.of(
+                            RefundPolicyFixtures.activeRefundPolicy(),
+                            RefundPolicyFixtures.newRefundPolicy(7, 14));
 
-            // When
-            RefundPolicyResponse response = refundPolicyAssembler.toResponse(refundPolicy);
+            // when
+            List<RefundPolicyResult> results = sut.toResults(domains);
 
-            // Then
-            assertNotNull(response);
-            assertEquals(1L, response.refundPolicyId());
-            assertEquals(TEST_SELLER_ID, response.sellerId());
-            assertEquals("기본 환불", response.policyName());
-            assertEquals("서울시 강남구", response.returnAddressLine1());
-            assertEquals("테헤란로 123", response.returnAddressLine2());
-            assertEquals("06234", response.returnZipCode());
-            assertEquals(7, response.refundPeriodDays());
-            assertEquals(3000, response.refundDeliveryCost());
-            assertEquals("환불 안내", response.refundGuide());
-            assertTrue(response.isDefault());
-            assertEquals(1, response.displayOrder());
+            // then
+            assertThat(results).hasSize(2);
+        }
+
+        @Test
+        @DisplayName("빈 목록이면 빈 결과를 반환한다")
+        void toResults_EmptyList_ReturnsEmptyList() {
+            // given
+            List<RefundPolicy> domains = Collections.emptyList();
+
+            // when
+            List<RefundPolicyResult> results = sut.toResults(domains);
+
+            // then
+            assertThat(results).isEmpty();
         }
     }
 
     @Nested
-    @DisplayName("toResponses")
-    class ToResponsesTest {
+    @DisplayName("toPageResult() - Domain List → PageResult 변환")
+    class ToPageResultTest {
 
         @Test
-        @DisplayName("Domain 목록을 Response 목록으로 변환")
-        void shouldConvertDomainListToResponseList() {
-            // Given
-            List<RefundPolicy> policies = List.of(createDefaultPolicy(), createNonDefaultPolicy());
+        @DisplayName("Domain 목록과 페이징 정보로 PageResult를 생성한다")
+        void toPageResult_CreatesPageResult() {
+            // given
+            List<RefundPolicy> domains =
+                    List.of(
+                            RefundPolicyFixtures.activeRefundPolicy(),
+                            RefundPolicyFixtures.newRefundPolicy(7, 14));
+            int page = 0;
+            int size = 20;
+            long totalElements = 100L;
 
-            // When
-            List<RefundPolicyResponse> responses = refundPolicyAssembler.toResponses(policies);
+            // when
+            RefundPolicyPageResult result = sut.toPageResult(domains, page, size, totalElements);
 
-            // Then
-            assertNotNull(responses);
-            assertEquals(2, responses.size());
-            assertEquals(1L, responses.get(0).refundPolicyId());
-            assertEquals(2L, responses.get(1).refundPolicyId());
+            // then
+            assertThat(result).isNotNull();
+            assertThat(result.results()).hasSize(2);
+            assertThat(result.pageMeta().totalElements()).isEqualTo(totalElements);
         }
-    }
 
-    // ========== Helper Methods ==========
+        @Test
+        @DisplayName("빈 목록으로 PageResult를 생성한다")
+        void toPageResult_EmptyList_CreatesEmptyPageResult() {
+            // given
+            List<RefundPolicy> domains = Collections.emptyList();
+            int page = 0;
+            int size = 20;
+            long totalElements = 0L;
 
-    private RegisterRefundPolicyCommand createFullCommand() {
-        return new RegisterRefundPolicyCommand(
-                TEST_SELLER_ID,
-                "기본 환불",
-                "서울시 강남구",
-                "테헤란로 123",
-                "06234",
-                7,
-                3000,
-                "상품 수령 후 7일 이내 환불 가능",
-                true,
-                1);
-    }
+            // when
+            RefundPolicyPageResult result = sut.toPageResult(domains, page, size, totalElements);
 
-    private RegisterRefundPolicyCommand createMinimalCommand() {
-        return new RegisterRefundPolicyCommand(
-                TEST_SELLER_ID, "심플 환불", "서울시 강남구", null, "06234", 14, 0, null, false, 2);
-    }
-
-    private RefundPolicy createDefaultPolicy() {
-        return RefundPolicy.reconstitute(
-                RefundPolicyId.of(1L),
-                TEST_SELLER_ID,
-                PolicyName.of("기본 환불"),
-                ReturnAddress.of("서울시 강남구", "테헤란로 123", "06234"),
-                RefundPeriodDays.of(7),
-                RefundDeliveryCost.of(3000),
-                RefundGuide.of("환불 안내"),
-                true,
-                1,
-                FIXED_TIME,
-                FIXED_TIME,
-                null);
-    }
-
-    private RefundPolicy createNonDefaultPolicy() {
-        return RefundPolicy.reconstitute(
-                RefundPolicyId.of(2L),
-                TEST_SELLER_ID,
-                PolicyName.of("추가 환불"),
-                ReturnAddress.of("서울시 서초구", null, "06500"),
-                RefundPeriodDays.of(14),
-                RefundDeliveryCost.of(5000),
-                null,
-                false,
-                2,
-                FIXED_TIME,
-                FIXED_TIME,
-                null);
+            // then
+            assertThat(result.isEmpty()).isTrue();
+        }
     }
 }
