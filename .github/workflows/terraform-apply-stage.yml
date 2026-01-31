@@ -70,7 +70,7 @@ jobs:
         module:
           # 의존성 순서대로 배치
           - name: ecr-stage
-            dir: terraform/ecr-stage
+            dir: terraform/environments/stage/ecr
             order: 0
           - name: ecs-cluster-stage
             dir: terraform/ecs-cluster-stage
