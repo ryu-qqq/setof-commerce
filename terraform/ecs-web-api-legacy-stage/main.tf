@@ -546,7 +546,7 @@ module "ecs_service" {
 
   # Container Environment Variables
   container_environment = [
-    { name = "SPRING_PROFILES_ACTIVE", value = var.environment },
+    { name = "SPRING_PROFILES_ACTIVE", value = "stage" },  # application-stage.yml 사용
     # Database
     { name = "DB_HOST", value = local.rds_host },
     { name = "DB_PORT", value = local.rds_port },
