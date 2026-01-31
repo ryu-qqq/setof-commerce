@@ -367,7 +367,7 @@ resource "aws_ecs_task_definition" "legacy_batch" {
       ]
 
       environment = [
-        { name = "SPRING_PROFILES_ACTIVE", value = var.environment },
+        { name = "SPRING_PROFILES_ACTIVE", value = "stage" },  # application-stage.yml 사용
         # Primary Database (SetOf - Spring Batch metadata)
         { name = "DB_URL", value = "jdbc:mysql://${local.rds_host}:${local.rds_port}/${local.rds_dbname}?useSSL=false&serverTimezone=Asia/Seoul" },
         { name = "DB_HOST", value = local.rds_host },
