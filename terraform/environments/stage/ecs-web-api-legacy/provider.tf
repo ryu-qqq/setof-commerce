@@ -78,7 +78,12 @@ variable "legacy_api_desired_count" {
 variable "image_tag" {
   description = "Docker image tag to deploy"
   type        = string
-  default     = "legacy-api-75-dd1e941"
+  default     = "legacy-api-stage-13-56cfddd"
+
+  validation {
+    condition     = can(regex("^legacy-api-stage-[0-9]+-[a-zA-Z0-9]+$", var.image_tag))
+    error_message = "Image tag must follow format: legacy-api-stage-{build-number}-{git-sha}"
+  }
 }
 
 # ========================================
