@@ -420,8 +420,8 @@ jobs:
     with:
       legacy-api-image-tag: ${{ needs.build-legacy-api.outputs.image-tag || '' }}
       legacy-api-admin-image-tag: ${{ needs.build-legacy-api-admin.outputs.image-tag || '' }}
-      legacy-batch-image-tag: ${{ needs.build-legacy-batch.outputs.image-tag || '' }}
       scheduler-image-tag: ${{ needs.build-scheduler.outputs.image-tag || '' }}
+      # NOTE: legacy-batch는 RunTask 전용으로 ECS 서비스 없음, terraform 업데이트 불필요
       # NOTE: web-api, web-api-admin, migration Stage Terraform 모듈 추가 시 아래 주석 해제
       # web-api-image-tag: ${{ needs.build-web-api.outputs.image-tag || '' }}
       # web-api-admin-image-tag: ${{ needs.build-web-api-admin.outputs.image-tag || '' }}
