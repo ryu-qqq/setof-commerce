@@ -367,21 +367,15 @@ module "ecs_service" {
 
   # Container Environment Variables
   container_environment = [
-    { name = "SPRING_PROFILES_ACTIVE", value = var.environment },
-    # RDS
+    { name = "SPRING_PROFILES_ACTIVE", value = "stage" },  # application-stage.yml 사용
     { name = "DB_HOST", value = local.rds_host },
     { name = "DB_PORT", value = local.rds_port },
     { name = "DB_NAME", value = local.rds_dbname },
     { name = "DB_USERNAME", value = local.rds_username },
-    # Redis (Stage: No Auth, No TLS)
     { name = "REDIS_HOST", value = local.redis_host },
     { name = "REDIS_PORT", value = tostring(local.redis_port) },
-    { name = "REDIS_PASSWORD", value = local.redis_password },
-    { name = "REDIS_SSL_ENABLED", value = local.redis_ssl_enabled },
     # Service Token authentication enabled (for internal service communication)
-    { name = "SECURITY_SERVICE_TOKEN_ENABLED", value = "true" },
-    # Sentry (Stage: 비활성화)
-    { name = "SENTRY_DSN", value = local.sentry_dsn }
+    { name = "SECURITY_SERVICE_TOKEN_ENABLED", value = "true" }
   ]
 
   # Container Secrets
@@ -411,12 +405,8 @@ module "ecs_service" {
   # ADOT Sidecar
   sidecars = [module.adot_sidecar.container_definition]
 
-  # Auto Scaling (Stage: conservative settings)
-  enable_autoscaling        = true
-  autoscaling_min_capacity  = 0
-  autoscaling_max_capacity  = 2
-  autoscaling_target_cpu    = 70
-  autoscaling_target_memory = 80
+  # Auto Scaling (Stage는 비활성화 - 고정 desired_count=1)
+  enable_autoscaling = false
 
   # Enable ECS Exec for debugging
   enable_execute_command = true

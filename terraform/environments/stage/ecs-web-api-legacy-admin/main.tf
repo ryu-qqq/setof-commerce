@@ -469,27 +469,20 @@ module "ecs_service" {
   health_check_grace_period_seconds = 180
 
   container_environment = [
-    { name = "SPRING_PROFILES_ACTIVE", value = var.environment },
-    # Database
+    { name = "SPRING_PROFILES_ACTIVE", value = "stage" },  # application-stage.yml 사용
     { name = "DB_HOST", value = local.rds_host },
     { name = "DB_PORT", value = local.rds_port },
     { name = "DB_NAME", value = local.rds_dbname },
-    # Redis (Stage: No Auth, No TLS)
     { name = "REDIS_HOST", value = local.redis_host },
     { name = "REDIS_PORT", value = tostring(local.redis_port) },
     { name = "REDIS_DATABASE", value = "0" },
-    { name = "REDIS_PASSWORD", value = local.redis_password },
-    { name = "REDIS_SSL_ENABLED", value = local.redis_ssl_enabled },
-    # Service URLs
     { name = "CORE_SERVER_URL", value = "https://stage-core-server.set-of.net" },
     { name = "SECURITY_SERVICE_TOKEN_ENABLED", value = "true" },
     { name = "SEWON_URL", value = "http://api.sellic.co.kr" },
     { name = "SEWON_CUSTOMER_ID", value = "1012" },
     { name = "OCO_URL", value = "http://localhost:9998" },
     # Stage Environment: Disable external payment API
-    { name = "PORTONE_ENABLED", value = "false" },
-    # Sentry (Stage: 비활성화)
-    { name = "SENTRY_DSN", value = local.sentry_dsn }
+    { name = "PORTONE_ENABLED", value = "false" }
   ]
 
   container_secrets = [

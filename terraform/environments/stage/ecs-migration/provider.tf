@@ -71,7 +71,7 @@ variable "migration_memory" {
 }
 
 variable "migration_desired_count" {
-  description = "Desired count for migration service (0 = inactive)"
+  description = "Desired count for migration service (0 = inactive, 필요시 수동 실행)"
   type        = number
   default     = 0
 }
@@ -116,6 +116,17 @@ data "aws_ssm_parameter" "amp_remote_write_url" {
 }
 
 # ========================================
+# Redis Configuration (Stage Shared Redis)
+# ========================================
+data "aws_ssm_parameter" "redis_endpoint" {
+  name = "/${var.project_name}/elasticache-stage/redis-endpoint"
+}
+
+data "aws_ssm_parameter" "redis_port" {
+  name = "/${var.project_name}/elasticache-stage/redis-port"
+}
+
+# ========================================
 # Locals
 # ========================================
 locals {
@@ -138,8 +149,8 @@ locals {
   legacy_rds_username = local.rds_credentials.username
 
   # Stage Redis Configuration (Shared Redis - No Auth, No TLS)
-  redis_host = "stage-shared-redis.j9czrc.0001.apn2.cache.amazonaws.com"
-  redis_port = 6379
+  redis_host = data.aws_ssm_parameter.redis_endpoint.value
+  redis_port = tonumber(data.aws_ssm_parameter.redis_port.value)
 
   # AMP Configuration
   amp_workspace_arn    = data.aws_ssm_parameter.amp_workspace_arn.value

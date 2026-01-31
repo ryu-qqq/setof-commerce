@@ -41,7 +41,7 @@ resource "aws_security_group_rule" "migration_to_rds" {
   from_port                = 3306
   to_port                  = 3306
   protocol                 = "tcp"
-  security_group_id        = tolist(data.aws_db_instance.staging_rds.vpc_security_groups)[0]
+  security_group_id        = tolist(data.aws_db_instance.staging_rds.vpc_security_groups)[0].vpc_security_group_id
   source_security_group_id = module.ecs_security_group.security_group_id
   description              = "Allow migration-stage ECS to access staging RDS"
 }
