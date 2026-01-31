@@ -124,6 +124,17 @@ data "aws_ssm_parameter" "amp_remote_write_url" {
 }
 
 # ========================================
+# Redis Configuration (Stage Shared Redis)
+# ========================================
+data "aws_ssm_parameter" "redis_endpoint" {
+  name = "/${var.project_name}/elasticache-stage/redis-endpoint"
+}
+
+data "aws_ssm_parameter" "redis_port" {
+  name = "/${var.project_name}/elasticache-stage/redis-port"
+}
+
+# ========================================
 # Locals
 # ========================================
 locals {
@@ -138,8 +149,8 @@ locals {
   rds_username    = local.rds_credentials.username
 
   # Stage Redis Configuration (Shared Redis - No Auth, No TLS)
-  redis_host        = "stage-shared-redis.j9czrc.0001.apn2.cache.amazonaws.com"
-  redis_port        = 6379
+  redis_host        = data.aws_ssm_parameter.redis_endpoint.value
+  redis_port        = tonumber(data.aws_ssm_parameter.redis_port.value)
   redis_password    = ""
   redis_ssl_enabled = "false"
 

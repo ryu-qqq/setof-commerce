@@ -139,11 +139,11 @@ jobs:
           # ECR Stage 모듈: 기존 리소스 import 시도
           if [ "${{ matrix.module.name }}" == "ecr-stage" ]; then
             echo "📦 ECR Stage Repository 리소스 Import 중..."
-            for REPO in legacy-api legacy-api-admin web-api web-api-admin scheduler migration; do
+            for REPO in legacy-api legacy-api-admin web-api web-api-admin legacy-batch migration; do
               REPO_NAME="setof-commerce-${REPO}-stage"
               if aws ecr describe-repositories --repository-names $REPO_NAME --region ap-northeast-2 >/dev/null 2>&1; then
                 echo "  → Importing $REPO_NAME ECR repository..."
-                terraform import -input=false "module.ecr_${REPO//-/_}_stage.aws_ecr_repository.this" $REPO_NAME || echo "  ⚠️ Import failed or already in state"
+                terraform import -input=false "module.ecr_${REPO//-/_}.aws_ecr_repository.this" $REPO_NAME || echo "  ⚠️ Import failed or already in state"
               fi
             done
           fi

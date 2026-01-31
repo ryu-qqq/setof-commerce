@@ -140,6 +140,13 @@ data "aws_ssm_parameter" "redis_port" {
 }
 
 # ========================================
+# RDS Proxy Configuration
+# ========================================
+data "aws_ssm_parameter" "rds_proxy_endpoint" {
+  name = "/shared/rds/proxy-endpoint"
+}
+
+# ========================================
 # Locals
 # ========================================
 locals {
@@ -148,7 +155,7 @@ locals {
 
   # RDS Configuration (using RDS Proxy)
   rds_credentials = jsondecode(data.aws_secretsmanager_secret_version.rds.secret_string)
-  rds_host        = "prod-shared-mysql-proxy.proxy-cfacertspqbw.ap-northeast-2.rds.amazonaws.com"
+  rds_host        = data.aws_ssm_parameter.rds_proxy_endpoint.value
   rds_port        = "3306"
   rds_dbname      = "luxurydb"
   rds_username    = local.rds_credentials.username

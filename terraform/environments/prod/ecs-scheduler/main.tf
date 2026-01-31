@@ -112,7 +112,7 @@ resource "aws_kms_alias" "logs" {
 # CloudWatch Log Group (using Infrastructure module)
 # ========================================
 module "scheduler_logs" {
-  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/cloudwatch-log-group?ref=main"
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/cloudwatch-log-group?ref=5b2acb3"
 
   name              = "/aws/ecs/${var.project_name}-scheduler-${var.environment}/application"
   retention_in_days = 30
@@ -131,7 +131,7 @@ module "scheduler_logs" {
 # Security Groups (Internal only - no ALB)
 # ========================================
 module "ecs_security_group" {
-  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/security-group?ref=main"
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/security-group?ref=5b2acb3"
 
   name        = "${var.project_name}-scheduler-sg-${var.environment}"
   description = "Security group for scheduler ECS tasks - Internal only"
@@ -165,7 +165,7 @@ module "ecs_security_group" {
 
 # ECS Task Execution Role
 module "scheduler_task_execution_role" {
-  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/iam-role-policy?ref=main"
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/iam-role-policy?ref=5b2acb3"
 
   role_name = "${var.project_name}-scheduler-execution-role-${var.environment}"
 
@@ -233,7 +233,7 @@ module "scheduler_task_execution_role" {
 
 # ECS Task Role
 module "scheduler_task_role" {
-  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/iam-role-policy?ref=main"
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/iam-role-policy?ref=5b2acb3"
 
   role_name = "${var.project_name}-scheduler-task-role-${var.environment}"
 
@@ -320,7 +320,7 @@ module "scheduler_task_role" {
 # ADOT Sidecar (using Infrastructure module)
 # ========================================
 module "adot_sidecar" {
-  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/adot-sidecar?ref=main"
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/adot-sidecar?ref=5b2acb3"
 
   project_name              = var.project_name
   service_name              = "scheduler"
@@ -339,7 +339,7 @@ module "adot_sidecar" {
 # ECS Service (using Infrastructure module)
 # ========================================
 module "ecs_service" {
-  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecs-service?ref=main"
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecs-service?ref=5b2acb3"
 
   # Service Configuration
   name            = "${var.project_name}-scheduler-${var.environment}"
