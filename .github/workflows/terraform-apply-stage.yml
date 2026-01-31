@@ -128,7 +128,7 @@ jobs:
       - name: Terraform Init - ${{ matrix.module.name }}
         if: steps.check-dir.outputs.exists == 'true'
         working-directory: ${{ matrix.module.dir }}
-        run: terraform init -reconfigure
+        run: terraform init -reconfigure -upgrade  # 모듈 업데이트를 위해 -upgrade 추가
 
       - name: Check and Import Existing Resources - ${{ matrix.module.name }}
         if: steps.check-dir.outputs.exists == 'true'
