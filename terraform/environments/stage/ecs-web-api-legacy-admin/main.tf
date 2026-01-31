@@ -25,7 +25,7 @@ locals {
 # ECR Repository Reference
 # ========================================
 data "aws_ecr_repository" "legacy_admin" {
-  name = "${var.project_name}-legacy-api-admin-prod"
+  name = "${var.project_name}-legacy-api-admin-stage"
 }
 
 # ========================================

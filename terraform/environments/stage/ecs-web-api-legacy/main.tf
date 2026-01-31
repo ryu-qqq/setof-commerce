@@ -24,10 +24,10 @@ locals {
 }
 
 # ========================================
-# ECR Repository Reference (Same as prod)
+# ECR Repository Reference (Stage)
 # ========================================
 data "aws_ecr_repository" "legacy_api" {
-  name = "${var.project_name}-legacy-api-prod"
+  name = "${var.project_name}-legacy-api-stage"
 }
 
 # ========================================
