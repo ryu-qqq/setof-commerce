@@ -26,7 +26,6 @@ COPY application/build.gradle application/
 COPY adapter-in/rest-api-admin/build.gradle adapter-in/rest-api-admin/
 COPY adapter-out/persistence-mysql/build.gradle adapter-out/persistence-mysql/
 COPY adapter-out/persistence-redis/build.gradle adapter-out/persistence-redis/
-COPY adapter-out/security/build.gradle adapter-out/security/
 COPY bootstrap/bootstrap-web-api-admin/build.gradle bootstrap/bootstrap-web-api-admin/
 
 # 의존성 캐시 레이어 (소스 변경 시 재활용)
@@ -38,11 +37,10 @@ COPY application/src application/src
 COPY adapter-in/rest-api-admin/src adapter-in/rest-api-admin/src
 COPY adapter-out/persistence-mysql/src adapter-out/persistence-mysql/src
 COPY adapter-out/persistence-redis/src adapter-out/persistence-redis/src
-COPY adapter-out/security/src adapter-out/security/src
 COPY bootstrap/bootstrap-web-api-admin/src bootstrap/bootstrap-web-api-admin/src
 
-# 빌드 (테스트 제외)
-RUN ./gradlew :bootstrap:bootstrap-web-api-admin:bootJar --no-daemon -x test
+# 빌드 (테스트 포함 - REST Docs 생성)
+RUN ./gradlew :bootstrap:bootstrap-web-api-admin:bootJar --no-daemon
 
 # ============================================================
 # Stage 2: Runtime
