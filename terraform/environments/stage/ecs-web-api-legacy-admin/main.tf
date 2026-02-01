@@ -1,7 +1,7 @@
 # ========================================
-# ECS Service: legacy-admin-api (Staging)
+# ECS Service: legacy-admin-api (Stage)
 # ========================================
-# Staging environment for Legacy Partner Admin
+# Stage environment for Legacy Partner Admin
 # Domain: stage-commerce-admin.set-of.com
 # Port: 8089
 # ========================================
@@ -43,7 +43,7 @@ resource "aws_security_group_rule" "legacy_admin_to_rds" {
   protocol                 = "tcp"
   security_group_id        = tolist(data.aws_db_instance.staging_rds.vpc_security_groups)[0]
   source_security_group_id = module.ecs_security_group.security_group_id
-  description              = "Allow legacy-admin-staging ECS to access staging RDS"
+  description              = "Allow legacy-admin-stage ECS to access stage RDS"
 }
 
 # ========================================
@@ -63,7 +63,7 @@ data "aws_vpc" "main" {
 # KMS Key for CloudWatch Logs
 # ========================================
 resource "aws_kms_key" "logs" {
-  description             = "KMS key for SetOf Commerce legacy-admin staging CloudWatch logs"
+  description             = "KMS key for SetOf Commerce legacy-admin stage CloudWatch logs"
   deletion_window_in_days = 30
   enable_key_rotation     = true
 
@@ -136,7 +136,7 @@ module "legacy_admin_logs" {
 # ========================================
 resource "aws_security_group" "alb" {
   name        = "${var.project_name}-legacy-admin-alb-sg-${var.environment}"
-  description = "Security group for Legacy Admin Staging ALB"
+  description = "Security group for Legacy Admin Stage ALB"
   vpc_id      = local.vpc_id
 
   ingress {
@@ -171,7 +171,7 @@ module "ecs_security_group" {
   source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/security-group?ref=main"
 
   name        = "${var.project_name}-legacy-admin-sg-${var.environment}"
-  description = "Security group for legacy-admin staging ECS tasks"
+  description = "Security group for legacy-admin stage ECS tasks"
   vpc_id      = local.vpc_id
 
   type = "custom"
@@ -374,7 +374,7 @@ module "legacy_admin_task_role" {
   })
 
   custom_inline_policies = {
-    legacy-admin-staging-access = {
+    legacy-admin-stage-access = {
       policy = jsonencode({
         Version = "2012-10-17"
         Statement = [

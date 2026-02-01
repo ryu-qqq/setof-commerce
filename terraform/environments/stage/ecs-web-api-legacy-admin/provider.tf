@@ -1,7 +1,7 @@
 # ========================================
 # Terraform Provider Configuration
 # ========================================
-# Legacy Admin API - Staging Environment
+# Legacy Admin API - Stage Environment
 # ========================================
 
 terraform {
@@ -48,7 +48,7 @@ variable "project_name" {
 variable "environment" {
   description = "Environment name"
   type        = string
-  default     = "staging"
+  default     = "stage"
 }
 
 variable "aws_region" {
