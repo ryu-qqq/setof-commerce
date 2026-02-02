@@ -41,6 +41,8 @@ security:
     # API 문서
     - pattern: /docs
     - pattern: /docs/**
+    - pattern: /api/admin/docs
+    - pattern: /api/admin/docs/**
     - pattern: /v3/api-docs/**
     - pattern: /swagger-ui/**
     - pattern: /swagger-ui.html
