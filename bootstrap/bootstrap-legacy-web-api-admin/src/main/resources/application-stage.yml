@@ -151,7 +151,7 @@ logging:
 # PortOne (iamport)
 # ============================================================
 portone:
-  enabled: ${PORTONE_ENABLED:true}  # Stage: false (외부 API 호출 비활성화)
+  enabled: ${PORTONE_ENABLED:false}  # Stage: 기본 비활성화 (NoOpPgPaymentService 사용)
 
 Import:
   import-restApi: ${PORTONE_API_KEY}

@@ -25,6 +25,8 @@ COPY application/build.gradle application/
 COPY adapter-in/rest-api/build.gradle adapter-in/rest-api/
 COPY adapter-out/persistence-mysql/build.gradle adapter-out/persistence-mysql/
 COPY adapter-out/persistence-redis/build.gradle adapter-out/persistence-redis/
+COPY adapter-out/client/security-client/build.gradle adapter-out/client/security-client/
+COPY adapter-out/client/portone-client/build.gradle adapter-out/client/portone-client/
 COPY bootstrap/bootstrap-web-api/build.gradle bootstrap/bootstrap-web-api/
 
 # 의존성 캐시 레이어 (소스 변경 시 재활용)
@@ -36,6 +38,8 @@ COPY application/src application/src
 COPY adapter-in/rest-api/src adapter-in/rest-api/src
 COPY adapter-out/persistence-mysql/src adapter-out/persistence-mysql/src
 COPY adapter-out/persistence-redis/src adapter-out/persistence-redis/src
+COPY adapter-out/client/security-client/src adapter-out/client/security-client/src
+COPY adapter-out/client/portone-client/src adapter-out/client/portone-client/src
 COPY bootstrap/bootstrap-web-api/src bootstrap/bootstrap-web-api/src
 
 # 빌드 (테스트 제외)

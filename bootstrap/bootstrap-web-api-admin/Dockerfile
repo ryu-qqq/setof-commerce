@@ -26,6 +26,8 @@ COPY application/build.gradle application/
 COPY adapter-in/rest-api-admin/build.gradle adapter-in/rest-api-admin/
 COPY adapter-out/persistence-mysql/build.gradle adapter-out/persistence-mysql/
 COPY adapter-out/persistence-redis/build.gradle adapter-out/persistence-redis/
+COPY adapter-out/client/security-client/build.gradle adapter-out/client/security-client/
+COPY adapter-out/client/authhub-client/build.gradle adapter-out/client/authhub-client/
 COPY bootstrap/bootstrap-web-api-admin/build.gradle bootstrap/bootstrap-web-api-admin/
 
 # 의존성 캐시 레이어 (소스 변경 시 재활용)
@@ -35,8 +37,11 @@ RUN chmod +x gradlew && ./gradlew dependencies --no-daemon || true
 COPY domain/src domain/src
 COPY application/src application/src
 COPY adapter-in/rest-api-admin/src adapter-in/rest-api-admin/src
+COPY adapter-in/rest-api-admin/docs adapter-in/rest-api-admin/docs
 COPY adapter-out/persistence-mysql/src adapter-out/persistence-mysql/src
 COPY adapter-out/persistence-redis/src adapter-out/persistence-redis/src
+COPY adapter-out/client/security-client/src adapter-out/client/security-client/src
+COPY adapter-out/client/authhub-client/src adapter-out/client/authhub-client/src
 COPY bootstrap/bootstrap-web-api-admin/src bootstrap/bootstrap-web-api-admin/src
 
 # REST Docs 생성을 위해 unit 테스트만 실행 (통합 테스트 제외)
