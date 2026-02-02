@@ -17,8 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
  *
  * <ul>
  *   <li>Actuator: /actuator/**
- *   <li>Swagger UI: /swagger-ui/**, /swagger-ui.html, /v3/api-docs/**
- *   <li>REST Docs: /docs/**, /api/admin/docs/**
+ *   <li>Swagger UI: /api/v2/swagger-ui/**, /api/v2/swagger-ui.html, /api/v2/api-docs/**
+ *   <li>REST Docs: /api/v2/docs/**
  * </ul>
  *
  * @author development-team
@@ -36,17 +36,15 @@ public class SecurityConfig {
                                         // Actuator endpoints
                                         .requestMatchers("/actuator/**")
                                         .permitAll()
-                                        // Swagger UI (v2 prefix for new API)
-                                        .requestMatchers(
-                                                "/v2/swagger-ui/**", "/api/v2/swagger-ui/**")
+                                        // Swagger UI (/api/v2 prefix - 컨트롤러와 동일)
+                                        .requestMatchers("/api/v2/swagger-ui/**")
                                         .permitAll()
-                                        .requestMatchers(
-                                                "/v2/swagger-ui.html", "/api/v2/swagger-ui.html")
+                                        .requestMatchers("/api/v2/swagger-ui.html")
                                         .permitAll()
-                                        .requestMatchers("/v2/api-docs/**", "/api/v2/api-docs/**")
+                                        .requestMatchers("/api/v2/api-docs/**")
                                         .permitAll()
-                                        // REST Docs (v2 prefix for new API)
-                                        .requestMatchers("/v2/docs/**", "/api/v2/docs/**")
+                                        // REST Docs (/api/v2 prefix)
+                                        .requestMatchers("/api/v2/docs/**")
                                         .permitAll()
                                         // Static resources
                                         .requestMatchers("/static/**")
