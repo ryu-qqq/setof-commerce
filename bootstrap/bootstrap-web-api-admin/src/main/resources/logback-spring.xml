@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Logback Configuration - Spring Boot Template Project
+    Logback Configuration - Web API Admin
 
     Features:
     - Development: Human-readable console output with colors
@@ -20,7 +20,7 @@
     <!-- ============================================ -->
     <!-- Application Properties (from application.yml) -->
     <!-- ============================================ -->
-    <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="template-api"/>
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="admin-api"/>
     <springProperty scope="context" name="APP_ENV" source="spring.profiles.active" defaultValue="local"/>
 
     <!-- ============================================ -->
@@ -45,7 +45,7 @@
             <appender-ref ref="CONSOLE"/>
         </root>
 
-        <!-- Application packages - adjust to your package name -->
+        <!-- Application packages -->
         <logger name="com.ryuqq" level="DEBUG"/>
 
         <!-- Spring Framework -->
@@ -114,7 +114,7 @@
             <appender-ref ref="JSON_CONSOLE"/>
         </root>
 
-        <!-- Application packages - adjust to your package name -->
+        <!-- Application packages -->
         <logger name="com.ryuqq" level="INFO"/>
 
         <!-- Reduce Framework verbosity -->
