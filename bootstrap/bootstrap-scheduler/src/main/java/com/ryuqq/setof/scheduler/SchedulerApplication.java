@@ -3,6 +3,7 @@ package com.ryuqq.setof.scheduler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
@@ -22,6 +23,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
             "com.ryuqq.setof.application",
             "com.ryuqq.setof.adapter.out"
         })
+@EnableJpaRepositories(basePackages = "com.ryuqq.setof.adapter.out.persistence")
 @ConfigurationPropertiesScan(
         basePackages = {"com.ryuqq.setof.scheduler", "com.ryuqq.setof.adapter.in.scheduler"})
 @EnableScheduling
