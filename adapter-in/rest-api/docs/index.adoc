@@ -1,0 +1,71 @@
+= SETOF Commerce Public API Documentation
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+:stylesheet: custom-style.css
+
+[[overview]]
+== 개요
+
+SETOF Commerce Public API V1 문서입니다.
+
+=== 공통 응답 형식
+
+[source,json]
+----
+{
+    "data": { ... },
+    "response": {
+        "status": 200,
+        "message": "OK"
+    }
+}
+----
+
+=== 리스트 응답
+
+[source,json]
+----
+{
+    "data": [ ... ],
+    "response": {
+        "status": 200,
+        "message": "OK"
+    }
+}
+----
+
+=== 에러 응답
+
+[source,json]
+----
+{
+    "error": {
+        "code": "INVALID_REQUEST",
+        "message": "요청 파라미터가 유효하지 않습니다.",
+        "details": [
+            {
+                "field": "email",
+                "reason": "이메일 형식이 올바르지 않습니다."
+            }
+        ]
+    },
+    "response": {
+        "status": 400,
+        "message": "Bad Request"
+    }
+}
+----
+
+[[api-brand]]
+== 브랜드 API
+
+include::v1/brand/brand.adoc[leveloffset=+1]
+
+[[api-category]]
+== 카테고리 API
+
+include::v1/category/category.adoc[leveloffset=+1]

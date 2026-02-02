@@ -27,6 +27,12 @@ public record AuthHubUserContext(
         List<RoleInfo> roles,
         List<String> permissions) {
 
+    /** 불변 리스트로 방어적 복사를 수행하는 Compact Canonical Constructor. */
+    public AuthHubUserContext {
+        roles = roles != null ? List.copyOf(roles) : List.of();
+        permissions = permissions != null ? List.copyOf(permissions) : List.of();
+    }
+
     /**
      * 역할 정보.
      *

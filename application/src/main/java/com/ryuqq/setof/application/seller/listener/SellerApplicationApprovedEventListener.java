@@ -27,8 +27,7 @@ import org.springframework.stereotype.Component;
  *   <li>실패 시 스케줄러에서 재시도
  * </ol>
  *
- * <p><strong>조건부 활성화</strong>:
- * SellerAuthOutboxProcessor가 존재할 때만 활성화됩니다. IdentityClient가 없는 환경에서는
+ * <p><strong>조건부 활성화</strong>: SellerAuthOutboxProcessor가 존재할 때만 활성화됩니다. IdentityClient가 없는 환경에서는
  * Processor와 함께 비활성화되어 스케줄러에서만 Outbox를 처리합니다.
  */
 @Component

@@ -1,0 +1,49 @@
+[[auth-api]]
+= 인증
+
+`/api/v2/admin/auth`
+
+[[auth-login]]
+== POST 로그인
+
+사용자 인증 후 액세스 토큰을 발급합니다.
+
+include::{snippets}/login-test/login_-success/http-request.adoc[]
+
+=== Request Fields
+include::{snippets}/login-test/login_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/login-test/login_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/login-test/login_-success/response-fields.adoc[]
+
+[[auth-logout]]
+== POST 로그아웃
+
+현재 세션의 토큰을 무효화합니다.
+
+include::{snippets}/logout-test/logout_-success/http-request.adoc[]
+
+=== Response
+include::{snippets}/logout-test/logout_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/logout-test/logout_-success/response-fields.adoc[]
+
+[[auth-me]]
+== GET 내 정보 조회
+
+현재 로그인한 관리자의 정보를 조회합니다.
+
+include::{snippets}/get-my-info-test/get-my-info_-success/http-request.adoc[]
+
+=== Request Headers
+include::{snippets}/get-my-info-test/get-my-info_-success/request-headers.adoc[]
+
+=== Response
+include::{snippets}/get-my-info-test/get-my-info_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/get-my-info-test/get-my-info_-success/response-fields.adoc[]
