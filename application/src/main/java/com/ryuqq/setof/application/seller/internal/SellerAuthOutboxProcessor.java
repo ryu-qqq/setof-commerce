@@ -8,6 +8,7 @@ import com.ryuqq.setof.domain.seller.aggregate.SellerAuthOutbox;
 import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Component;
  * </ol>
  */
 @Component
+@ConditionalOnBean(IdentityClient.class)
 public class SellerAuthOutboxProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(SellerAuthOutboxProcessor.class);
