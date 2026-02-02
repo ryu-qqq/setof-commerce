@@ -27,7 +27,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EntityScan(basePackages = "com.ryuqq.setof.adapter.out.persistence")
 @EnableJpaRepositories(basePackages = "com.ryuqq.setof.adapter.out.persistence")
 @ConfigurationPropertiesScan(
-        basePackages = {"com.ryuqq.setof.scheduler", "com.ryuqq.setof.adapter.in.scheduler"})
+        basePackages = {
+            "com.ryuqq.setof.scheduler",
+            "com.ryuqq.setof.adapter.in.scheduler",
+            "com.ryuqq.setof.adapter.out.client"
+        })
 @EnableScheduling
 public class SchedulerApplication {
 

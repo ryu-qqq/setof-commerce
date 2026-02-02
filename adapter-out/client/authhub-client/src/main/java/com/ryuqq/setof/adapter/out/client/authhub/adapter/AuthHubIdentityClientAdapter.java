@@ -11,6 +11,7 @@ import com.ryuqq.setof.adapter.out.client.authhub.mapper.AuthHubIdentityMapper;
 import com.ryuqq.setof.application.seller.dto.response.SellerIdentityProvisioningResult;
 import com.ryuqq.setof.application.seller.port.out.client.IdentityClient;
 import com.ryuqq.setof.domain.seller.aggregate.SellerAuthOutbox;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  */
 @Component
+@ConditionalOnBean(OnboardingApi.class)
 public class AuthHubIdentityClientAdapter implements IdentityClient {
 
     private final OnboardingApi onboardingApi;

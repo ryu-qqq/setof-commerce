@@ -3,7 +3,7 @@
 // ========================================
 // Outbound adapter for AuthHub (Identity Service) API integration
 // Implements IdentityClient from application layer
-// Technology: AuthHub SDK v2.0.0
+// Technology: AuthHub SDK (version managed in libs.versions.toml)
 // NO Lombok allowed
 // ========================================
 
@@ -27,7 +27,7 @@ dependencies {
     // ========================================
     // AuthHub SDK
     // ========================================
-    implementation 'com.github.ryu-qqq.AuthHub:authhub-sdk-core:v2.0.0'
+    implementation libs.authhub.sdk.core
 
     // ========================================
     // Spring Boot (for @Component, @ConfigurationProperties)
