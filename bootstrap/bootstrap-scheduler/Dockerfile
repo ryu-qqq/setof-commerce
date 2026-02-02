@@ -22,21 +22,25 @@ COPY build.gradle .
 COPY gradle/libs.versions.toml gradle/
 
 # 모듈 build.gradle 복사
+COPY domain/build.gradle domain/
+COPY application/build.gradle application/
+COPY adapter-in/scheduler/build.gradle adapter-in/scheduler/
+COPY adapter-out/persistence-mysql/build.gradle adapter-out/persistence-mysql/
+COPY adapter-out/persistence-redis/build.gradle adapter-out/persistence-redis/
+COPY adapter-out/client/security-client/build.gradle adapter-out/client/security-client/
 COPY bootstrap/bootstrap-scheduler/build.gradle bootstrap/bootstrap-scheduler/
 
 # 의존성 캐시 레이어 (소스 변경 시 재활용)
 RUN chmod +x gradlew && ./gradlew dependencies --no-daemon || true
 
 # 소스코드 복사
+COPY domain/src domain/src
+COPY application/src application/src
+COPY adapter-in/scheduler/src adapter-in/scheduler/src
+COPY adapter-out/persistence-mysql/src adapter-out/persistence-mysql/src
+COPY adapter-out/persistence-redis/src adapter-out/persistence-redis/src
+COPY adapter-out/client/security-client/src adapter-out/client/security-client/src
 COPY bootstrap/bootstrap-scheduler/src bootstrap/bootstrap-scheduler/src
-
-# 의존 모듈 복사
-COPY domain domain
-COPY application application
-COPY adapter-in/scheduler adapter-in/scheduler
-COPY adapter-out/persistence-mysql adapter-out/persistence-mysql
-COPY adapter-out/persistence-redis adapter-out/persistence-redis
-COPY adapter-out/client/security-client adapter-out/client/security-client
 
 # 빌드 (테스트 제외)
 RUN ./gradlew :bootstrap:bootstrap-scheduler:bootJar --no-daemon -x test
