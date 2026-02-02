@@ -14,6 +14,7 @@ import com.ryuqq.setof.adapter.out.client.authhub.mapper.AuthHubAuthMapper;
 import com.ryuqq.setof.application.auth.dto.response.LoginResult;
 import com.ryuqq.setof.application.auth.dto.response.MyInfoResult;
 import com.ryuqq.setof.application.auth.port.out.client.AuthClient;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  */
 @Component
+@ConditionalOnBean(AuthApi.class)
 public class AuthHubAuthClientAdapter implements AuthClient {
 
     private final AuthApi authApi;

@@ -23,6 +23,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  *   <li>adapter-out:persistence-mysql - MySQL 영속성 어댑터 (Entity, Repository)
  *   <li>adapter-out:persistence-redis - Redis 영속성 어댑터 (Cache)
  *   <li>adapter-out:security - Security 어댑터 (JWT, Password Encoder)
+ *   <li>adapter-out:client - 외부 API 클라이언트 어댑터 (AuthHub)
  * </ul>
  *
  * @author ryuqq
@@ -35,7 +36,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
             "com.ryuqq.setof.application",
             "com.ryuqq.setof.adapter.in.rest.admin",
             "com.ryuqq.setof.adapter.out.persistence",
-            "com.ryuqq.setof.adapter.out.security"
+            "com.ryuqq.setof.adapter.out.security",
+            "com.ryuqq.setof.adapter.out.client"
         })
 @EnableJpaRepositories(basePackages = "com.ryuqq.setof.adapter.out.persistence")
 @EntityScan(basePackages = "com.ryuqq.setof.adapter.out.persistence")
