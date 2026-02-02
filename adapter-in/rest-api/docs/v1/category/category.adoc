@@ -1,0 +1,17 @@
+[[category-api]]
+= 카테고리
+
+`/api/v1/category`
+
+[[category-tree]]
+== GET 전체 카테고리 트리 조회
+
+노출 중인 전체 카테고리를 트리 구조로 조회합니다.
+
+include::{snippets}/get-all-categories-as-tree-test/get-all-categories-as-tree_-success/http-request.adoc[]
+
+=== Response
+include::{snippets}/get-all-categories-as-tree-test/get-all-categories-as-tree_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/get-all-categories-as-tree-test/get-all-categories-as-tree_-success/response-fields.adoc[]

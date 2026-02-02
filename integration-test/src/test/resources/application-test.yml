@@ -34,6 +34,9 @@ spring:
         # MySQL Dialect for H2 MySQL Mode
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
+        # Timezone 설정 - Native Query에서 Instant 타입 호환성
+        jdbc:
+          time_zone: UTC
     show-sql: true
     open-in-view: false
 

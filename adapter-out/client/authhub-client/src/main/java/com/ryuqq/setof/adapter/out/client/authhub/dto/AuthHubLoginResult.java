@@ -35,4 +35,12 @@ public record AuthHubLoginResult(
     public static AuthHubLoginResult failure(String errorCode, String errorMessage) {
         return new AuthHubLoginResult(false, null, null, null, null, null, errorCode, errorMessage);
     }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public boolean isFailure() {
+        return !success;
+    }
 }

@@ -26,8 +26,7 @@ import org.springframework.stereotype.Component;
  *   <li>Refresh Token: 긴 만료 시간 (기본 7일), Access Token 갱신용
  * </ul>
  *
- * <p><strong>조건부 활성화</strong>:
- * security.jwt.secret 프로퍼티가 설정된 경우에만 활성화됩니다.
+ * <p><strong>조건부 활성화</strong>: security.jwt.secret 프로퍼티가 설정된 경우에만 활성화됩니다.
  *
  * @author development-team
  * @since 1.0.0

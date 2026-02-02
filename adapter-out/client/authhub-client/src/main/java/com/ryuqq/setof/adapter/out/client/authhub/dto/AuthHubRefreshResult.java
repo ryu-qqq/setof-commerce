@@ -38,4 +38,12 @@ public record AuthHubRefreshResult(
     public static AuthHubRefreshResult failure(String errorCode, String errorMessage) {
         return new AuthHubRefreshResult(false, null, null, null, null, errorCode, errorMessage);
     }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public boolean isFailure() {
+        return !success;
+    }
 }

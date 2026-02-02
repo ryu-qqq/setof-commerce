@@ -133,7 +133,12 @@ asciidoctor {
 
     // snippets 디렉토리가 존재할 때만 실행 (CI -x test 대응)
     onlyIf {
-        snippetsDir.exists()
+        snippetsDir.exists() && snippetsDir.listFiles()?.length > 0
+    }
+
+    sourceDir = file('docs')
+    sources {
+        include 'index.adoc'
     }
 
     baseDirFollowsSourceFile()
@@ -144,7 +149,9 @@ asciidoctor {
         'toc': 'left',
         'toclevels': 3,
         'sectlinks': true,
-        'sectnums': true
+        'sectnums': true,
+        'stylesdir': file('docs').absolutePath,
+        'stylesheet': 'custom-style.css'
     )
 }
 

@@ -116,4 +116,10 @@ public final class TestTags {
 
     /** 환불 정책 관련 테스트 */
     public static final String REFUND_POLICY = "refund-policy";
+
+    /** 브랜드 관련 테스트 */
+    public static final String BRAND = "brand";
+
+    /** 카테고리 관련 테스트 */
+    public static final String CATEGORY = "category";
 }

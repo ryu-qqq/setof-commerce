@@ -28,7 +28,11 @@ import org.springframework.context.annotation.ComponentScan;
             "com.ryuqq.setof.adapter.out.persistence.shippingpolicy.condition",
             "com.ryuqq.setof.adapter.out.persistence.shippingpolicy.repository",
             "com.ryuqq.setof.adapter.out.persistence.refundpolicy.condition",
-            "com.ryuqq.setof.adapter.out.persistence.refundpolicy.repository"
+            "com.ryuqq.setof.adapter.out.persistence.refundpolicy.repository",
+            "com.ryuqq.setof.adapter.out.persistence.brand.condition",
+            "com.ryuqq.setof.adapter.out.persistence.brand.repository",
+            "com.ryuqq.setof.adapter.out.persistence.category.condition",
+            "com.ryuqq.setof.adapter.out.persistence.category.repository"
         })
 public class RepositoryTestConfig {
 
