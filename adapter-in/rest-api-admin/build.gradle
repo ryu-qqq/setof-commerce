@@ -131,7 +131,11 @@ tasks.test {
 // Asciidoctor Configuration
 // ========================================
 tasks.asciidoctor {
-    inputs.dir snippetsDir
+    // CI 환경에서 테스트 스킵 시 snippets가 없으면 asciidoctor도 스킵
+    onlyIf {
+        snippetsDir.exists() && snippetsDir.listFiles()?.length > 0
+    }
+
     configurations 'asciidoctorExt'
     dependsOn tasks.test
 
@@ -144,4 +148,9 @@ tasks.asciidoctor {
                'stylesheet': 'custom-style.css'
     // linkcss 미설정 = CSS가 HTML에 임베드됨
     baseDirFollowsSourceFile()
+}
+
+// snippets 디렉토리가 있을 때만 input으로 등록 (구성 단계)
+if (snippetsDir.exists()) {
+    tasks.asciidoctor.inputs.dir snippetsDir
 }

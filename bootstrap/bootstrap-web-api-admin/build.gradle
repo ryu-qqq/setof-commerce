@@ -155,10 +155,15 @@ tasks.bootRun {
 // REST Docs Configuration
 // ========================================
 // rest-api-admin 모듈에서 생성된 문서를 static 리소스로 복사
+// CI 환경에서 테스트 스킵 시 REST Docs 생성도 스킵됨
+def restApiAdminDocsDir = file("${project(':adapter-in:rest-api-admin').buildDir}/docs/asciidoc")
+
 tasks.register('copyRestDocs', Copy) {
     dependsOn ':adapter-in:rest-api-admin:asciidoctor'
-    from "${project(':adapter-in:rest-api-admin').buildDir}/docs/asciidoc"
+    from restApiAdminDocsDir
     into "${sourceSets.main.output.resourcesDir}/static/docs"
+    // asciidoctor가 스킵되어 docs가 없으면 복사도 스킵
+    onlyIf { restApiAdminDocsDir.exists() }
 }
 
 tasks.processResources {
