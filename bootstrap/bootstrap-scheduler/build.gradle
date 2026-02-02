@@ -31,8 +31,8 @@ dependencies {
     implementation project(':adapter-out:client:security-client')
     implementation project(':adapter-out:client:authhub-client')
 
-    // AuthHub SDK - authhub-client 모듈에서 수동 설정 사용
-    // (authhub-sdk-spring-boot-starter 대신 core 사용, client 모듈이 빈 설정 담당)
+    // AuthHub SDK (Auto-configuration for AuthHubClient, AuthApi, OnboardingApi)
+    implementation libs.authhub.sdk.core
 
     // ========================================
     // Observability
