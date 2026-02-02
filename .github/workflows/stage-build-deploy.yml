@@ -376,30 +376,29 @@ jobs:
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
-  # NOTE: web-api, web-api-admin Stage ECS 서비스 생성 후 활성화 필요
-  # deploy-web-api:
-  #   name: Deploy web-api (Stage)
-  #   needs: build-web-api
-  #   if: needs.build-web-api.result == 'success'
-  #   uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
-  #   with:
-  #     ecs-cluster: setof-commerce-cluster-stage
-  #     ecs-service: setof-commerce-web-api-stage
-  #     image-uri: ${{ needs.build-web-api.outputs.image-uri }}
-  #   secrets:
-  #     AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+  deploy-web-api:
+    name: Deploy web-api (Stage)
+    needs: build-web-api
+    if: needs.build-web-api.result == 'success'
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
+    with:
+      ecs-cluster: setof-commerce-cluster-stage
+      ecs-service: setof-commerce-web-api-stage
+      image-uri: ${{ needs.build-web-api.outputs.image-uri }}
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
-  # deploy-web-api-admin:
-  #   name: Deploy web-api-admin (Stage)
-  #   needs: build-web-api-admin
-  #   if: needs.build-web-api-admin.result == 'success'
-  #   uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
-  #   with:
-  #     ecs-cluster: setof-commerce-cluster-stage
-  #     ecs-service: setof-commerce-web-api-admin-stage
-  #     image-uri: ${{ needs.build-web-api-admin.outputs.image-uri }}
-  #   secrets:
-  #     AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+  deploy-web-api-admin:
+    name: Deploy web-api-admin (Stage)
+    needs: build-web-api-admin
+    if: needs.build-web-api-admin.result == 'success'
+    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
+    with:
+      ecs-cluster: setof-commerce-cluster-stage
+      ecs-service: setof-commerce-web-api-admin-stage
+      image-uri: ${{ needs.build-web-api-admin.outputs.image-uri }}
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
   # ============================================================================
   # Terraform Image Tag 업데이트 (Stage)
@@ -421,11 +420,10 @@ jobs:
       legacy-api-image-tag: ${{ needs.build-legacy-api.outputs.image-tag || '' }}
       legacy-api-admin-image-tag: ${{ needs.build-legacy-api-admin.outputs.image-tag || '' }}
       scheduler-image-tag: ${{ needs.build-scheduler.outputs.image-tag || '' }}
+      web-api-image-tag: ${{ needs.build-web-api.outputs.image-tag || '' }}
+      web-api-admin-image-tag: ${{ needs.build-web-api-admin.outputs.image-tag || '' }}
+      migration-image-tag: ${{ needs.build-migration.outputs.image-tag || '' }}
       # NOTE: legacy-batch는 RunTask 전용으로 ECS 서비스 없음, terraform 업데이트 불필요
-      # NOTE: web-api, web-api-admin, migration Stage Terraform 모듈 추가 시 아래 주석 해제
-      # web-api-image-tag: ${{ needs.build-web-api.outputs.image-tag || '' }}
-      # web-api-admin-image-tag: ${{ needs.build-web-api-admin.outputs.image-tag || '' }}
-      # migration-image-tag: ${{ needs.build-migration.outputs.image-tag || '' }}
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
