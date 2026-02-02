@@ -216,6 +216,24 @@ server:
       max: 100
 
 ---
+# Stage 환경 (ECS Stage)
+spring:
+  config:
+    activate:
+      on-profile: stage
+
+server:
+  tomcat:
+    threads:
+      max: 150
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+---
 # Staging 환경
 spring:
   config:
