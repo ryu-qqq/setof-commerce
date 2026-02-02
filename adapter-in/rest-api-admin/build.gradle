@@ -125,6 +125,16 @@ tasks.jacocoTestCoverageVerification {
 tasks.test {
     outputs.dir snippetsDir
     finalizedBy tasks.jacocoTestCoverageVerification
+
+    // JUnit5 태그 필터링 지원 (예: -Ptest.includeTags=unit)
+    useJUnitPlatform {
+        if (project.hasProperty('test.includeTags')) {
+            includeTags project.property('test.includeTags')
+        }
+        if (project.hasProperty('test.excludeTags')) {
+            excludeTags project.property('test.excludeTags')
+        }
+    }
 }
 
 // ========================================

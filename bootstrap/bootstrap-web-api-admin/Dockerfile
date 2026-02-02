@@ -39,8 +39,11 @@ COPY adapter-out/persistence-mysql/src adapter-out/persistence-mysql/src
 COPY adapter-out/persistence-redis/src adapter-out/persistence-redis/src
 COPY bootstrap/bootstrap-web-api-admin/src bootstrap/bootstrap-web-api-admin/src
 
-# 빌드 (테스트 스킵 - CI에서는 별도 테스트 job 실행)
-# REST Docs는 테스트 실행 시 생성되며, CI 테스트 job에서 처리
+# REST Docs 생성을 위해 unit 테스트만 실행 (통합 테스트 제외)
+# @Tag("unit") 테스트만 실행하여 generated-snippets 생성
+RUN ./gradlew :adapter-in:rest-api-admin:test -Ptest.includeTags=unit --no-daemon || true
+
+# 빌드 (테스트 스킵 - 위에서 이미 실행)
 RUN ./gradlew :bootstrap:bootstrap-web-api-admin:bootJar --no-daemon -x test
 
 # ============================================================
