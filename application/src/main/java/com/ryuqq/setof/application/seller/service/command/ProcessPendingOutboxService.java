@@ -15,8 +15,7 @@ import org.springframework.stereotype.Service;
  *
  * <p>각 Outbox 처리는 SellerAuthOutboxProcessor에서 수행됩니다.
  *
- * <p><strong>조건부 활성화</strong>:
- * SellerAuthOutboxProcessor가 존재할 때만 활성화됩니다.
+ * <p><strong>조건부 활성화</strong>: SellerAuthOutboxProcessor가 존재할 때만 활성화됩니다.
  */
 @Service
 @ConditionalOnBean(SellerAuthOutboxProcessor.class)

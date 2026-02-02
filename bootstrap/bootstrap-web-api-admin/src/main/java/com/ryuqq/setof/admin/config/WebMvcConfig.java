@@ -10,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * <p>정적 리소스 핸들러 설정을 정의합니다.
  *
  * <p><strong>리소스 매핑:</strong>
+ *
  * <ul>
  *   <li>/v2/docs/** → classpath:/static/docs/ (REST Docs)
  * </ul>
@@ -23,7 +24,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // REST Docs: /v2/docs/** → static/docs/
-        registry.addResourceHandler("/v2/docs/**")
-                .addResourceLocations("classpath:/static/docs/");
+        registry.addResourceHandler("/v2/docs/**").addResourceLocations("classpath:/static/docs/");
     }
 }

@@ -28,6 +28,7 @@ dependencies {
             classifier = 'jakarta'
         }
     }
+    implementation libs.querydsl.sql
     annotationProcessor(libs.querydsl.apt) {
         artifact {
             classifier = 'jakarta'

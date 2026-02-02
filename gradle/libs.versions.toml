@@ -120,6 +120,7 @@ spring-batch-test = { module = "org.springframework.batch:spring-batch-test" }
 # ========================================
 querydsl-jpa = { module = "com.querydsl:querydsl-jpa", version.ref = "querydsl" }
 querydsl-apt = { module = "com.querydsl:querydsl-apt", version.ref = "querydsl" }
+querydsl-sql = { module = "com.querydsl:querydsl-sql", version.ref = "querydsl" }
 
 # ========================================
 # Database
