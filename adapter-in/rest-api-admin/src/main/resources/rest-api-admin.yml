@@ -38,14 +38,13 @@ security:
     - pattern: /actuator/health/**
     # Prometheus Metrics (ADOT/AMP 메트릭 수집용)
     - pattern: /actuator/prometheus
-    # API 문서
-    - pattern: /docs
-    - pattern: /docs/**
-    - pattern: /api/admin/docs
-    - pattern: /api/admin/docs/**
-    - pattern: /v3/api-docs/**
-    - pattern: /swagger-ui/**
-    - pattern: /swagger-ui.html
+    # API 문서 (v2 prefix for new API)
+    - pattern: /v2/docs
+    - pattern: /v2/docs/**
+    - pattern: /v2/api-docs
+    - pattern: /v2/api-docs/**
+    - pattern: /v2/swagger-ui/**
+    - pattern: /v2/swagger-ui.html
 
   # Admin API Key 설정 (프로덕션에서 반드시 환경변수로 변경)
   admin:
@@ -57,11 +56,11 @@ security:
 springdoc:
   api-docs:
     enabled: true
-    path: /v3/api-docs
+    path: /v2/api-docs
 
   swagger-ui:
     enabled: true
-    path: /swagger-ui.html
+    path: /v2/swagger-ui.html
     operations-sorter: method
     tags-sorter: alpha
     # Deep Linking 지원

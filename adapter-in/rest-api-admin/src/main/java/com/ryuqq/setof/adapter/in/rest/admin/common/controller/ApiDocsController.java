@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.GetMapping;
  * <p><strong>API Gateway 라우팅 패턴:</strong>
  *
  * <ul>
- *   <li>Gateway: /api/admin/** → 이 서버 (prefix strip 없음)
- *   <li>REST Docs: /api/admin/docs → 문서 메인 페이지
+ *   <li>Gateway: /v2/** → 새 Admin API (Strangler Fig 패턴)
+ *   <li>REST Docs: /v2/docs → 문서 메인 페이지
  * </ul>
  *
  * <p><strong>접근 경로:</strong>
  *
  * <ul>
- *   <li>{@code /api/admin/docs} - API 문서 메인 페이지
- *   <li>{@code /api/admin/docs/index.html} - API 문서 메인 페이지 (직접 접근)
+ *   <li>{@code /v2/docs} - API 문서 메인 페이지
+ *   <li>{@code /v2/docs/index.html} - API 문서 메인 페이지 (직접 접근)
  * </ul>
  *
  * <p><strong>문서 위치:</strong>
@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ApiDocsController {
 
-    private static final String DOCS_PATH = "/api/admin/docs";
+    private static final String DOCS_PATH = "/v2/docs";
 
     /**
      * API 문서 메인 페이지로 리다이렉트

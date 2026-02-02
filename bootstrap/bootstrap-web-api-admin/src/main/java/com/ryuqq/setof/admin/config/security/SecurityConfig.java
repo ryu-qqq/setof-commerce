@@ -33,13 +33,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         // Actuator endpoints
                         .requestMatchers("/actuator/**").permitAll()
-                        // Swagger UI
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/swagger-ui.html").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll()
-                        // REST Docs
-                        .requestMatchers("/docs/**").permitAll()
-                        .requestMatchers("/api/admin/docs/**").permitAll()
+                        // Swagger UI (v2 prefix for new API)
+                        .requestMatchers("/v2/swagger-ui/**").permitAll()
+                        .requestMatchers("/v2/swagger-ui.html").permitAll()
+                        .requestMatchers("/v2/api-docs/**").permitAll()
+                        // REST Docs (v2 prefix for new API)
+                        .requestMatchers("/v2/docs/**").permitAll()
                         // Static resources
                         .requestMatchers("/static/**").permitAll()
                         // All other requests require authentication
