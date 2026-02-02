@@ -63,7 +63,11 @@ spring:
     import:
       - classpath:rest-api-admin.yml
       - classpath:persistence.yml
+      - optional:classpath:persistence-${spring.profiles.active:local}.yml
       - classpath:redis.yml
+      - optional:classpath:redis-${spring.profiles.active:local}.yml
+      - classpath:authhub.yml
+      - optional:classpath:authhub-${spring.profiles.active:local}.yml
 
   # ===============================================
   # MessageSource (i18n)

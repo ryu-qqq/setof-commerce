@@ -1,0 +1,7 @@
+# ============================================================
+# AuthHub SDK Stage 환경 설정
+# ============================================================
+
+authhub:
+  base-url: ${AUTHHUB_BASE_URL:https://auth-stage.ryuqq.com}
+  service-token: ${AUTHHUB_SERVICE_TOKEN:}
