@@ -395,6 +395,8 @@ module "ecs_service" {
     { name = "REDIS_SSL_ENABLED", value = local.redis_ssl_enabled },
     # Security Service Token
     { name = "SECURITY_SERVICE_TOKEN_ENABLED", value = "true" },
+    # AuthHub SDK configuration
+    { name = "AUTHHUB_BASE_URL", value = "http://authhub-web-api-stage.connectly.local" },
     # Sentry (Stage: disabled)
     { name = "SENTRY_DSN", value = local.sentry_dsn }
   ]

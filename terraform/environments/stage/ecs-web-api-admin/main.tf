@@ -376,7 +376,9 @@ module "ecs_service" {
     { name = "REDIS_HOST", value = local.redis_host },
     { name = "REDIS_PORT", value = tostring(local.redis_port) },
     # Service Token authentication enabled (for internal service communication)
-    { name = "SECURITY_SERVICE_TOKEN_ENABLED", value = "true" }
+    { name = "SECURITY_SERVICE_TOKEN_ENABLED", value = "true" },
+    # AuthHub SDK configuration
+    { name = "AUTHHUB_BASE_URL", value = "http://authhub-web-api-stage.connectly.local" }
   ]
 
   # Container Secrets
