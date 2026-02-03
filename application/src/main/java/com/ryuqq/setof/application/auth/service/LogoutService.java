@@ -3,6 +3,7 @@ package com.ryuqq.setof.application.auth.service;
 import com.ryuqq.setof.application.auth.dto.command.LogoutCommand;
 import com.ryuqq.setof.application.auth.manager.AuthManager;
 import com.ryuqq.setof.application.auth.port.in.LogoutUseCase;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
  * @since 1.0.0
  */
 @Service
+@ConditionalOnBean(AuthManager.class)
 public class LogoutService implements LogoutUseCase {
 
     private final AuthManager authManager;

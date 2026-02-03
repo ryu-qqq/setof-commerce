@@ -4,6 +4,7 @@ import com.ryuqq.setof.application.auth.dto.command.LoginCommand;
 import com.ryuqq.setof.application.auth.dto.response.LoginResult;
 import com.ryuqq.setof.application.auth.manager.AuthManager;
 import com.ryuqq.setof.application.auth.port.in.LoginUseCase;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
  * @since 1.0.0
  */
 @Service
+@ConditionalOnBean(AuthManager.class)
 public class LoginService implements LoginUseCase {
 
     private final AuthManager authManager;
