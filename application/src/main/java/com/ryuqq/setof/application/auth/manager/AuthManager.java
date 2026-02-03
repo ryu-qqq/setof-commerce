@@ -3,6 +3,7 @@ package com.ryuqq.setof.application.auth.manager;
 import com.ryuqq.setof.application.auth.dto.response.LoginResult;
 import com.ryuqq.setof.application.auth.dto.response.MyInfoResult;
 import com.ryuqq.setof.application.auth.port.out.client.AuthClient;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  */
 @Component
+@ConditionalOnBean(AuthClient.class)
 public class AuthManager {
 
     private final AuthClient authClient;

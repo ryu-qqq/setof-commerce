@@ -117,6 +117,13 @@ data "aws_ssm_parameter" "service_token_secret" {
 }
 
 # ========================================
+# AuthHub Service Token (for AuthHub SDK authentication)
+# ========================================
+data "aws_ssm_parameter" "authhub_service_token" {
+  name = "/authhub/stage/security/service-token-secret"
+}
+
+# ========================================
 # Monitoring Configuration (AMP)
 # ========================================
 data "aws_ssm_parameter" "amp_workspace_arn" {
