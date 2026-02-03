@@ -3,5 +3,5 @@
 # ============================================================
 
 authhub:
-  base-url: ${AUTHHUB_BASE_URL:https://auth.ryuqq.com}
+  base-url: ${AUTHHUB_BASE_URL:http://authhub-web-api-prod.connectly.local}
   service-token: ${AUTHHUB_SERVICE_TOKEN:}
