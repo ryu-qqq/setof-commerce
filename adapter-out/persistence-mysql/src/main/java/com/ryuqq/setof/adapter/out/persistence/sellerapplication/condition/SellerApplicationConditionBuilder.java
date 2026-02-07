@@ -6,6 +6,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.ryuqq.setof.adapter.out.persistence.sellerapplication.entity.SellerApplicationJpaEntity.ApplicationStatusJpaValue;
 import com.ryuqq.setof.domain.sellerapplication.query.SellerApplicationSearchCriteria;
 import com.ryuqq.setof.domain.sellerapplication.query.SellerApplicationSearchField;
+import com.ryuqq.setof.domain.sellerapplication.vo.ApplicationStatus;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -147,15 +148,19 @@ public class SellerApplicationConditionBuilder {
      * @return 상태 조건
      */
     public BooleanExpression statusCondition(SellerApplicationSearchCriteria criteria) {
-        if (criteria.status() == null) {
+        if (!criteria.hasStatusFilter()) {
             return null;
         }
-        ApplicationStatusJpaValue jpaStatus =
-                switch (criteria.status()) {
-                    case PENDING -> ApplicationStatusJpaValue.PENDING;
-                    case APPROVED -> ApplicationStatusJpaValue.APPROVED;
-                    case REJECTED -> ApplicationStatusJpaValue.REJECTED;
-                };
-        return sellerApplicationJpaEntity.status.eq(jpaStatus);
+        List<ApplicationStatusJpaValue> jpaStatuses =
+                criteria.status().stream().map(this::toJpaStatus).toList();
+        return sellerApplicationJpaEntity.status.in(jpaStatuses);
+    }
+
+    private ApplicationStatusJpaValue toJpaStatus(ApplicationStatus status) {
+        return switch (status) {
+            case PENDING -> ApplicationStatusJpaValue.PENDING;
+            case APPROVED -> ApplicationStatusJpaValue.APPROVED;
+            case REJECTED -> ApplicationStatusJpaValue.REJECTED;
+        };
     }
 }

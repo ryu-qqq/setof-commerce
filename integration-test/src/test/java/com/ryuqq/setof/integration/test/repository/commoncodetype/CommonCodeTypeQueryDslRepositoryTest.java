@@ -254,7 +254,7 @@ class CommonCodeTypeQueryDslRepositoryTest extends RepositoryTestBase {
             QueryContext<CommonCodeTypeSortKey> queryContext =
                     QueryContext.defaultOf(CommonCodeTypeSortKey.CREATED_AT);
             CommonCodeTypeSearchCriteria criteria =
-                    CommonCodeTypeSearchCriteria.of(null, "상태", queryContext);
+                    CommonCodeTypeSearchCriteria.of(null, null, "상태", null, queryContext);
 
             // when
             List<CommonCodeTypeJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -278,7 +278,7 @@ class CommonCodeTypeQueryDslRepositoryTest extends RepositoryTestBase {
                             PageRequest.defaultPage(),
                             true);
             CommonCodeTypeSearchCriteria criteria =
-                    CommonCodeTypeSearchCriteria.of(null, null, queryContext);
+                    CommonCodeTypeSearchCriteria.of(null, null, null, null, queryContext);
 
             // when
             List<CommonCodeTypeJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -305,7 +305,7 @@ class CommonCodeTypeQueryDslRepositoryTest extends RepositoryTestBase {
                                 PageRequest.defaultPage(),
                                 false);
                 CommonCodeTypeSearchCriteria criteria =
-                        CommonCodeTypeSearchCriteria.of(true, null, queryContext);
+                        CommonCodeTypeSearchCriteria.of(true, null, null, null, queryContext);
 
                 // when
                 List<CommonCodeTypeJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -333,7 +333,7 @@ class CommonCodeTypeQueryDslRepositoryTest extends RepositoryTestBase {
                                 PageRequest.of(0, 2),
                                 false);
                 CommonCodeTypeSearchCriteria criteria =
-                        CommonCodeTypeSearchCriteria.of(true, null, queryContext);
+                        CommonCodeTypeSearchCriteria.of(true, null, null, null, queryContext);
 
                 // when
                 List<CommonCodeTypeJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -353,7 +353,7 @@ class CommonCodeTypeQueryDslRepositoryTest extends RepositoryTestBase {
                                 PageRequest.of(1, 2),
                                 false);
                 CommonCodeTypeSearchCriteria criteria =
-                        CommonCodeTypeSearchCriteria.of(true, null, queryContext);
+                        CommonCodeTypeSearchCriteria.of(true, null, null, null, queryContext);
 
                 // when
                 List<CommonCodeTypeJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -419,7 +419,7 @@ class CommonCodeTypeQueryDslRepositoryTest extends RepositoryTestBase {
                             PageRequest.defaultPage(),
                             true);
             CommonCodeTypeSearchCriteria criteria =
-                    CommonCodeTypeSearchCriteria.of(null, null, queryContext);
+                    CommonCodeTypeSearchCriteria.of(null, null, null, null, queryContext);
 
             // when
             long count = queryDslRepository.countByCriteria(criteria);

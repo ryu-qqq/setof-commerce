@@ -79,7 +79,8 @@ class SearchCommonCodeTypeServiceTest {
         @DisplayName("검색 결과가 없으면 빈 페이지를 반환한다")
         void searchCommonCodeTypes_Empty_ReturnsEmptyPage() {
             // given
-            CommonCodeTypeSearchParams params = CommonCodeTypeQueryFixtures.searchParams("존재하지않음");
+            CommonCodeTypeSearchParams params =
+                    CommonCodeTypeQueryFixtures.searchParams(null, "존재하지않음");
             CommonCodeTypeSearchCriteria criteria = CommonCodeTypeSearchCriteria.defaultCriteria();
             List<CommonCodeType> domains = List.of();
             long totalElements = 0L;

@@ -9,13 +9,15 @@ package com.ryuqq.setof.application.sellerapplication.dto.command;
  * @param businessInfo 사업자 정보
  * @param csContact CS 연락처 정보
  * @param addressInfo 주소 정보 (출고지/반품지)
+ * @param settlementInfo 정산 정보
  * @author ryu-qqq
  */
 public record ApplySellerApplicationCommand(
         SellerInfoCommand sellerInfo,
         BusinessInfoCommand businessInfo,
         CsContactCommand csContact,
-        AddressInfoCommand addressInfo) {
+        AddressInfoCommand addressInfo,
+        SettlementInfoCommand settlementInfo) {
 
     /**
      * 셀러 기본 정보 Command.
@@ -83,4 +85,22 @@ public record ApplySellerApplicationCommand(
      * @param phone 전화번호
      */
     public record ContactInfoCommand(String name, String phone) {}
+
+    /**
+     * 정산 정보 Command.
+     *
+     * @param bankCode 은행 코드
+     * @param bankName 은행명
+     * @param accountNumber 계좌번호
+     * @param accountHolderName 예금주
+     * @param settlementCycle 정산 주기 (WEEKLY, BIWEEKLY, MONTHLY)
+     * @param settlementDay 정산일 (1-31)
+     */
+    public record SettlementInfoCommand(
+            String bankCode,
+            String bankName,
+            String accountNumber,
+            String accountHolderName,
+            String settlementCycle,
+            Integer settlementDay) {}
 }

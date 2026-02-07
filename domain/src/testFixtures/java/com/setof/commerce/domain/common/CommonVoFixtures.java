@@ -1,6 +1,7 @@
 package com.ryuqq.setof.domain.common;
 
 import com.ryuqq.setof.domain.common.vo.Money;
+import com.ryuqq.setof.domain.common.vo.PhoneNumber;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import java.time.Instant;
 
@@ -66,5 +67,14 @@ public final class CommonVoFixtures {
 
     public static SellerId defaultSellerId() {
         return SellerId.of(1L);
+    }
+
+    /** PhoneNumber Fixtures */
+    public static PhoneNumber phoneNumber(String value) {
+        return PhoneNumber.of(value);
+    }
+
+    public static PhoneNumber defaultPhoneNumber() {
+        return PhoneNumber.of("010-1234-5678");
     }
 }

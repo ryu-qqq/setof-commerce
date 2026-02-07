@@ -1,8 +1,10 @@
 package com.ryuqq.setof.application.sellerapplication.factory;
 
+import com.ryuqq.setof.application.common.dto.command.StatusChangeContext;
 import com.ryuqq.setof.application.common.time.TimeProvider;
 import com.ryuqq.setof.application.sellerapplication.dto.bundle.SellerCreationBundle;
 import com.ryuqq.setof.application.sellerapplication.dto.command.ApplySellerApplicationCommand;
+import com.ryuqq.setof.application.sellerapplication.dto.command.RejectSellerApplicationCommand;
 import com.ryuqq.setof.domain.common.vo.Address;
 import com.ryuqq.setof.domain.seller.aggregate.Seller;
 import com.ryuqq.setof.domain.seller.aggregate.SellerAddress;
@@ -13,6 +15,7 @@ import com.ryuqq.setof.domain.seller.aggregate.SellerCs;
 import com.ryuqq.setof.domain.seller.aggregate.SellerSettlement;
 import com.ryuqq.setof.domain.seller.vo.AddressName;
 import com.ryuqq.setof.domain.seller.vo.AddressType;
+import com.ryuqq.setof.domain.seller.vo.BankAccount;
 import com.ryuqq.setof.domain.seller.vo.CommissionRate;
 import com.ryuqq.setof.domain.seller.vo.CompanyName;
 import com.ryuqq.setof.domain.seller.vo.ContactInfo;
@@ -24,7 +27,9 @@ import com.ryuqq.setof.domain.seller.vo.RegistrationNumber;
 import com.ryuqq.setof.domain.seller.vo.Representative;
 import com.ryuqq.setof.domain.seller.vo.SaleReportNumber;
 import com.ryuqq.setof.domain.seller.vo.SellerName;
+import com.ryuqq.setof.domain.seller.vo.SettlementCycle;
 import com.ryuqq.setof.domain.sellerapplication.aggregate.SellerApplication;
+import com.ryuqq.setof.domain.sellerapplication.id.SellerApplicationId;
 import java.time.Instant;
 import org.springframework.stereotype.Component;
 
@@ -68,16 +73,22 @@ public class SellerApplicationCommandFactory {
                 toAddressName(command.addressInfo()),
                 toAddress(command.addressInfo()),
                 toContactInfo(command.addressInfo()),
+                toBankAccount(command.settlementInfo()),
+                toSettlementCycle(command.settlementInfo()),
+                command.settlementInfo().settlementDay(),
                 now);
     }
 
     /**
-     * 현재 시각을 반환합니다.
+     * 거절 Command로부터 StatusChangeContext 생성.
      *
-     * @return 현재 Instant
+     * @param command 거절 Command
+     * @return StatusChangeContext (신청 ID, 변경 시간)
      */
-    public Instant now() {
-        return timeProvider.now();
+    public StatusChangeContext<SellerApplicationId> createRejectContext(
+            RejectSellerApplicationCommand command) {
+        return new StatusChangeContext<>(
+                SellerApplicationId.of(command.sellerApplicationId()), timeProvider.now());
     }
 
     /**
@@ -122,7 +133,12 @@ public class SellerApplicationCommandFactory {
         SellerContract sellerContract =
                 SellerContract.defaultContract(null, CommissionRate.zero(), now);
 
-        SellerSettlement sellerSettlement = SellerSettlement.forPending(null, now);
+        SellerSettlement sellerSettlement =
+                SellerSettlement.forNew(
+                        application.bankAccount(),
+                        application.settlementCycle(),
+                        application.settlementDay(),
+                        now);
 
         SellerAuthOutbox authOutbox =
                 SellerAuthOutbox.forNew(buildAuthOutboxPayload(application), now);
@@ -134,7 +150,8 @@ public class SellerApplicationCommandFactory {
                 sellerCs,
                 sellerContract,
                 sellerSettlement,
-                authOutbox);
+                authOutbox,
+                now);
     }
 
     /**
@@ -227,5 +244,15 @@ public class SellerApplicationCommandFactory {
             return null;
         }
         return ContactInfo.of(contact.name(), contact.phone());
+    }
+
+    private BankAccount toBankAccount(ApplySellerApplicationCommand.SettlementInfoCommand info) {
+        return BankAccount.of(
+                info.bankCode(), info.bankName(), info.accountNumber(), info.accountHolderName());
+    }
+
+    private SettlementCycle toSettlementCycle(
+            ApplySellerApplicationCommand.SettlementInfoCommand info) {
+        return SettlementCycle.valueOf(info.settlementCycle());
     }
 }

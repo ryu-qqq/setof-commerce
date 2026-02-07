@@ -8,7 +8,6 @@ import com.ryuqq.setof.application.sellerapplication.manager.SellerApplicationRe
 import com.ryuqq.setof.domain.sellerapplication.aggregate.SellerApplication;
 import com.ryuqq.setof.domain.sellerapplication.id.SellerApplicationId;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 셀러 입점 신청 승인 Coordinator.
@@ -54,7 +53,6 @@ public class SellerApplicationApprovalCoordinator {
      * @param processedBy 처리자 식별자
      * @return 승인 처리된 SellerApplication (이벤트 포함)
      */
-    @Transactional
     public SellerApplication approve(Long sellerApplicationId, String processedBy) {
         SellerApplicationId applicationId = SellerApplicationId.of(sellerApplicationId);
         SellerApplication application = applicationReadManager.getById(applicationId);
@@ -63,7 +61,7 @@ public class SellerApplicationApprovalCoordinator {
         validateBeforeApprove(bundle);
 
         sellerCreationFacade.approveAndPersist(
-                bundle, application, processedBy, commandFactory.now());
+                bundle, application, processedBy, bundle.createdAt());
 
         return application;
     }

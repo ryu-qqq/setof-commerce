@@ -9,6 +9,7 @@ import com.ryuqq.setof.domain.commoncodetype.id.CommonCodeTypeId;
 import com.ryuqq.setof.domain.commoncodetype.query.CommonCodeTypeSearchCriteria;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,10 +25,13 @@ import org.springframework.stereotype.Component;
  *
  * <p>PER-ADP-005: Entity -> Domain 변환 (Mapper 사용).
  *
+ * <p>활성화 조건: persistence.legacy.common-code-type.enabled=false
+ *
  * @author ryu-qqq
  * @since 1.0.0
  */
 @Component
+@ConditionalOnProperty(name = "persistence.legacy.common-code-type.enabled", havingValue = "false")
 public class CommonCodeTypeQueryAdapter implements CommonCodeTypeQueryPort {
 
     private final CommonCodeTypeQueryDslRepository queryDslRepository;

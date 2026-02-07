@@ -244,7 +244,7 @@ class CommonCodeTypeQueryAdapterTest {
                             SortDirection.ASC,
                             PageRequest.of(0, 20));
             CommonCodeTypeSearchCriteria criteria =
-                    CommonCodeTypeSearchCriteria.of(true, null, queryContext);
+                    CommonCodeTypeSearchCriteria.of(true, null, null, null, queryContext);
 
             CommonCodeTypeJpaEntity entity = CommonCodeTypeJpaEntityFixtures.activeEntity();
             CommonCodeType domain = CommonCodeTypeFixtures.activeCommonCodeType();
@@ -270,7 +270,7 @@ class CommonCodeTypeQueryAdapterTest {
                             SortDirection.ASC,
                             PageRequest.of(0, 20));
             CommonCodeTypeSearchCriteria criteria =
-                    CommonCodeTypeSearchCriteria.of(null, "NON_EXISTENT", queryContext);
+                    CommonCodeTypeSearchCriteria.of(null, null, "NON_EXISTENT", null, queryContext);
 
             given(queryDslRepository.findByCriteria(criteria)).willReturn(Collections.emptyList());
 
@@ -300,7 +300,7 @@ class CommonCodeTypeQueryAdapterTest {
                             SortDirection.ASC,
                             PageRequest.of(0, 20));
             CommonCodeTypeSearchCriteria criteria =
-                    CommonCodeTypeSearchCriteria.of(true, null, queryContext);
+                    CommonCodeTypeSearchCriteria.of(true, null, null, null, queryContext);
 
             given(queryDslRepository.countByCriteria(criteria)).willReturn(5L);
 
@@ -321,7 +321,7 @@ class CommonCodeTypeQueryAdapterTest {
                             SortDirection.ASC,
                             PageRequest.of(0, 20));
             CommonCodeTypeSearchCriteria criteria =
-                    CommonCodeTypeSearchCriteria.of(null, "NON_EXISTENT", queryContext);
+                    CommonCodeTypeSearchCriteria.of(null, null, "NON_EXISTENT", null, queryContext);
 
             given(queryDslRepository.countByCriteria(criteria)).willReturn(0L);
 

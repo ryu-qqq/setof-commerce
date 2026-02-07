@@ -2,19 +2,20 @@ package com.ryuqq.setof.domain.sellerapplication.query;
 
 import com.ryuqq.setof.domain.common.vo.QueryContext;
 import com.ryuqq.setof.domain.sellerapplication.vo.ApplicationStatus;
+import java.util.List;
 
 /**
  * SellerApplication 검색 조건 Criteria.
  *
  * <p>입점 신청 목록 조회 시 사용하는 검색 조건과 페이징 정보를 정의합니다.
  *
- * @param status 신청 상태 필터 (null이면 전체)
+ * @param status 신청 상태 필터 목록 (빈 리스트면 전체)
  * @param searchField 검색 필드 (null이면 전체 필드 검색)
  * @param searchWord 검색어 (null이면 전체)
  * @param queryContext 정렬 및 페이징 정보
  */
 public record SellerApplicationSearchCriteria(
-        ApplicationStatus status,
+        List<ApplicationStatus> status,
         SellerApplicationSearchField searchField,
         String searchWord,
         QueryContext<SellerApplicationSortKey> queryContext) {
@@ -22,14 +23,14 @@ public record SellerApplicationSearchCriteria(
     /**
      * 검색 조건 생성.
      *
-     * @param status 신청 상태 필터 (null이면 전체)
+     * @param status 신청 상태 필터 목록 (빈 리스트면 전체)
      * @param searchField 검색 필드 (null이면 전체 필드 검색)
      * @param searchWord 검색어 (null이면 전체)
      * @param queryContext 정렬 및 페이징 정보
      * @return SellerApplicationSearchCriteria
      */
     public static SellerApplicationSearchCriteria of(
-            ApplicationStatus status,
+            List<ApplicationStatus> status,
             SellerApplicationSearchField searchField,
             String searchWord,
             QueryContext<SellerApplicationSortKey> queryContext) {
@@ -43,7 +44,10 @@ public record SellerApplicationSearchCriteria(
      */
     public static SellerApplicationSearchCriteria defaultCriteria() {
         return new SellerApplicationSearchCriteria(
-                null, null, null, QueryContext.defaultOf(SellerApplicationSortKey.defaultKey()));
+                List.of(),
+                null,
+                null,
+                QueryContext.defaultOf(SellerApplicationSortKey.defaultKey()));
     }
 
     /**
@@ -53,7 +57,7 @@ public record SellerApplicationSearchCriteria(
      */
     public static SellerApplicationSearchCriteria pendingOnly() {
         return new SellerApplicationSearchCriteria(
-                ApplicationStatus.PENDING,
+                List.of(ApplicationStatus.PENDING),
                 null,
                 null,
                 QueryContext.defaultOf(SellerApplicationSortKey.defaultKey()));
@@ -71,7 +75,7 @@ public record SellerApplicationSearchCriteria(
 
     /** 상태 필터가 있는지 확인. */
     public boolean hasStatusFilter() {
-        return status != null;
+        return status != null && !status.isEmpty();
     }
 
     /** 페이지 크기 반환 (편의 메서드). */

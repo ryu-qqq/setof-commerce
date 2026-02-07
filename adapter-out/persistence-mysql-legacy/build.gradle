@@ -1,0 +1,141 @@
+// ========================================
+// Adapter-Out: Persistence MySQL Legacy
+// ========================================
+// Legacy database adapter for Strangler Fig migration
+// Reads from legacy DB and converts to new domain model
+// Technology: Spring Data JPA + QueryDSL + MySQL
+// NO Lombok allowed
+// ========================================
+
+plugins {
+    id 'java-library'
+    id 'java-test-fixtures'
+}
+
+dependencies {
+    // ========================================
+    // Core Dependencies
+    // ========================================
+    api project(':application')
+    api project(':domain')
+
+    // Spring Data JPA
+    implementation libs.spring.boot.starter.data.jpa
+
+    // QueryDSL
+    implementation(libs.querydsl.jpa) {
+        artifact {
+            classifier = 'jakarta'
+        }
+    }
+    implementation libs.querydsl.sql
+    annotationProcessor(libs.querydsl.apt) {
+        artifact {
+            classifier = 'jakarta'
+        }
+    }
+    annotationProcessor libs.jakarta.persistence.api
+
+    // Database Drivers (Runtime)
+    runtimeOnly libs.mysql.connector
+
+    // Connection Pooling
+    implementation libs.hikaricp
+
+    // ========================================
+    // Test Dependencies
+    // ========================================
+    testImplementation libs.spring.boot.starter.test
+    testImplementation libs.testcontainers.mysql
+    testImplementation libs.testcontainers.junit
+
+    // ArchUnit for architecture validation
+    testImplementation libs.archunit.junit5
+
+    // Domain/Application testFixtures
+    testImplementation testFixtures(project(':domain'))
+    testImplementation testFixtures(project(':application'))
+
+    // ========================================
+    // Test Fixtures Dependencies
+    // ========================================
+    testFixturesApi project(':domain')
+    testFixturesApi project(':application')
+    testFixturesApi testFixtures(project(':domain'))
+    testFixturesApi testFixtures(project(':application'))
+    testFixturesImplementation libs.spring.boot.starter.data.jpa
+}
+
+// ========================================
+// QueryDSL Configuration
+// ========================================
+def generatedSourcesDir = file('build/generated/sources/annotationProcessor/java/main')
+
+sourceSets {
+    main {
+        java {
+            srcDir generatedSourcesDir
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.generatedSourceOutputDirectory.set(generatedSourcesDir)
+}
+
+// ========================================
+// Test Coverage
+// ========================================
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.0
+            }
+        }
+        rule {
+            element = 'CLASS'
+            excludes = [
+                '*.entity.*',
+                '*.Q*'
+            ]
+            limit {
+                minimum = 0.0
+            }
+        }
+    }
+}
+
+tasks.test {
+    finalizedBy tasks.jacocoTestCoverageVerification
+}
+
+// ========================================
+// Clean Generated Sources
+// ========================================
+tasks.clean {
+    delete generatedSourcesDir
+}
+
+// ========================================
+// Checkstyle Configuration
+// ========================================
+tasks.withType(Checkstyle).configureEach {
+    exclude '**/Q*.java'
+    source = fileTree('src/main/java')
+}
+
+// ========================================
+// PMD Configuration
+// ========================================
+tasks.withType(Pmd).configureEach {
+    exclude '**/Q*.java'
+    source = fileTree('src/main/java')
+}
+
+// ========================================
+// SpotBugs Configuration
+// ========================================
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
+    sourceDirs = files('src/main/java')
+}

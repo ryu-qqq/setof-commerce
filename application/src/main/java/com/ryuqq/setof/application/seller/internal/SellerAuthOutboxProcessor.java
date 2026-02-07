@@ -2,7 +2,6 @@ package com.ryuqq.setof.application.seller.internal;
 
 import com.ryuqq.setof.application.seller.dto.response.SellerIdentityProvisioningResult;
 import com.ryuqq.setof.application.seller.manager.SellerAuthOutboxCommandManager;
-import com.ryuqq.setof.application.seller.manager.SellerCommandManager;
 import com.ryuqq.setof.application.seller.port.out.client.IdentityClient;
 import com.ryuqq.setof.domain.seller.aggregate.SellerAuthOutbox;
 import java.time.Instant;
@@ -19,8 +18,9 @@ import org.springframework.stereotype.Component;
  * <p><strong>트랜잭션 전략</strong>:
  *
  * <ul>
- *   <li>각 Manager 메서드가 자체 @Transactional을 가지므로 별도 트랜잭션 선언 불필요
- *   <li>외부 API 호출 실패 시에도 상태 업데이트가 커밋되어야 하므로 전체 트랜잭션으로 묶지 않음
+ *   <li>PROCESSING 상태 변경: 별도 트랜잭션 (외부 API 호출 전 커밋 필요)
+ *   <li>실패 시 상태 변경: 별도 트랜잭션 (실패 상태 즉시 커밋 필요)
+ *   <li>성공 시 완료 처리: SellerAuthCompletionFacade를 통해 원자적 처리
  * </ul>
  *
  * <p><strong>처리 흐름</strong>:
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
  *   <li>PROCESSING 상태로 변경 (다른 프로세스와 충돌 방지)
  *   <li>Identity 서비스 API 호출 (Tenant/Organization 생성)
  *   <li>결과에 따라 Outbox가 자체적으로 상태 전이 (COMPLETED/PENDING/FAILED)
- *   <li>성공 시 Seller에 tenantId, organizationId 저장
+ *   <li>성공 시 Seller에 tenantId, organizationId 저장 (Facade를 통해 원자적 처리)
  * </ol>
  */
 @Component
@@ -39,15 +39,15 @@ public class SellerAuthOutboxProcessor {
     private static final Logger log = LoggerFactory.getLogger(SellerAuthOutboxProcessor.class);
 
     private final SellerAuthOutboxCommandManager outboxCommandManager;
-    private final SellerCommandManager sellerCommandManager;
+    private final SellerAuthCompletionFacade authCompletionFacade;
     private final IdentityClient identityClient;
 
     public SellerAuthOutboxProcessor(
             SellerAuthOutboxCommandManager outboxCommandManager,
-            SellerCommandManager sellerCommandManager,
+            SellerAuthCompletionFacade authCompletionFacade,
             IdentityClient identityClient) {
         this.outboxCommandManager = outboxCommandManager;
-        this.sellerCommandManager = sellerCommandManager;
+        this.authCompletionFacade = authCompletionFacade;
         this.identityClient = identityClient;
     }
 
@@ -98,11 +98,8 @@ public class SellerAuthOutboxProcessor {
                 result.tenantId(),
                 result.organizationId());
 
-        outbox.complete(now);
-        outboxCommandManager.persist(outbox);
-
-        sellerCommandManager.updateAuthInfo(
-                outbox.sellerId(), result.tenantId(), result.organizationId());
+        authCompletionFacade.completeAuthOutbox(
+                outbox, result.tenantId(), result.organizationId(), now);
 
         return true;
     }

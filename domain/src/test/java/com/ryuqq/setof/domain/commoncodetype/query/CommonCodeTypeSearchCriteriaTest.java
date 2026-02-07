@@ -30,11 +30,18 @@ class CommonCodeTypeSearchCriteriaTest {
 
             // when
             CommonCodeTypeSearchCriteria criteria =
-                    CommonCodeTypeSearchCriteria.of(true, "결제", queryContext);
+                    CommonCodeTypeSearchCriteria.of(
+                            true,
+                            CommonCodeTypeSearchField.CODE,
+                            "결제",
+                            null,
+                            queryContext);
 
             // then
             assertThat(criteria.active()).isTrue();
-            assertThat(criteria.keyword()).isEqualTo("결제");
+            assertThat(criteria.searchField()).isEqualTo(CommonCodeTypeSearchField.CODE);
+            assertThat(criteria.searchWord()).isEqualTo("결제");
+            assertThat(criteria.type()).isNull();
             assertThat(criteria.queryContext()).isEqualTo(queryContext);
         }
 
@@ -46,7 +53,9 @@ class CommonCodeTypeSearchCriteriaTest {
 
             // then
             assertThat(criteria.active()).isNull();
-            assertThat(criteria.keyword()).isNull();
+            assertThat(criteria.searchField()).isNull();
+            assertThat(criteria.searchWord()).isNull();
+            assertThat(criteria.type()).isNull();
             assertThat(criteria.queryContext().sortKey())
                     .isEqualTo(CommonCodeTypeSortKey.CREATED_AT);
         }
@@ -59,7 +68,7 @@ class CommonCodeTypeSearchCriteriaTest {
 
             // then
             assertThat(criteria.active()).isTrue();
-            assertThat(criteria.keyword()).isNull();
+            assertThat(criteria.searchWord()).isNull();
         }
     }
 
@@ -68,37 +77,71 @@ class CommonCodeTypeSearchCriteriaTest {
     class ConvenienceMethodTest {
 
         @Test
-        @DisplayName("hasKeyword()는 키워드가 있으면 true를 반환한다")
-        void hasKeywordReturnsTrueWhenKeywordExists() {
+        @DisplayName("hasSearchWord()는 검색어가 있으면 true를 반환한다")
+        void hasSearchWordReturnsTrueWhenSearchWordExists() {
             // given
             CommonCodeTypeSearchCriteria criteria =
                     CommonCodeTypeSearchCriteria.of(
-                            null, "결제", QueryContext.defaultOf(CommonCodeTypeSortKey.CREATED_AT));
+                            null,
+                            null,
+                            "결제",
+                            null,
+                            QueryContext.defaultOf(CommonCodeTypeSortKey.CREATED_AT));
 
             // then
-            assertThat(criteria.hasKeyword()).isTrue();
+            assertThat(criteria.hasSearchWord()).isTrue();
         }
 
         @Test
-        @DisplayName("hasKeyword()는 키워드가 없으면 false를 반환한다")
-        void hasKeywordReturnsFalseWhenNoKeyword() {
+        @DisplayName("hasSearchWord()는 검색어가 없으면 false를 반환한다")
+        void hasSearchWordReturnsFalseWhenNoSearchWord() {
             // given
             CommonCodeTypeSearchCriteria criteria = CommonCodeTypeSearchCriteria.defaultCriteria();
 
             // then
-            assertThat(criteria.hasKeyword()).isFalse();
+            assertThat(criteria.hasSearchWord()).isFalse();
         }
 
         @Test
-        @DisplayName("hasKeyword()는 빈 키워드에서 false를 반환한다")
-        void hasKeywordReturnsFalseForBlankKeyword() {
+        @DisplayName("hasSearchWord()는 빈 검색어에서 false를 반환한다")
+        void hasSearchWordReturnsFalseForBlankSearchWord() {
             // given
             CommonCodeTypeSearchCriteria criteria =
                     CommonCodeTypeSearchCriteria.of(
-                            null, "   ", QueryContext.defaultOf(CommonCodeTypeSortKey.CREATED_AT));
+                            null,
+                            null,
+                            "   ",
+                            null,
+                            QueryContext.defaultOf(CommonCodeTypeSortKey.CREATED_AT));
 
             // then
-            assertThat(criteria.hasKeyword()).isFalse();
+            assertThat(criteria.hasSearchWord()).isFalse();
+        }
+
+        @Test
+        @DisplayName("hasType()는 type이 있으면 true를 반환한다")
+        void hasTypeReturnsTrueWhenTypeExists() {
+            // given
+            CommonCodeTypeSearchCriteria criteria =
+                    CommonCodeTypeSearchCriteria.of(
+                            null,
+                            null,
+                            null,
+                            "CARD",
+                            QueryContext.defaultOf(CommonCodeTypeSortKey.CREATED_AT));
+
+            // then
+            assertThat(criteria.hasType()).isTrue();
+        }
+
+        @Test
+        @DisplayName("hasType()는 type이 없으면 false를 반환한다")
+        void hasTypeReturnsFalseWhenNoType() {
+            // given
+            CommonCodeTypeSearchCriteria criteria = CommonCodeTypeSearchCriteria.defaultCriteria();
+
+            // then
+            assertThat(criteria.hasType()).isFalse();
         }
 
         @Test
@@ -141,7 +184,7 @@ class CommonCodeTypeSearchCriteriaTest {
                             SortDirection.DESC,
                             PageRequest.of(2, 20));
             CommonCodeTypeSearchCriteria criteria =
-                    CommonCodeTypeSearchCriteria.of(null, null, queryContext);
+                    CommonCodeTypeSearchCriteria.of(null, null, null, null, queryContext);
 
             // then
             assertThat(criteria.offset()).isEqualTo(40);
@@ -157,7 +200,7 @@ class CommonCodeTypeSearchCriteriaTest {
                             SortDirection.DESC,
                             PageRequest.of(3, 20));
             CommonCodeTypeSearchCriteria criteria =
-                    CommonCodeTypeSearchCriteria.of(null, null, queryContext);
+                    CommonCodeTypeSearchCriteria.of(null, null, null, null, queryContext);
 
             // then
             assertThat(criteria.page()).isEqualTo(3);

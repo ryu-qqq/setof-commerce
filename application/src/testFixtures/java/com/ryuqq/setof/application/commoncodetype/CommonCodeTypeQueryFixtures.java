@@ -19,23 +19,29 @@ public final class CommonCodeTypeQueryFixtures {
     // ===== CommonCodeTypeSearchParams Fixtures =====
 
     public static CommonCodeTypeSearchParams searchParams() {
-        return new CommonCodeTypeSearchParams(null, null, defaultCommonSearchParams());
+        return new CommonCodeTypeSearchParams(
+                null, null, null, null, defaultCommonSearchParams());
     }
 
-    public static CommonCodeTypeSearchParams searchParams(String keyword) {
-        return new CommonCodeTypeSearchParams(null, keyword, defaultCommonSearchParams());
+    public static CommonCodeTypeSearchParams searchParams(String searchField, String searchWord) {
+        return new CommonCodeTypeSearchParams(
+                null, searchField, searchWord, null, defaultCommonSearchParams());
     }
 
     public static CommonCodeTypeSearchParams searchParams(Boolean active) {
-        return new CommonCodeTypeSearchParams(active, null, defaultCommonSearchParams());
+        return new CommonCodeTypeSearchParams(
+                active, null, null, null, defaultCommonSearchParams());
     }
 
-    public static CommonCodeTypeSearchParams searchParams(Boolean active, String keyword) {
-        return new CommonCodeTypeSearchParams(active, keyword, defaultCommonSearchParams());
+    public static CommonCodeTypeSearchParams searchParams(
+            Boolean active, String searchField, String searchWord, String type) {
+        return new CommonCodeTypeSearchParams(
+                active, searchField, searchWord, type, defaultCommonSearchParams());
     }
 
     public static CommonCodeTypeSearchParams searchParams(int page, int size) {
-        return new CommonCodeTypeSearchParams(null, null, commonSearchParams(page, size));
+        return new CommonCodeTypeSearchParams(
+                null, null, null, null, commonSearchParams(page, size));
     }
 
     // ===== CommonSearchParams Fixtures =====

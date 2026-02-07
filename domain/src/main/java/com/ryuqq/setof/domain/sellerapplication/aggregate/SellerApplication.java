@@ -5,6 +5,7 @@ import com.ryuqq.setof.domain.common.vo.Address;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import com.ryuqq.setof.domain.seller.vo.AddressName;
 import com.ryuqq.setof.domain.seller.vo.AddressType;
+import com.ryuqq.setof.domain.seller.vo.BankAccount;
 import com.ryuqq.setof.domain.seller.vo.CompanyName;
 import com.ryuqq.setof.domain.seller.vo.ContactInfo;
 import com.ryuqq.setof.domain.seller.vo.CsContact;
@@ -15,6 +16,7 @@ import com.ryuqq.setof.domain.seller.vo.RegistrationNumber;
 import com.ryuqq.setof.domain.seller.vo.Representative;
 import com.ryuqq.setof.domain.seller.vo.SaleReportNumber;
 import com.ryuqq.setof.domain.seller.vo.SellerName;
+import com.ryuqq.setof.domain.seller.vo.SettlementCycle;
 import com.ryuqq.setof.domain.sellerapplication.event.SellerApplicationAppliedEvent;
 import com.ryuqq.setof.domain.sellerapplication.event.SellerApplicationApprovedEvent;
 import com.ryuqq.setof.domain.sellerapplication.event.SellerApplicationRejectedEvent;
@@ -57,6 +59,11 @@ public class SellerApplication {
     private final Address address;
     private final ContactInfo contactInfo;
 
+    // 정산 정보
+    private final BankAccount bankAccount;
+    private final SettlementCycle settlementCycle;
+    private final Integer settlementDay;
+
     // 동의 정보
     private final Agreement agreement;
 
@@ -89,6 +96,9 @@ public class SellerApplication {
             AddressName addressName,
             Address address,
             ContactInfo contactInfo,
+            BankAccount bankAccount,
+            SettlementCycle settlementCycle,
+            Integer settlementDay,
             Agreement agreement,
             ApplicationStatus status,
             Instant appliedAt,
@@ -111,6 +121,9 @@ public class SellerApplication {
         this.addressName = addressName;
         this.address = address;
         this.contactInfo = contactInfo;
+        this.bankAccount = bankAccount;
+        this.settlementCycle = settlementCycle;
+        this.settlementDay = settlementDay;
         this.agreement = agreement;
         this.status = status;
         this.appliedAt = appliedAt;
@@ -120,7 +133,29 @@ public class SellerApplication {
         this.approvedSellerId = approvedSellerId;
     }
 
-    /** 새 입점 신청 생성. */
+    /**
+     * 새 입점 신청 생성.
+     *
+     * @param sellerName 셀러명
+     * @param displayName 표시명
+     * @param logoUrl 로고 URL
+     * @param description 설명
+     * @param registrationNumber 사업자등록번호
+     * @param companyName 회사명
+     * @param representative 대표자명
+     * @param saleReportNumber 통신판매업 신고번호
+     * @param businessAddress 사업장 주소
+     * @param csContact CS 연락처
+     * @param addressType 주소 유형
+     * @param addressName 주소 별칭
+     * @param address 주소
+     * @param contactInfo 담당자 연락처
+     * @param bankAccount 정산 계좌 정보
+     * @param settlementCycle 정산 주기
+     * @param settlementDay 정산일
+     * @param now 신청 시각
+     * @return 생성된 SellerApplication
+     */
     public static SellerApplication apply(
             SellerName sellerName,
             DisplayName displayName,
@@ -136,6 +171,9 @@ public class SellerApplication {
             AddressName addressName,
             Address address,
             ContactInfo contactInfo,
+            BankAccount bankAccount,
+            SettlementCycle settlementCycle,
+            Integer settlementDay,
             Instant now) {
         SellerApplication application =
                 new SellerApplication(
@@ -154,6 +192,9 @@ public class SellerApplication {
                         addressName,
                         address,
                         contactInfo,
+                        bankAccount,
+                        settlementCycle,
+                        settlementDay,
                         Agreement.agreedAt(now),
                         ApplicationStatus.PENDING,
                         now,
@@ -169,7 +210,36 @@ public class SellerApplication {
         return application;
     }
 
-    /** DB에서 재구성. */
+    /**
+     * DB에서 재구성.
+     *
+     * @param id 신청 ID
+     * @param sellerName 셀러명
+     * @param displayName 표시명
+     * @param logoUrl 로고 URL
+     * @param description 설명
+     * @param registrationNumber 사업자등록번호
+     * @param companyName 회사명
+     * @param representative 대표자명
+     * @param saleReportNumber 통신판매업 신고번호
+     * @param businessAddress 사업장 주소
+     * @param csContact CS 연락처
+     * @param addressType 주소 유형
+     * @param addressName 주소 별칭
+     * @param address 주소
+     * @param contactInfo 담당자 연락처
+     * @param bankAccount 정산 계좌 정보
+     * @param settlementCycle 정산 주기
+     * @param settlementDay 정산일
+     * @param agreement 동의 정보
+     * @param status 상태
+     * @param appliedAt 신청 시각
+     * @param processedAt 처리 시각
+     * @param processedBy 처리자
+     * @param rejectionReason 거절 사유
+     * @param approvedSellerId 승인된 셀러 ID
+     * @return 재구성된 SellerApplication
+     */
     public static SellerApplication reconstitute(
             SellerApplicationId id,
             SellerName sellerName,
@@ -186,6 +256,9 @@ public class SellerApplication {
             AddressName addressName,
             Address address,
             ContactInfo contactInfo,
+            BankAccount bankAccount,
+            SettlementCycle settlementCycle,
+            Integer settlementDay,
             Agreement agreement,
             ApplicationStatus status,
             Instant appliedAt,
@@ -209,6 +282,9 @@ public class SellerApplication {
                 addressName,
                 address,
                 contactInfo,
+                bankAccount,
+                settlementCycle,
+                settlementDay,
                 agreement,
                 status,
                 appliedAt,
@@ -376,6 +452,69 @@ public class SellerApplication {
 
     public ContactInfo contactInfo() {
         return contactInfo;
+    }
+
+    /**
+     * 정산 계좌 정보를 반환합니다.
+     *
+     * @return BankAccount
+     */
+    public BankAccount bankAccount() {
+        return bankAccount;
+    }
+
+    /**
+     * 은행 코드를 반환합니다.
+     *
+     * @return 은행 코드
+     */
+    public String bankCode() {
+        return bankAccount != null ? bankAccount.bankCode() : null;
+    }
+
+    /**
+     * 은행명을 반환합니다.
+     *
+     * @return 은행명
+     */
+    public String bankName() {
+        return bankAccount != null ? bankAccount.bankName() : null;
+    }
+
+    /**
+     * 계좌번호를 반환합니다.
+     *
+     * @return 계좌번호
+     */
+    public String accountNumber() {
+        return bankAccount != null ? bankAccount.accountNumber() : null;
+    }
+
+    /**
+     * 예금주를 반환합니다.
+     *
+     * @return 예금주
+     */
+    public String accountHolderName() {
+        return bankAccount != null ? bankAccount.accountHolderName() : null;
+    }
+
+    /**
+     * 정산 주기를 반환합니다.
+     *
+     * @return SettlementCycle
+     */
+    public SettlementCycle settlementCycle() {
+        return settlementCycle;
+    }
+
+    /**
+     * 정산일을 반환합니다.
+     *
+     * @return 정산일 (1-31)
+     */
+    public Integer settlementDay() {
+        return settlementDay;
     }
 
     public Agreement agreement() {

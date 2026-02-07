@@ -2,6 +2,7 @@ package com.ryuqq.setof.adapter.in.rest.admin.seller;
 
 import com.ryuqq.setof.adapter.in.rest.admin.v2.seller.dto.command.RegisterSellerApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.seller.dto.command.UpdateSellerApiRequest;
+import com.ryuqq.setof.adapter.in.rest.admin.v2.seller.dto.command.UpdateSellerFullApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.seller.dto.query.SearchSellersApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.seller.dto.response.SellerDetailApiResponse;
 import com.ryuqq.setof.application.seller.dto.composite.SellerCompositeResult;
@@ -105,6 +106,68 @@ public final class SellerApiFixtures {
                         "제2025-부산해운대-5678호",
                         new UpdateSellerApiRequest.AddressRequest(
                                 "54321", "부산시 해운대구", "해운대로 789")));
+    }
+
+    /**
+     * 셀러 전체정보 수정 요청 Fixture.
+     *
+     * <p>seller + businessInfo + csInfo + address + contractInfo + settlementInfo 모두 포함.
+     */
+    public static UpdateSellerFullApiRequest updateFullRequest() {
+        return new UpdateSellerFullApiRequest(
+                updateFullSellerInfoRequest(),
+                updateFullBusinessInfoRequest(),
+                updateFullCsInfoRequest(),
+                updateFullAddressInfoRequest(),
+                updateFullContractInfoRequest(),
+                updateFullSettlementInfoRequest());
+    }
+
+    public static UpdateSellerFullApiRequest.SellerInfoRequest updateFullSellerInfoRequest() {
+        return new UpdateSellerFullApiRequest.SellerInfoRequest(
+                "수정된 셀러명", "수정된 표시명", "https://example.com/new-logo.png", "수정된 설명입니다.");
+    }
+
+    public static UpdateSellerFullApiRequest.BusinessInfoRequest updateFullBusinessInfoRequest() {
+        return new UpdateSellerFullApiRequest.BusinessInfoRequest(
+                "123-45-67890",
+                "테스트컴퍼니",
+                "홍길동",
+                "제2025-서울강남-1234호",
+                new UpdateSellerFullApiRequest.AddressRequest("12345", "서울시 강남구", "테헤란로 456"));
+    }
+
+    public static UpdateSellerFullApiRequest.CsInfoRequest updateFullCsInfoRequest() {
+        return new UpdateSellerFullApiRequest.CsInfoRequest(
+                "02-1234-5678",
+                "cs@example.com",
+                "010-1234-5678",
+                "09:00",
+                "18:00",
+                "MON,TUE,WED,THU,FRI",
+                "https://pf.kakao.com/test");
+    }
+
+    public static UpdateSellerFullApiRequest.AddressInfoRequest updateFullAddressInfoRequest() {
+        return new UpdateSellerFullApiRequest.AddressInfoRequest(
+                1L,
+                "본사",
+                new UpdateSellerFullApiRequest.AddressRequest("12345", "서울시 강남구", "테헤란로 123"),
+                new UpdateSellerFullApiRequest.ContactInfoRequest("홍길동", "010-1234-5678"));
+    }
+
+    public static UpdateSellerFullApiRequest.ContractInfoRequest updateFullContractInfoRequest() {
+        return new UpdateSellerFullApiRequest.ContractInfoRequest(
+                10.5, "2025-01-01", "2025-12-31", "신규 셀러 수수료 할인");
+    }
+
+    public static UpdateSellerFullApiRequest.SettlementInfoRequest
+            updateFullSettlementInfoRequest() {
+        return new UpdateSellerFullApiRequest.SettlementInfoRequest(
+                new UpdateSellerFullApiRequest.BankAccountRequest(
+                        "088", "신한은행", "110123456789", "테스트컴퍼니"),
+                "MONTHLY",
+                15);
     }
 
     public static SearchSellersApiRequest searchRequest() {

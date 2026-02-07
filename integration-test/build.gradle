@@ -43,6 +43,7 @@ dependencies {
 
     // Outbound
     testImplementation project(':adapter-out:persistence-mysql')
+    testImplementation project(':adapter-out:persistence-mysql-legacy')
     testImplementation project(':adapter-out:persistence-redis')
     testImplementation project(':adapter-out:client:security-client')
     testImplementation project(':adapter-out:client:portone-client')
@@ -55,6 +56,7 @@ dependencies {
     testImplementation testFixtures(project(':adapter-in:rest-api'))
     testImplementation testFixtures(project(':adapter-in:rest-api-admin'))
     testImplementation testFixtures(project(':adapter-out:persistence-mysql'))
+    testImplementation testFixtures(project(':adapter-out:persistence-mysql-legacy'))
 
     // ========================================
     // Spring Boot Starters

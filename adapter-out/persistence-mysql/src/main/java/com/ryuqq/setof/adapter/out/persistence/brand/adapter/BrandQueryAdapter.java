@@ -9,6 +9,7 @@ import com.ryuqq.setof.domain.brand.id.BrandId;
 import com.ryuqq.setof.domain.brand.query.BrandSearchCriteria;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,10 +25,13 @@ import org.springframework.stereotype.Component;
  *
  * <p>PER-ADP-005: Entity -> Domain 변환 (Mapper 사용).
  *
+ * <p>활성화 조건: persistence.legacy.brand.enabled=false
+ *
  * @author ryu-qqq
  * @since 1.0.0
  */
 @Component
+@ConditionalOnProperty(name = "persistence.legacy.brand.enabled", havingValue = "false")
 public class BrandQueryAdapter implements BrandQueryPort {
 
     private final BrandQueryDslRepository queryDslRepository;

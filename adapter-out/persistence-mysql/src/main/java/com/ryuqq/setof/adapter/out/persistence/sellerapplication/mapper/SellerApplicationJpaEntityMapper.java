@@ -7,6 +7,7 @@ import com.ryuqq.setof.domain.common.vo.Address;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import com.ryuqq.setof.domain.seller.vo.AddressName;
 import com.ryuqq.setof.domain.seller.vo.AddressType;
+import com.ryuqq.setof.domain.seller.vo.BankAccount;
 import com.ryuqq.setof.domain.seller.vo.CompanyName;
 import com.ryuqq.setof.domain.seller.vo.ContactInfo;
 import com.ryuqq.setof.domain.seller.vo.CsContact;
@@ -17,6 +18,7 @@ import com.ryuqq.setof.domain.seller.vo.RegistrationNumber;
 import com.ryuqq.setof.domain.seller.vo.Representative;
 import com.ryuqq.setof.domain.seller.vo.SaleReportNumber;
 import com.ryuqq.setof.domain.seller.vo.SellerName;
+import com.ryuqq.setof.domain.seller.vo.SettlementCycle;
 import com.ryuqq.setof.domain.sellerapplication.aggregate.SellerApplication;
 import com.ryuqq.setof.domain.sellerapplication.id.SellerApplicationId;
 import com.ryuqq.setof.domain.sellerapplication.vo.Agreement;
@@ -62,6 +64,12 @@ public class SellerApplicationJpaEntityMapper {
                 domain.address().line2(),
                 domain.contactInfo().name(),
                 domain.contactInfo().phoneValue(),
+                domain.bankCode(),
+                domain.bankName(),
+                domain.accountNumber(),
+                domain.accountHolderName(),
+                domain.settlementCycle().name(),
+                domain.settlementDay(),
                 domain.agreement().agreedAt(),
                 toJpaStatus(domain.status()),
                 domain.appliedAt(),
@@ -98,6 +106,13 @@ public class SellerApplicationJpaEntityMapper {
                         entity.getAddressBaseAddress(),
                         entity.getAddressDetailAddress()),
                 ContactInfo.of(entity.getContactName(), entity.getContactPhoneNumber()),
+                BankAccount.of(
+                        entity.getBankCode(),
+                        entity.getBankName(),
+                        entity.getAccountNumber(),
+                        entity.getAccountHolderName()),
+                SettlementCycle.valueOf(entity.getSettlementCycle()),
+                entity.getSettlementDay(),
                 Agreement.reconstitute(entity.getAgreedAt()),
                 toDomainStatus(entity.getStatus()),
                 entity.getAppliedAt(),

@@ -10,15 +10,26 @@ import com.ryuqq.setof.application.common.dto.query.CommonSearchParams;
  * <p>APP-DTO-002: Command/Query 인스턴스 메서드 금지
  *
  * @param active 활성화 여부 필터
- * @param keyword 검색 키워드 (코드, 이름)
+ * @param searchField 검색 필드 (null이면 전체 필드)
+ * @param searchWord 검색어
+ * @param type 공통 코드 값(CommonCodeValue) 필터 (선택, null이면 미적용)
  * @param searchParams 공통 검색 파라미터 (정렬, 페이징 등)
  */
 public record CommonCodeTypeSearchParams(
-        Boolean active, String keyword, CommonSearchParams searchParams) {
+        Boolean active,
+        String searchField,
+        String searchWord,
+        String type,
+        CommonSearchParams searchParams) {
 
     public static CommonCodeTypeSearchParams of(
-            Boolean active, String keyword, CommonSearchParams searchParams) {
-        return new CommonCodeTypeSearchParams(active, keyword, searchParams);
+            Boolean active,
+            String searchField,
+            String searchWord,
+            String type,
+            CommonSearchParams searchParams) {
+        return new CommonCodeTypeSearchParams(
+                active, searchField, searchWord, type, searchParams);
     }
 
     // Delegate methods for convenience

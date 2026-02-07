@@ -2,7 +2,7 @@ package com.ryuqq.setof.adapter.in.scheduler.seller;
 
 import com.ryuqq.setof.adapter.in.scheduler.annotation.SchedulerJob;
 import com.ryuqq.setof.adapter.in.scheduler.config.SchedulerProperties;
-import com.ryuqq.setof.application.common.dto.BatchProcessingResult;
+import com.ryuqq.setof.application.common.dto.result.SchedulerBatchProcessingResult;
 import com.ryuqq.setof.application.seller.dto.command.ProcessPendingOutboxCommand;
 import com.ryuqq.setof.application.seller.dto.command.RecoverTimeoutOutboxCommand;
 import com.ryuqq.setof.application.seller.port.in.command.ProcessPendingOutboxUseCase;
@@ -55,7 +55,7 @@ public class SellerAuthOutboxScheduler {
             cron = "${scheduler.jobs.seller-auth-outbox.process-pending.cron}",
             zone = "${scheduler.jobs.seller-auth-outbox.process-pending.timezone}")
     @SchedulerJob("SellerAuthOutbox-ProcessPending")
-    public BatchProcessingResult processPendingOutboxes() {
+    public SchedulerBatchProcessingResult processPendingOutboxes() {
         SchedulerProperties.ProcessPending processPending = config.processPending();
         ProcessPendingOutboxCommand command =
                 ProcessPendingOutboxCommand.of(
@@ -73,7 +73,7 @@ public class SellerAuthOutboxScheduler {
             cron = "${scheduler.jobs.seller-auth-outbox.recover-timeout.cron}",
             zone = "${scheduler.jobs.seller-auth-outbox.recover-timeout.timezone}")
     @SchedulerJob("SellerAuthOutbox-RecoverTimeout")
-    public BatchProcessingResult recoverTimeoutOutboxes() {
+    public SchedulerBatchProcessingResult recoverTimeoutOutboxes() {
         SchedulerProperties.RecoverTimeout recoverTimeout = config.recoverTimeout();
         RecoverTimeoutOutboxCommand command =
                 new RecoverTimeoutOutboxCommand(

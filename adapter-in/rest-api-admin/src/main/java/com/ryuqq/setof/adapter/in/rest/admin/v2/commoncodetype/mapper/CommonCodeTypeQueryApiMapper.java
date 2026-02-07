@@ -55,7 +55,12 @@ public class CommonCodeTypeQueryApiMapper {
                 CommonSearchParams.of(
                         null, null, null, request.sortKey(), request.sortDirection(), page, size);
 
-        return CommonCodeTypeSearchParams.of(request.active(), request.keyword(), searchParams);
+        return CommonCodeTypeSearchParams.of(
+                request.active(),
+                request.searchField(),
+                request.searchWord(),
+                request.type(),
+                searchParams);
     }
 
     /**

@@ -70,16 +70,24 @@ public final class CommonCodeTypeApiFixtures {
 
     // ===== Search Request Fixtures =====
     public static SearchCommonCodeTypesPageApiRequest searchRequest() {
-        return new SearchCommonCodeTypesPageApiRequest(null, null, "CREATED_AT", "DESC", 0, 20);
+        return new SearchCommonCodeTypesPageApiRequest(
+                null, null, null, null, "CREATED_AT", "DESC", 0, 20);
     }
 
     public static SearchCommonCodeTypesPageApiRequest searchRequest(int page, int size) {
         return new SearchCommonCodeTypesPageApiRequest(
-                null, null, "CREATED_AT", "DESC", page, size);
+                null, null, null, null, "CREATED_AT", "DESC", page, size);
     }
 
-    public static SearchCommonCodeTypesPageApiRequest searchRequestWithKeyword(String keyword) {
-        return new SearchCommonCodeTypesPageApiRequest(null, keyword, "CREATED_AT", "DESC", 0, 20);
+    public static SearchCommonCodeTypesPageApiRequest searchRequestWithSearch(
+            String searchField, String searchWord) {
+        return new SearchCommonCodeTypesPageApiRequest(
+                null, searchField, searchWord, null, "CREATED_AT", "DESC", 0, 20);
+    }
+
+    public static SearchCommonCodeTypesPageApiRequest searchRequestWithType(String type) {
+        return new SearchCommonCodeTypesPageApiRequest(
+                null, null, null, type, "CREATED_AT", "DESC", 0, 20);
     }
 
     // ===== Result Fixtures (Application Layer 응답) =====

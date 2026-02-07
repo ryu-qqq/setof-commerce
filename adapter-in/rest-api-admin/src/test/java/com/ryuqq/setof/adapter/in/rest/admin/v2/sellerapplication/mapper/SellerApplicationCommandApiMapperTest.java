@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ryuqq.setof.adapter.in.rest.admin.sellerapplication.SellerApplicationApiFixtures;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.command.ApplySellerApplicationApiRequest;
-import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.command.ApproveSellerApplicationApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.command.RejectSellerApplicationApiRequest;
 import com.ryuqq.setof.application.sellerapplication.dto.command.ApplySellerApplicationCommand;
 import com.ryuqq.setof.application.sellerapplication.dto.command.ApproveSellerApplicationCommand;
@@ -59,6 +58,15 @@ class SellerApplicationCommandApiMapperTest {
             assertThat(command.addressInfo()).isNotNull();
             assertThat(command.addressInfo().addressType())
                     .isEqualTo(request.returnAddress().addressType());
+            assertThat(command.settlementInfo()).isNotNull();
+            assertThat(command.settlementInfo().bankName())
+                    .isEqualTo(request.settlementInfo().bankName());
+            assertThat(command.settlementInfo().accountNumber())
+                    .isEqualTo(request.settlementInfo().accountNumber());
+            assertThat(command.settlementInfo().settlementCycle())
+                    .isEqualTo(request.settlementInfo().settlementCycle());
+            assertThat(command.settlementInfo().settlementDay())
+                    .isEqualTo(request.settlementInfo().settlementDay());
         }
 
         @Test
@@ -83,9 +91,13 @@ class SellerApplicationCommandApiMapperTest {
                     new ApplySellerApplicationApiRequest.AddressInfo(
                             "RETURN", "반품지", address, contactInfo);
 
+            ApplySellerApplicationApiRequest.SettlementInfo settlementInfo =
+                    new ApplySellerApplicationApiRequest.SettlementInfo(
+                            "088", "신한은행", "110123456789", "홍길동", "MONTHLY", 1);
+
             ApplySellerApplicationApiRequest request =
                     new ApplySellerApplicationApiRequest(
-                            sellerInfo, businessInfo, csContact, returnAddress);
+                            sellerInfo, businessInfo, csContact, returnAddress, settlementInfo);
 
             // when
             ApplySellerApplicationCommand command = mapper.toCommand(request);
@@ -96,45 +108,43 @@ class SellerApplicationCommandApiMapperTest {
     }
 
     @Nested
-    @DisplayName("toCommand(Long, ApproveSellerApplicationApiRequest)")
+    @DisplayName("toApproveCommand(Long)")
     class ToApproveCommandTest {
 
         @Test
         @DisplayName("승인 요청을 Command로 변환한다")
-        void toCommand_Approve_Success() {
+        void toApproveCommand_Success() {
             // given
             Long applicationId = 1L;
-            ApproveSellerApplicationApiRequest request =
-                    SellerApplicationApiFixtures.approveRequest();
 
             // when
-            ApproveSellerApplicationCommand command = mapper.toCommand(applicationId, request);
+            ApproveSellerApplicationCommand command = mapper.toApproveCommand(applicationId);
 
             // then
             assertThat(command.sellerApplicationId()).isEqualTo(applicationId);
-            assertThat(command.processedBy()).isEqualTo(request.processedBy());
+            assertThat(command.processedBy()).isNull();
         }
     }
 
     @Nested
-    @DisplayName("toCommand(Long, RejectSellerApplicationApiRequest)")
+    @DisplayName("toRejectCommand(Long, RejectSellerApplicationApiRequest)")
     class ToRejectCommandTest {
 
         @Test
         @DisplayName("거절 요청을 Command로 변환한다")
-        void toCommand_Reject_Success() {
+        void toRejectCommand_Success() {
             // given
             Long applicationId = 1L;
             RejectSellerApplicationApiRequest request =
                     SellerApplicationApiFixtures.rejectRequest();
 
             // when
-            RejectSellerApplicationCommand command = mapper.toCommand(applicationId, request);
+            RejectSellerApplicationCommand command = mapper.toRejectCommand(applicationId, request);
 
             // then
             assertThat(command.sellerApplicationId()).isEqualTo(applicationId);
             assertThat(command.rejectionReason()).isEqualTo(request.rejectionReason());
-            assertThat(command.processedBy()).isEqualTo(request.processedBy());
+            assertThat(command.processedBy()).isNull();
         }
     }
 }

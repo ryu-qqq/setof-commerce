@@ -120,7 +120,8 @@ public class CommonCodeTypeQueryDslRepository {
                 .where(
                         deletedAtFilter(criteria),
                         conditionBuilder.activeEq(criteria),
-                        conditionBuilder.keywordContains(criteria))
+                        conditionBuilder.searchCondition(criteria),
+                        conditionBuilder.typeHasCommonCodeValue(criteria))
                 .orderBy(createOrderSpecifier(qc.sortKey(), qc.sortDirection()))
                 .offset(criteria.offset())
                 .limit(criteria.size())
@@ -141,7 +142,8 @@ public class CommonCodeTypeQueryDslRepository {
                         .where(
                                 deletedAtFilter(criteria),
                                 conditionBuilder.activeEq(criteria),
-                                conditionBuilder.keywordContains(criteria))
+                                conditionBuilder.searchCondition(criteria),
+                                conditionBuilder.typeHasCommonCodeValue(criteria))
                         .fetchOne();
         return count != null ? count : 0L;
     }

@@ -1,9 +1,12 @@
 package com.ryuqq.setof.adapter.out.persistence.commoncodetype.condition;
 
+import static com.ryuqq.setof.adapter.out.persistence.commoncode.entity.QCommonCodeJpaEntity.commonCodeJpaEntity;
 import static com.ryuqq.setof.adapter.out.persistence.commoncodetype.entity.QCommonCodeTypeJpaEntity.commonCodeTypeJpaEntity;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.ryuqq.setof.domain.commoncodetype.query.CommonCodeTypeSearchCriteria;
+import com.ryuqq.setof.domain.commoncodetype.query.CommonCodeTypeSearchField;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -93,29 +96,69 @@ public class CommonCodeTypeConditionBuilder {
     }
 
     /**
-     * 키워드 검색 조건 (코드, 이름에서 검색).
+     * 검색 필드 기반 검색 조건.
      *
-     * @param keyword 검색 키워드 (null 또는 빈 문자열이면 null 반환)
-     * @return 키워드 검색 조건
+     * @param searchField 검색 필드 (null이면 코드, 이름, 설명 전체 검색)
+     * @param searchWord 검색어
+     * @return 검색 조건
      */
-    public BooleanExpression keywordContains(String keyword) {
-        if (keyword == null || keyword.isBlank()) {
+    public BooleanExpression searchFieldContains(
+            CommonCodeTypeSearchField searchField, String searchWord) {
+        if (searchWord == null || searchWord.isBlank()) {
             return null;
         }
-        return commonCodeTypeJpaEntity
-                .code
-                .containsIgnoreCase(keyword)
-                .or(commonCodeTypeJpaEntity.name.containsIgnoreCase(keyword))
-                .or(commonCodeTypeJpaEntity.description.containsIgnoreCase(keyword));
+        if (searchField == null) {
+            return commonCodeTypeJpaEntity
+                    .code
+                    .containsIgnoreCase(searchWord)
+                    .or(commonCodeTypeJpaEntity.name.containsIgnoreCase(searchWord))
+                    .or(commonCodeTypeJpaEntity.description.containsIgnoreCase(searchWord));
+        }
+        return switch (searchField) {
+            case CODE -> commonCodeTypeJpaEntity.code.containsIgnoreCase(searchWord);
+            case NAME -> commonCodeTypeJpaEntity.name.containsIgnoreCase(searchWord);
+        };
     }
 
     /**
-     * 키워드 검색 조건 (Criteria 기반).
+     * 검색 조건 (Criteria 기반).
      *
      * @param criteria 검색 조건
-     * @return 키워드 검색 조건 (키워드가 없으면 null 반환)
+     * @return 검색 조건 (검색어가 없으면 null 반환)
      */
-    public BooleanExpression keywordContains(CommonCodeTypeSearchCriteria criteria) {
-        return criteria.hasKeyword() ? keywordContains(criteria.keyword()) : null;
+    public BooleanExpression searchCondition(CommonCodeTypeSearchCriteria criteria) {
+        if (!criteria.hasSearchWord()) {
+            return null;
+        }
+        return searchFieldContains(criteria.searchField(), criteria.searchWord());
+    }
+
+    /**
+     * 공통 코드 값(CommonCodeValue) 필터 - 해당 값을 가진 공통코드를 갖는 타입만 조회.
+     *
+     * @param type 공통 코드 값 (null 또는 빈 문자열이면 null 반환)
+     * @return 타입 필터 조건
+     */
+    public BooleanExpression typeHasCommonCodeValue(String type) {
+        if (type == null || type.isBlank()) {
+            return null;
+        }
+        String normalizedType = type.trim().toUpperCase();
+        return commonCodeTypeJpaEntity
+                .id
+                .in(
+                        JPAExpressions.select(commonCodeJpaEntity.commonCodeTypeId)
+                                .from(commonCodeJpaEntity)
+                                .where(commonCodeJpaEntity.code.eq(normalizedType)));
+    }
+
+    /**
+     * 공통 코드 값 필터 (Criteria 기반).
+     *
+     * @param criteria 검색 조건
+     * @return 타입 필터 조건 (type이 없으면 null 반환)
+     */
+    public BooleanExpression typeHasCommonCodeValue(CommonCodeTypeSearchCriteria criteria) {
+        return criteria.hasType() ? typeHasCommonCodeValue(criteria.type()) : null;
     }
 }

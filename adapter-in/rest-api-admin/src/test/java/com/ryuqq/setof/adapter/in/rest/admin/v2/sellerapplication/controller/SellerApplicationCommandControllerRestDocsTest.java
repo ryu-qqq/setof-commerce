@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.ryuqq.setof.adapter.in.rest.admin.common.RestDocsTestSupport;
 import com.ryuqq.setof.adapter.in.rest.admin.sellerapplication.SellerApplicationApiFixtures;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.command.ApplySellerApplicationApiRequest;
-import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.command.ApproveSellerApplicationApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.command.RejectSellerApplicationApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.mapper.SellerApplicationCommandApiMapper;
 import com.ryuqq.setof.application.sellerapplication.port.in.command.ApplySellerApplicationUseCase;
@@ -171,7 +170,32 @@ class SellerApplicationCommandControllerRestDocsTest extends RestDocsTestSupport
                                             fieldWithPath("returnAddress.contactInfo.phone")
                                                     .type(JsonFieldType.STRING)
                                                     .description("담당자 연락처 [최대 20자]")
-                                                    .optional()),
+                                                    .optional(),
+                                            fieldWithPath("settlementInfo")
+                                                    .type(JsonFieldType.OBJECT)
+                                                    .description("정산 정보 [필수]"),
+                                            fieldWithPath("settlementInfo.bankCode")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("은행 코드 [최대 10자]")
+                                                    .optional(),
+                                            fieldWithPath("settlementInfo.bankName")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("은행명 [필수, 최대 50자]"),
+                                            fieldWithPath("settlementInfo.accountNumber")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("계좌번호 [필수, 최대 30자, 숫자만]"),
+                                            fieldWithPath("settlementInfo.accountHolderName")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("예금주 [필수, 최대 50자]"),
+                                            fieldWithPath("settlementInfo.settlementCycle")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description(
+                                                            "정산 주기 [필수] +\n"
+                                                                    + "WEEKLY: 주간, BIWEEKLY: 격주,"
+                                                                    + " MONTHLY: 월간"),
+                                            fieldWithPath("settlementInfo.settlementDay")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("정산일 [필수, 1~31]")),
                                     responseFields(
                                             fieldWithPath("data.applicationId")
                                                     .type(JsonFieldType.NUMBER)
@@ -195,17 +219,13 @@ class SellerApplicationCommandControllerRestDocsTest extends RestDocsTestSupport
         @DisplayName("셀러 입점 신청 승인 성공")
         void approve_Success() throws Exception {
             // given
-            ApproveSellerApplicationApiRequest request =
-                    SellerApplicationApiFixtures.approveRequest();
             given(approveUseCase.execute(any())).willReturn(SELLER_ID);
 
             // when & then
             mockMvc.perform(
                             post(
-                                            "/api/v2/admin/seller-applications/{applicationId}/approve",
-                                            APPLICATION_ID)
-                                    .contentType(APPLICATION_JSON)
-                                    .content(toJson(request)))
+                                    "/api/v2/admin/seller-applications/{applicationId}/approve",
+                                    APPLICATION_ID))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.data.sellerId").value(SELLER_ID))
                     .andDo(
@@ -213,10 +233,6 @@ class SellerApplicationCommandControllerRestDocsTest extends RestDocsTestSupport
                                     pathParameters(
                                             parameterWithName("applicationId")
                                                     .description("신청 ID")),
-                                    requestFields(
-                                            fieldWithPath("processedBy")
-                                                    .type(JsonFieldType.STRING)
-                                                    .description("처리자 ID [필수]")),
                                     responseFields(
                                             fieldWithPath("data.sellerId")
                                                     .type(JsonFieldType.NUMBER)
@@ -260,10 +276,7 @@ class SellerApplicationCommandControllerRestDocsTest extends RestDocsTestSupport
                                     requestFields(
                                             fieldWithPath("rejectionReason")
                                                     .type(JsonFieldType.STRING)
-                                                    .description("거절 사유 [필수]"),
-                                            fieldWithPath("processedBy")
-                                                    .type(JsonFieldType.STRING)
-                                                    .description("처리자 ID [필수]"))));
+                                                    .description("거절 사유 [필수]"))));
         }
     }
 }

@@ -8,6 +8,7 @@ import com.ryuqq.setof.domain.seller.aggregate.SellerContract;
 import com.ryuqq.setof.domain.seller.aggregate.SellerCs;
 import com.ryuqq.setof.domain.seller.aggregate.SellerSettlement;
 import com.ryuqq.setof.domain.seller.id.SellerId;
+import java.time.Instant;
 
 /**
  * 셀러 생성 Bundle.
@@ -21,6 +22,7 @@ import com.ryuqq.setof.domain.seller.id.SellerId;
  * @param sellerContract 계약 정보
  * @param sellerSettlement 정산 정보
  * @param authOutbox 인증 서버 연동 Outbox
+ * @param createdAt 생성 시각
  * @author ryu-qqq
  */
 public record SellerCreationBundle(
@@ -30,7 +32,8 @@ public record SellerCreationBundle(
         SellerCs sellerCs,
         SellerContract sellerContract,
         SellerSettlement sellerSettlement,
-        SellerAuthOutbox authOutbox) {
+        SellerAuthOutbox authOutbox,
+        Instant createdAt) {
 
     /**
      * SellerId를 설정합니다.

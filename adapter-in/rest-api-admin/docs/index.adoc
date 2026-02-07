@@ -3,7 +3,7 @@
 :icons: font
 :source-highlighter: highlightjs
 :toc: left
-:toclevels: 2
+:toclevels: 3
 :sectlinks:
 :stylesheet: custom-style.css
 
@@ -76,38 +76,19 @@ SETOF Commerce Admin API V2 문서입니다.
 }
 ----
 
-[[api-auth]]
-== 인증 API
-
 include::v2/auth/auth.adoc[leveloffset=+1]
-
-[[api-seller]]
-== 셀러 API
 
 include::v2/seller/seller.adoc[leveloffset=+1]
 
 include::v2/sellerapplication/sellerapplication.adoc[leveloffset=+1]
 
-[[api-policy]]
-== 정책 API
+include::v2/selleradmin/seller-admin.adoc[leveloffset=+1]
 
 include::v2/shippingpolicy/shipping-policy.adoc[leveloffset=+1]
 
 include::v2/refundpolicy/refund-policy.adoc[leveloffset=+1]
 
-[[api-commoncode]]
-== 공통코드 API
-
 include::v2/commoncodetype/common-code-type.adoc[leveloffset=+1]
 
 include::v2/commoncode/common-code.adoc[leveloffset=+1]
 
-[[api-brand-v1]]
-== 브랜드 API (V1)
-
-include::v1/brand/brand.adoc[leveloffset=+1]
-
-[[api-category-v1]]
-== 카테고리 API (V1)
-
-include::v1/category/category.adoc[leveloffset=+1]

@@ -1,6 +1,6 @@
 package com.ryuqq.setof.application.seller.port.in.command;
 
-import com.ryuqq.setof.application.common.dto.BatchProcessingResult;
+import com.ryuqq.setof.application.common.dto.result.SchedulerBatchProcessingResult;
 import com.ryuqq.setof.application.seller.dto.command.RecoverTimeoutOutboxCommand;
 
 /**
@@ -10,5 +10,5 @@ import com.ryuqq.setof.application.seller.dto.command.RecoverTimeoutOutboxComman
  */
 public interface RecoverTimeoutOutboxUseCase {
 
-    BatchProcessingResult execute(RecoverTimeoutOutboxCommand command);
+    SchedulerBatchProcessingResult execute(RecoverTimeoutOutboxCommand command);
 }

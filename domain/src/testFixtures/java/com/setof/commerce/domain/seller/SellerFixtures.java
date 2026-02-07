@@ -5,7 +5,6 @@ import com.ryuqq.setof.domain.common.vo.Address;
 import com.ryuqq.setof.domain.seller.aggregate.Seller;
 import com.ryuqq.setof.domain.seller.aggregate.SellerAddress;
 import com.ryuqq.setof.domain.seller.aggregate.SellerAddressUpdateData;
-import com.ryuqq.setof.domain.seller.aggregate.SellerAdmin;
 import com.ryuqq.setof.domain.seller.aggregate.SellerAuthOutbox;
 import com.ryuqq.setof.domain.seller.aggregate.SellerBusinessInfo;
 import com.ryuqq.setof.domain.seller.aggregate.SellerBusinessInfoUpdateData;
@@ -17,7 +16,6 @@ import com.ryuqq.setof.domain.seller.aggregate.SellerSettlement;
 import com.ryuqq.setof.domain.seller.aggregate.SellerSettlementUpdateData;
 import com.ryuqq.setof.domain.seller.aggregate.SellerUpdateData;
 import com.ryuqq.setof.domain.seller.id.SellerAddressId;
-import com.ryuqq.setof.domain.seller.id.SellerAdminId;
 import com.ryuqq.setof.domain.seller.id.SellerAuthOutboxId;
 import com.ryuqq.setof.domain.seller.id.SellerBusinessInfoId;
 import com.ryuqq.setof.domain.seller.id.SellerContractId;
@@ -39,10 +37,14 @@ import com.ryuqq.setof.domain.seller.vo.OperatingHours;
 import com.ryuqq.setof.domain.seller.vo.RegistrationNumber;
 import com.ryuqq.setof.domain.seller.vo.Representative;
 import com.ryuqq.setof.domain.seller.vo.SaleReportNumber;
-import com.ryuqq.setof.domain.seller.vo.SellerAdminStatus;
 import com.ryuqq.setof.domain.seller.vo.SellerAuthOutboxStatus;
 import com.ryuqq.setof.domain.seller.vo.SellerName;
 import com.ryuqq.setof.domain.seller.vo.SettlementCycle;
+import com.ryuqq.setof.domain.selleradmin.aggregate.SellerAdmin;
+import com.ryuqq.setof.domain.selleradmin.id.SellerAdminId;
+import com.ryuqq.setof.domain.selleradmin.vo.AdminName;
+import com.ryuqq.setof.domain.selleradmin.vo.LoginId;
+import com.ryuqq.setof.domain.selleradmin.vo.SellerAdminStatus;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -636,38 +638,50 @@ public final class SellerFixtures {
     }
 
     // ===== SellerAdmin Fixtures =====
+    private static final String DEFAULT_SELLER_ADMIN_ID = "01956f4a-2b3c-7d8e-9f0a-1b2c3d4e5f60";
+    private static final String ACTIVE_SELLER_ADMIN_ID = "01956f4a-2b3c-7d8e-9f0a-1b2c3d4e5f61";
+    private static final String REJECTED_SELLER_ADMIN_ID = "01956f4a-2b3c-7d8e-9f0a-1b2c3d4e5f62";
+    private static final String SUSPENDED_SELLER_ADMIN_ID = "01956f4a-2b3c-7d8e-9f0a-1b2c3d4e5f63";
+
     public static SellerAdmin newSellerAdmin() {
         return SellerAdmin.forNew(
+                SellerAdminId.forNew(DEFAULT_SELLER_ADMIN_ID),
                 CommonVoFixtures.defaultSellerId(),
                 "auth-user-123",
-                "admin@test.com",
-                "홍길동",
-                "010-1234-5678",
+                LoginId.of("admin@test.com"),
+                AdminName.of("홍길동"),
+                CommonVoFixtures.defaultPhoneNumber(),
                 CommonVoFixtures.now());
     }
 
     public static SellerAdmin newSellerAdminWithoutSellerId() {
         return SellerAdmin.forNew(
-                "auth-user-123", "admin@test.com", "홍길동", "010-1234-5678", CommonVoFixtures.now());
+                SellerAdminId.forNew(DEFAULT_SELLER_ADMIN_ID),
+                "auth-user-123",
+                LoginId.of("admin@test.com"),
+                AdminName.of("홍길동"),
+                CommonVoFixtures.defaultPhoneNumber(),
+                CommonVoFixtures.now());
     }
 
     public static SellerAdmin pendingApprovalSellerAdmin() {
         return SellerAdmin.forApplication(
+                SellerAdminId.forNew(DEFAULT_SELLER_ADMIN_ID),
                 CommonVoFixtures.defaultSellerId(),
-                "pending@test.com",
-                "김대기",
-                "010-9999-8888",
+                LoginId.of("pending@test.com"),
+                AdminName.of("김대기"),
+                CommonVoFixtures.phoneNumber("010-9999-8888"),
                 CommonVoFixtures.now());
     }
 
     public static SellerAdmin activeSellerAdmin() {
         return SellerAdmin.reconstitute(
-                SellerAdminId.of(1L),
+                SellerAdminId.of(ACTIVE_SELLER_ADMIN_ID),
                 CommonVoFixtures.defaultSellerId(),
                 "auth-user-456",
-                "active@test.com",
-                "이활성",
-                "010-1111-2222",
+                LoginId.of("active@test.com"),
+                AdminName.of("이활성"),
+                CommonVoFixtures.phoneNumber("010-1111-2222"),
                 SellerAdminStatus.ACTIVE,
                 CommonVoFixtures.yesterday(),
                 CommonVoFixtures.yesterday(),
@@ -676,12 +690,12 @@ public final class SellerFixtures {
 
     public static SellerAdmin rejectedSellerAdmin() {
         return SellerAdmin.reconstitute(
-                SellerAdminId.of(2L),
+                SellerAdminId.of(REJECTED_SELLER_ADMIN_ID),
                 CommonVoFixtures.defaultSellerId(),
                 null,
-                "rejected@test.com",
-                "박거절",
-                "010-3333-4444",
+                LoginId.of("rejected@test.com"),
+                AdminName.of("박거절"),
+                CommonVoFixtures.phoneNumber("010-3333-4444"),
                 SellerAdminStatus.REJECTED,
                 CommonVoFixtures.yesterday(),
                 CommonVoFixtures.yesterday(),
@@ -690,12 +704,12 @@ public final class SellerFixtures {
 
     public static SellerAdmin suspendedSellerAdmin() {
         return SellerAdmin.reconstitute(
-                SellerAdminId.of(3L),
+                SellerAdminId.of(SUSPENDED_SELLER_ADMIN_ID),
                 CommonVoFixtures.defaultSellerId(),
                 "auth-user-789",
-                "suspended@test.com",
-                "최정지",
-                "010-5555-6666",
+                LoginId.of("suspended@test.com"),
+                AdminName.of("최정지"),
+                CommonVoFixtures.phoneNumber("010-5555-6666"),
                 SellerAdminStatus.SUSPENDED,
                 CommonVoFixtures.yesterday(),
                 CommonVoFixtures.yesterday(),

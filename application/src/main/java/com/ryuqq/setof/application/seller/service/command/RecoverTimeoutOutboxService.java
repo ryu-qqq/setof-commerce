@@ -1,6 +1,6 @@
 package com.ryuqq.setof.application.seller.service.command;
 
-import com.ryuqq.setof.application.common.dto.BatchProcessingResult;
+import com.ryuqq.setof.application.common.dto.result.SchedulerBatchProcessingResult;
 import com.ryuqq.setof.application.seller.dto.command.RecoverTimeoutOutboxCommand;
 import com.ryuqq.setof.application.seller.manager.SellerAuthOutboxCommandManager;
 import com.ryuqq.setof.application.seller.manager.SellerAuthOutboxReadManager;
@@ -36,7 +36,7 @@ public class RecoverTimeoutOutboxService implements RecoverTimeoutOutboxUseCase 
 
     @Override
     @Transactional
-    public BatchProcessingResult execute(RecoverTimeoutOutboxCommand command) {
+    public SchedulerBatchProcessingResult execute(RecoverTimeoutOutboxCommand command) {
         List<SellerAuthOutbox> outboxes =
                 outboxReadManager.findProcessingTimeoutOutboxes(
                         command.timeoutThreshold(), command.batchSize());
@@ -62,6 +62,6 @@ public class RecoverTimeoutOutboxService implements RecoverTimeoutOutboxUseCase 
             }
         }
 
-        return BatchProcessingResult.of(total, successCount, failedCount);
+        return SchedulerBatchProcessingResult.of(total, successCount, failedCount);
     }
 }
