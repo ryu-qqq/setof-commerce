@@ -39,8 +39,7 @@ public record SearchCommonCodeTypesPageApiRequest(
                         example = "code",
                         schema = @Schema(allowableValues = {"code", "name"}))
                 String searchField,
-        @Parameter(description = "검색어", example = "결제")
-                String searchWord,
+        @Parameter(description = "검색어", example = "결제") String searchWord,
         @Parameter(
                         description = "공통 코드 값(CommonCodeValue) 필터 - 해당 값을 가진 공통코드를 갖는 타입만 조회 (선택)",
                         example = "CARD")

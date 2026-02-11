@@ -263,10 +263,10 @@ class SellerAssemblerTest {
             // then
             assertThat(result).isNotNull();
             assertThat(result.content()).hasSize(1);
-            assertThat(result.totalCount()).isEqualTo(totalCount);
-            assertThat(result.page()).isEqualTo(page);
-            assertThat(result.size()).isEqualTo(size);
-            assertThat(result.hasNext()).isFalse();
+            assertThat(result.pageMeta().totalElements()).isEqualTo(totalCount);
+            assertThat(result.pageMeta().page()).isEqualTo(page);
+            assertThat(result.pageMeta().size()).isEqualTo(size);
+            assertThat(result.pageMeta().hasNext()).isFalse();
         }
 
         @Test
@@ -283,7 +283,7 @@ class SellerAssemblerTest {
 
             // then
             assertThat(result.content()).isEmpty();
-            assertThat(result.totalCount()).isZero();
+            assertThat(result.pageMeta().totalElements()).isZero();
         }
 
         @Test
@@ -300,7 +300,7 @@ class SellerAssemblerTest {
             SellerPageResult result = sut.toPageResult(sellers, page, size, totalCount);
 
             // then
-            assertThat(result.hasNext()).isTrue();
+            assertThat(result.pageMeta().hasNext()).isTrue();
         }
 
         @Test
@@ -316,7 +316,7 @@ class SellerAssemblerTest {
             SellerPageResult result = sut.toPageResult(sellers, page, size, totalCount);
 
             // then
-            assertThat(result.hasNext()).isFalse();
+            assertThat(result.pageMeta().hasNext()).isFalse();
         }
     }
 }

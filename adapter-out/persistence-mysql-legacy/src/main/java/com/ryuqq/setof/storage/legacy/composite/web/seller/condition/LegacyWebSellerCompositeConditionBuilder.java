@@ -1,5 +1,6 @@
 package com.ryuqq.setof.storage.legacy.composite.web.seller.condition;
 
+import static com.ryuqq.setof.storage.legacy.seller.entity.QLegacySellerBusinessInfoEntity.legacySellerBusinessInfoEntity;
 import static com.ryuqq.setof.storage.legacy.seller.entity.QLegacySellerEntity.legacySellerEntity;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -28,5 +29,17 @@ public class LegacyWebSellerCompositeConditionBuilder {
      */
     public BooleanExpression sellerIdEq(Long sellerId) {
         return sellerId != null ? legacySellerEntity.id.eq(sellerId) : null;
+    }
+
+    /**
+     * 사업자등록번호 일치 조건.
+     *
+     * @param registrationNumber 사업자등록번호
+     * @return BooleanExpression
+     */
+    public BooleanExpression registrationNumberEq(String registrationNumber) {
+        return registrationNumber != null
+                ? legacySellerBusinessInfoEntity.registrationNumber.eq(registrationNumber)
+                : null;
     }
 }

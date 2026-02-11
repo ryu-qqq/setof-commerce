@@ -41,11 +41,7 @@ public class CommonCodeTypeQueryFactory {
         CommonCodeTypeSearchField searchField =
                 CommonCodeTypeSearchField.fromString(params.searchField());
         return new CommonCodeTypeSearchCriteria(
-                params.active(),
-                searchField,
-                params.searchWord(),
-                params.type(),
-                queryContext);
+                params.active(), searchField, params.searchWord(), params.type(), queryContext);
     }
 
     private CommonCodeTypeSortKey resolveSortKey(String sortKeyString) {

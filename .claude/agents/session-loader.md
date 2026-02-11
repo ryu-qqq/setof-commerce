@@ -2,7 +2,7 @@
 name: session-loader
 description: 세션 시작 시 프로젝트 컨텍스트 로딩. Serena 프로젝트 활성화 + Spring Standards 규칙 인덱스 캐싱. 자동으로 사용.
 tools: Read, Write, Glob, Grep, Bash
-model: opus
+model: sonnet
 ---
 
 # Session Loader Agent

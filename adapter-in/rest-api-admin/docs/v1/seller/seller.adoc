@@ -1,0 +1,52 @@
+[[seller-v1-api]]
+= 셀러 V1
+
+`/api/v1/sellers`
+
+[[seller-v1-search]]
+== GET 셀러 목록 검색
+
+셀러 목록을 검색 키워드(셀러명/ID)로 필터링하고 페이징하여 조회합니다.
+
+include::{snippets}/fetch-sellers-test/fetch-sellers_-success/http-request.adoc[]
+
+=== Query Parameters
+include::{snippets}/fetch-sellers-test/fetch-sellers_-success/query-parameters.adoc[]
+
+=== Response
+include::{snippets}/fetch-sellers-test/fetch-sellers_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/fetch-sellers-test/fetch-sellers_-success/response-fields.adoc[]
+
+[[seller-v1-detail]]
+== GET 셀러 상세 조회
+
+셀러 ID로 셀러 전체 상세 정보를 조회합니다 (기본정보 + 주소 + 사업자정보 + CS + 계약 + 정산).
+
+include::{snippets}/fetch-seller-test/fetch-seller_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/fetch-seller-test/fetch-seller_-success/path-parameters.adoc[]
+
+=== Response
+include::{snippets}/fetch-seller-test/fetch-seller_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/fetch-seller-test/fetch-seller_-success/response-fields.adoc[]
+
+[[seller-v1-business-validation]]
+== GET 사업자등록번호 유효성 검증
+
+사업자등록번호의 중복 여부를 확인합니다.
+
+include::{snippets}/validate-business-registration-test/validate-business-registration_-available/http-request.adoc[]
+
+=== Query Parameters
+include::{snippets}/validate-business-registration-test/validate-business-registration_-available/query-parameters.adoc[]
+
+=== Response
+include::{snippets}/validate-business-registration-test/validate-business-registration_-available/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/validate-business-registration-test/validate-business-registration_-available/response-fields.adoc[]

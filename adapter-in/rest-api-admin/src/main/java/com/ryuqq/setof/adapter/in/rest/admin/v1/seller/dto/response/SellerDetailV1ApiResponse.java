@@ -1,148 +1,114 @@
 package com.ryuqq.setof.adapter.in.rest.admin.v1.seller.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.List;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
 
 /**
- * SellerDetailV1ApiResponse - 판매자 상세 응답 DTO.
+ * SellerDetailV1ApiResponse - 셀러 상세 응답 DTO.
  *
- * <p>레거시 SellerDetailResponse 기반 변환.
+ * <p>Application Layer SellerFullCompositeResult 기반 변환.
  *
- * <p>GET /api/v1/seller/{sellerId} - 판매자 상세 조회
+ * <p>API-DTO-001: Record 타입 필수.
  *
- * <p>변환 내역:
+ * <p>API-DTO-002: DTO 불변성 보장.
  *
- * <ul>
- *   <li>class → record 타입
- *   <li>Lombok @Getter → record 기본 접근자
- *   <li>ApprovalStatus enum → String 타입
- *   <li>중첩 클래스 SiteResponse → 중첩 record
- *   <li>@Schema 어노테이션 추가
- * </ul>
+ * <p>GET /api/v1/sellers/{sellerId} - 셀러 상세 조회 응답.
  *
+ * <p>Seller 기본정보 + 주소 + 사업자정보 + CS + 계약 + 정산 정보를 포함합니다.
+ *
+ * @param seller 셀러 기본 정보
+ * @param address 주소 정보
+ * @param businessInfo 사업자 정보
+ * @param csInfo 고객센터 정보
+ * @param contractInfo 계약 정보
+ * @param settlementInfo 정산 정보
  * @author ryu-qqq
- * @since 1.1.0
- * @see com.connectly.partnerAdmin.module.seller.dto.SellerDetailResponse
+ * @since 1.0.0
  */
-@Schema(description = "판매자 상세 응답")
+@Schema(description = "셀러 상세 응답")
 public record SellerDetailV1ApiResponse(
-        @Schema(description = "판매자 ID", example = "123") long sellerId,
-        @Schema(description = "판매자명", example = "판매자 A") String sellerName,
-        @Schema(description = "로고 이미지 URL", example = "https://example.com/logo.png")
-                String logoUrl,
-        @Schema(description = "수수료율 (%)", example = "10.5") Double commissionRate,
-        @Schema(
-                        description = "승인 상태",
-                        example = "APPROVED",
-                        allowableValues = {"PENDING", "APPROVED", "REJECTED"})
-                String approvalStatus,
-        @Schema(description = "판매자 설명", example = "판매자 소개글입니다.") String sellerDescription,
-        @Schema(description = "사업장 주소") AddressResponse businessAddress,
-        @Schema(description = "반품 주소") AddressResponse returnAddress,
-        @Schema(description = "고객센터 정보") CustomerServiceResponse customerService,
+        @Schema(description = "셀러 기본 정보") SellerInfoResponse seller,
+        @Schema(description = "주소 정보") AddressInfoResponse address,
         @Schema(description = "사업자 정보") BusinessInfoResponse businessInfo,
-        @Schema(description = "정산 계좌 정보") SettlementAccountResponse settlementAccount,
-        @Schema(description = "입점 사이트 목록") List<SiteResponse> sites) {
+        @Schema(description = "고객센터 정보") CsInfoResponse csInfo,
+        @Schema(description = "계약 정보") ContractInfoResponse contractInfo,
+        @Schema(description = "정산 정보") SettlementInfoResponse settlementInfo) {
+
+    /** 셀러 기본 정보 응답 DTO. */
+    @Schema(description = "셀러 기본 정보")
+    public record SellerInfoResponse(
+            @Schema(description = "셀러 ID", example = "1") long sellerId,
+            @Schema(description = "셀러명", example = "나이키코리아") String sellerName,
+            @Schema(description = "표시명", example = "나이키 공식스토어") String displayName,
+            @Schema(description = "로고 URL") String logoUrl,
+            @Schema(description = "설명") String description,
+            @Schema(description = "활성화 여부") boolean active,
+            @Schema(description = "생성일시") Instant createdAt,
+            @Schema(description = "수정일시") Instant updatedAt) {}
 
     /** 주소 정보 응답 DTO. */
     @Schema(description = "주소 정보")
-    public record AddressResponse(
-            @Schema(description = "기본 주소", example = "서울시 강남구") String addressLine1,
-            @Schema(description = "상세 주소", example = "테헤란로 123") String addressLine2,
-            @Schema(description = "우편번호", example = "06234") String zipCode) {
-
-        public static AddressResponse of(String addressLine1, String addressLine2, String zipCode) {
-            return new AddressResponse(addressLine1, addressLine2, zipCode);
-        }
-    }
-
-    /** 고객센터 정보 응답 DTO. */
-    @Schema(description = "고객센터 정보")
-    public record CustomerServiceResponse(
-            @Schema(description = "고객센터 대표번호", example = "1588-1234") String csNumber,
-            @Schema(description = "고객센터 전화번호", example = "02-1234-5678") String csPhoneNumber,
-            @Schema(description = "고객센터 이메일", example = "cs@example.com") String csEmail) {
-
-        public static CustomerServiceResponse of(
-                String csNumber, String csPhoneNumber, String csEmail) {
-            return new CustomerServiceResponse(csNumber, csPhoneNumber, csEmail);
-        }
-    }
+    public record AddressInfoResponse(
+            @Schema(description = "주소 ID") long addressId,
+            @Schema(description = "주소 유형") String addressType,
+            @Schema(description = "주소명") String addressName,
+            @Schema(description = "우편번호") String zipcode,
+            @Schema(description = "주소") String address,
+            @Schema(description = "상세주소") String addressDetail,
+            @Schema(description = "연락처 이름") String contactName,
+            @Schema(description = "연락처 전화번호") String contactPhone,
+            @Schema(description = "기본 주소 여부") boolean defaultAddress) {}
 
     /** 사업자 정보 응답 DTO. */
     @Schema(description = "사업자 정보")
     public record BusinessInfoResponse(
-            @Schema(description = "사업자등록번호", example = "123-45-67890") String registrationNumber,
-            @Schema(description = "통신판매업신고번호", example = "2024-서울강남-12345") String saleReportNumber,
-            @Schema(description = "대표자명", example = "홍길동") String representative) {
+            @Schema(description = "사업자정보 ID") long businessInfoId,
+            @Schema(description = "사업자등록번호") String registrationNumber,
+            @Schema(description = "회사명") String companyName,
+            @Schema(description = "대표자명") String representative,
+            @Schema(description = "통신판매업 신고번호") String saleReportNumber,
+            @Schema(description = "사업장 우편번호") String businessZipcode,
+            @Schema(description = "사업장 주소") String businessAddress,
+            @Schema(description = "사업장 상세주소") String businessAddressDetail) {}
 
-        public static BusinessInfoResponse of(
-                String registrationNumber, String saleReportNumber, String representative) {
-            return new BusinessInfoResponse(registrationNumber, saleReportNumber, representative);
-        }
-    }
+    /** 고객센터 정보 응답 DTO. */
+    @Schema(description = "고객센터 정보")
+    public record CsInfoResponse(
+            @Schema(description = "CS ID") long csInfoId,
+            @Schema(description = "고객센터 전화번호") String csPhone,
+            @Schema(description = "고객센터 휴대전화") String csMobile,
+            @Schema(description = "고객센터 이메일") String csEmail,
+            @Schema(description = "운영 시작 시간") String operatingStartTime,
+            @Schema(description = "운영 종료 시간") String operatingEndTime,
+            @Schema(description = "운영 요일") String operatingDays,
+            @Schema(description = "카카오 채널 URL") String kakaoChannelUrl) {}
 
-    /** 정산 계좌 정보 응답 DTO. */
-    @Schema(description = "정산 계좌 정보")
-    public record SettlementAccountResponse(
-            @Schema(description = "은행명", example = "신한은행") String bankName,
-            @Schema(description = "계좌번호", example = "110-123-456789") String accountNumber,
-            @Schema(description = "예금주", example = "홍길동") String accountHolderName) {
+    /** 계약 정보 응답 DTO. */
+    @Schema(description = "계약 정보")
+    public record ContractInfoResponse(
+            @Schema(description = "계약 ID") long contractId,
+            @Schema(description = "수수료율") BigDecimal commissionRate,
+            @Schema(description = "계약 시작일") LocalDate contractStartDate,
+            @Schema(description = "계약 종료일") LocalDate contractEndDate,
+            @Schema(description = "계약 상태") String status,
+            @Schema(description = "특약 사항") String specialTerms,
+            @Schema(description = "생성일시") Instant createdAt,
+            @Schema(description = "수정일시") Instant updatedAt) {}
 
-        public static SettlementAccountResponse of(
-                String bankName, String accountNumber, String accountHolderName) {
-            return new SettlementAccountResponse(bankName, accountNumber, accountHolderName);
-        }
-    }
-
-    /** 입점 사이트 정보 응답 DTO. */
-    @Schema(description = "입점 사이트 정보")
-    public record SiteResponse(
-            @Schema(description = "사이트 ID", example = "1") long siteId,
-            @Schema(description = "사이트명", example = "메인몰") String siteName) {
-
-        public static SiteResponse of(long siteId, String siteName) {
-            return new SiteResponse(siteId, siteName);
-        }
-    }
-
-    /** 정적 팩토리 메서드 - 레거시 SellerDetailResponse를 변환. */
-    public static SellerDetailV1ApiResponse of(
-            long sellerId,
-            String sellerName,
-            String logoUrl,
-            Double commissionRate,
-            String approvalStatus,
-            String sellerDescription,
-            String businessAddressLine1,
-            String businessAddressLine2,
-            String businessAddressZipCode,
-            String returnAddressLine1,
-            String returnAddressLine2,
-            String returnAddressZipCode,
-            String csNumber,
-            String csPhoneNumber,
-            String csEmail,
-            String registrationNumber,
-            String saleReportNumber,
-            String representative,
-            String bankName,
-            String accountNumber,
-            String accountHolderName,
-            List<SiteResponse> sites) {
-        return new SellerDetailV1ApiResponse(
-                sellerId,
-                sellerName,
-                logoUrl,
-                commissionRate,
-                approvalStatus,
-                sellerDescription,
-                AddressResponse.of(
-                        businessAddressLine1, businessAddressLine2, businessAddressZipCode),
-                AddressResponse.of(returnAddressLine1, returnAddressLine2, returnAddressZipCode),
-                CustomerServiceResponse.of(csNumber, csPhoneNumber, csEmail),
-                BusinessInfoResponse.of(registrationNumber, saleReportNumber, representative),
-                SettlementAccountResponse.of(bankName, accountNumber, accountHolderName),
-                sites);
-    }
+    /** 정산 정보 응답 DTO. */
+    @Schema(description = "정산 정보")
+    public record SettlementInfoResponse(
+            @Schema(description = "정산 ID") long settlementId,
+            @Schema(description = "은행 코드") String bankCode,
+            @Schema(description = "은행명") String bankName,
+            @Schema(description = "계좌번호") String accountNumber,
+            @Schema(description = "예금주명") String accountHolderName,
+            @Schema(description = "정산 주기") String settlementCycle,
+            @Schema(description = "정산일") Integer settlementDay,
+            @Schema(description = "인증 여부") boolean verified,
+            @Schema(description = "인증일시") Instant verifiedAt,
+            @Schema(description = "생성일시") Instant createdAt,
+            @Schema(description = "수정일시") Instant updatedAt) {}
 }

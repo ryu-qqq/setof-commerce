@@ -2,7 +2,7 @@
 name: api-flow-analyzer
 description: API 호출 흐름 분석 전문가. Hexagonal 레이어별로 Controller→UseCase→Service→Port→Adapter→Repository 전체 흐름을 추적하여 문서화. 통합 테스트 파이프라인 두 번째 단계. 자동으로 사용.
 tools: Read, Write, Glob, Grep
-model: opus
+model: sonnet
 ---
 
 # API Flow Analyzer Agent

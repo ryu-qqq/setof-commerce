@@ -63,7 +63,7 @@ class SearchBrandByOffsetServiceTest {
                                                     b.isDisplayed()))
                             .toList();
             BrandPageResult expected =
-                    BrandPageResult.of(results, totalElements, params.page(), params.size());
+                    BrandPageResult.of(results, params.page(), params.size(), totalElements);
 
             given(queryFactory.createCriteria(params)).willReturn(criteria);
             given(readManager.findByCriteria(criteria)).willReturn(brands);
@@ -107,7 +107,7 @@ class SearchBrandByOffsetServiceTest {
 
             // then
             assertThat(result.content()).isEmpty();
-            assertThat(result.totalCount()).isZero();
+            assertThat(result.pageMeta().totalElements()).isZero();
         }
     }
 }

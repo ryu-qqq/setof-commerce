@@ -2,7 +2,7 @@
 name: jira-manager
 description: Jira Epic/Task 관리 전문가. Epic 생성, Sub-task 등록, Task Queue 구성, 상태 조회. Jira MCP 기반. 자동으로 사용.
 tools: Read, Write, Glob, Grep, Bash
-model: opus
+model: sonnet
 ---
 
 # Jira Manager Agent

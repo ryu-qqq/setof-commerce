@@ -1,7 +1,6 @@
 package com.ryuqq.setof.storage.legacy.composite.web.brand.adapter;
 
 import com.ryuqq.setof.application.legacy.brand.dto.response.LegacyBrandResult;
-import com.ryuqq.setof.domain.legacy.brand.dto.query.LegacyBrandSearchCondition;
 import com.ryuqq.setof.storage.legacy.composite.web.brand.dto.LegacyWebBrandQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.web.brand.mapper.LegacyWebBrandMapper;
 import com.ryuqq.setof.storage.legacy.composite.web.brand.repository.LegacyWebBrandCompositeQueryDslRepository;
@@ -45,10 +44,10 @@ public class LegacyWebBrandCompositeQueryAdapter {
      * @param condition 검색 조건
      * @return 브랜드 목록
      */
-    public List<LegacyBrandResult> fetchBrands(LegacyBrandSearchCondition condition) {
+    public List<LegacyBrandResult> fetchBrands(String searchWord) {
         List<LegacyWebBrandQueryDto> dtos;
-        if (condition.hasSearchWord()) {
-            dtos = repository.fetchBrands(condition);
+        if (searchWord != null && !searchWord.isBlank()) {
+            dtos = repository.fetchBrands(searchWord);
         } else {
             dtos = repository.fetchBrands();
         }

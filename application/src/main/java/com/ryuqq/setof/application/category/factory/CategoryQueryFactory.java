@@ -3,6 +3,7 @@ package com.ryuqq.setof.application.category.factory;
 import com.ryuqq.setof.application.category.dto.query.CategorySearchParams;
 import com.ryuqq.setof.application.common.factory.CommonVoFactory;
 import com.ryuqq.setof.domain.category.query.CategorySearchCriteria;
+import com.ryuqq.setof.domain.category.query.CategorySearchField;
 import com.ryuqq.setof.domain.category.query.CategorySortKey;
 import com.ryuqq.setof.domain.common.vo.PageRequest;
 import com.ryuqq.setof.domain.common.vo.QueryContext;
@@ -48,8 +49,16 @@ public class CategoryQueryFactory {
                         pageRequest,
                         params.searchParams().includeDeleted());
 
+        CategorySearchField searchField = CategorySearchField.fromString(params.searchField());
+
         return CategorySearchCriteria.of(
-                null, params.displayed(), null, null, params.categoryName(), queryContext);
+                null,
+                params.displayed(),
+                null,
+                null,
+                searchField,
+                params.searchWord(),
+                queryContext);
     }
 
     private CategorySortKey resolveSortKey(String sortKeyString) {

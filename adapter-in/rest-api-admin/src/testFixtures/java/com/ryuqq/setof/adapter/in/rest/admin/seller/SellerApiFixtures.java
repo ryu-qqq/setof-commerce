@@ -346,6 +346,6 @@ public final class SellerApiFixtures {
     }
 
     public static SellerPageResult sellerPageResult() {
-        return new SellerPageResult(List.of(sellerResult(1L), sellerResult(2L)), 2L, 0, 20, false);
+        return SellerPageResult.of(List.of(sellerResult(1L), sellerResult(2L)), 0, 20, 2L);
     }
 }

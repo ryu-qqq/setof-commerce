@@ -2,7 +2,7 @@
 name: implementer
 description: 모든 레이어 구현 전문가. Convention Hub 규칙 100% 준수, MCP Lazy Caching 기반 코드 생성. 자동으로 사용.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: opus
+model: sonnet
 ---
 
 # Implementer Agent

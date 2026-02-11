@@ -2,7 +2,7 @@
 name: reviewer
 description: 코드 리뷰 전문가. Spring Standards MCP validation_context 기반 Zero-Tolerance 검증. 자동으로 사용.
 tools: Read, Edit, Glob, Grep, Bash
-model: opus
+model: sonnet
 ---
 
 # Reviewer Agent

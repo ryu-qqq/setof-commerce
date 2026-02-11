@@ -93,7 +93,7 @@ public class BrandQueryDslRepository {
                 .selectFrom(brandJpaEntity)
                 .where(
                         conditionBuilder.displayedEq(criteria.displayed()),
-                        conditionBuilder.brandNameContains(criteria.brandName()),
+                        conditionBuilder.searchCondition(criteria),
                         conditionBuilder.notDeleted())
                 .orderBy(createOrderSpecifier(qc.sortKey(), qc.sortDirection()))
                 .offset(criteria.offset())
@@ -114,7 +114,7 @@ public class BrandQueryDslRepository {
                         .from(brandJpaEntity)
                         .where(
                                 conditionBuilder.displayedEq(criteria.displayed()),
-                                conditionBuilder.brandNameContains(criteria.brandName()),
+                                conditionBuilder.brandNameContains(criteria.searchWord()),
                                 conditionBuilder.notDeleted())
                         .fetchOne();
         return count != null ? count : 0L;

@@ -2,7 +2,7 @@
 name: api-tester
 description: rest-api / rest-api-admin 모듈 테스트 전문가. testFixtures + Mapper 테스트 + RestDocs 테스트 자동 생성. 자동으로 사용.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: opus
+model: sonnet
 ---
 
 # API Tester Agent
@@ -39,8 +39,8 @@ reference_tests = [
     "SellerApiFixtures.java",
     "SellerQueryApiMapperTest.java",
     "SellerCommandApiMapperTest.java",
-    "SellerQueryV2ControllerRestDocsTest.java",
-    "SellerCommandV2ControllerRestDocsTest.java"
+    "SellerQueryControllerRestDocsTest.java",
+    "SellerCommandControllerRestDocsTest.java"
 ]
 ```
 

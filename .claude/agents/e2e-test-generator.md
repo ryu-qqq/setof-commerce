@@ -2,7 +2,7 @@
 name: e2e-test-generator
 description: E2E 통합 테스트 코드 생성 전문가. test-scenario 문서 기반 실제 테스트 코드 생성 및 실행. 자동으로 사용.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: opus
+model: sonnet
 ---
 
 # E2E Test Generator Agent

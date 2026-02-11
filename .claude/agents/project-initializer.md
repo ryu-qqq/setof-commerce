@@ -2,7 +2,7 @@
 name: project-initializer
 description: .claude/ 디렉토리 초기화. Spring Standards MCP에서 템플릿 조회 후 현재 프로젝트 구조에 맞는 설정 파일 생성. 자동으로 사용.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: opus
+model: sonnet
 ---
 
 # Project Initializer Agent

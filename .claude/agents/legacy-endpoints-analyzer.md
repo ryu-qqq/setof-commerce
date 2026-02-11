@@ -2,7 +2,7 @@
 name: legacy-endpoints-analyzer
 description: 레거시 패키지 엔드포인트를 분석하여 Query/Command로 분류. 마이그레이션 계획 수립의 첫 단계. 자동으로 사용.
 tools: Glob, Grep, Read, Write
-model: opus
+model: sonnet
 ---
 
 # Legacy Endpoints Analyzer Agent

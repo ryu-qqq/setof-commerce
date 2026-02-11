@@ -3,6 +3,8 @@ package com.ryuqq.setof.adapter.out.persistence.brand.condition;
 import static com.ryuqq.setof.adapter.out.persistence.brand.entity.QBrandJpaEntity.brandJpaEntity;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.ryuqq.setof.domain.brand.query.BrandSearchCriteria;
+import com.ryuqq.setof.domain.brand.query.BrandSearchField;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -31,11 +33,44 @@ public class BrandConditionBuilder {
         return ids != null && !ids.isEmpty() ? brandJpaEntity.id.in(ids) : null;
     }
 
-    /** 브랜드명 포함 조건 */
+    /** 브랜드명 포함 조건 (레거시 호환용, searchFieldContains 사용 권장) */
     public BooleanExpression brandNameContains(String brandName) {
         return brandName != null && !brandName.isBlank()
                 ? brandJpaEntity.brandName.containsIgnoreCase(brandName)
                 : null;
+    }
+
+    /**
+     * 검색 필드 기반 검색 조건.
+     *
+     * <p>persistence-mysql brands 테이블은 displayName 단일 필드만 있음. DISPLAY_KOREAN_NAME,
+     * DISPLAY_ENGLISH_NAME은 displayName으로 매핑.
+     */
+    public BooleanExpression searchFieldContains(BrandSearchField searchField, String searchWord) {
+        if (searchWord == null || searchWord.isBlank()) {
+            return null;
+        }
+        if (searchField == null) {
+            return brandJpaEntity.brandName.containsIgnoreCase(searchWord);
+        }
+        return switch (searchField) {
+            case BRAND_NAME -> brandJpaEntity.brandName.containsIgnoreCase(searchWord);
+            case DISPLAY_KOREAN_NAME, DISPLAY_ENGLISH_NAME ->
+                    brandJpaEntity.displayName.containsIgnoreCase(searchWord);
+        };
+    }
+
+    /**
+     * 검색 조건 (Criteria 기반).
+     *
+     * @param criteria 검색 조건
+     * @return BooleanExpression
+     */
+    public BooleanExpression searchCondition(BrandSearchCriteria criteria) {
+        if (!criteria.hasSearchCondition()) {
+            return null;
+        }
+        return searchFieldContains(criteria.searchField(), criteria.searchWord());
     }
 
     /** 표시 여부 일치 조건 */

@@ -2,7 +2,7 @@
 name: legacy-query-generator
 description: legacy-flow 분석 결과 기반 Composite 패턴 QueryDSL Repository 생성. Persistence Layer 전문가. 자동으로 사용.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: opus
+model: sonnet
 ---
 
 # Legacy Query Generator Agent (Persistence Layer)

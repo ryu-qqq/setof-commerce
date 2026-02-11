@@ -69,11 +69,7 @@ public record CommonCodeTypeSearchCriteria(
      */
     public static CommonCodeTypeSearchCriteria defaultCriteria() {
         return new CommonCodeTypeSearchCriteria(
-                null,
-                null,
-                null,
-                null,
-                QueryContext.defaultOf(CommonCodeTypeSortKey.defaultKey()));
+                null, null, null, null, QueryContext.defaultOf(CommonCodeTypeSortKey.defaultKey()));
     }
 
     /**
@@ -83,11 +79,7 @@ public record CommonCodeTypeSearchCriteria(
      */
     public static CommonCodeTypeSearchCriteria activeOnly() {
         return new CommonCodeTypeSearchCriteria(
-                true,
-                null,
-                null,
-                null,
-                QueryContext.defaultOf(CommonCodeTypeSortKey.defaultKey()));
+                true, null, null, null, QueryContext.defaultOf(CommonCodeTypeSortKey.defaultKey()));
     }
 
     /** 검색어 조건이 있는지 확인 */

@@ -1,6 +1,6 @@
 package com.ryuqq.setof.storage.legacy.composite.web.gnb.adapter;
 
-import com.ryuqq.setof.application.legacy.web.gnb.dto.response.LegacyWebGnbResult;
+import com.ryuqq.setof.application.legacy.gnb.dto.response.LegacyGnbResult;
 import com.ryuqq.setof.storage.legacy.composite.web.gnb.dto.LegacyWebGnbQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.web.gnb.mapper.LegacyWebGnbMapper;
 import com.ryuqq.setof.storage.legacy.composite.web.gnb.repository.LegacyWebGnbCompositeQueryDslRepository;
@@ -30,9 +30,9 @@ public class LegacyWebGnbCompositeQueryAdapter {
     /**
      * 전시 중인 GNB 목록 조회.
      *
-     * @return LegacyWebGnbResult 목록
+     * @return LegacyGnbResult 목록
      */
-    public List<LegacyWebGnbResult> fetchGnbs() {
+    public List<LegacyGnbResult> fetchGnbs() {
         List<LegacyWebGnbQueryDto> dtos = repository.fetchGnbs();
         return mapper.toResults(dtos);
     }

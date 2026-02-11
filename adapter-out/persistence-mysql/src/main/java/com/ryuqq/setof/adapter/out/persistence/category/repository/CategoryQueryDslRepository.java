@@ -4,6 +4,7 @@ import static com.ryuqq.setof.adapter.out.persistence.category.entity.QCategoryJ
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
@@ -116,7 +117,7 @@ public class CategoryQueryDslRepository {
                         conditionBuilder.displayedEq(criteria.displayed()),
                         conditionBuilder.targetGroupEq(criteria.targetGroup()),
                         conditionBuilder.categoryTypeEq(criteria.categoryType()),
-                        conditionBuilder.categoryNameContains(criteria.categoryName()),
+                        conditionBuilder.searchCondition(criteria),
                         conditionBuilder.notDeleted())
                 .orderBy(createOrderSpecifier(qc.sortKey(), qc.sortDirection()))
                 .offset(criteria.offset())
@@ -143,7 +144,7 @@ public class CategoryQueryDslRepository {
                                 conditionBuilder.displayedEq(criteria.displayed()),
                                 conditionBuilder.targetGroupEq(criteria.targetGroup()),
                                 conditionBuilder.categoryTypeEq(criteria.categoryType()),
-                                conditionBuilder.categoryNameContains(criteria.categoryName()),
+                                conditionBuilder.searchCondition(criteria),
                                 conditionBuilder.notDeleted())
                         .fetchOne();
         return count != null ? count : 0L;
@@ -286,7 +287,7 @@ public class CategoryQueryDslRepository {
         EntityPathBase<QCategoryJpaEntity> rec =
                 new EntityPathBase<>(QCategoryJpaEntity.class, "sub");
 
-        JPQLQuery<CategoryJpaEntity> baseQuery =
+        SubQueryExpression<CategoryJpaEntity> baseQuery =
                 JPAExpressions.select(
                                 Projections.fields(
                                         CategoryJpaEntity.class,
@@ -305,7 +306,7 @@ public class CategoryQueryDslRepository {
                         .from(c)
                         .where(c.id.eq(childId));
 
-        JPQLQuery<CategoryJpaEntity> recursiveQuery =
+        SubQueryExpression<CategoryJpaEntity> recursiveQuery =
                 JPAExpressions.select(
                                 Projections.fields(
                                         CategoryJpaEntity.class,

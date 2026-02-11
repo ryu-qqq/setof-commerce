@@ -2,7 +2,7 @@
 name: planner
 description: Epic 기획 및 구현 계획 수립 전문가. Spring Standards MCP 기반 프로젝트 분석, 영향도 분석, Task 분해. 자동으로 사용.
 tools: Read, Write, Glob, Grep, Bash
-model: opus
+model: sonnet
 ---
 
 # Planner Agent

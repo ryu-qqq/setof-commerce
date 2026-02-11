@@ -101,4 +101,9 @@ public class SellerCompositionQueryAdapter implements SellerCompositionQueryPort
                 dto.createdAt(),
                 dto.updatedAt());
     }
+
+    @Override
+    public boolean existsByRegistrationNumber(String registrationNumber) {
+        return compositeRepository.existsByRegistrationNumber(registrationNumber);
+    }
 }

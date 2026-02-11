@@ -3,9 +3,9 @@ package com.ryuqq.setof.storage.legacy.composite.web.seller.repository;
 import static com.ryuqq.setof.storage.legacy.seller.entity.QLegacySellerBusinessInfoEntity.legacySellerBusinessInfoEntity;
 import static com.ryuqq.setof.storage.legacy.seller.entity.QLegacySellerEntity.legacySellerEntity;
 
+import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ryuqq.setof.domain.legacy.seller.dto.query.LegacySellerSearchCondition;
 import com.ryuqq.setof.storage.legacy.composite.web.seller.condition.LegacyWebSellerCompositeConditionBuilder;
 import com.ryuqq.setof.storage.legacy.composite.web.seller.dto.LegacyWebSellerQueryDto;
 import java.util.Optional;
@@ -43,14 +43,14 @@ public class LegacyWebSellerCompositeQueryDslRepository {
      * @param condition 검색 조건
      * @return 판매자 Optional
      */
-    public Optional<LegacyWebSellerQueryDto> fetchSeller(LegacySellerSearchCondition condition) {
+    public Optional<LegacyWebSellerQueryDto> fetchSeller(Long sellerId) {
         LegacyWebSellerQueryDto dto =
                 queryFactory
                         .select(createProjection())
                         .from(legacySellerEntity)
                         .innerJoin(legacySellerBusinessInfoEntity)
                         .on(legacySellerBusinessInfoEntity.id.eq(legacySellerEntity.id))
-                        .where(conditionBuilder.sellerIdEq(condition.sellerId()))
+                        .where(conditionBuilder.sellerIdEq(sellerId))
                         .fetchFirst();
         return Optional.ofNullable(dto);
     }
@@ -58,28 +58,46 @@ public class LegacyWebSellerCompositeQueryDslRepository {
     /**
      * Projections.constructor()로 Projection 생성.
      *
-     * <p>@QueryProjection 대신 사용.
+     * <p>@QueryProjection 대신 사용. SellerCompositeResult 변환에 필요한 개별 필드를 모두 포함.
      */
-    private com.querydsl.core.types.ConstructorExpression<LegacyWebSellerQueryDto>
-            createProjection() {
+    /**
+     * 사업자등록번호 존재 여부 조회.
+     *
+     * @param registrationNumber 사업자등록번호
+     * @return 존재하면 true
+     */
+    public boolean existsByRegistrationNumber(String registrationNumber) {
+        Long result =
+                queryFactory
+                        .select(legacySellerBusinessInfoEntity.id)
+                        .from(legacySellerBusinessInfoEntity)
+                        .where(conditionBuilder.registrationNumberEq(registrationNumber))
+                        .fetchFirst();
+        return result != null;
+    }
+
+    private ConstructorExpression<LegacyWebSellerQueryDto> createProjection() {
         return Projections.constructor(
                 LegacyWebSellerQueryDto.class,
                 legacySellerEntity.id,
+                legacySellerEntity.sellerName,
                 legacySellerBusinessInfoEntity.companyName,
                 legacySellerEntity.sellerLogoUrl,
                 legacySellerEntity.sellerDescription.coalesce(""),
-                legacySellerBusinessInfoEntity
-                        .businessAddressLine1
-                        .concat(" ")
-                        .append(legacySellerBusinessInfoEntity.businessAddressLine2)
-                        .concat(" ")
-                        .append(legacySellerBusinessInfoEntity.businessAddressZipCode),
-                legacySellerBusinessInfoEntity.csNumber.coalesce(
-                        legacySellerBusinessInfoEntity.csPhoneNumber),
+                legacySellerEntity.commissionRate,
+                legacySellerBusinessInfoEntity.businessAddressLine1,
+                legacySellerBusinessInfoEntity.businessAddressLine2,
+                legacySellerBusinessInfoEntity.businessAddressZipCode,
+                legacySellerBusinessInfoEntity.csNumber,
                 legacySellerBusinessInfoEntity.csPhoneNumber,
+                legacySellerBusinessInfoEntity.csEmail,
                 legacySellerBusinessInfoEntity.registrationNumber,
                 legacySellerBusinessInfoEntity.saleReportNumber,
                 legacySellerBusinessInfoEntity.representative,
-                legacySellerBusinessInfoEntity.csEmail);
+                legacySellerBusinessInfoEntity.bankName,
+                legacySellerBusinessInfoEntity.accountNumber,
+                legacySellerBusinessInfoEntity.accountHolderName,
+                legacySellerEntity.createdAt,
+                legacySellerEntity.updatedAt);
     }
 }

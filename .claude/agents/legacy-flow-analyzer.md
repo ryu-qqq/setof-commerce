@@ -2,7 +2,7 @@
 name: legacy-flow-analyzer
 description: 레거시 API 엔드포인트의 전체 호출 흐름(Controller→Service→Repository→DB)을 추적하여 문서화. 자동으로 사용.
 tools: Glob, Grep, Read, Write
-model: opus
+model: sonnet
 ---
 
 # Legacy Flow Analyzer Agent

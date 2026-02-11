@@ -25,6 +25,8 @@ spring:
       - classpath:rest-api-admin.yml
       - classpath:persistence.yml
       - classpath:persistence-prod.yml
+      - classpath:persistence-legacy.yml
+      - classpath:persistence-legacy-prod.yml
       - classpath:redis.yml
       - classpath:redis-prod.yml
 

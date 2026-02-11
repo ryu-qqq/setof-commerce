@@ -54,4 +54,15 @@ public class SellerCompositionReadManager {
                 .findPolicyCompositeById(sellerId)
                 .orElseThrow(() -> new SellerNotFoundException(sellerId));
     }
+
+    /**
+     * 사업자등록번호 존재 여부 확인.
+     *
+     * @param registrationNumber 사업자등록번호
+     * @return 존재하면 true
+     */
+    @Transactional(readOnly = true)
+    public boolean existsByRegistrationNumber(String registrationNumber) {
+        return compositionQueryPort.existsByRegistrationNumber(registrationNumber);
+    }
 }

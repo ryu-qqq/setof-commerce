@@ -26,15 +26,4 @@ public record TreeCategoryV1ApiResponse(
         @Schema(description = "카테고리 depth (1=루트)", example = "1") int categoryDepth,
         @Schema(description = "부모 카테고리 ID (루트면 0)", example = "0") long parentCategoryId,
         @Schema(description = "하위 카테고리 목록") @JsonInclude(JsonInclude.Include.NON_EMPTY)
-                List<TreeCategoryV1ApiResponse> children) {
-
-    /** 하위 카테고리 없는 단순 노드 생성. */
-    public TreeCategoryV1ApiResponse(
-            long categoryId,
-            String categoryName,
-            String displayName,
-            int categoryDepth,
-            long parentCategoryId) {
-        this(categoryId, categoryName, displayName, categoryDepth, parentCategoryId, List.of());
-    }
-}
+                List<TreeCategoryV1ApiResponse> children) {}

@@ -1,12 +1,15 @@
 package com.ryuqq.setof.storage.legacy.category.entity;
 
+import com.ryuqq.setof.domain.category.vo.CategoryType;
+import com.ryuqq.setof.domain.category.vo.TargetGroup;
+import com.ryuqq.setof.storage.legacy.common.Yn;
+import com.ryuqq.setof.storage.legacy.common.entity.LegacyBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 
 /**
  * LegacyCategoryEntity - 레거시 카테고리 엔티티.
@@ -15,14 +18,12 @@ import java.time.LocalDateTime;
  *
  * <p>PER-ENT-001: 엔티티는 JPA 표준 어노테이션만 사용.
  *
- * <p>PER-ENT-003: Lombok 사용 금지 (Zero-Tolerance).
- *
  * @author ryu-qqq
  * @since 1.1.0
  */
 @Entity
 @Table(name = "category")
-public class LegacyCategoryEntity {
+public class LegacyCategoryEntity extends LegacyBaseEntity {
 
     @Id
     @Column(name = "category_id")
@@ -54,12 +55,6 @@ public class LegacyCategoryEntity {
 
     @Column(name = "PATH", length = 255)
     private String path;
-
-    @Column(name = "insert_date")
-    private LocalDateTime insertDate;
-
-    @Column(name = "update_date")
-    private LocalDateTime updateDate;
 
     protected LegacyCategoryEntity() {}
 
@@ -97,36 +92,5 @@ public class LegacyCategoryEntity {
 
     public String getPath() {
         return path;
-    }
-
-    public LocalDateTime getInsertDate() {
-        return insertDate;
-    }
-
-    public LocalDateTime getUpdateDate() {
-        return updateDate;
-    }
-
-    /** Yn - Y/N 구분 Enum. */
-    public enum Yn {
-        Y,
-        N
-    }
-
-    /** TargetGroup - 대상 그룹 Enum. */
-    public enum TargetGroup {
-        MALE,
-        FEMALE,
-        KIDS,
-        LIFE
-    }
-
-    /** CategoryType - 카테고리 타입 Enum. */
-    public enum CategoryType {
-        NONE,
-        CLOTHING,
-        SHOSE,
-        BAG,
-        ACC
     }
 }

@@ -1,6 +1,6 @@
 package com.ryuqq.setof.storage.legacy.faq.entity;
 
-import com.ryuqq.setof.domain.legacy.faq.FaqType;
+import com.ryuqq.setof.domain.faq.vo.FaqType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

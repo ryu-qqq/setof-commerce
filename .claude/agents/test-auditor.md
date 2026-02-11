@@ -2,7 +2,7 @@
 name: test-auditor
 description: 테스트 커버리지 갭 분석 전문가. 레이어별 소스 대비 테스트 누락/부족 분석, 시나리오 갭 탐지, 권장 조치 문서화. 자동으로 사용.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: opus
+model: sonnet
 ---
 
 # Test Auditor Agent

@@ -2,7 +2,7 @@
 name: shipper
 description: Epic 배포 전문가. WIP 커밋 정리, PR 생성, Jira 상태 업데이트. 자동으로 사용.
 tools: Read, Glob, Grep, Bash
-model: opus
+model: sonnet
 ---
 
 # Shipper Agent

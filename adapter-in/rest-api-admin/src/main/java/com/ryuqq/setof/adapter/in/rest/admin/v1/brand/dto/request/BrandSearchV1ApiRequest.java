@@ -55,47 +55,4 @@ public record BrandSearchV1ApiRequest(
                                 @Schema(
                                         allowableValues = {"ASC", "DESC"},
                                         defaultValue = "ASC"))
-                String sortDirection) {
-
-    /**
-     * 기본값이 적용된 인스턴스를 반환합니다.
-     *
-     * @return 기본값이 적용된 BrandSearchV1ApiRequest
-     */
-    public BrandSearchV1ApiRequest withDefaults() {
-        return new BrandSearchV1ApiRequest(
-                this.lastBrandId,
-                this.brandName,
-                this.mainDisplayType != null ? this.mainDisplayType : "US",
-                this.page != null ? this.page : 0,
-                this.size != null ? this.size : 20,
-                this.sortDirection != null ? this.sortDirection : "ASC");
-    }
-
-    /**
-     * No-Offset(커서 기반) 페이징 여부를 반환합니다.
-     *
-     * @return lastBrandId가 있으면 true
-     */
-    public boolean isNoOffsetFetch() {
-        return lastBrandId != null;
-    }
-
-    /**
-     * 한글 브랜드명 검색 여부를 반환합니다.
-     *
-     * @return mainDisplayType이 "KR"이면 true
-     */
-    public boolean isKoreanNameSearch() {
-        return "KR".equalsIgnoreCase(mainDisplayType);
-    }
-
-    /**
-     * 오름차순 정렬 여부를 반환합니다.
-     *
-     * @return sortDirection이 "ASC"이면 true
-     */
-    public boolean isAscending() {
-        return !"DESC".equalsIgnoreCase(sortDirection);
-    }
-}
+                String sortDirection) {}

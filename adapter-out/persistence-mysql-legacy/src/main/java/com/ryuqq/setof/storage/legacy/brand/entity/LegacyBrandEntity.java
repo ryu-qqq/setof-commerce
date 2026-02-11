@@ -1,12 +1,13 @@
 package com.ryuqq.setof.storage.legacy.brand.entity;
 
+import com.ryuqq.setof.storage.legacy.common.Yn;
+import com.ryuqq.setof.storage.legacy.common.entity.LegacyBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 
 /**
  * LegacyBrandEntity - 레거시 브랜드 엔티티.
@@ -15,14 +16,12 @@ import java.time.LocalDateTime;
  *
  * <p>PER-ENT-001: 엔티티는 JPA 표준 어노테이션만 사용.
  *
- * <p>PER-ENT-003: Lombok 사용 금지 (Zero-Tolerance).
- *
  * @author ryu-qqq
  * @since 1.1.0
  */
 @Entity
 @Table(name = "brand")
-public class LegacyBrandEntity {
+public class LegacyBrandEntity extends LegacyBaseEntity {
 
     @Id
     @Column(name = "brand_id")
@@ -50,12 +49,6 @@ public class LegacyBrandEntity {
     @Column(name = "display_yn")
     @Enumerated(EnumType.STRING)
     private Yn displayYn;
-
-    @Column(name = "insert_date")
-    private LocalDateTime insertDate;
-
-    @Column(name = "update_date")
-    private LocalDateTime updateDate;
 
     protected LegacyBrandEntity() {}
 
@@ -91,23 +84,18 @@ public class LegacyBrandEntity {
         return displayYn;
     }
 
-    public LocalDateTime getInsertDate() {
-        return insertDate;
-    }
-
-    public LocalDateTime getUpdateDate() {
-        return updateDate;
+    /**
+     * 표시 여부 확인.
+     *
+     * @return 표시 여부 (displayYn == Y)
+     */
+    public boolean isDisplayed() {
+        return displayYn != null && displayYn.toBoolean();
     }
 
     /** MainDisplayNameType - 메인 표시명 타입. */
     public enum MainDisplayNameType {
         KOREAN,
         ENGLISH
-    }
-
-    /** Yn - Y/N 구분 Enum. */
-    public enum Yn {
-        Y,
-        N
     }
 }

@@ -2,7 +2,7 @@
 name: application-tester
 description: Application 레이어 테스트 전문가. Service, Factory, Assembler, Manager의 testFixtures + Mockito 기반 단위 테스트 자동 생성. 자동으로 사용.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: opus
+model: sonnet
 ---
 
 # Application Tester Agent

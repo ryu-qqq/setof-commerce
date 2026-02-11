@@ -2,7 +2,7 @@
 name: legacy-controller-generator
 description: 마이그레이션 사이클의 마지막 단계. Controller + ApiMapper 생성하여 전체 흐름 완성. 자동으로 사용.
 tools: Read, Write, Edit, Glob
-model: opus
+model: sonnet
 ---
 
 # Legacy Controller Generator Agent (Adapter-In Layer)

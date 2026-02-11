@@ -31,11 +31,7 @@ class CommonCodeTypeSearchCriteriaTest {
             // when
             CommonCodeTypeSearchCriteria criteria =
                     CommonCodeTypeSearchCriteria.of(
-                            true,
-                            CommonCodeTypeSearchField.CODE,
-                            "결제",
-                            null,
-                            queryContext);
+                            true, CommonCodeTypeSearchField.CODE, "결제", null, queryContext);
 
             // then
             assertThat(criteria.active()).isTrue();

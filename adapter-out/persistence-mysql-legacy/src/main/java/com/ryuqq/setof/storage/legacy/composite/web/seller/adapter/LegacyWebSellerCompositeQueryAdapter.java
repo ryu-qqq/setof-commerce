@@ -1,7 +1,9 @@
 package com.ryuqq.setof.storage.legacy.composite.web.seller.adapter;
 
-import com.ryuqq.setof.application.legacy.seller.dto.response.LegacySellerResult;
-import com.ryuqq.setof.domain.legacy.seller.dto.query.LegacySellerSearchCondition;
+import com.ryuqq.setof.application.seller.dto.composite.SellerAdminCompositeResult;
+import com.ryuqq.setof.application.seller.dto.composite.SellerCompositeResult;
+import com.ryuqq.setof.application.seller.dto.composite.SellerPolicyCompositeResult;
+import com.ryuqq.setof.application.seller.port.out.query.SellerCompositionQueryPort;
 import com.ryuqq.setof.storage.legacy.composite.web.seller.mapper.LegacyWebSellerMapper;
 import com.ryuqq.setof.storage.legacy.composite.web.seller.repository.LegacyWebSellerCompositeQueryDslRepository;
 import java.util.Optional;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Component;
  *
  * <p>Persistence Layer의 진입점입니다.
  *
- * <p>TODO: Application Layer의 LegacySellerCompositeQueryPort implements 추가.
+ * <p>SellerCompositionQueryPort를 구현하여 Application Layer에 조회 기능을 제공합니다.
  *
  * <p>PER-ADP-001: Adapter는 @Component로 등록.
  *
@@ -22,7 +24,7 @@ import org.springframework.stereotype.Component;
  * @since 1.1.0
  */
 @Component
-public class LegacyWebSellerCompositeQueryAdapter {
+public class LegacyWebSellerCompositeQueryAdapter implements SellerCompositionQueryPort {
 
     private final LegacyWebSellerCompositeQueryDslRepository repository;
     private final LegacyWebSellerMapper mapper;
@@ -33,15 +35,24 @@ public class LegacyWebSellerCompositeQueryAdapter {
         this.mapper = mapper;
     }
 
-    /**
-     * 판매자 단건 조회 (ID).
-     *
-     * @param condition 검색 조건
-     * @return 판매자 Optional
-     */
-    public Optional<LegacySellerResult> fetchSeller(LegacySellerSearchCondition condition) {
-        Optional<com.ryuqq.setof.storage.legacy.composite.web.seller.dto.LegacyWebSellerQueryDto>
-                dto = repository.fetchSeller(condition);
-        return mapper.toResult(dto);
+    @Override
+    public Optional<SellerCompositeResult> findSellerCompositeById(Long sellerId) {
+        return mapper.toCompositeResult(repository.fetchSeller(sellerId));
+    }
+
+    @Override
+    public Optional<SellerAdminCompositeResult> findAdminCompositeById(Long sellerId) {
+        return mapper.toAdminCompositeResult(repository.fetchSeller(sellerId));
+    }
+
+    /** 레거시 DB에는 배송/환불 정책 테이블이 없으므로 빈 Optional을 반환합니다. */
+    @Override
+    public Optional<SellerPolicyCompositeResult> findPolicyCompositeById(Long sellerId) {
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean existsByRegistrationNumber(String registrationNumber) {
+        return repository.existsByRegistrationNumber(registrationNumber);
     }
 }

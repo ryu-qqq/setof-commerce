@@ -298,8 +298,7 @@ class CommonCodeTypeConditionBuilderTest {
         @DisplayName("유효한 검색어 입력 시 (null 필드) BooleanExpression을 반환합니다")
         void searchFieldContains_WithNullField_ReturnsBooleanExpression() {
             // when
-            BooleanExpression result =
-                    conditionBuilder.searchFieldContains(null, "결제");
+            BooleanExpression result = conditionBuilder.searchFieldContains(null, "결제");
 
             // then
             assertThat(result).isNotNull();
@@ -310,8 +309,7 @@ class CommonCodeTypeConditionBuilderTest {
         void searchFieldContains_WithCodeField_ReturnsBooleanExpression() {
             // when
             BooleanExpression result =
-                    conditionBuilder.searchFieldContains(
-                            CommonCodeTypeSearchField.CODE, "결제");
+                    conditionBuilder.searchFieldContains(CommonCodeTypeSearchField.CODE, "결제");
 
             // then
             assertThat(result).isNotNull();
@@ -322,8 +320,7 @@ class CommonCodeTypeConditionBuilderTest {
         void searchFieldContains_WithNullSearchWord_ReturnsNull() {
             // when
             BooleanExpression result =
-                    conditionBuilder.searchFieldContains(
-                            CommonCodeTypeSearchField.CODE, null);
+                    conditionBuilder.searchFieldContains(CommonCodeTypeSearchField.CODE, null);
 
             // then
             assertThat(result).isNull();
@@ -334,8 +331,7 @@ class CommonCodeTypeConditionBuilderTest {
         void searchFieldContains_WithBlankSearchWord_ReturnsNull() {
             // when
             BooleanExpression result =
-                    conditionBuilder.searchFieldContains(
-                            CommonCodeTypeSearchField.NAME, "   ");
+                    conditionBuilder.searchFieldContains(CommonCodeTypeSearchField.NAME, "   ");
 
             // then
             assertThat(result).isNull();

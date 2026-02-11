@@ -144,12 +144,10 @@ public class CommonCodeTypeConditionBuilder {
             return null;
         }
         String normalizedType = type.trim().toUpperCase();
-        return commonCodeTypeJpaEntity
-                .id
-                .in(
-                        JPAExpressions.select(commonCodeJpaEntity.commonCodeTypeId)
-                                .from(commonCodeJpaEntity)
-                                .where(commonCodeJpaEntity.code.eq(normalizedType)));
+        return commonCodeTypeJpaEntity.id.in(
+                JPAExpressions.select(commonCodeJpaEntity.commonCodeTypeId)
+                        .from(commonCodeJpaEntity)
+                        .where(commonCodeJpaEntity.code.eq(normalizedType)));
     }
 
     /**

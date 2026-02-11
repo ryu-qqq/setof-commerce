@@ -32,14 +32,4 @@ public record SearchCategoriesV1ApiRequest(
         @Parameter(description = "페이지 크기 (1~100)", example = "20")
                 @Min(value = 1, message = "페이지 크기는 1 이상이어야 합니다.")
                 @Max(value = 100, message = "페이지 크기는 100 이하여야 합니다.")
-                Integer size) {
-
-    /**
-     * No-Offset 페이징 사용 여부.
-     *
-     * @return lastCategoryId가 있으면 true
-     */
-    public boolean isNoOffsetFetch() {
-        return lastCategoryId != null;
-    }
-}
+                Integer size) {}

@@ -19,8 +19,7 @@ public final class CommonCodeTypeQueryFixtures {
     // ===== CommonCodeTypeSearchParams Fixtures =====
 
     public static CommonCodeTypeSearchParams searchParams() {
-        return new CommonCodeTypeSearchParams(
-                null, null, null, null, defaultCommonSearchParams());
+        return new CommonCodeTypeSearchParams(null, null, null, null, defaultCommonSearchParams());
     }
 
     public static CommonCodeTypeSearchParams searchParams(String searchField, String searchWord) {

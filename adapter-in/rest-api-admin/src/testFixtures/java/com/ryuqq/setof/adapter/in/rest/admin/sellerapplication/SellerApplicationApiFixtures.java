@@ -99,7 +99,7 @@ public final class SellerApplicationApiFixtures {
 
     public static SellerApplicationPageResult applicationPageResult() {
         return SellerApplicationPageResult.of(
-                List.of(applicationResult(1L), applicationResult(2L)), 2L, 0, 20);
+                List.of(applicationResult(1L), applicationResult(2L)), 0, 20, 2L);
     }
 
     // ===== API Response Fixtures =====

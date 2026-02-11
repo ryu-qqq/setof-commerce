@@ -581,8 +581,8 @@ module "ecs_service" {
   enable_execute_command = true
 
   # Deployment Configuration - Zero-Downtime Rolling Update
-  deployment_maximum_percent         = 200  # 새 태스크 먼저 시작
-  deployment_minimum_healthy_percent = 100  # 최소 100% 유지 (Zero-Downtime: 새 태스크 healthy 후 기존 종료)
+  deployment_maximum_percent          = 200 # 새 태스크 먼저 시작
+  deployment_minimum_healthy_percent  = 100 # 최소 100% 유지 (Zero-Downtime: 새 태스크 healthy 후 기존 종료)
   deployment_circuit_breaker_enable   = true
   deployment_circuit_breaker_rollback = true
 

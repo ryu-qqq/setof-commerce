@@ -15,22 +15,28 @@ public final class CategoryQueryFixtures {
     // ===== CategorySearchParams =====
 
     public static CategorySearchParams searchParams() {
-        return CategorySearchParams.of(null, null, null, defaultCommonSearchParams());
+        return CategorySearchParams.of(null, null, null, null, defaultCommonSearchParams());
     }
 
-    public static CategorySearchParams searchParams(String categoryName) {
-        return CategorySearchParams.of(categoryName, null, null, defaultCommonSearchParams());
-    }
-
-    public static CategorySearchParams searchParams(
-            String categoryName, Integer depth, Boolean displayed) {
-        return CategorySearchParams.of(categoryName, depth, displayed, defaultCommonSearchParams());
+    public static CategorySearchParams searchParams(String searchWord) {
+        return CategorySearchParams.of(null, searchWord, null, null, defaultCommonSearchParams());
     }
 
     public static CategorySearchParams searchParams(
-            String categoryName, Integer depth, Boolean displayed, int page, int size) {
+            String searchField, String searchWord, Integer depth, Boolean displayed) {
         return CategorySearchParams.of(
-                categoryName, depth, displayed, commonSearchParams(page, size));
+                searchField, searchWord, depth, displayed, defaultCommonSearchParams());
+    }
+
+    public static CategorySearchParams searchParams(
+            String searchField,
+            String searchWord,
+            Integer depth,
+            Boolean displayed,
+            int page,
+            int size) {
+        return CategorySearchParams.of(
+                searchField, searchWord, depth, displayed, commonSearchParams(page, size));
     }
 
     // ===== CommonSearchParams =====

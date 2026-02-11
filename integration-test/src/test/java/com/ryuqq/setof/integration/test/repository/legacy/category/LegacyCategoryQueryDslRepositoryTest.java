@@ -6,6 +6,7 @@ import com.ryuqq.setof.domain.category.query.CategorySearchCriteria;
 import com.ryuqq.setof.integration.test.common.base.RepositoryTestBase;
 import com.ryuqq.setof.integration.test.common.tag.TestTags;
 import com.ryuqq.setof.storage.legacy.category.LegacyCategoryEntityFixtures;
+import com.ryuqq.setof.storage.legacy.category.dto.LegacyCategoryTreeDto;
 import com.ryuqq.setof.storage.legacy.category.entity.LegacyCategoryEntity;
 import com.ryuqq.setof.storage.legacy.category.repository.LegacyCategoryJpaRepository;
 import com.ryuqq.setof.storage.legacy.category.repository.LegacyCategoryQueryDslRepository;
@@ -417,6 +418,87 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
             // then
             assertThat(children).hasSize(1);
             assertThat(children.get(0).getCategoryName()).isEqualTo("활성자식");
+        }
+    }
+
+    @Nested
+    @DisplayName("findParentsByChildId 테스트 (Recursive CTE)")
+    class FindParentsByChildIdTest {
+
+        @Test
+        @DisplayName("자식 ID로 부모 카테고리들 조회 (Recursive CTE)")
+        void shouldFindParentsByChildId() {
+            // given: root(800) -> parent(801) -> child(802)
+            jpaRepository.save(
+                    LegacyCategoryEntityFixtures.builder()
+                            .id(800L)
+                            .parentCategoryId(0L)
+                            .categoryDepth(1)
+                            .categoryName("루트")
+                            .path("/800")
+                            .deleteYn("N")
+                            .build());
+            jpaRepository.save(
+                    LegacyCategoryEntityFixtures.builder()
+                            .id(801L)
+                            .parentCategoryId(800L)
+                            .categoryDepth(2)
+                            .categoryName("부모")
+                            .path("/800/801")
+                            .deleteYn("N")
+                            .build());
+            jpaRepository.save(
+                    LegacyCategoryEntityFixtures.builder()
+                            .id(802L)
+                            .parentCategoryId(801L)
+                            .categoryDepth(3)
+                            .categoryName("자식")
+                            .path("/800/801/802")
+                            .deleteYn("N")
+                            .build());
+            flushAndClear();
+
+            // when
+            List<LegacyCategoryTreeDto> parents = queryDslRepository.findParentsByChildId(802L);
+
+            // then: 루트, 부모, 자식 순 (depth 오름차순)
+            assertThat(parents).hasSize(3);
+            assertThat(parents)
+                    .extracting(LegacyCategoryTreeDto::getCategoryName)
+                    .containsExactly("루트", "부모", "자식");
+        }
+
+        @Test
+        @DisplayName("루트 카테고리 ID로 조회 시 해당 카테고리만 반환")
+        void shouldReturnSingleRootForRootCategoryId() {
+            // given
+            jpaRepository.save(
+                    LegacyCategoryEntityFixtures.builder()
+                            .id(810L)
+                            .parentCategoryId(0L)
+                            .categoryDepth(1)
+                            .categoryName("루트만")
+                            .path("/810")
+                            .deleteYn("N")
+                            .build());
+            flushAndClear();
+
+            // when
+            List<LegacyCategoryTreeDto> parents = queryDslRepository.findParentsByChildId(810L);
+
+            // then
+            assertThat(parents).hasSize(1);
+            assertThat(parents.get(0).getCategoryName()).isEqualTo("루트만");
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 ID로 조회 시 빈 목록 반환")
+        void shouldReturnEmptyForNonExistentId() {
+            // when
+            List<LegacyCategoryTreeDto> parents = queryDslRepository.findParentsByChildId(999999L);
+
+            // then
+            assertThat(parents).isEmpty();
         }
     }
 }

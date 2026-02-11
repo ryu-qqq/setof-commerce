@@ -2,7 +2,7 @@
 name: repository-tester
 description: persistence-mysql 모듈 Repository 테스트 전문가. testFixtures + 단위 테스트 + 통합 테스트 자동 생성. 자동으로 사용.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: opus
+model: sonnet
 ---
 
 # Repository Tester Agent

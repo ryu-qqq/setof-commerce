@@ -1,6 +1,6 @@
 package com.ryuqq.setof.application.legacy.faq.dto.response;
 
-import com.ryuqq.setof.domain.legacy.faq.FaqType;
+import com.ryuqq.setof.domain.faq.vo.FaqType;
 
 /**
  * LegacyFaqResult - 레거시 FAQ 조회 결과 DTO.

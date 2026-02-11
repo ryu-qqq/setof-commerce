@@ -28,8 +28,7 @@ public record CommonCodeTypeSearchParams(
             String searchWord,
             String type,
             CommonSearchParams searchParams) {
-        return new CommonCodeTypeSearchParams(
-                active, searchField, searchWord, type, searchParams);
+        return new CommonCodeTypeSearchParams(active, searchField, searchWord, type, searchParams);
     }
 
     // Delegate methods for convenience

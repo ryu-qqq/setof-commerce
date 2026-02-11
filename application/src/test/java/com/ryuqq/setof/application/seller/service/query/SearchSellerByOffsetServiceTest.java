@@ -54,7 +54,7 @@ class SearchSellerByOffsetServiceTest {
             List<SellerResult> sellerResults =
                     List.of(createSellerResult(1L, "셀러1"), createSellerResult(2L, "셀러2"));
             SellerPageResult expected =
-                    SellerPageResult.of(sellerResults, totalCount, params.page(), params.size());
+                    SellerPageResult.of(sellerResults, params.page(), params.size(), totalCount);
 
             given(queryFactory.createCriteria(params)).willReturn(criteria);
             given(readManager.findByCriteria(criteria)).willReturn(sellers);
@@ -68,7 +68,7 @@ class SearchSellerByOffsetServiceTest {
             // then
             assertThat(result).isEqualTo(expected);
             assertThat(result.content()).hasSize(2);
-            assertThat(result.totalCount()).isEqualTo(2L);
+            assertThat(result.pageMeta().totalElements()).isEqualTo(2L);
             then(queryFactory).should().createCriteria(params);
             then(readManager).should().findByCriteria(criteria);
             then(readManager).should().countByCriteria(criteria);
@@ -88,7 +88,7 @@ class SearchSellerByOffsetServiceTest {
 
             SellerPageResult expected =
                     SellerPageResult.of(
-                            Collections.emptyList(), totalCount, params.page(), params.size());
+                            Collections.emptyList(), params.page(), params.size(), totalCount);
 
             given(queryFactory.createCriteria(params)).willReturn(criteria);
             given(readManager.findByCriteria(criteria)).willReturn(emptySellers);
@@ -101,7 +101,7 @@ class SearchSellerByOffsetServiceTest {
 
             // then
             assertThat(result.content()).isEmpty();
-            assertThat(result.totalCount()).isZero();
+            assertThat(result.pageMeta().totalElements()).isZero();
         }
 
         @Test
@@ -116,9 +116,9 @@ class SearchSellerByOffsetServiceTest {
             SellerPageResult expected =
                     SellerPageResult.of(
                             List.of(createSellerResult(1L, "활성 셀러")),
-                            totalCount,
                             params.page(),
-                            params.size());
+                            params.size(),
+                            totalCount);
 
             given(queryFactory.createCriteria(params)).willReturn(criteria);
             given(readManager.findByCriteria(criteria)).willReturn(activeSellers);

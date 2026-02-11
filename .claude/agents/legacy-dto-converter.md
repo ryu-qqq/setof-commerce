@@ -2,7 +2,7 @@
 name: legacy-dto-converter
 description: 레거시 API 분석 결과를 새 컨벤션에 맞는 record 기반 Request/Response DTO로 변환. 자동으로 사용.
 tools: Read, Write, Edit, Glob
-model: opus
+model: sonnet
 ---
 
 # Legacy DTO Converter Agent

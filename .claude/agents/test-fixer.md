@@ -2,7 +2,7 @@
 name: test-fixer
 description: test-audit 감사 리포트 기반 테스트 보완 전문가. 갭 유형별 타겟 테스트 코드 생성/수정. 자동으로 사용.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: opus
+model: sonnet
 ---
 
 # Test Fixer Agent

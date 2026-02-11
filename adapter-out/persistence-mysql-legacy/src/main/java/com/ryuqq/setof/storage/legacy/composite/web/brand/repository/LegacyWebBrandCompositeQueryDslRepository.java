@@ -4,7 +4,6 @@ import static com.ryuqq.setof.storage.legacy.brand.entity.QLegacyBrandEntity.leg
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ryuqq.setof.domain.legacy.brand.dto.query.LegacyBrandSearchCondition;
 import com.ryuqq.setof.storage.legacy.composite.web.brand.condition.LegacyWebBrandCompositeConditionBuilder;
 import com.ryuqq.setof.storage.legacy.composite.web.brand.dto.LegacyWebBrandQueryDto;
 import java.util.List;
@@ -54,11 +53,11 @@ public class LegacyWebBrandCompositeQueryDslRepository {
      * @param condition 검색 조건
      * @return 브랜드 목록
      */
-    public List<LegacyWebBrandQueryDto> fetchBrands(LegacyBrandSearchCondition condition) {
+    public List<LegacyWebBrandQueryDto> fetchBrands(String searchWord) {
         return queryFactory
                 .select(createBrandProjection())
                 .from(legacyBrandEntity)
-                .where(conditionBuilder.brandNameLike(condition.searchWord()))
+                .where(conditionBuilder.brandNameLike(searchWord))
                 .fetch();
     }
 

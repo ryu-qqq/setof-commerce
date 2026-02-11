@@ -30,36 +30,4 @@ public record BrandV1ApiResponse(
                         allowableValues = {"US", "KR"})
                 String mainDisplayType,
         @Schema(description = "영문 표시명", example = "Nike") String displayEnglishName,
-        @Schema(description = "한글 표시명", example = "나이키") String displayKoreanName) {
-
-    /**
-     * ExtendedBrandContext로부터 BrandV1ApiResponse를 생성합니다.
-     *
-     * <p>Application Layer의 Result DTO에서 API Response로 변환할 때 사용.
-     *
-     * @param brandId 브랜드 ID
-     * @param brandName 브랜드명
-     * @param mainDisplayType 메인 표시 타입 enum
-     * @param displayEnglishName 영문 표시명
-     * @param displayKoreanName 한글 표시명
-     * @return BrandV1ApiResponse 인스턴스
-     */
-    public static BrandV1ApiResponse of(
-            long brandId,
-            String brandName,
-            String mainDisplayType,
-            String displayEnglishName,
-            String displayKoreanName) {
-        return new BrandV1ApiResponse(
-                brandId, brandName, mainDisplayType, displayEnglishName, displayKoreanName);
-    }
-
-    /**
-     * 메인 표시 타입에 따른 표시명을 반환합니다.
-     *
-     * @return mainDisplayType이 "KR"이면 한글명, 그 외 영문명
-     */
-    public String getDisplayName() {
-        return "KR".equalsIgnoreCase(mainDisplayType) ? displayKoreanName : displayEnglishName;
-    }
-}
+        @Schema(description = "한글 표시명", example = "나이키") String displayKoreanName) {}

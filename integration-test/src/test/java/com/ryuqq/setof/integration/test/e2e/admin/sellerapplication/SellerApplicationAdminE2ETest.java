@@ -121,9 +121,7 @@ class SellerApplicationAdminE2ETest extends AdminE2ETestBase {
 
             // when
             Response response =
-                    givenAdmin()
-                            .when()
-                            .post(BASE_PATH + "/" + applicationId + "/approve");
+                    givenAdmin().when().post(BASE_PATH + "/" + applicationId + "/approve");
 
             // then
             response.then().statusCode(HttpStatus.OK.value()).body("data.sellerId", greaterThan(0));
@@ -371,9 +369,7 @@ class SellerApplicationAdminE2ETest extends AdminE2ETestBase {
 
             // 3. 승인
             Response approveResponse =
-                    givenAdmin()
-                            .when()
-                            .post(BASE_PATH + "/" + applicationId + "/approve");
+                    givenAdmin().when().post(BASE_PATH + "/" + applicationId + "/approve");
 
             approveResponse
                     .then()

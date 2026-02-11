@@ -2,7 +2,7 @@
 name: api-endpoints-analyzer
 description: API 엔드포인트 분석 전문가. adapter-in 모듈의 Controller에서 엔드포인트를 추출하여 Query/Command로 분류하고 문서화. 통합 테스트 파이프라인 첫 단계. 자동으로 사용.
 tools: Read, Write, Glob, Grep
-model: opus
+model: sonnet
 ---
 
 # API Endpoints Analyzer Agent

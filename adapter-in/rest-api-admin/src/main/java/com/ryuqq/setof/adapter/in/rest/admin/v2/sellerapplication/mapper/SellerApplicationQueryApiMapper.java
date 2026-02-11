@@ -74,7 +74,10 @@ public class SellerApplicationQueryApiMapper {
             SellerApplicationPageResult pageResult) {
         List<SellerApplicationApiResponse> responses = toResponses(pageResult.content());
         return PageApiResponse.of(
-                responses, pageResult.page(), pageResult.size(), pageResult.totalCount());
+                responses,
+                pageResult.pageMeta().page(),
+                pageResult.pageMeta().size(),
+                pageResult.pageMeta().totalElements());
     }
 
     /**

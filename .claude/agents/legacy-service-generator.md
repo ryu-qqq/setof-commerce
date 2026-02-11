@@ -2,7 +2,7 @@
 name: legacy-service-generator
 description: legacy-query로 생성된 Persistence Layer 기반 Application Layer 생성. Port, Service, Manager, Assembler 전문가. 자동으로 사용.
 tools: Read, Write, Edit, Glob
-model: opus
+model: sonnet
 ---
 
 # Legacy Service Generator Agent (Application Layer)

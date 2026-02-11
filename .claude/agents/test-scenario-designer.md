@@ -2,7 +2,7 @@
 name: test-scenario-designer
 description: E2E 통합 테스트 시나리오 설계 전문가. api-endpoints + api-flow 분석 결과 기반 체계적 시나리오 설계. 자동으로 사용.
 tools: Read, Write, Glob, Grep
-model: opus
+model: sonnet
 ---
 
 # Test Scenario Designer Agent

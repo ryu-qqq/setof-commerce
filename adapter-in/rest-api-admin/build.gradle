@@ -93,6 +93,8 @@ dependencies {
     testFixturesApi project(':application')
     testFixturesApi project(':domain')
     testFixturesImplementation libs.jackson.databind
+    testFixturesImplementation libs.spring.boot.starter.web
+    testFixturesImplementation libs.springdoc.openapi
 }
 
 // ========================================
