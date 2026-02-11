@@ -28,7 +28,6 @@ COPY adapter-in/scheduler/build.gradle adapter-in/scheduler/
 COPY adapter-out/persistence-mysql/build.gradle adapter-out/persistence-mysql/
 COPY adapter-out/persistence-redis/build.gradle adapter-out/persistence-redis/
 COPY adapter-out/client/security-client/build.gradle adapter-out/client/security-client/
-COPY adapter-out/client/authhub-client/build.gradle adapter-out/client/authhub-client/
 COPY bootstrap/bootstrap-scheduler/build.gradle bootstrap/bootstrap-scheduler/
 
 # 의존성 캐시 레이어 (소스 변경 시 재활용)
@@ -41,7 +40,6 @@ COPY adapter-in/scheduler/src adapter-in/scheduler/src
 COPY adapter-out/persistence-mysql/src adapter-out/persistence-mysql/src
 COPY adapter-out/persistence-redis/src adapter-out/persistence-redis/src
 COPY adapter-out/client/security-client/src adapter-out/client/security-client/src
-COPY adapter-out/client/authhub-client/src adapter-out/client/authhub-client/src
 COPY bootstrap/bootstrap-scheduler/src bootstrap/bootstrap-scheduler/src
 
 # 빌드 (테스트 제외)

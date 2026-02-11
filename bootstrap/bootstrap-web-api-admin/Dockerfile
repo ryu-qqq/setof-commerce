@@ -28,7 +28,6 @@ COPY adapter-out/persistence-mysql/build.gradle adapter-out/persistence-mysql/
 COPY adapter-out/persistence-mysql-legacy/build.gradle adapter-out/persistence-mysql-legacy/
 COPY adapter-out/persistence-redis/build.gradle adapter-out/persistence-redis/
 COPY adapter-out/client/security-client/build.gradle adapter-out/client/security-client/
-COPY adapter-out/client/authhub-client/build.gradle adapter-out/client/authhub-client/
 COPY bootstrap/bootstrap-web-api-admin/build.gradle bootstrap/bootstrap-web-api-admin/
 
 # 의존성 캐시 레이어 (소스 변경 시 재활용)
@@ -43,7 +42,6 @@ COPY adapter-out/persistence-mysql/src adapter-out/persistence-mysql/src
 COPY adapter-out/persistence-mysql-legacy/src adapter-out/persistence-mysql-legacy/src
 COPY adapter-out/persistence-redis/src adapter-out/persistence-redis/src
 COPY adapter-out/client/security-client/src adapter-out/client/security-client/src
-COPY adapter-out/client/authhub-client/src adapter-out/client/authhub-client/src
 COPY bootstrap/bootstrap-web-api-admin/src bootstrap/bootstrap-web-api-admin/src
 
 # REST Docs 생성을 위해 unit 테스트만 실행 (통합 테스트 제외)

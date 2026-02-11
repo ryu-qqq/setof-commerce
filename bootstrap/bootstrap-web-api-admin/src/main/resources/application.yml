@@ -68,8 +68,6 @@ spring:
       - optional:classpath:persistence-legacy-${spring.profiles.active:local}.yml
       - classpath:redis.yml
       - optional:classpath:redis-${spring.profiles.active:local}.yml
-      - classpath:authhub.yml
-      - optional:classpath:authhub-${spring.profiles.active:local}.yml
 
   # ===============================================
   # MessageSource (i18n)

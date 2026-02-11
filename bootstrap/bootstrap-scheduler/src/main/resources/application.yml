@@ -19,8 +19,6 @@ spring:
       - optional:classpath:redis-${spring.profiles.active:local}.yml
       - classpath:scheduler.yml
       - optional:classpath:scheduler-${spring.profiles.active:local}.yml
-      - classpath:authhub.yml
-      - optional:classpath:authhub-${spring.profiles.active:local}.yml
 
 # ========================================
 # Management & Actuator

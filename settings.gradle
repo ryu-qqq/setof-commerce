@@ -24,7 +24,6 @@ include 'adapter-out:client:security-client'
 include 'adapter-out:client:portone-client'
 include 'adapter-out:client:fileflow-client'
 include 'adapter-out:client:smart-delivery-client'
-include 'adapter-out:client:authhub-client'
 
 // ========================================
 // Bootstrap Modules (Runnable Applications)
@@ -57,7 +56,6 @@ project(':adapter-out:client:security-client').projectDir = file('adapter-out/cl
 project(':adapter-out:client:portone-client').projectDir = file('adapter-out/client/portone-client')
 project(':adapter-out:client:fileflow-client').projectDir = file('adapter-out/client/fileflow-client')
 project(':adapter-out:client:smart-delivery-client').projectDir = file('adapter-out/client/smart-delivery-client')
-project(':adapter-out:client:authhub-client').projectDir = file('adapter-out/client/authhub-client')
 
 project(':bootstrap:bootstrap-web-api').projectDir = file('bootstrap/bootstrap-web-api')
 project(':bootstrap:bootstrap-web-api-admin').projectDir = file('bootstrap/bootstrap-web-api-admin')

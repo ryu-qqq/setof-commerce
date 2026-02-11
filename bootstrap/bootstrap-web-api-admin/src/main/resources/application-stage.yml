@@ -31,8 +31,6 @@ spring:
       - classpath:persistence-legacy-stage.yml
       - classpath:redis.yml
       - classpath:redis-stage.yml
-      - classpath:authhub.yml
-      - classpath:authhub-stage.yml
 
 management:
   endpoints:
