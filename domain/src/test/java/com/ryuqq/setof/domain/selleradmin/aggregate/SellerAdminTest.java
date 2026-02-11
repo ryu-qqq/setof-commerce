@@ -117,7 +117,7 @@ class SellerAdminTest {
             Instant now = CommonVoFixtures.now();
 
             // when
-            admin.approve(authUserId, now);
+            admin.approveWithAuthUserId(authUserId, now);
 
             // then
             assertThat(admin.status()).isEqualTo(SellerAdminStatus.ACTIVE);
@@ -134,7 +134,8 @@ class SellerAdminTest {
             SellerAdmin admin = SellerFixtures.activeSellerAdmin();
 
             // when & then
-            assertThatThrownBy(() -> admin.approve("auth-123", CommonVoFixtures.now()))
+            assertThatThrownBy(
+                            () -> admin.approveWithAuthUserId("auth-123", CommonVoFixtures.now()))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("승인할 수 없는 상태");
         }
@@ -146,7 +147,8 @@ class SellerAdminTest {
             SellerAdmin admin = SellerFixtures.rejectedSellerAdmin();
 
             // when & then
-            assertThatThrownBy(() -> admin.approve("auth-123", CommonVoFixtures.now()))
+            assertThatThrownBy(
+                            () -> admin.approveWithAuthUserId("auth-123", CommonVoFixtures.now()))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("승인할 수 없는 상태");
         }
