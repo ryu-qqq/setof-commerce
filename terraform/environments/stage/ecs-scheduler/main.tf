@@ -314,6 +314,18 @@ module "scheduler_task_role" {
                 "cloudwatch:namespace" = "SetOfCommerce"
               }
             }
+          },
+          {
+            Sid    = "S3OtelConfigAccess"
+            Effect = "Allow"
+            Action = [
+              "s3:GetObject",
+              "s3:ListBucket"
+            ]
+            Resource = [
+              "arn:aws:s3:::prod-connectly",
+              "arn:aws:s3:::prod-connectly/otel-config/*"
+            ]
           }
         ]
       })
