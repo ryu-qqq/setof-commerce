@@ -22,7 +22,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
             "com.ryuqq.setof.scheduler",
             "com.ryuqq.setof.adapter.in.scheduler",
             "com.ryuqq.setof.application",
-            "com.ryuqq.setof.adapter.out"
+            "com.ryuqq.setof.adapter.out",
+            "com.ryuqq.setof.storage.legacy"
         })
 @EntityScan(basePackages = "com.ryuqq.setof.adapter.out.persistence")
 @EnableJpaRepositories(basePackages = "com.ryuqq.setof.adapter.out.persistence")

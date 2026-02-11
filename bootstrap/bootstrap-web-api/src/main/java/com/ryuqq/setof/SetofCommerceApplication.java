@@ -37,7 +37,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
             "com.ryuqq.setof.adapter.in.rest",
             "com.ryuqq.setof.adapter.out.persistence",
             "com.ryuqq.setof.adapter.out.security",
-            "com.ryuqq.setof.adapter.out.client"
+            "com.ryuqq.setof.adapter.out.client",
+            "com.ryuqq.setof.storage.legacy"
         })
 @EnableJpaRepositories(basePackages = "com.ryuqq.setof.adapter.out.persistence")
 @EntityScan(basePackages = "com.ryuqq.setof.adapter.out.persistence")
