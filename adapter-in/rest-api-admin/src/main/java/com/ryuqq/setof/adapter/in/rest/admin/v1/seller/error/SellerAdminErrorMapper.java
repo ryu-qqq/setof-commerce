@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  * @author ryu-qqq
  * @since 1.0.0
  */
-@Component
+@Component("sellerV1ErrorMapper")
 public class SellerAdminErrorMapper implements ErrorMapper {
 
     private static final String ERROR_TYPE_PREFIX = "/errors/seller";
