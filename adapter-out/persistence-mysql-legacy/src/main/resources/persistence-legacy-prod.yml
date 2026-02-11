@@ -10,3 +10,13 @@
 persistence:
   legacy:
     enabled: true
+    seller:
+      enabled: true
+    category:
+      enabled: true
+    brand:
+      enabled: true
+    board:
+      enabled: true
+    faq:
+      enabled: true
