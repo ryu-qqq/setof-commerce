@@ -171,8 +171,8 @@ locals {
 
   # Stage RDS Configuration
   rds_credentials = jsondecode(data.aws_secretsmanager_secret_version.rds_staging.secret_string)
-  rds_host        = local.rds_credentials.host
-  rds_port        = local.rds_credentials.port
+  rds_host        = "staging-shared-mysql-proxy.proxy-cfacertspqbw.ap-northeast-2.rds.amazonaws.com"
+  rds_port        = "3306"
   rds_dbname      = "luxurydb"
 
   # Stage Redis Configuration (Shared Redis - No Auth, No TLS)

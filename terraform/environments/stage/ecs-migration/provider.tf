@@ -135,16 +135,16 @@ locals {
 
   # Stage RDS Configuration (Both schemas on same staging RDS)
   rds_credentials = jsondecode(data.aws_secretsmanager_secret_version.rds.secret_string)
-  rds_host        = local.rds_credentials.host
-  rds_port        = local.rds_credentials.port
+  rds_host        = "staging-shared-mysql-proxy.proxy-cfacertspqbw.ap-northeast-2.rds.amazonaws.com"
+  rds_port        = "3306"
   rds_username    = local.rds_credentials.username
 
   # Primary DB (New Schema)
   rds_dbname = "setof"
 
   # Legacy DB (Legacy Schema) - same host in staging
-  legacy_rds_host     = local.rds_credentials.host
-  legacy_rds_port     = local.rds_credentials.port
+  legacy_rds_host     = "staging-shared-mysql-proxy.proxy-cfacertspqbw.ap-northeast-2.rds.amazonaws.com"
+  legacy_rds_port     = "3306"
   legacy_rds_dbname   = "luxurydb"
   legacy_rds_username = local.rds_credentials.username
 
