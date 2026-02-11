@@ -8,6 +8,7 @@ scheduler:
   jobs:
     seller-auth-outbox:
       process-pending:
+        enabled: false
         # 로컬: 1분마다 (빠른 테스트)
         cron: "0 */1 * * * *"
         # 로컬: 작은 배치
@@ -16,6 +17,7 @@ scheduler:
         delay-seconds: 10
 
       recover-timeout:
+        enabled: false
         # 로컬: 2분마다
         cron: "0 */2 * * * *"
         # 로컬: 작은 배치
@@ -25,6 +27,7 @@ scheduler:
 
     seller-admin-auth-outbox:
       process-pending:
+        enabled: false
         # 로컬: 1분마다 (빠른 테스트)
         cron: "0 */1 * * * *"
         # 로컬: 작은 배치
@@ -33,6 +36,7 @@ scheduler:
         delay-seconds: 10
 
       recover-timeout:
+        enabled: false
         # 로컬: 2분마다
         cron: "0 */2 * * * *"
         # 로컬: 작은 배치

@@ -8,6 +8,7 @@ scheduler:
   jobs:
     seller-auth-outbox:
       process-pending:
+        enabled: false
         # Prod: 5분마다 (기본값)
         cron: "0 */5 * * * *"
         # Prod: 큰 배치
@@ -16,6 +17,7 @@ scheduler:
         delay-seconds: 60
 
       recover-timeout:
+        enabled: false
         # Prod: 10분마다 (기본값)
         cron: "0 */10 * * * *"
         # Prod: 큰 배치
@@ -25,6 +27,7 @@ scheduler:
 
     seller-admin-auth-outbox:
       process-pending:
+        enabled: false
         # Prod: 5분마다 (기본값)
         cron: "0 */5 * * * *"
         # Prod: 큰 배치
@@ -33,6 +36,7 @@ scheduler:
         delay-seconds: 60
 
       recover-timeout:
+        enabled: false
         # Prod: 10분마다 (기본값)
         cron: "0 */10 * * * *"
         # Prod: 큰 배치

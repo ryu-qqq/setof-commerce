@@ -8,6 +8,7 @@ scheduler:
   jobs:
     seller-auth-outbox:
       process-pending:
+        enabled: false
         # Stage: 3분마다
         cron: "0 */3 * * * *"
         # Stage: 중간 배치
@@ -16,6 +17,7 @@ scheduler:
         delay-seconds: 30
 
       recover-timeout:
+        enabled: false
         # Stage: 5분마다
         cron: "0 */5 * * * *"
         # Stage: 중간 배치
@@ -25,6 +27,7 @@ scheduler:
 
     seller-admin-auth-outbox:
       process-pending:
+        enabled: false
         # Stage: 3분마다
         cron: "0 */3 * * * *"
         # Stage: 중간 배치
@@ -33,6 +36,7 @@ scheduler:
         delay-seconds: 30
 
       recover-timeout:
+        enabled: false
         # Stage: 5분마다
         cron: "0 */5 * * * *"
         # Stage: 중간 배치

@@ -16,7 +16,7 @@ scheduler:
     seller-auth-outbox:
       # PENDING 처리
       process-pending:
-        enabled: true
+        enabled: false
         # Cron: 5분마다 (환경별 오버라이드 가능)
         cron: "0 */5 * * * *"
         timezone: Asia/Seoul
@@ -27,7 +27,7 @@ scheduler:
 
       # 타임아웃 복구
       recover-timeout:
-        enabled: true
+        enabled: false
         # Cron: 10분마다 (환경별 오버라이드 가능)
         cron: "0 */10 * * * *"
         timezone: Asia/Seoul
@@ -40,7 +40,7 @@ scheduler:
     seller-admin-auth-outbox:
       # PENDING 처리
       process-pending:
-        enabled: true
+        enabled: false
         # Cron: 5분마다 (환경별 오버라이드 가능)
         cron: "0 */5 * * * *"
         timezone: Asia/Seoul
@@ -51,7 +51,7 @@ scheduler:
 
       # 타임아웃 복구
       recover-timeout:
-        enabled: true
+        enabled: false
         # Cron: 10분마다 (환경별 오버라이드 가능)
         cron: "0 */10 * * * *"
         timezone: Asia/Seoul
