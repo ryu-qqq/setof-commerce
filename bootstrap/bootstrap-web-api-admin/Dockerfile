@@ -25,6 +25,7 @@ COPY domain/build.gradle domain/
 COPY application/build.gradle application/
 COPY adapter-in/rest-api-admin/build.gradle adapter-in/rest-api-admin/
 COPY adapter-out/persistence-mysql/build.gradle adapter-out/persistence-mysql/
+COPY adapter-out/persistence-mysql-legacy/build.gradle adapter-out/persistence-mysql-legacy/
 COPY adapter-out/persistence-redis/build.gradle adapter-out/persistence-redis/
 COPY adapter-out/client/security-client/build.gradle adapter-out/client/security-client/
 COPY adapter-out/client/authhub-client/build.gradle adapter-out/client/authhub-client/
@@ -39,6 +40,7 @@ COPY application/src application/src
 COPY adapter-in/rest-api-admin/src adapter-in/rest-api-admin/src
 COPY adapter-in/rest-api-admin/docs adapter-in/rest-api-admin/docs
 COPY adapter-out/persistence-mysql/src adapter-out/persistence-mysql/src
+COPY adapter-out/persistence-mysql-legacy/src adapter-out/persistence-mysql-legacy/src
 COPY adapter-out/persistence-redis/src adapter-out/persistence-redis/src
 COPY adapter-out/client/security-client/src adapter-out/client/security-client/src
 COPY adapter-out/client/authhub-client/src adapter-out/client/authhub-client/src
