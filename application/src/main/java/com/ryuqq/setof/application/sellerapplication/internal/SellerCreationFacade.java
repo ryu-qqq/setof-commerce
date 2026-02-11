@@ -13,6 +13,7 @@ import com.ryuqq.setof.domain.seller.id.SellerId;
 import com.ryuqq.setof.domain.sellerapplication.aggregate.SellerApplication;
 import java.time.Instant;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Seller 생성 Facade.
@@ -60,6 +61,7 @@ public class SellerCreationFacade {
      * @param processedBy 처리자 식별자
      * @param now 처리 시각
      */
+    @Transactional
     public void approveAndPersist(
             SellerCreationBundle bundle,
             SellerApplication application,

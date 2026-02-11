@@ -29,4 +29,12 @@ public interface SellerCompositionQueryPort {
     Optional<SellerAdminCompositeResult> findAdminCompositeById(Long sellerId);
 
     Optional<SellerPolicyCompositeResult> findPolicyCompositeById(Long sellerId);
+
+    /**
+     * 사업자등록번호 존재 여부 확인.
+     *
+     * @param registrationNumber 사업자등록번호
+     * @return 존재하면 true
+     */
+    boolean existsByRegistrationNumber(String registrationNumber);
 }

@@ -5,6 +5,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -17,6 +18,7 @@ import com.ryuqq.setof.adapter.in.rest.admin.common.RestDocsTestSupport;
 import com.ryuqq.setof.adapter.in.rest.admin.seller.SellerApiFixtures;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.seller.dto.command.RegisterSellerApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.seller.dto.command.UpdateSellerApiRequest;
+import com.ryuqq.setof.adapter.in.rest.admin.v2.seller.dto.command.UpdateSellerFullApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.seller.mapper.SellerCommandApiMapper;
 import com.ryuqq.setof.application.seller.port.in.command.RegisterSellerUseCase;
 import com.ryuqq.setof.application.seller.port.in.command.UpdateSellerFullUseCase;
@@ -264,6 +266,178 @@ class SellerCommandV2ControllerRestDocsTest extends RestDocsTestSupport {
                                             fieldWithPath("businessInfo.businessAddress.line2")
                                                     .type(JsonFieldType.STRING)
                                                     .description("사업장 상세주소 [필수]"))));
+        }
+    }
+
+    @Nested
+    @DisplayName("셀러 전체정보 수정 API")
+    class UpdateSellerFullTest {
+
+        @Test
+        @DisplayName("셀러 전체정보 수정 성공")
+        void updateSellerFull_Success() throws Exception {
+            // given
+            UpdateSellerFullApiRequest request = SellerApiFixtures.updateFullRequest();
+            willDoNothing().given(updateSellerFullUseCase).execute(any());
+
+            // when & then
+            mockMvc.perform(
+                            put("/api/v2/admin/sellers/{sellerId}", SELLER_ID)
+                                    .contentType(APPLICATION_JSON)
+                                    .content(toJson(request)))
+                    .andExpect(status().isNoContent())
+                    .andDo(
+                            document.document(
+                                    pathParameters(
+                                            parameterWithName("sellerId").description("셀러 ID")),
+                                    requestFields(
+                                            fieldWithPath("seller")
+                                                    .type(JsonFieldType.OBJECT)
+                                                    .description("셀러 기본 정보 [필수]"),
+                                            fieldWithPath("seller.sellerName")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("셀러명 [필수]"),
+                                            fieldWithPath("seller.displayName")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("표시명 [필수]"),
+                                            fieldWithPath("seller.logoUrl")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("로고 URL [필수]"),
+                                            fieldWithPath("seller.description")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("설명 [필수]"),
+                                            fieldWithPath("businessInfo")
+                                                    .type(JsonFieldType.OBJECT)
+                                                    .description("사업자 정보 [필수]"),
+                                            fieldWithPath("businessInfo.registrationNumber")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("사업자등록번호 [필수]"),
+                                            fieldWithPath("businessInfo.companyName")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("회사명 [필수]"),
+                                            fieldWithPath("businessInfo.representative")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("대표자명 [필수]"),
+                                            fieldWithPath("businessInfo.saleReportNumber")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("통신판매업 신고번호 [필수]"),
+                                            fieldWithPath("businessInfo.businessAddress")
+                                                    .type(JsonFieldType.OBJECT)
+                                                    .description("사업장 주소 [필수]"),
+                                            fieldWithPath("businessInfo.businessAddress.zipCode")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("사업장 우편번호 [필수]"),
+                                            fieldWithPath("businessInfo.businessAddress.line1")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("사업장 주소 [필수]"),
+                                            fieldWithPath("businessInfo.businessAddress.line2")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("사업장 상세주소 [필수]"),
+                                            fieldWithPath("csInfo")
+                                                    .type(JsonFieldType.OBJECT)
+                                                    .description("CS 정보 [필수]"),
+                                            fieldWithPath("csInfo.phone")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("CS 전화번호 [필수]"),
+                                            fieldWithPath("csInfo.email")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("CS 이메일 [필수]"),
+                                            fieldWithPath("csInfo.mobile")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("CS 휴대폰번호")
+                                                    .optional(),
+                                            fieldWithPath("csInfo.operatingStartTime")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("운영 시작 시간 (예: 09:00)")
+                                                    .optional(),
+                                            fieldWithPath("csInfo.operatingEndTime")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("운영 종료 시간 (예: 18:00)")
+                                                    .optional(),
+                                            fieldWithPath("csInfo.operatingDays")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description(
+                                                            "운영 요일 (쉼표 구분, 예: MON,TUE,WED,THU,FRI)")
+                                                    .optional(),
+                                            fieldWithPath("csInfo.kakaoChannelUrl")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("카카오 채널 URL")
+                                                    .optional(),
+                                            fieldWithPath("address")
+                                                    .type(JsonFieldType.OBJECT)
+                                                    .description("주소 정보 [필수]"),
+                                            fieldWithPath("address.addressId")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("주소 ID [필수]"),
+                                            fieldWithPath("address.addressName")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("주소 이름 [필수]"),
+                                            fieldWithPath("address.address")
+                                                    .type(JsonFieldType.OBJECT)
+                                                    .description("주소 [필수]"),
+                                            fieldWithPath("address.address.zipCode")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("우편번호 [필수]"),
+                                            fieldWithPath("address.address.line1")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("주소 [필수]"),
+                                            fieldWithPath("address.address.line2")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("상세주소 [필수]"),
+                                            fieldWithPath("address.contactInfo")
+                                                    .type(JsonFieldType.OBJECT)
+                                                    .description("담당자 연락처 [필수]"),
+                                            fieldWithPath("address.contactInfo.name")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("담당자명 [필수]"),
+                                            fieldWithPath("address.contactInfo.phone")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("연락처 [필수]"),
+                                            fieldWithPath("contractInfo")
+                                                    .type(JsonFieldType.OBJECT)
+                                                    .description("계약 정보 [필수]"),
+                                            fieldWithPath("contractInfo.commissionRate")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("수수료율 (0 ~ 100) [필수]"),
+                                            fieldWithPath("contractInfo.contractStartDate")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("계약 시작일 (YYYY-MM-DD) [필수]"),
+                                            fieldWithPath("contractInfo.contractEndDate")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("계약 종료일 (YYYY-MM-DD) [필수]"),
+                                            fieldWithPath("contractInfo.specialTerms")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("특약사항")
+                                                    .optional(),
+                                            fieldWithPath("settlementInfo")
+                                                    .type(JsonFieldType.OBJECT)
+                                                    .description("정산 정보 [필수]"),
+                                            fieldWithPath("settlementInfo.bankAccount")
+                                                    .type(JsonFieldType.OBJECT)
+                                                    .description("정산 계좌 [필수]"),
+                                            fieldWithPath("settlementInfo.bankAccount.bankCode")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("은행 코드")
+                                                    .optional(),
+                                            fieldWithPath("settlementInfo.bankAccount.bankName")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("은행명 [필수]"),
+                                            fieldWithPath(
+                                                            "settlementInfo.bankAccount.accountNumber")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("계좌번호 [필수]"),
+                                            fieldWithPath(
+                                                            "settlementInfo.bankAccount.accountHolderName")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("예금주 [필수]"),
+                                            fieldWithPath("settlementInfo.settlementCycle")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description(
+                                                            "정산 주기 (WEEKLY, BIWEEKLY, MONTHLY)"
+                                                                    + " [필수]"),
+                                            fieldWithPath("settlementInfo.settlementDay")
+                                                    .type(JsonFieldType.NUMBER)
+                                                    .description("정산일 (1 ~ 31) [필수]"))));
         }
     }
 }

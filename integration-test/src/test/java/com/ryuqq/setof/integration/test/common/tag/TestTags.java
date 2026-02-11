@@ -122,4 +122,21 @@ public final class TestTags {
 
     /** 카테고리 관련 테스트 */
     public static final String CATEGORY = "category";
+
+    /** 셀러 관리자 관련 테스트 */
+    public static final String SELLER_ADMIN = "seller-admin";
+
+    // ========================================
+    // Migration Tags (마이그레이션 태그)
+    // ========================================
+
+    /**
+     * 레거시 DB 관련 테스트
+     *
+     * <p>Strangler Fig 패턴의 레거시 어댑터 테스트
+     */
+    public static final String LEGACY = "legacy";
+
+    /** 레거시 vs 새 시스템 비교 테스트 */
+    public static final String COMPARISON = "comparison";
 }

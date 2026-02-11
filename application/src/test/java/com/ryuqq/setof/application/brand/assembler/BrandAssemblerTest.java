@@ -92,9 +92,9 @@ class BrandAssemblerTest {
             // then
             assertThat(result).isNotNull();
             assertThat(result.content()).hasSize(2);
-            assertThat(result.totalCount()).isEqualTo(totalCount);
-            assertThat(result.page()).isEqualTo(page);
-            assertThat(result.size()).isEqualTo(size);
+            assertThat(result.pageMeta().totalElements()).isEqualTo(totalCount);
+            assertThat(result.pageMeta().page()).isEqualTo(page);
+            assertThat(result.pageMeta().size()).isEqualTo(size);
         }
 
         @Test
@@ -111,7 +111,7 @@ class BrandAssemblerTest {
 
             // then
             assertThat(result.content()).isEmpty();
-            assertThat(result.totalCount()).isZero();
+            assertThat(result.pageMeta().totalElements()).isZero();
         }
     }
 

@@ -54,7 +54,7 @@ public class BrandAssembler {
      */
     public BrandPageResult toPageResult(List<Brand> brands, int page, int size, long totalCount) {
         List<BrandResult> results = toResults(brands);
-        return BrandPageResult.of(results, totalCount, page, size);
+        return BrandPageResult.of(results, page, size, totalCount);
     }
 
     /**

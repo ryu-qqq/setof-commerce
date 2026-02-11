@@ -2,8 +2,14 @@ package com.ryuqq.setof.adapter.in.rest.admin.v1.category.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ryuqq.setof.adapter.in.rest.admin.category.CategoryV1ApiFixtures;
+import com.ryuqq.setof.adapter.in.rest.admin.v1.category.CategoryAdminApiFixtures;
+import com.ryuqq.setof.adapter.in.rest.admin.v1.category.dto.request.SearchCategoriesV1ApiRequest;
+import com.ryuqq.setof.adapter.in.rest.admin.v1.category.dto.response.ProductCategoryV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.category.dto.response.TreeCategoryV1ApiResponse;
+import com.ryuqq.setof.adapter.in.rest.admin.v1.common.dto.CustomPageableV1ApiResponse;
+import com.ryuqq.setof.application.category.dto.query.CategorySearchParams;
+import com.ryuqq.setof.application.category.dto.response.CategoryPageResult;
+import com.ryuqq.setof.application.category.dto.response.CategoryResult;
 import com.ryuqq.setof.application.category.dto.response.TreeCategoryResult;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +20,6 @@ import org.junit.jupiter.api.Test;
 
 /**
  * CategoryAdminV1ApiMapper 단위 테스트.
- *
- * <p>V1 Admin 카테고리 API Mapper의 변환 로직을 검증합니다.
  *
  * @author ryu-qqq
  * @since 1.0.0
@@ -32,91 +36,269 @@ class CategoryAdminV1ApiMapperTest {
     }
 
     @Nested
-    @DisplayName("toTreeResponse 테스트")
-    class ToTreeResponseTest {
+    @DisplayName("toSearchParams 메서드 테스트")
+    class ToSearchParamsTest {
 
         @Test
-        @DisplayName("단일 트리 카테고리 결과 변환")
-        void shouldConvertSingleTreeCategoryResult() {
+        @DisplayName("검색 요청을 SearchParams로 변환한다")
+        void toSearchParams_Success() {
             // given
-            List<TreeCategoryResult> results = List.of(CategoryV1ApiFixtures.treeCategoryResult());
+            SearchCategoriesV1ApiRequest request =
+                    CategoryAdminApiFixtures.searchCategoriesRequest();
 
             // when
-            List<TreeCategoryV1ApiResponse> response = mapper.toTreeResponse(results);
+            CategorySearchParams params = mapper.toSearchParams(request);
 
             // then
-            assertThat(response).hasSize(1);
-            assertThat(response.get(0).categoryId()).isEqualTo(1L);
-            assertThat(response.get(0).categoryName()).isEqualTo("의류");
-            assertThat(response.get(0).categoryDepth()).isEqualTo(1);
-            assertThat(response.get(0).parentCategoryId()).isZero();
+            assertThat(params.searchField()).isEqualTo("displayName");
+            assertThat(params.searchWord()).isEqualTo("의류");
+            assertThat(params.depth()).isEqualTo(2);
+            assertThat(params.displayed()).isNull();
+            assertThat(params.searchParams().page()).isEqualTo(0);
+            assertThat(params.searchParams().size()).isEqualTo(20);
+            assertThat(params.searchParams().sortKey()).isEqualTo("createdAt");
+            assertThat(params.searchParams().sortDirection()).isEqualTo("ASC");
         }
 
         @Test
-        @DisplayName("자식 포함 트리 카테고리 변환")
-        void shouldConvertTreeCategoryWithChildren() {
+        @DisplayName("null 값에 대해 기본값을 적용한다")
+        void toSearchParams_WithNullValues_AppliesDefaults() {
+            // given
+            SearchCategoriesV1ApiRequest request =
+                    CategoryAdminApiFixtures.searchCategoriesRequestWithDefaults();
+
+            // when
+            CategorySearchParams params = mapper.toSearchParams(request);
+
+            // then
+            assertThat(params.searchWord()).isNull();
+            assertThat(params.searchParams().page()).isEqualTo(0);
+            assertThat(params.searchParams().size()).isEqualTo(20);
+        }
+
+        @Test
+        @DisplayName("빈 문자열 categoryName은 null로 변환된다")
+        void toSearchParams_WithBlankCategoryName_ConvertsToNull() {
+            // given
+            SearchCategoriesV1ApiRequest request =
+                    CategoryAdminApiFixtures.searchCategoriesRequestWithBlankName();
+
+            // when
+            CategorySearchParams params = mapper.toSearchParams(request);
+
+            // then
+            assertThat(params.searchWord()).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("toTreeListResponse 메서드 테스트")
+    class ToTreeListResponseTest {
+
+        @Test
+        @DisplayName("TreeCategoryResult 목록을 TreeCategoryV1ApiResponse 목록으로 변환한다")
+        void toTreeListResponse_Success() {
             // given
             List<TreeCategoryResult> results =
-                    List.of(CategoryV1ApiFixtures.treeCategoryResultWithChildren());
+                    List.of(
+                            CategoryAdminApiFixtures.treeCategoryResult(100L),
+                            CategoryAdminApiFixtures.treeCategoryResult(200L));
 
             // when
-            List<TreeCategoryV1ApiResponse> response = mapper.toTreeResponse(results);
+            List<TreeCategoryV1ApiResponse> responses = mapper.toTreeListResponse(results);
 
             // then
-            assertThat(response).hasSize(1);
-            TreeCategoryV1ApiResponse parent = response.get(0);
-            assertThat(parent.children()).hasSize(2);
-            assertThat(parent.children().get(0).categoryName()).isEqualTo("상의");
-            assertThat(parent.children().get(1).categoryName()).isEqualTo("하의");
+            assertThat(responses).hasSize(2);
+            assertThat(responses.get(0).categoryId()).isEqualTo(100L);
+            assertThat(responses.get(0).children()).hasSize(1);
+            assertThat(responses.get(1).categoryId()).isEqualTo(200L);
         }
 
         @Test
-        @DisplayName("여러 트리 카테고리 결과 변환")
-        void shouldConvertMultipleTreeCategoryResults() {
-            // given
-            List<TreeCategoryResult> results = CategoryV1ApiFixtures.multipleTreeCategoryResults();
-
-            // when
-            List<TreeCategoryV1ApiResponse> response = mapper.toTreeResponse(results);
-
-            // then
-            assertThat(response).hasSize(3);
-            assertThat(response.get(0).categoryName()).isEqualTo("의류");
-            assertThat(response.get(1).categoryName()).isEqualTo("신발");
-            assertThat(response.get(2).categoryName()).isEqualTo("가방");
-        }
-
-        @Test
-        @DisplayName("빈 결과 리스트 변환")
-        void shouldConvertEmptyResultList() {
+        @DisplayName("빈 목록을 처리한다")
+        void toTreeListResponse_WithEmptyList_ReturnsEmptyList() {
             // given
             List<TreeCategoryResult> results = List.of();
 
             // when
-            List<TreeCategoryV1ApiResponse> response = mapper.toTreeResponse(results);
+            List<TreeCategoryV1ApiResponse> responses = mapper.toTreeListResponse(results);
 
             // then
-            assertThat(response).isEmpty();
+            assertThat(responses).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("toTreeResponse 메서드 테스트")
+    class ToTreeResponseTest {
+
+        @Test
+        @DisplayName("TreeCategoryResult를 TreeCategoryV1ApiResponse로 변환한다 (재귀)")
+        void toTreeResponse_Success() {
+            // given
+            TreeCategoryResult result = CategoryAdminApiFixtures.treeCategoryResult(100L);
+
+            // when
+            TreeCategoryV1ApiResponse response = mapper.toTreeResponse(result);
+
+            // then
+            assertThat(response.categoryId()).isEqualTo(100L);
+            assertThat(response.categoryName()).isEqualTo("의류");
+            assertThat(response.displayName()).isEqualTo("의류");
+            assertThat(response.categoryDepth()).isEqualTo(1);
+            assertThat(response.parentCategoryId()).isEqualTo(0L);
+            assertThat(response.children()).hasSize(1);
+            assertThat(response.children().get(0).categoryId()).isEqualTo(101L);
         }
 
         @Test
-        @DisplayName("트리 응답 필드 매핑 검증")
-        void shouldMapTreeResponseFieldsCorrectly() {
+        @DisplayName("null 값을 기본값으로 변환한다")
+        void toTreeResponse_WithNullValues_AppliesDefaults() {
             // given
-            TreeCategoryResult result =
-                    TreeCategoryResult.leaf(100L, "테스트카테고리", 10L, 2, true, "/10/100");
-            List<TreeCategoryResult> results = List.of(result);
+            TreeCategoryResult result = CategoryAdminApiFixtures.treeCategoryResultWithNulls();
 
             // when
-            List<TreeCategoryV1ApiResponse> response = mapper.toTreeResponse(results);
+            TreeCategoryV1ApiResponse response = mapper.toTreeResponse(result);
 
             // then
-            TreeCategoryV1ApiResponse categoryResponse = response.get(0);
-            assertThat(categoryResponse.categoryId()).isEqualTo(100L);
-            assertThat(categoryResponse.categoryName()).isEqualTo("테스트카테고리");
-            assertThat(categoryResponse.categoryDepth()).isEqualTo(2);
-            assertThat(categoryResponse.parentCategoryId()).isEqualTo(10L);
-            assertThat(categoryResponse.children()).isEmpty();
+            assertThat(response.categoryId()).isEqualTo(0L);
+            assertThat(response.categoryName()).isEmpty();
+            assertThat(response.displayName()).isEmpty();
+            assertThat(response.parentCategoryId()).isEqualTo(0L);
+            assertThat(response.children()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("자식이 없는 카테고리를 처리한다")
+        void toTreeResponse_WithNoChildren_ReturnsEmptyChildrenList() {
+            // given
+            TreeCategoryResult result = CategoryAdminApiFixtures.leafTreeCategoryResult(300L);
+
+            // when
+            TreeCategoryV1ApiResponse response = mapper.toTreeResponse(result);
+
+            // then
+            assertThat(response.children()).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("toTreeLeafResponse 메서드 테스트")
+    class ToTreeLeafResponseTest {
+
+        @Test
+        @DisplayName("TreeCategoryResult를 Leaf Response로 변환한다")
+        void toTreeLeafResponse_Success() {
+            // given
+            TreeCategoryResult result = CategoryAdminApiFixtures.leafTreeCategoryResult(300L);
+
+            // when
+            TreeCategoryV1ApiResponse response = mapper.toTreeLeafResponse(result);
+
+            // then
+            assertThat(response.categoryId()).isEqualTo(300L);
+            assertThat(response.categoryName()).isEqualTo("티셔츠");
+            assertThat(response.displayName()).isEqualTo("티셔츠");
+            assertThat(response.categoryDepth()).isEqualTo(3);
+            assertThat(response.parentCategoryId()).isEqualTo(200L);
+            assertThat(response.children()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("null 값을 기본값으로 변환하고 children은 빈 목록이다")
+        void toTreeLeafResponse_WithNullValues_AppliesDefaults() {
+            // given
+            TreeCategoryResult result = CategoryAdminApiFixtures.treeCategoryResultWithNulls();
+
+            // when
+            TreeCategoryV1ApiResponse response = mapper.toTreeLeafResponse(result);
+
+            // then
+            assertThat(response.categoryId()).isEqualTo(0L);
+            assertThat(response.categoryName()).isEmpty();
+            assertThat(response.displayName()).isEmpty();
+            assertThat(response.parentCategoryId()).isEqualTo(0L);
+            assertThat(response.children()).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("toPageResponse 메서드 테스트")
+    class ToPageResponseTest {
+
+        @Test
+        @DisplayName("CategoryPageResult를 CustomPageableV1ApiResponse로 변환한다")
+        void toPageResponse_Success() {
+            // given
+            CategoryPageResult pageResult = CategoryAdminApiFixtures.categoryPageResult();
+
+            // when
+            CustomPageableV1ApiResponse<ProductCategoryV1ApiResponse> response =
+                    mapper.toPageResponse(pageResult);
+
+            // then
+            assertThat(response.content()).hasSize(2);
+            assertThat(response.totalElements()).isEqualTo(50L);
+            assertThat(response.number()).isEqualTo(0);
+            assertThat(response.size()).isEqualTo(20);
+            assertThat(response.totalPages()).isEqualTo(3);
+        }
+
+        @Test
+        @DisplayName("빈 페이지를 처리한다")
+        void toPageResponse_WithEmptyPage_ReturnsEmptyResponse() {
+            // given
+            CategoryPageResult pageResult = CategoryAdminApiFixtures.categoryPageResultEmpty();
+
+            // when
+            CustomPageableV1ApiResponse<ProductCategoryV1ApiResponse> response =
+                    mapper.toPageResponse(pageResult);
+
+            // then
+            assertThat(response.content()).isEmpty();
+            assertThat(response.totalElements()).isEqualTo(0L);
+            assertThat(response.empty()).isTrue();
+        }
+    }
+
+    @Nested
+    @DisplayName("toProductResponse 메서드 테스트")
+    class ToProductResponseTest {
+
+        @Test
+        @DisplayName("CategoryResult를 ProductCategoryV1ApiResponse로 변환한다")
+        void toProductResponse_Success() {
+            // given
+            CategoryResult result = CategoryAdminApiFixtures.categoryResult(100L);
+
+            // when
+            ProductCategoryV1ApiResponse response = mapper.toProductResponse(result);
+
+            // then
+            assertThat(response.categoryId()).isEqualTo(100L);
+            assertThat(response.categoryName()).isEqualTo("티셔츠");
+            assertThat(response.displayName()).isEqualTo("티셔츠");
+            assertThat(response.categoryDepth()).isEqualTo(3);
+            assertThat(response.categoryFullPath()).isEqualTo("의류 > 상의 > 티셔츠");
+            assertThat(response.targetGroup()).isEqualTo("ALL");
+        }
+
+        @Test
+        @DisplayName("null 값을 기본값으로 변환한다")
+        void toProductResponse_WithNullValues_AppliesDefaults() {
+            // given
+            CategoryResult result = CategoryAdminApiFixtures.categoryResultWithNulls();
+
+            // when
+            ProductCategoryV1ApiResponse response = mapper.toProductResponse(result);
+
+            // then
+            assertThat(response.categoryId()).isEqualTo(0L);
+            assertThat(response.categoryName()).isEmpty();
+            assertThat(response.displayName()).isEmpty();
+            assertThat(response.categoryDepth()).isEqualTo(0);
+            assertThat(response.categoryFullPath()).isEmpty();
+            assertThat(response.targetGroup()).isEqualTo("ALL");
         }
     }
 }

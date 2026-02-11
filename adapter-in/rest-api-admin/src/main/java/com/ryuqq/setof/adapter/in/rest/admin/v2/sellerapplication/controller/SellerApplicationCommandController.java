@@ -3,7 +3,6 @@ package com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.controller;
 import com.ryuqq.setof.adapter.in.rest.admin.common.dto.ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.SellerApplicationAdminEndpoints;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.command.ApplySellerApplicationApiRequest;
-import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.command.ApproveSellerApplicationApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.command.RejectSellerApplicationApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.response.ApplySellerApplicationApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.response.ApproveSellerApplicationApiResponse;
@@ -112,7 +111,6 @@ public class SellerApplicationCommandController {
      * <p>대기 중인 입점 신청을 승인하고 셀러를 생성합니다.
      *
      * @param applicationId 신청 ID
-     * @param request 승인 요청 DTO
      * @return 생성된 셀러 ID
      */
     @Operation(summary = "셀러 입점 신청 승인", description = "대기 중인 입점 신청을 승인하고 셀러를 생성합니다.")
@@ -134,10 +132,9 @@ public class SellerApplicationCommandController {
     public ResponseEntity<ApiResponse<ApproveSellerApplicationApiResponse>> approve(
             @Parameter(description = "신청 ID", required = true)
                     @PathVariable(SellerApplicationAdminEndpoints.PATH_APPLICATION_ID)
-                    Long applicationId,
-            @Valid @RequestBody ApproveSellerApplicationApiRequest request) {
+                    Long applicationId) {
 
-        ApproveSellerApplicationCommand command = mapper.toCommand(applicationId, request);
+        ApproveSellerApplicationCommand command = mapper.toApproveCommand(applicationId);
         Long sellerId = approveUseCase.execute(command);
 
         return ResponseEntity.ok(ApiResponse.of(new ApproveSellerApplicationApiResponse(sellerId)));
@@ -174,7 +171,7 @@ public class SellerApplicationCommandController {
                     Long applicationId,
             @Valid @RequestBody RejectSellerApplicationApiRequest request) {
 
-        RejectSellerApplicationCommand command = mapper.toCommand(applicationId, request);
+        RejectSellerApplicationCommand command = mapper.toRejectCommand(applicationId, request);
         rejectUseCase.execute(command);
 
         return ResponseEntity.noContent().build();

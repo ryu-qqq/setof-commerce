@@ -95,6 +95,25 @@ public class SellerApplicationJpaEntity extends BaseAuditEntity {
     @Column(name = "contact_phone_number", nullable = false, length = 20)
     private String contactPhoneNumber;
 
+    // 정산 정보
+    @Column(name = "bank_code", length = 10)
+    private String bankCode;
+
+    @Column(name = "bank_name", nullable = false, length = 50)
+    private String bankName;
+
+    @Column(name = "account_number", nullable = false, length = 30)
+    private String accountNumber;
+
+    @Column(name = "account_holder_name", nullable = false, length = 50)
+    private String accountHolderName;
+
+    @Column(name = "settlement_cycle", nullable = false, length = 20)
+    private String settlementCycle;
+
+    @Column(name = "settlement_day", nullable = false)
+    private Integer settlementDay;
+
     // 동의 정보
     @Column(name = "agreed_at", nullable = false)
     private Instant agreedAt;
@@ -146,6 +165,12 @@ public class SellerApplicationJpaEntity extends BaseAuditEntity {
             String addressDetailAddress,
             String contactName,
             String contactPhoneNumber,
+            String bankCode,
+            String bankName,
+            String accountNumber,
+            String accountHolderName,
+            String settlementCycle,
+            Integer settlementDay,
             Instant agreedAt,
             ApplicationStatusJpaValue status,
             Instant appliedAt,
@@ -177,6 +202,12 @@ public class SellerApplicationJpaEntity extends BaseAuditEntity {
         this.addressDetailAddress = addressDetailAddress;
         this.contactName = contactName;
         this.contactPhoneNumber = contactPhoneNumber;
+        this.bankCode = bankCode;
+        this.bankName = bankName;
+        this.accountNumber = accountNumber;
+        this.accountHolderName = accountHolderName;
+        this.settlementCycle = settlementCycle;
+        this.settlementDay = settlementDay;
         this.agreedAt = agreedAt;
         this.status = status;
         this.appliedAt = appliedAt;
@@ -208,6 +239,12 @@ public class SellerApplicationJpaEntity extends BaseAuditEntity {
             String addressDetailAddress,
             String contactName,
             String contactPhoneNumber,
+            String bankCode,
+            String bankName,
+            String accountNumber,
+            String accountHolderName,
+            String settlementCycle,
+            Integer settlementDay,
             Instant agreedAt,
             ApplicationStatusJpaValue status,
             Instant appliedAt,
@@ -239,6 +276,12 @@ public class SellerApplicationJpaEntity extends BaseAuditEntity {
                 addressDetailAddress,
                 contactName,
                 contactPhoneNumber,
+                bankCode,
+                bankName,
+                accountNumber,
+                accountHolderName,
+                settlementCycle,
+                settlementDay,
                 agreedAt,
                 status,
                 appliedAt,
@@ -332,6 +375,30 @@ public class SellerApplicationJpaEntity extends BaseAuditEntity {
 
     public String getContactPhoneNumber() {
         return contactPhoneNumber;
+    }
+
+    public String getBankCode() {
+        return bankCode;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public String getAccountHolderName() {
+        return accountHolderName;
+    }
+
+    public String getSettlementCycle() {
+        return settlementCycle;
+    }
+
+    public Integer getSettlementDay() {
+        return settlementDay;
     }
 
     public Instant getAgreedAt() {

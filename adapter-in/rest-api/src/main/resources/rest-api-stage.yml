@@ -1,0 +1,54 @@
+# ============================================================
+# REST API Adapter 스테이지 환경 설정
+# ============================================================
+# 활성화: spring.profiles.active=stage
+#
+# @since 1.0.0
+# ============================================================
+
+# ============================================================
+# API Documentation (스테이지: 활성화)
+# ============================================================
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    display-request-duration: true
+    try-it-out-enabled: true
+  cache:
+    disabled: false
+
+# ============================================================
+# Error Response (스테이지: 상세 URL 제공)
+# ============================================================
+api:
+  server:
+    url: https://stage-api.set-of.com
+  error:
+    base-url: ${API_ERROR_DOCS_URL:https://stage-api.set-of.com/problems}
+    use-about-blank: false
+
+# ============================================================
+# Security (스테이지: HTTPS 강제)
+# ============================================================
+security:
+  cookie:
+    secure: true
+    domain: ${COOKIE_DOMAIN}
+
+  cors:
+    allowed-origins:
+      - ${CORS_ALLOWED_ORIGINS:https://stage.setof.io}
+
+# ============================================================
+# Logging (스테이지: INFO 레벨)
+# ============================================================
+logging:
+  level:
+    com.ryuqq.setof.adapter.in.rest: INFO
+    org.springframework.security: WARN
+    org.springframework.web: INFO

@@ -14,7 +14,8 @@ import com.ryuqq.setof.domain.common.vo.QueryContext;
  * @param displayed 표시 여부 필터 (null이면 전체)
  * @param targetGroup 타겟 그룹 필터 (null이면 전체)
  * @param categoryType 카테고리 타입 필터 (null이면 전체)
- * @param categoryName 카테고리명 검색 (null이면 전체)
+ * @param searchField 검색 필드 (null이면 전체 필드 검색)
+ * @param searchWord 검색어 (null이면 전체)
  * @param queryContext 정렬 및 페이징 정보
  * @author ryu-qqq
  * @since 1.0.0
@@ -24,7 +25,8 @@ public record CategorySearchCriteria(
         Boolean displayed,
         TargetGroup targetGroup,
         CategoryType categoryType,
-        String categoryName,
+        CategorySearchField searchField,
+        String searchWord,
         QueryContext<CategorySortKey> queryContext) {
 
     /** Compact Constructor - null 방어 */
@@ -32,10 +34,10 @@ public record CategorySearchCriteria(
         if (queryContext == null) {
             queryContext = QueryContext.defaultOf(CategorySortKey.defaultKey());
         }
-        if (categoryName != null) {
-            categoryName = categoryName.trim();
-            if (categoryName.isBlank()) {
-                categoryName = null;
+        if (searchWord != null) {
+            searchWord = searchWord.trim();
+            if (searchWord.isBlank()) {
+                searchWord = null;
             }
         }
     }
@@ -47,7 +49,8 @@ public record CategorySearchCriteria(
      * @param displayed 표시 여부 필터 (null이면 전체)
      * @param targetGroup 타겟 그룹 필터 (null이면 전체)
      * @param categoryType 카테고리 타입 필터 (null이면 전체)
-     * @param categoryName 카테고리명 검색 (null이면 전체)
+     * @param searchField 검색 필드 (null이면 전체 필드 검색)
+     * @param searchWord 검색어 (null이면 전체)
      * @param queryContext 정렬 및 페이징 정보
      * @return CategorySearchCriteria
      */
@@ -56,10 +59,17 @@ public record CategorySearchCriteria(
             Boolean displayed,
             TargetGroup targetGroup,
             CategoryType categoryType,
-            String categoryName,
+            CategorySearchField searchField,
+            String searchWord,
             QueryContext<CategorySortKey> queryContext) {
         return new CategorySearchCriteria(
-                parentCategoryId, displayed, targetGroup, categoryType, categoryName, queryContext);
+                parentCategoryId,
+                displayed,
+                targetGroup,
+                categoryType,
+                searchField,
+                searchWord,
+                queryContext);
     }
 
     /**
@@ -69,7 +79,13 @@ public record CategorySearchCriteria(
      */
     public static CategorySearchCriteria defaultOf() {
         return new CategorySearchCriteria(
-                null, null, null, null, null, QueryContext.defaultOf(CategorySortKey.defaultKey()));
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                QueryContext.defaultOf(CategorySortKey.defaultKey()));
     }
 
     /**
@@ -81,6 +97,7 @@ public record CategorySearchCriteria(
     public static CategorySearchCriteria byParent(CategoryId parentCategoryId) {
         return new CategorySearchCriteria(
                 parentCategoryId,
+                null,
                 null,
                 null,
                 null,
@@ -100,6 +117,7 @@ public record CategorySearchCriteria(
                 null,
                 null,
                 null,
+                null,
                 QueryContext.defaultOf(CategorySortKey.defaultKey()));
     }
 
@@ -113,9 +131,14 @@ public record CategorySearchCriteria(
         return displayed != null;
     }
 
-    /** 카테고리명 검색 조건이 있는지 확인 */
-    public boolean hasCategoryNameFilter() {
-        return categoryName != null && !categoryName.isBlank();
+    /** 검색 조건이 있는지 확인 */
+    public boolean hasSearchCondition() {
+        return searchWord != null && !searchWord.isBlank();
+    }
+
+    /** 특정 필드 검색인지 확인 */
+    public boolean hasSearchField() {
+        return searchField != null;
     }
 
     /** 페이지 크기 반환 (편의 메서드) */

@@ -33,6 +33,22 @@ include::{snippets}/update-seller-test/update-seller_-success/request-fields.ado
 === Response
 include::{snippets}/update-seller-test/update-seller_-success/http-response.adoc[]
 
+[[seller-update-full]]
+== PUT 셀러 전체 수정
+
+`PUT /api/v2/admin/sellers/{sellerId}`
+
+include::{snippets}/update-seller-full-test/update-seller-full_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/update-seller-full-test/update-seller-full_-success/path-parameters.adoc[]
+
+=== Request Fields
+include::{snippets}/update-seller-full-test/update-seller-full_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/update-seller-full-test/update-seller-full_-success/http-response.adoc[]
+
 [[seller-get]]
 == GET 셀러 상세 조회
 

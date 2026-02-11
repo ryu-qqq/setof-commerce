@@ -1,22 +1,22 @@
 package com.ryuqq.setof.adapter.in.rest.v1.category.mapper;
 
-import com.ryuqq.setof.adapter.in.rest.v1.category.dto.response.CategoryDisplayV1ApiResponse;
+import com.ryuqq.setof.adapter.in.rest.v1.category.dto.response.TreeCategoryV1ApiResponse;
 import com.ryuqq.setof.application.category.dto.response.CategoryDisplayResult;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
- * CategoryV1ApiMapper - V1 Public 카테고리 API 매퍼.
+ * CategoryV1ApiMapper - 카테고리 V1 API Request/Response 변환 매퍼.
  *
- * <p>Application Layer의 결과를 V1 Public API 응답으로 변환합니다.
+ * <p>API-MAP-001: Mapper는 @Component로 등록.
  *
- * <p>레거시 CategoryDisplayDto와 동일한 구조로 변환합니다.
+ * <p>API-MAP-002: 양방향 변환 지원.
  *
- * <p>API-MAP-001: Mapper는 @Component로 정의.
+ * <p>API-MAP-003: Application Result → API Response 변환.
  *
- * <p>API-MAP-002: 순수 변환 로직만 포함 (비즈니스 로직 금지).
+ * <p>API-MAP-005: 순수 변환 로직만.
  *
- * <p>API-MAP-003: null-safe 변환 필수.
+ * <p>레거시 CategoryController.getCategories 흐름 변환.
  *
  * @author ryu-qqq
  * @since 1.0.0
@@ -25,34 +25,39 @@ import org.springframework.stereotype.Component;
 public class CategoryV1ApiMapper {
 
     /**
-     * CategoryDisplayResult 목록을 V1 카테고리 응답 목록으로 변환.
+     * CategoryDisplayResult 목록 → TreeCategoryV1ApiResponse 목록 변환.
      *
-     * <p>레거시 CategoryDisplayDto와 동일한 필드로 변환합니다.
+     * <p>트리 구조를 재귀적으로 변환합니다.
      *
-     * @param results UseCase 실행 결과
-     * @return V1 호환 카테고리 목록
+     * @param results CategoryDisplayResult 트리 목록
+     * @return TreeCategoryV1ApiResponse 트리 목록
      */
-    public List<CategoryDisplayV1ApiResponse> toListResponse(List<CategoryDisplayResult> results) {
+    public List<TreeCategoryV1ApiResponse> toListResponse(List<CategoryDisplayResult> results) {
         return results.stream().map(this::toResponse).toList();
     }
 
     /**
-     * CategoryDisplayResult를 V1 카테고리 응답으로 재귀 변환.
+     * CategoryDisplayResult → TreeCategoryV1ApiResponse 변환.
      *
-     * <p>레거시 CategoryDisplayDto와 동일한 필드로 변환합니다.
+     * <p>자식 노드를 재귀적으로 변환합니다.
      *
-     * @param result 카테고리 조회 결과
-     * @return V1 호환 카테고리 응답
+     * @param result CategoryDisplayResult
+     * @return TreeCategoryV1ApiResponse
      */
-    private CategoryDisplayV1ApiResponse toResponse(CategoryDisplayResult result) {
-        List<CategoryDisplayV1ApiResponse> children =
-                result.children().stream().map(this::toResponse).toList();
+    public TreeCategoryV1ApiResponse toResponse(CategoryDisplayResult result) {
+        List<TreeCategoryV1ApiResponse> children =
+                result.children() != null && !result.children().isEmpty()
+                        ? result.children().stream().map(this::toResponse).toList()
+                        : List.of();
 
-        return new CategoryDisplayV1ApiResponse(
-                result.categoryId(),
-                result.categoryName(),
+        long categoryId = result.categoryId() != null ? result.categoryId() : 0L;
+        long parentCategoryId = result.parentCategoryId() != null ? result.parentCategoryId() : 0L;
+
+        return new TreeCategoryV1ApiResponse(
+                categoryId,
+                result.categoryName() != null ? result.categoryName() : "",
                 result.depth(),
-                result.parentCategoryId(),
+                parentCategoryId,
                 children);
     }
 }

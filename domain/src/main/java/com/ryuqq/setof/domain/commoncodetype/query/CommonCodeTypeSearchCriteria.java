@@ -14,35 +14,52 @@ import com.ryuqq.setof.domain.common.vo.QueryContext;
  * CommonCodeTypeSearchCriteria criteria = CommonCodeTypeSearchCriteria.of(
  *     true,
  *     null,
+ *     null,
+ *     null,
  *     QueryContext.defaultOf(CommonCodeTypeSortKey.CREATED_AT)
  * );
  *
- * // 키워드 검색
+ * // 검색 필드 + 검색어
  * CommonCodeTypeSearchCriteria criteria = CommonCodeTypeSearchCriteria.of(
  *     null,
+ *     CommonCodeTypeSearchField.CODE,
  *     "결제",
+ *     null,
  *     QueryContext.firstPage(CommonCodeTypeSortKey.CREATED_AT, SortDirection.DESC, 10)
  * );
  * }</pre>
  *
  * @param active 활성화 상태 필터 (null이면 전체)
- * @param keyword 검색 키워드 (코드, 이름에서 검색, null이면 전체)
+ * @param searchField 검색 필드 (null이면 전체 필드 검색)
+ * @param searchWord 검색어 (null/blank이면 검색 미적용)
+ * @param type 공통 코드 값(CommonCodeValue) 필터 (null이면 미적용)
  * @param queryContext 정렬 및 페이징 정보
  */
 public record CommonCodeTypeSearchCriteria(
-        Boolean active, String keyword, QueryContext<CommonCodeTypeSortKey> queryContext) {
+        Boolean active,
+        CommonCodeTypeSearchField searchField,
+        String searchWord,
+        String type,
+        QueryContext<CommonCodeTypeSortKey> queryContext) {
 
     /**
      * 검색 조건 생성
      *
      * @param active 활성화 상태 필터 (null이면 전체)
-     * @param keyword 검색 키워드 (null이면 전체)
+     * @param searchField 검색 필드 (null이면 전체)
+     * @param searchWord 검색어 (null이면 미적용)
+     * @param type 공통 코드 값 필터 (null이면 미적용)
      * @param queryContext 정렬 및 페이징 정보
      * @return CommonCodeTypeSearchCriteria
      */
     public static CommonCodeTypeSearchCriteria of(
-            Boolean active, String keyword, QueryContext<CommonCodeTypeSortKey> queryContext) {
-        return new CommonCodeTypeSearchCriteria(active, keyword, queryContext);
+            Boolean active,
+            CommonCodeTypeSearchField searchField,
+            String searchWord,
+            String type,
+            QueryContext<CommonCodeTypeSortKey> queryContext) {
+        return new CommonCodeTypeSearchCriteria(
+                active, searchField, searchWord, type, queryContext);
     }
 
     /**
@@ -52,7 +69,7 @@ public record CommonCodeTypeSearchCriteria(
      */
     public static CommonCodeTypeSearchCriteria defaultCriteria() {
         return new CommonCodeTypeSearchCriteria(
-                null, null, QueryContext.defaultOf(CommonCodeTypeSortKey.defaultKey()));
+                null, null, null, null, QueryContext.defaultOf(CommonCodeTypeSortKey.defaultKey()));
     }
 
     /**
@@ -62,12 +79,22 @@ public record CommonCodeTypeSearchCriteria(
      */
     public static CommonCodeTypeSearchCriteria activeOnly() {
         return new CommonCodeTypeSearchCriteria(
-                true, null, QueryContext.defaultOf(CommonCodeTypeSortKey.defaultKey()));
+                true, null, null, null, QueryContext.defaultOf(CommonCodeTypeSortKey.defaultKey()));
     }
 
-    /** 키워드 검색 조건이 있는지 확인 */
-    public boolean hasKeyword() {
-        return keyword != null && !keyword.isBlank();
+    /** 검색어 조건이 있는지 확인 */
+    public boolean hasSearchWord() {
+        return searchWord != null && !searchWord.isBlank();
+    }
+
+    /** 검색 필드가 지정되었는지 확인 */
+    public boolean hasSearchField() {
+        return searchField != null;
+    }
+
+    /** 공통 코드 값(type) 필터가 있는지 확인 */
+    public boolean hasType() {
+        return type != null && !type.isBlank();
     }
 
     /** 활성화 상태 필터가 있는지 확인 */

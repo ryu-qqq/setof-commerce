@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import java.util.List;
 
 /**
  * SearchSellerApplicationsApiRequest - 셀러 입점 신청 목록 검색 요청 DTO.
@@ -17,8 +18,10 @@ import jakarta.validation.constraints.Min;
  */
 @Schema(description = "셀러 입점 신청 검색 요청 DTO")
 public record SearchSellerApplicationsApiRequest(
-        @Parameter(description = "신청 상태 (PENDING, APPROVED, REJECTED)", example = "PENDING")
-                String status,
+        @Parameter(
+                        description = "신청 상태 목록 (PENDING, APPROVED, REJECTED). 복수 선택 가능",
+                        example = "PENDING")
+                List<String> status,
         @Parameter(description = "검색 필드 (sellerName, companyName)", example = "sellerName")
                 String searchField,
         @Parameter(description = "검색어", example = "테스트") String searchWord,

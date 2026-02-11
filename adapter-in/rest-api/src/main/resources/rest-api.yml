@@ -1,35 +1,96 @@
-# ===============================================
-# REST API Adapter Configuration
-# ===============================================
-# REST API 어댑터 전용 설정
-# 애플리케이션 런타임 설정은 bootstrap/bootstrap-web-api/application.yml 참조
-#
-# 설정 범위:
-# - Security: JWT, CORS, OAuth2
-# - OpenAPI: Swagger UI, API Docs
-# - Error: RFC 7807 Problem Details
+# ============================================================
+# REST API Adapter 공통 설정
+# ============================================================
+# 환경별 설정은 rest-api-{profile}.yml 참조
+# - rest-api-local.yml: 로컬 개발 환경
+# - rest-api-stage.yml: 스테이지 환경
+# - rest-api-prod.yml: 운영 환경
 #
 # @since 1.0.0
-# ===============================================
+# ============================================================
 
-# ===============================================
+spring:
+  # ============================================================
+  # MessageSource (i18n)
+  # ============================================================
+  messages:
+    basename: messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
+
+  # ============================================================
+  # Jackson (JSON 직렬화/역직렬화)
+  # ============================================================
+  jackson:
+    date-format: yyyy-MM-dd'T'HH:mm:ss
+    time-zone: Asia/Seoul
+
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+      FAIL_ON_EMPTY_BEANS: false
+
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: false
+
+    default-property-inclusion: non_null
+
+  # ============================================================
+  # Web Configuration
+  # ============================================================
+  web:
+    locale: ko_KR
+    locale-resolver: fixed
+
+  # ============================================================
+  # MVC Configuration
+  # ============================================================
+  mvc:
+    contentnegotiation:
+      favor-parameter: false
+      favor-path-extension: false
+
+  # ============================================================
+  # OAuth2 Configuration (Spring Security)
+  # ============================================================
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID:your-kakao-client-id}
+            client-secret: ${KAKAO_CLIENT_SECRET:your-kakao-client-secret}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - profile_nickname
+              - account_email
+              - gender
+              - name
+              - birthday
+              - birthyear
+              - phone_number
+            client-name: Kakao
+
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+# ============================================================
 # Error Response Configuration (RFC 7807)
-# ===============================================
+# ============================================================
 # @see com.ryuqq.adapter.in.rest.common.controller.GlobalExceptionHandler
 api:
   error:
-    # 에러 타입 문서 베이스 URL
-    # 프로덕션: https://api.example.com/problems
-    # 개발: about:blank (기본값)
     base-url: about:blank
-
-    # about:blank 사용 여부 (true: 문서 URL 무시, false: base-url 사용)
     use-about-blank: true
 
-# ===============================================
+# ============================================================
 # Security Configuration
-# ===============================================
-# @see com.ryuqq.adapter.in.rest.auth.config.SecurityProperties
+# ============================================================
 security:
   # 공개 엔드포인트 (인증 없이 접근 가능)
   public-endpoints:
@@ -59,7 +120,9 @@ security:
     - pattern: /oauth2/**
     - pattern: /login/oauth2/**
     # 공개 API (v1 - 비회원도 접근 가능)
+    - pattern: /api/v1/brand/**
     - pattern: /api/v1/brands/**
+    - pattern: /api/v1/category/**
     - pattern: /api/v1/categories/**
     - pattern: /api/v1/products/**
     - pattern: /api/v1/displays/**
@@ -75,8 +138,8 @@ security:
   # Cookie 설정
   cookie:
     domain: ${COOKIE_DOMAIN:localhost}
-    secure: ${COOKIE_SECURE:false}  # 프로덕션에서는 true
-    same-site: lax  # CSRF 보호를 위해 lax 또는 strict
+    secure: ${COOKIE_SECURE:false}
+    same-site: lax
 
   # CORS 설정
   cors:
@@ -98,108 +161,22 @@ security:
       - X-Request-Id
     allow-credentials: true
 
-# ===============================================
-# OAuth2 Configuration (Spring Security)
-# ===============================================
-spring:
-  security:
-    oauth2:
-      client:
-        registration:
-          kakao:
-            client-id: ${KAKAO_CLIENT_ID:your-kakao-client-id}
-            client-secret: ${KAKAO_CLIENT_SECRET:your-kakao-client-secret}
-            client-authentication-method: client_secret_post
-            authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-            scope:
-              - profile_nickname
-              - account_email
-              - gender
-              - name
-              - birthday
-              - birthyear
-              - phone_number
-            client-name: Kakao
-
-        provider:
-          kakao:
-            authorization-uri: https://kauth.kakao.com/oauth/authorize
-            token-uri: https://kauth.kakao.com/oauth/token
-            user-info-uri: https://kapi.kakao.com/v2/user/me
-            user-name-attribute: id
-
-# ===============================================
+# ============================================================
 # API Documentation (Springdoc OpenAPI)
-# ===============================================
+# ============================================================
 springdoc:
   api-docs:
     enabled: true
     path: /v3/api-docs
 
   swagger-ui:
-    enabled: true
-    path: /swagger-ui.html
-    operations-sorter: method
-    tags-sorter: alpha
-    # Deep Linking 지원
-    display-request-duration: true
-    # Try it out 기본 활성화
-    try-it-out-enabled: true
+    enabled: false
 
-  # 스캔 대상 패키지
   packages-to-scan:
     - com.ryuqq.setof.adapter.in.rest
 
-  # 기본 Content-Type
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
 
-  # Cache 비활성화 (개발 환경)
   cache:
     disabled: true
-
-# ===============================================
-# Profile-Specific Configurations
-# ===============================================
----
-# Production 환경
-spring:
-  config:
-    activate:
-      on-profile: prod
-
-springdoc:
-  # 프로덕션에서 Swagger UI 비활성화
-  swagger-ui:
-    enabled: false
-  api-docs:
-    enabled: false
-
-security:
-  cookie:
-    secure: true  # HTTPS 필수
-    same-site: strict  # 더 엄격한 CSRF 보호
-
----
-# Stage 환경
-spring:
-  config:
-    activate:
-      on-profile: stage
-
-springdoc:
-  # Stage에서는 Swagger UI 활성화 (내부 테스트용)
-  swagger-ui:
-    enabled: true
-  api-docs:
-    enabled: true
-
-security:
-  cookie:
-    secure: true
-    domain: ${COOKIE_DOMAIN}
-
-  cors:
-    allowed-origins:
-      - ${CORS_ALLOWED_ORIGINS:https://stage.setof.io}

@@ -19,7 +19,9 @@ import jakarta.validation.constraints.Min;
  * <p>기본값 처리는 Mapper에서 수행합니다. Request DTO에서는 기본값 설정 금지.
  *
  * @param active 활성화 여부 필터 (null이면 전체 조회)
- * @param keyword 검색 키워드 (코드, 이름에서 검색)
+ * @param searchField 검색 필드 (null: 전체 필드, code: 코드, name: 이름)
+ * @param searchWord 검색어
+ * @param type 공통 코드 값(CommonCodeValue) 필터 - 있으면 해당 값을 가진 공통코드를 갖는 타입만 조회, null이면 미적용
  * @param sortKey 정렬 키 (CREATED_AT, DISPLAY_ORDER, CODE)
  * @param sortDirection 정렬 방향 (ASC, DESC)
  * @param page 페이지 번호 (0부터 시작)
@@ -32,9 +34,17 @@ public record SearchCommonCodeTypesPageApiRequest(
         @Parameter(description = "활성화 여부 필터", example = "true")
                 @Schema(description = "활성화 여부 필터", nullable = true)
                 Boolean active,
-        @Parameter(description = "검색 키워드 (코드, 이름)", example = "결제")
-                @Schema(description = "검색 키워드 (코드, 이름에서 검색)", nullable = true)
-                String keyword,
+        @Parameter(
+                        description = "검색 필드 (null: 전체 필드)",
+                        example = "code",
+                        schema = @Schema(allowableValues = {"code", "name"}))
+                String searchField,
+        @Parameter(description = "검색어", example = "결제") String searchWord,
+        @Parameter(
+                        description = "공통 코드 값(CommonCodeValue) 필터 - 해당 값을 가진 공통코드를 갖는 타입만 조회 (선택)",
+                        example = "CARD")
+                @Schema(description = "공통 코드 값 필터 (선택)", nullable = true)
+                String type,
         @Parameter(description = "정렬 키 (CREATED_AT, DISPLAY_ORDER, CODE)", example = "CREATED_AT")
                 @Schema(description = "정렬 키", nullable = true)
                 String sortKey,

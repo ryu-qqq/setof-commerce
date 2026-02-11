@@ -1,13 +1,13 @@
 package com.ryuqq.setof.adapter.in.rest.v1.category;
 
 /**
- * CategoryV1Endpoints - 카테고리 V1 API 엔드포인트 상수.
+ * CategoryV1Endpoints - 카테고리 V1 Public API 엔드포인트 상수.
  *
- * <p>레거시 호환을 위한 V1 엔드포인트 정의.
+ * <p>API-END-001: Endpoints final class + private 생성자.
  *
- * <p>API-END-001: Endpoints final class
+ * <p>API-END-002: static final 상수.
  *
- * <p>API-END-002: static final 상수
+ * <p>레거시 CategoryController 경로 호환: /api/v1/category
  *
  * @author ryu-qqq
  * @since 1.0.0
@@ -22,9 +22,9 @@ public final class CategoryV1Endpoints {
     public static final String BASE_V1 = "/api/v1";
 
     // ========================================================================
-    // 카테고리 조회 경로
+    // 카테고리 경로
     // ========================================================================
 
-    /** 전체 카테고리 트리 조회 경로 */
+    /** 카테고리 트리 조회 경로 (GET /api/v1/category) */
     public static final String CATEGORY = BASE_V1 + "/category";
 }

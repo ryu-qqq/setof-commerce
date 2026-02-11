@@ -1,7 +1,7 @@
 package com.ryuqq.setof.adapter.in.scheduler.aspect;
 
 import com.ryuqq.setof.adapter.in.scheduler.annotation.SchedulerJob;
-import com.ryuqq.setof.application.common.dto.BatchProcessingResult;
+import com.ryuqq.setof.application.common.dto.result.SchedulerBatchProcessingResult;
 import java.util.UUID;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -60,14 +60,14 @@ public class SchedulerLoggingAspect {
     }
 
     private void logResult(String jobName, Object result) {
-        if (result instanceof BatchProcessingResult batchResult) {
+        if (result instanceof SchedulerBatchProcessingResult batchResult) {
             logBatchResult(jobName, batchResult);
         } else {
             log.info("[{}] 스케줄러 작업 완료", jobName);
         }
     }
 
-    private void logBatchResult(String jobName, BatchProcessingResult result) {
+    private void logBatchResult(String jobName, SchedulerBatchProcessingResult result) {
         if (result.total() == 0) {
             log.info("[{}] 스케줄러 작업 완료 - 처리 대상 없음", jobName);
             return;

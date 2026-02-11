@@ -19,8 +19,4 @@ public record RejectSellerApplicationApiRequest(
         @Schema(description = "거절 사유", example = "서류 미비", required = true)
                 @NotBlank(message = "거절 사유는 필수입니다.")
                 @Size(max = 500, message = "거절 사유는 500자 이하여야 합니다.")
-                String rejectionReason,
-        @Schema(description = "처리자 식별자 (이메일 등)", example = "admin@example.com", required = true)
-                @NotBlank(message = "처리자 정보는 필수입니다.")
-                @Size(max = 100, message = "처리자 정보는 100자 이하여야 합니다.")
-                String processedBy) {}
+                String rejectionReason) {}

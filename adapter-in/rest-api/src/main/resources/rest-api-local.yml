@@ -1,0 +1,47 @@
+# ============================================================
+# REST API Adapter 로컬 개발 환경 설정
+# ============================================================
+# 활성화: spring.profiles.active=local
+#
+# @since 1.0.0
+# ============================================================
+
+# ============================================================
+# API Documentation (로컬: 전체 활성화)
+# ============================================================
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    display-request-duration: true
+    try-it-out-enabled: true
+  cache:
+    disabled: true
+
+# ============================================================
+# API Server URL (로컬)
+# ============================================================
+api:
+  server:
+    url: http://localhost:8080
+
+# ============================================================
+# Security Cookie (로컬: HTTP 허용)
+# ============================================================
+security:
+  cookie:
+    secure: false
+    same-site: lax
+
+# ============================================================
+# Logging (로컬: 상세 로깅)
+# ============================================================
+logging:
+  level:
+    com.ryuqq.setof.adapter.in.rest: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG

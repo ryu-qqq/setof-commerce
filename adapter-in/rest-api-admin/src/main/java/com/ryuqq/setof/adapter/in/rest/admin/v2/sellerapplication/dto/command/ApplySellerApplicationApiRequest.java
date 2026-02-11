@@ -3,8 +3,11 @@ package com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.command;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 /**
@@ -23,7 +26,9 @@ public record ApplySellerApplicationApiRequest(
         @Schema(description = "사업자 정보", required = true) @NotNull @Valid BusinessInfo businessInfo,
         @Schema(description = "CS 연락처 정보", required = true) @NotNull @Valid CsContactInfo csContact,
         @Schema(description = "반품지 주소 정보", required = true) @NotNull @Valid
-                AddressInfo returnAddress) {
+                AddressInfo returnAddress,
+        @Schema(description = "정산 정보", required = true) @NotNull @Valid
+                SettlementInfo settlementInfo) {
 
     @Schema(description = "셀러 기본 정보")
     public record SellerInfo(
@@ -110,4 +115,34 @@ public record ApplySellerApplicationApiRequest(
             @Schema(description = "전화번호", example = "010-1234-5678")
                     @Size(max = 20, message = "전화번호는 20자 이하여야 합니다.")
                     String phone) {}
+
+    @Schema(description = "정산 정보")
+    public record SettlementInfo(
+            @Schema(description = "은행 코드", example = "088")
+                    @Size(max = 10, message = "은행 코드는 10자 이하여야 합니다.")
+                    String bankCode,
+            @Schema(description = "은행명", example = "신한은행", required = true)
+                    @NotBlank(message = "은행명은 필수입니다.")
+                    @Size(max = 50, message = "은행명은 50자 이하여야 합니다.")
+                    String bankName,
+            @Schema(description = "계좌번호", example = "110123456789", required = true)
+                    @NotBlank(message = "계좌번호는 필수입니다.")
+                    @Size(max = 30, message = "계좌번호는 30자 이하여야 합니다.")
+                    @Pattern(regexp = "^[0-9]+$", message = "계좌번호는 숫자만 입력 가능합니다.")
+                    String accountNumber,
+            @Schema(description = "예금주", example = "홍길동", required = true)
+                    @NotBlank(message = "예금주는 필수입니다.")
+                    @Size(max = 50, message = "예금주는 50자 이하여야 합니다.")
+                    String accountHolderName,
+            @Schema(description = "정산 주기", example = "MONTHLY", required = true)
+                    @NotBlank(message = "정산 주기는 필수입니다.")
+                    @Pattern(
+                            regexp = "^(WEEKLY|BIWEEKLY|MONTHLY)$",
+                            message = "정산 주기는 WEEKLY, BIWEEKLY, MONTHLY 중 하나여야 합니다.")
+                    String settlementCycle,
+            @Schema(description = "정산일", example = "1", required = true)
+                    @NotNull(message = "정산일은 필수입니다.")
+                    @Min(value = 1, message = "정산일은 1 이상이어야 합니다.")
+                    @Max(value = 31, message = "정산일은 31 이하여야 합니다.")
+                    Integer settlementDay) {}
 }

@@ -7,6 +7,7 @@ import com.ryuqq.setof.application.brand.dto.query.BrandDisplaySearchParams;
 import com.ryuqq.setof.application.brand.dto.query.BrandSearchParams;
 import com.ryuqq.setof.application.common.factory.CommonVoFactory;
 import com.ryuqq.setof.domain.brand.query.BrandSearchCriteria;
+import com.ryuqq.setof.domain.brand.query.BrandSearchField;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -33,7 +34,8 @@ class BrandQueryFactoryTest {
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.brandName()).isEqualTo("테스트브랜드");
+            assertThat(result.searchField()).isEqualTo(BrandSearchField.BRAND_NAME);
+            assertThat(result.searchWord()).isEqualTo("테스트브랜드");
             assertThat(result.queryContext()).isNotNull();
         }
 
@@ -68,7 +70,8 @@ class BrandQueryFactoryTest {
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.brandName()).isEqualTo("테스트브랜드");
+            assertThat(result.searchField()).isEqualTo(BrandSearchField.BRAND_NAME);
+            assertThat(result.searchWord()).isEqualTo("테스트브랜드");
             assertThat(result.displayed()).isTrue();
         }
 

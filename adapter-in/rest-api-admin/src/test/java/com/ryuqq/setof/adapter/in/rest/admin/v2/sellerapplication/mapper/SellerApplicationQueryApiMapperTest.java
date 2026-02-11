@@ -10,6 +10,7 @@ import com.ryuqq.setof.application.sellerapplication.dto.query.SellerApplication
 import com.ryuqq.setof.application.sellerapplication.dto.response.SellerApplicationPageResult;
 import com.ryuqq.setof.application.sellerapplication.dto.response.SellerApplicationResult;
 import com.ryuqq.setof.domain.sellerapplication.vo.ApplicationStatus;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -45,17 +46,40 @@ class SellerApplicationQueryApiMapperTest {
             // given
             SearchSellerApplicationsApiRequest request =
                     new SearchSellerApplicationsApiRequest(
-                            "PENDING", "sellerName", "테스트", "id", "ASC", 1, 10);
+                            List.of("PENDING"), "sellerName", "테스트", "id", "ASC", 1, 10);
 
             // when
             SellerApplicationSearchParams params = mapper.toSearchParams(request);
 
             // then
-            assertThat(params.status()).isEqualTo(ApplicationStatus.PENDING);
+            assertThat(params.status()).containsExactly(ApplicationStatus.PENDING);
             assertThat(params.searchField()).isEqualTo("sellerName");
             assertThat(params.searchWord()).isEqualTo("테스트");
             assertThat(params.searchParams().page()).isEqualTo(1);
             assertThat(params.searchParams().size()).isEqualTo(10);
+        }
+
+        @Test
+        @DisplayName("복수 상태 검색 요청을 변환한다")
+        void toSearchParams_MultipleStatus_Success() {
+            // given
+            SearchSellerApplicationsApiRequest request =
+                    new SearchSellerApplicationsApiRequest(
+                            List.of("PENDING", "APPROVED"),
+                            "sellerName",
+                            "테스트",
+                            "id",
+                            "ASC",
+                            0,
+                            20);
+
+            // when
+            SellerApplicationSearchParams params = mapper.toSearchParams(request);
+
+            // then
+            assertThat(params.status())
+                    .containsExactlyInAnyOrder(
+                            ApplicationStatus.PENDING, ApplicationStatus.APPROVED);
         }
 
         @Test
@@ -70,7 +94,7 @@ class SellerApplicationQueryApiMapperTest {
             SellerApplicationSearchParams params = mapper.toSearchParams(request);
 
             // then
-            assertThat(params.status()).isNull();
+            assertThat(params.status()).isEmpty();
             assertThat(params.searchParams().page()).isEqualTo(0);
             assertThat(params.searchParams().size()).isEqualTo(20);
             assertThat(params.searchParams().sortKey()).isEqualTo("appliedAt");
@@ -78,18 +102,18 @@ class SellerApplicationQueryApiMapperTest {
         }
 
         @Test
-        @DisplayName("잘못된 상태값은 null로 변환한다")
-        void toSearchParams_InvalidStatus_ReturnsNull() {
+        @DisplayName("잘못된 상태값은 빈 리스트로 변환한다")
+        void toSearchParams_InvalidStatus_ReturnsEmptyList() {
             // given
             SearchSellerApplicationsApiRequest request =
                     new SearchSellerApplicationsApiRequest(
-                            "INVALID_STATUS", null, null, null, null, null, null);
+                            List.of("INVALID_STATUS"), null, null, null, null, null, null);
 
             // when
             SellerApplicationSearchParams params = mapper.toSearchParams(request);
 
             // then
-            assertThat(params.status()).isNull();
+            assertThat(params.status()).isEmpty();
         }
     }
 
@@ -132,9 +156,9 @@ class SellerApplicationQueryApiMapperTest {
 
             // then
             assertThat(response.content()).hasSize(2);
-            assertThat(response.page()).isEqualTo(pageResult.page());
-            assertThat(response.size()).isEqualTo(pageResult.size());
-            assertThat(response.totalElements()).isEqualTo(pageResult.totalCount());
+            assertThat(response.page()).isEqualTo(pageResult.pageMeta().page());
+            assertThat(response.size()).isEqualTo(pageResult.pageMeta().size());
+            assertThat(response.totalElements()).isEqualTo(pageResult.pageMeta().totalElements());
         }
     }
 }

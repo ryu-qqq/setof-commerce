@@ -1,7 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.mapper;
 
 import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.command.ApplySellerApplicationApiRequest;
-import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.command.ApproveSellerApplicationApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.command.RejectSellerApplicationApiRequest;
 import com.ryuqq.setof.application.sellerapplication.dto.command.ApplySellerApplicationCommand;
 import com.ryuqq.setof.application.sellerapplication.dto.command.ApproveSellerApplicationCommand;
@@ -72,33 +71,37 @@ public class SellerApplicationCommandApiMapper {
                         returnAddressCmd,
                         contactInfoCmd);
 
+        ApplySellerApplicationCommand.SettlementInfoCommand settlementInfoCmd =
+                toSettlementInfoCommand(request.settlementInfo());
+
         return new ApplySellerApplicationCommand(
-                sellerInfoCmd, businessInfoCmd, csContactCmd, addressInfoCmd);
+                sellerInfoCmd, businessInfoCmd, csContactCmd, addressInfoCmd, settlementInfoCmd);
     }
 
     /**
-     * ApproveSellerApplicationApiRequest를 ApproveSellerApplicationCommand로 변환.
+     * 승인 요청을 ApproveSellerApplicationCommand로 변환.
+     *
+     * <p>processedBy는 인증 컨텍스트에서 주입 예정 (현재 null).
      *
      * @param applicationId 신청 ID
-     * @param request API 요청 DTO
      * @return Application Command
      */
-    public ApproveSellerApplicationCommand toCommand(
-            Long applicationId, ApproveSellerApplicationApiRequest request) {
-        return new ApproveSellerApplicationCommand(applicationId, request.processedBy());
+    public ApproveSellerApplicationCommand toApproveCommand(Long applicationId) {
+        return new ApproveSellerApplicationCommand(applicationId, null);
     }
 
     /**
      * RejectSellerApplicationApiRequest를 RejectSellerApplicationCommand로 변환.
      *
+     * <p>processedBy는 인증 컨텍스트에서 주입 예정 (현재 null).
+     *
      * @param applicationId 신청 ID
      * @param request API 요청 DTO
      * @return Application Command
      */
-    public RejectSellerApplicationCommand toCommand(
+    public RejectSellerApplicationCommand toRejectCommand(
             Long applicationId, RejectSellerApplicationApiRequest request) {
-        return new RejectSellerApplicationCommand(
-                applicationId, request.rejectionReason(), request.processedBy());
+        return new RejectSellerApplicationCommand(applicationId, request.rejectionReason(), null);
     }
 
     private ApplySellerApplicationCommand.AddressCommand toAddressCommand(
@@ -117,6 +120,17 @@ public class SellerApplicationCommandApiMapper {
         }
         return new ApplySellerApplicationCommand.ContactInfoCommand(
                 nullSafe(contactInfo.name()), nullSafe(contactInfo.phone()));
+    }
+
+    private ApplySellerApplicationCommand.SettlementInfoCommand toSettlementInfoCommand(
+            ApplySellerApplicationApiRequest.SettlementInfo settlementInfo) {
+        return new ApplySellerApplicationCommand.SettlementInfoCommand(
+                settlementInfo.bankCode(),
+                settlementInfo.bankName(),
+                settlementInfo.accountNumber(),
+                settlementInfo.accountHolderName(),
+                settlementInfo.settlementCycle(),
+                settlementInfo.settlementDay());
     }
 
     private String nullSafe(String value) {

@@ -119,15 +119,9 @@ class SellerApplicationAdminE2ETest extends AdminE2ETestBase {
                                     uniqueSellerName, uniqueRegistrationNumber));
             Long applicationId = entity.getId();
 
-            Map<String, Object> request = new HashMap<>();
-            request.put("processedBy", "admin@example.com");
-
             // when
             Response response =
-                    givenAdmin()
-                            .body(request)
-                            .when()
-                            .post(BASE_PATH + "/" + applicationId + "/approve");
+                    givenAdmin().when().post(BASE_PATH + "/" + applicationId + "/approve");
 
             // then
             response.then().statusCode(HttpStatus.OK.value()).body("data.sellerId", greaterThan(0));
@@ -137,12 +131,8 @@ class SellerApplicationAdminE2ETest extends AdminE2ETestBase {
         @DisplayName("존재하지 않는 신청 승인시 404 에러 반환")
         void shouldReturn404WhenApplicationNotFound() {
             // given
-            Map<String, Object> request = new HashMap<>();
-            request.put("processedBy", "admin@example.com");
-
             // when & then
             givenAdmin()
-                    .body(request)
                     .when()
                     .post(BASE_PATH + "/999999/approve")
                     .then()
@@ -158,12 +148,8 @@ class SellerApplicationAdminE2ETest extends AdminE2ETestBase {
                             SellerApplicationJpaEntityFixtures.approvedEntity(100L));
             Long applicationId = entity.getId();
 
-            Map<String, Object> request = new HashMap<>();
-            request.put("processedBy", "admin@example.com");
-
             // when & then
             givenAdmin()
-                    .body(request)
                     .when()
                     .post(BASE_PATH + "/" + applicationId + "/approve")
                     .then()
@@ -186,7 +172,6 @@ class SellerApplicationAdminE2ETest extends AdminE2ETestBase {
 
             Map<String, Object> request = new HashMap<>();
             request.put("rejectionReason", "서류 미비로 인한 반려");
-            request.put("processedBy", "admin@example.com");
 
             // when & then
             givenAdmin()
@@ -208,7 +193,6 @@ class SellerApplicationAdminE2ETest extends AdminE2ETestBase {
             // given
             Map<String, Object> request = new HashMap<>();
             request.put("rejectionReason", "서류 미비");
-            request.put("processedBy", "admin@example.com");
 
             // when & then
             givenAdmin()
@@ -229,7 +213,6 @@ class SellerApplicationAdminE2ETest extends AdminE2ETestBase {
             Long applicationId = entity.getId();
 
             Map<String, Object> request = new HashMap<>();
-            request.put("processedBy", "admin@example.com");
 
             // when & then
             givenAdmin()
@@ -385,14 +368,8 @@ class SellerApplicationAdminE2ETest extends AdminE2ETestBase {
                     .body("data.content[0].id", equalTo(applicationId.intValue()));
 
             // 3. 승인
-            Map<String, Object> approveRequest = new HashMap<>();
-            approveRequest.put("processedBy", "admin@example.com");
-
             Response approveResponse =
-                    givenAdmin()
-                            .body(approveRequest)
-                            .when()
-                            .post(BASE_PATH + "/" + applicationId + "/approve");
+                    givenAdmin().when().post(BASE_PATH + "/" + applicationId + "/approve");
 
             approveResponse
                     .then()
@@ -426,7 +403,6 @@ class SellerApplicationAdminE2ETest extends AdminE2ETestBase {
             // 2. 거절
             Map<String, Object> rejectRequest = new HashMap<>();
             rejectRequest.put("rejectionReason", "사업자등록증 확인 불가");
-            rejectRequest.put("processedBy", "admin@example.com");
 
             givenAdmin()
                     .body(rejectRequest)
@@ -502,6 +478,16 @@ class SellerApplicationAdminE2ETest extends AdminE2ETestBase {
         returnAddress.put("contactInfo", contactInfo);
 
         request.put("returnAddress", returnAddress);
+
+        // settlementInfo - 정산 정보
+        Map<String, Object> settlementInfo = new HashMap<>();
+        settlementInfo.put("bankCode", "088");
+        settlementInfo.put("bankName", "신한은행");
+        settlementInfo.put("accountNumber", "110123456789");
+        settlementInfo.put("accountHolderName", "홍길동");
+        settlementInfo.put("settlementCycle", "MONTHLY");
+        settlementInfo.put("settlementDay", 1);
+        request.put("settlementInfo", settlementInfo);
 
         return request;
     }

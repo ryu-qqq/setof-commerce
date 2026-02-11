@@ -6,6 +6,7 @@ import com.ryuqq.setof.application.common.factory.CommonVoFactory;
 import com.ryuqq.setof.application.commoncodetype.CommonCodeTypeQueryFixtures;
 import com.ryuqq.setof.application.commoncodetype.dto.query.CommonCodeTypeSearchParams;
 import com.ryuqq.setof.domain.commoncodetype.query.CommonCodeTypeSearchCriteria;
+import com.ryuqq.setof.domain.commoncodetype.query.CommonCodeTypeSearchField;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -51,17 +52,19 @@ class CommonCodeTypeQueryFactoryTest {
         }
 
         @Test
-        @DisplayName("키워드가 있는 SearchParams로 SearchCriteria를 생성한다")
-        void createCriteria_WithKeyword_ReturnsCriteriaWithKeyword() {
+        @DisplayName("검색 필드/검색어가 있는 SearchParams로 SearchCriteria를 생성한다")
+        void createCriteria_WithSearchFieldAndWord_ReturnsCriteriaWithSearchWord() {
             // given
-            CommonCodeTypeSearchParams params = CommonCodeTypeQueryFixtures.searchParams("결제");
+            CommonCodeTypeSearchParams params =
+                    CommonCodeTypeQueryFixtures.searchParams("code", "결제");
 
             // when
             CommonCodeTypeSearchCriteria result = sut.createCriteria(params);
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.keyword()).isEqualTo("결제");
+            assertThat(result.searchField()).isEqualTo(CommonCodeTypeSearchField.CODE);
+            assertThat(result.searchWord()).isEqualTo("결제");
         }
 
         @Test

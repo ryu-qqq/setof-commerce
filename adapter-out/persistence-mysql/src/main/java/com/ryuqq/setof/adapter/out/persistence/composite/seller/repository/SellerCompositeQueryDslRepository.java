@@ -176,4 +176,26 @@ public class SellerCompositeQueryDslRepository {
 
         return Optional.ofNullable(result);
     }
+
+    /**
+     * 사업자등록번호로 존재 여부 확인.
+     *
+     * @param registrationNumber 사업자등록번호
+     * @return 존재하면 true
+     */
+    public boolean existsByRegistrationNumber(String registrationNumber) {
+        Integer count =
+                queryFactory
+                        .selectOne()
+                        .from(sellerJpaEntity)
+                        .leftJoin(sellerBusinessInfoJpaEntity)
+                        .on(conditionBuilder.businessInfoJoinCondition())
+                        .where(
+                                sellerBusinessInfoJpaEntity.registrationNumber.eq(
+                                        registrationNumber),
+                                conditionBuilder.sellerNotDeleted())
+                        .fetchFirst();
+
+        return count != null;
+    }
 }

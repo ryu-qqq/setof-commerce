@@ -29,13 +29,16 @@ public class CategoryAssembler {
      * @return CategoryResult
      */
     public CategoryResult toResult(Category category) {
+        String targetGroup = category.targetGroup() != null ? category.targetGroup().name() : null;
         return CategoryResult.of(
                 category.idValue(),
                 category.categoryNameValue(),
                 category.parentCategoryIdValue(),
                 category.categoryDepthValue(),
                 category.isDisplayed(),
-                category.pathValue());
+                category.pathValue(),
+                category.pathValue(), // categoryFullPath: path에 경로가 저장된 경우 동일
+                targetGroup);
     }
 
     /**
@@ -60,7 +63,7 @@ public class CategoryAssembler {
     public CategoryPageResult toPageResult(
             List<Category> categories, int page, int size, long totalCount) {
         List<CategoryResult> results = toResults(categories);
-        return CategoryPageResult.of(results, totalCount, page, size);
+        return CategoryPageResult.of(results, page, size, totalCount);
     }
 
     /**

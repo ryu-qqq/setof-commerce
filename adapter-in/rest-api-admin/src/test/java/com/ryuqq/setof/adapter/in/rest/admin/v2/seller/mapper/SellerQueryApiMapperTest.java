@@ -120,9 +120,9 @@ class SellerQueryApiMapperTest {
 
             // then
             assertThat(response.content()).hasSize(2);
-            assertThat(response.page()).isEqualTo(pageResult.page());
-            assertThat(response.size()).isEqualTo(pageResult.size());
-            assertThat(response.totalElements()).isEqualTo(pageResult.totalCount());
+            assertThat(response.page()).isEqualTo(pageResult.pageMeta().page());
+            assertThat(response.size()).isEqualTo(pageResult.pageMeta().size());
+            assertThat(response.totalElements()).isEqualTo(pageResult.pageMeta().totalElements());
         }
     }
 

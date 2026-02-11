@@ -7,15 +7,20 @@ import com.ryuqq.setof.application.common.dto.query.CommonSearchParams;
  *
  * <p>APP-DTO-003: SearchParams CommonSearchParams 포함 필수.
  *
- * @param brandName 브랜드명 (검색 조건)
+ * <p>컨벤션: searchField + searchWord 패턴. 확장 시 코드 변경 최소화.
+ *
+ * @param searchField 검색 필드 (예: brandName, korBrandName). null이면 전체.
+ * @param searchWord 검색어
  * @param searchParams 공통 검색 파라미터 (정렬, 페이징 등)
  * @author ryu-qqq
  * @since 1.0.0
  */
-public record BrandSearchParams(String brandName, CommonSearchParams searchParams) {
+public record BrandSearchParams(
+        String searchField, String searchWord, CommonSearchParams searchParams) {
 
-    public static BrandSearchParams of(String brandName, CommonSearchParams searchParams) {
-        return new BrandSearchParams(brandName, searchParams);
+    public static BrandSearchParams of(
+            String searchField, String searchWord, CommonSearchParams searchParams) {
+        return new BrandSearchParams(searchField, searchWord, searchParams);
     }
 
     public int page() {

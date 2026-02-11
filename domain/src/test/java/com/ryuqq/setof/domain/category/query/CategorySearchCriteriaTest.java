@@ -38,6 +38,7 @@ class CategorySearchCriteriaTest {
                             true,
                             TargetGroup.MALE,
                             CategoryType.CLOTHING,
+                            CategorySearchField.CATEGORY_NAME,
                             "테스트카테고리",
                             queryContext);
 
@@ -46,7 +47,8 @@ class CategorySearchCriteriaTest {
             assertThat(criteria.displayed()).isTrue();
             assertThat(criteria.targetGroup()).isEqualTo(TargetGroup.MALE);
             assertThat(criteria.categoryType()).isEqualTo(CategoryType.CLOTHING);
-            assertThat(criteria.categoryName()).isEqualTo("테스트카테고리");
+            assertThat(criteria.searchField()).isEqualTo(CategorySearchField.CATEGORY_NAME);
+            assertThat(criteria.searchWord()).isEqualTo("테스트카테고리");
             assertThat(criteria.queryContext()).isEqualTo(queryContext);
         }
 
@@ -61,7 +63,7 @@ class CategorySearchCriteriaTest {
             assertThat(criteria.displayed()).isNull();
             assertThat(criteria.targetGroup()).isNull();
             assertThat(criteria.categoryType()).isNull();
-            assertThat(criteria.categoryName()).isNull();
+            assertThat(criteria.searchWord()).isNull();
             assertThat(criteria.queryContext().sortKey()).isEqualTo(CategorySortKey.CREATED_AT);
         }
 
@@ -97,7 +99,7 @@ class CategorySearchCriteriaTest {
         void nullQueryContextDefaultsToDefault() {
             // when
             CategorySearchCriteria criteria =
-                    CategorySearchCriteria.of(null, null, null, null, null, null);
+                    CategorySearchCriteria.of(null, null, null, null, null, null, null);
 
             // then
             assertThat(criteria.queryContext()).isNotNull();
@@ -105,8 +107,8 @@ class CategorySearchCriteriaTest {
         }
 
         @Test
-        @DisplayName("categoryName은 trim된다")
-        void categoryNameIsTrimmed() {
+        @DisplayName("searchWord는 trim된다")
+        void searchWordIsTrimmed() {
             // when
             CategorySearchCriteria criteria =
                     CategorySearchCriteria.of(
@@ -114,16 +116,17 @@ class CategorySearchCriteriaTest {
                             null,
                             null,
                             null,
+                            CategorySearchField.CATEGORY_NAME,
                             "  테스트카테고리  ",
                             QueryContext.defaultOf(CategorySortKey.CREATED_AT));
 
             // then
-            assertThat(criteria.categoryName()).isEqualTo("테스트카테고리");
+            assertThat(criteria.searchWord()).isEqualTo("테스트카테고리");
         }
 
         @Test
-        @DisplayName("빈 문자열 categoryName은 null로 변환된다")
-        void blankCategoryNameBecomesNull() {
+        @DisplayName("빈 문자열 searchWord는 null로 변환된다")
+        void blankSearchWordBecomesNull() {
             // when
             CategorySearchCriteria criteria =
                     CategorySearchCriteria.of(
@@ -131,11 +134,12 @@ class CategorySearchCriteriaTest {
                             null,
                             null,
                             null,
+                            CategorySearchField.CATEGORY_NAME,
                             "   ",
                             QueryContext.defaultOf(CategorySortKey.CREATED_AT));
 
             // then
-            assertThat(criteria.categoryName()).isNull();
+            assertThat(criteria.searchWord()).isNull();
         }
     }
 
@@ -174,6 +178,7 @@ class CategorySearchCriteriaTest {
                             null,
                             null,
                             null,
+                            null,
                             QueryContext.defaultOf(CategorySortKey.CREATED_AT));
 
             // then
@@ -181,8 +186,8 @@ class CategorySearchCriteriaTest {
         }
 
         @Test
-        @DisplayName("hasCategoryNameFilter()는 카테고리명 필터가 있으면 true를 반환한다")
-        void hasCategoryNameFilterReturnsTrueWhenCategoryNameExists() {
+        @DisplayName("hasSearchCondition()는 검색어가 있으면 true를 반환한다")
+        void hasSearchConditionReturnsTrueWhenSearchWordExists() {
             // given
             CategorySearchCriteria criteria =
                     CategorySearchCriteria.of(
@@ -190,11 +195,12 @@ class CategorySearchCriteriaTest {
                             null,
                             null,
                             null,
+                            CategorySearchField.CATEGORY_NAME,
                             "테스트",
                             QueryContext.defaultOf(CategorySortKey.CREATED_AT));
 
             // then
-            assertThat(criteria.hasCategoryNameFilter()).isTrue();
+            assertThat(criteria.hasSearchCondition()).isTrue();
         }
 
         @Test
@@ -215,7 +221,7 @@ class CategorySearchCriteriaTest {
                     QueryContext.of(
                             CategorySortKey.CREATED_AT, SortDirection.DESC, PageRequest.of(2, 20));
             CategorySearchCriteria criteria =
-                    CategorySearchCriteria.of(null, null, null, null, null, queryContext);
+                    CategorySearchCriteria.of(null, null, null, null, null, null, queryContext);
 
             // then
             assertThat(criteria.offset()).isEqualTo(40);
@@ -229,7 +235,7 @@ class CategorySearchCriteriaTest {
                     QueryContext.of(
                             CategorySortKey.CREATED_AT, SortDirection.DESC, PageRequest.of(3, 20));
             CategorySearchCriteria criteria =
-                    CategorySearchCriteria.of(null, null, null, null, null, queryContext);
+                    CategorySearchCriteria.of(null, null, null, null, null, null, queryContext);
 
             // then
             assertThat(criteria.page()).isEqualTo(3);

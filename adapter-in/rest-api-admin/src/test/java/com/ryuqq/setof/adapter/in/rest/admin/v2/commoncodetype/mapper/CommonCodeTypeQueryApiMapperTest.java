@@ -61,7 +61,7 @@ class CommonCodeTypeQueryApiMapperTest {
             // given
             SearchCommonCodeTypesPageApiRequest request =
                     new SearchCommonCodeTypesPageApiRequest(
-                            null, null, "CREATED_AT", "DESC", null, null);
+                            null, null, null, null, "CREATED_AT", "DESC", null, null);
 
             // when
             CommonCodeTypeSearchParams params = mapper.toSearchParams(request);
@@ -72,17 +72,32 @@ class CommonCodeTypeQueryApiMapperTest {
         }
 
         @Test
-        @DisplayName("키워드 검색 요청을 변환한다")
-        void toSearchParams_WithKeyword_Success() {
+        @DisplayName("검색 필드/검색어 요청을 변환한다")
+        void toSearchParams_WithSearchFieldAndWord_Success() {
             // given
             SearchCommonCodeTypesPageApiRequest request =
-                    CommonCodeTypeApiFixtures.searchRequestWithKeyword("결제");
+                    CommonCodeTypeApiFixtures.searchRequestWithSearch("code", "결제");
 
             // when
             CommonCodeTypeSearchParams params = mapper.toSearchParams(request);
 
             // then
-            assertThat(params.keyword()).isEqualTo("결제");
+            assertThat(params.searchField()).isEqualTo("code");
+            assertThat(params.searchWord()).isEqualTo("결제");
+        }
+
+        @Test
+        @DisplayName("type(CommonCodeValue) 필터 요청을 변환한다")
+        void toSearchParams_WithType_Success() {
+            // given
+            SearchCommonCodeTypesPageApiRequest request =
+                    CommonCodeTypeApiFixtures.searchRequestWithType("CARD");
+
+            // when
+            CommonCodeTypeSearchParams params = mapper.toSearchParams(request);
+
+            // then
+            assertThat(params.type()).isEqualTo("CARD");
         }
     }
 

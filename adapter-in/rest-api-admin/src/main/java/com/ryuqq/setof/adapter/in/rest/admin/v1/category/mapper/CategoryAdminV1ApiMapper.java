@@ -1,6 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.admin.v1.category.mapper;
 
-import com.ryuqq.setof.adapter.in.rest.admin.v1.category.dto.query.CategorySearchV1ApiRequest;
+import com.ryuqq.setof.adapter.in.rest.admin.v1.category.dto.request.SearchCategoriesV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.category.dto.response.ProductCategoryV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.category.dto.response.TreeCategoryV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.common.dto.CustomPageableV1ApiResponse;
@@ -13,17 +13,13 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
- * CategoryAdminV1ApiMapper - V1 Admin 카테고리 API 매퍼.
+ * CategoryAdminV1ApiMapper - 카테고리 Admin V1 API Request/Response 변환 매퍼.
  *
- * <p>Application Layer의 결과를 V1 Admin API 응답으로 변환합니다.
+ * <p>API-MAP-001: Mapper는 @Component로 등록.
  *
- * <p>레거시 TreeCategoryContext, ProductCategoryContext와 동일한 구조로 변환합니다.
+ * <p>API-MAP-003: Application Result → API Response 변환.
  *
- * <p>API-MAP-001: Mapper는 @Component로 정의.
- *
- * <p>API-MAP-002: 순수 변환 로직만 포함 (비즈니스 로직 금지).
- *
- * <p>API-MAP-003: null-safe 변환 필수.
+ * <p>레거시 CategoryController 흐름 변환.
  *
  * @author ryu-qqq
  * @since 1.0.0
@@ -31,93 +27,128 @@ import org.springframework.stereotype.Component;
 @Component
 public class CategoryAdminV1ApiMapper {
 
-    private static final Integer DEFAULT_PAGE = 0;
-    private static final Integer DEFAULT_SIZE = 20;
-    private static final String DEFAULT_TARGET_GROUP = "UNISEX";
+    private static final String SEARCH_FIELD_DISPLAY_NAME = "displayName";
+    private static final String DEFAULT_SORT_KEY = "createdAt";
+    private static final String DEFAULT_SORT_DIRECTION = "ASC";
+    private static final int DEFAULT_PAGE = 0;
+    private static final int DEFAULT_SIZE = 20;
 
     /**
-     * CategorySearchV1ApiRequest를 CategorySearchParams로 변환.
+     * SearchCategoriesV1ApiRequest → CategorySearchParams 변환.
      *
-     * <p>기본값 처리를 Mapper에서 수행합니다.
+     * <p>categoryName → displayName 필드 LIKE 검색. No-Offset(lastCategoryId)은 현재 미지원.
      *
-     * @param request V1 검색 요청
-     * @return UseCase 검색 파라미터
+     * @param request 검색 요청 DTO
+     * @return CategorySearchParams
      */
-    public CategorySearchParams toSearchParams(CategorySearchV1ApiRequest request) {
-        Integer page = request.page() != null ? request.page() : DEFAULT_PAGE;
-        Integer size = request.size() != null ? request.size() : DEFAULT_SIZE;
+    public CategorySearchParams toSearchParams(SearchCategoriesV1ApiRequest request) {
+        String searchWord =
+                request.categoryName() != null && !request.categoryName().isBlank()
+                        ? request.categoryName().trim()
+                        : null;
+        int page = request.page() != null ? request.page() : DEFAULT_PAGE;
+        int size = request.size() != null ? request.size() : DEFAULT_SIZE;
 
-        CommonSearchParams commonParams =
-                CommonSearchParams.of(false, null, null, null, null, page, size);
+        CommonSearchParams searchParams =
+                CommonSearchParams.of(
+                        false, null, null, DEFAULT_SORT_KEY, DEFAULT_SORT_DIRECTION, page, size);
 
         return CategorySearchParams.of(
-                request.categoryName(), request.depth(), request.displayed(), commonParams);
+                SEARCH_FIELD_DISPLAY_NAME,
+                searchWord,
+                request.categoryDepth(),
+                null, // displayed: null (전체)
+                searchParams);
     }
 
     /**
-     * CategoryPageResult를 V1 CustomPageable 호환 페이지 응답으로 변환.
+     * TreeCategoryResult 목록 → TreeCategoryV1ApiResponse 목록 변환.
      *
-     * <p>레거시 CustomPageable + ProductCategoryContext와 동일한 JSON 구조를 반환합니다.
+     * @param results TreeCategoryResult 목록
+     * @return TreeCategoryV1ApiResponse 목록
+     */
+    public List<TreeCategoryV1ApiResponse> toTreeListResponse(List<TreeCategoryResult> results) {
+        return results.stream().map(this::toTreeResponse).toList();
+    }
+
+    /**
+     * TreeCategoryResult → TreeCategoryV1ApiResponse 변환 (재귀).
      *
-     * @param pageResult UseCase 실행 결과
-     * @return V1 호환 페이지 응답 (레거시 CustomPageable 구조)
+     * @param result TreeCategoryResult
+     * @return TreeCategoryV1ApiResponse
+     */
+    public TreeCategoryV1ApiResponse toTreeResponse(TreeCategoryResult result) {
+        List<TreeCategoryV1ApiResponse> children =
+                result.children() != null && !result.children().isEmpty()
+                        ? result.children().stream().map(this::toTreeResponse).toList()
+                        : List.of();
+
+        long categoryId = result.categoryId() != null ? result.categoryId() : 0L;
+        long parentCategoryId = result.parentCategoryId() != null ? result.parentCategoryId() : 0L;
+        String displayName = result.categoryName() != null ? result.categoryName() : "";
+
+        return new TreeCategoryV1ApiResponse(
+                categoryId,
+                result.categoryName() != null ? result.categoryName() : "",
+                displayName,
+                result.depth(),
+                parentCategoryId,
+                children);
+    }
+
+    /**
+     * TreeCategoryResult → TreeCategoryV1ApiResponse 변환 (leaf, children 빈 목록).
+     *
+     * <p>flat list 응답용 (fetchAllChildCategories, fetchAllParentCategories,
+     * fetchAllParentCategoriesBulk).
+     *
+     * @param result TreeCategoryResult
+     * @return TreeCategoryV1ApiResponse
+     */
+    public TreeCategoryV1ApiResponse toTreeLeafResponse(TreeCategoryResult result) {
+        long categoryId = result.categoryId() != null ? result.categoryId() : 0L;
+        long parentCategoryId = result.parentCategoryId() != null ? result.parentCategoryId() : 0L;
+        String name = result.categoryName() != null ? result.categoryName() : "";
+        return new TreeCategoryV1ApiResponse(
+                categoryId, name, name, result.depth(), parentCategoryId, List.of());
+    }
+
+    /**
+     * CategoryPageResult → CustomPageableV1ApiResponse 변환.
+     *
+     * @param pageResult Application 페이지 결과
+     * @return CustomPageableV1ApiResponse
      */
     public CustomPageableV1ApiResponse<ProductCategoryV1ApiResponse> toPageResponse(
             CategoryPageResult pageResult) {
         List<ProductCategoryV1ApiResponse> content =
-                pageResult.content().stream().map(this::toProductCategoryResponse).toList();
+                pageResult.content().stream().map(this::toProductResponse).toList();
         return CustomPageableV1ApiResponse.of(
-                content, pageResult.page(), pageResult.size(), pageResult.totalCount());
+                content,
+                pageResult.pageMeta().page(),
+                pageResult.pageMeta().size(),
+                pageResult.pageMeta().totalElements());
     }
 
     /**
-     * CategoryResult를 V1 상품 카테고리 응답으로 변환.
+     * CategoryResult → ProductCategoryV1ApiResponse 변환.
      *
-     * <p>레거시 ProductCategoryContext와 동일한 필드로 변환합니다.
-     *
-     * @param category 카테고리 조회 결과
-     * @return V1 호환 상품 카테고리 응답
+     * @param result CategoryResult
+     * @return ProductCategoryV1ApiResponse
      */
-    private ProductCategoryV1ApiResponse toProductCategoryResponse(CategoryResult category) {
+    public ProductCategoryV1ApiResponse toProductResponse(CategoryResult result) {
+        long categoryId = result.categoryId() != null ? result.categoryId() : 0L;
+        String categoryName = result.categoryName() != null ? result.categoryName() : "";
+        String displayName = categoryName;
+        String categoryFullPath =
+                result.categoryFullPath() != null ? result.categoryFullPath() : "";
+        String targetGroup = result.targetGroup() != null ? result.targetGroup() : "ALL";
         return new ProductCategoryV1ApiResponse(
-                category.categoryId(),
-                category.categoryName(),
-                category.categoryName(),
-                category.depth(),
-                DEFAULT_TARGET_GROUP,
-                category.targetUrl() != null ? category.targetUrl() : "");
-    }
-
-    /**
-     * TreeCategoryResult 목록을 V1 트리 카테고리 응답 목록으로 변환.
-     *
-     * <p>레거시 TreeCategoryContext와 동일한 구조로 변환합니다.
-     *
-     * @param treeResults 트리 카테고리 결과 목록
-     * @return V1 호환 트리 카테고리 응답 목록
-     */
-    public List<TreeCategoryV1ApiResponse> toTreeResponse(List<TreeCategoryResult> treeResults) {
-        return treeResults.stream().map(this::toTreeResponse).toList();
-    }
-
-    /**
-     * TreeCategoryResult를 V1 트리 카테고리 응답으로 재귀 변환.
-     *
-     * <p>레거시 TreeCategoryContext와 동일한 필드로 변환합니다.
-     *
-     * @param result 트리 카테고리 결과
-     * @return V1 호환 트리 카테고리 응답
-     */
-    private TreeCategoryV1ApiResponse toTreeResponse(TreeCategoryResult result) {
-        List<TreeCategoryV1ApiResponse> children =
-                result.children().stream().map(this::toTreeResponse).toList();
-
-        return new TreeCategoryV1ApiResponse(
-                result.categoryId(),
-                result.categoryName(),
-                result.categoryName(),
-                result.depth(),
-                result.parentCategoryId(),
-                children);
+                categoryId,
+                categoryName,
+                displayName,
+                result.depth() != null ? result.depth() : 0,
+                categoryFullPath,
+                targetGroup);
     }
 }

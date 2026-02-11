@@ -1,0 +1,20 @@
+[[seller-api]]
+= 셀러
+
+`/api/v1/seller`
+
+[[seller-detail]]
+== GET 셀러 상세 조회
+
+셀러 ID로 셀러 상세 정보를 조회합니다.
+
+include::{snippets}/get-seller-test/get-seller_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/get-seller-test/get-seller_-success/path-parameters.adoc[]
+
+=== Response
+include::{snippets}/get-seller-test/get-seller_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/get-seller-test/get-seller_-success/response-fields.adoc[]

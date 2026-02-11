@@ -27,11 +27,14 @@ class BrandSearchCriteriaTest {
                             BrandSortKey.CREATED_AT, SortDirection.DESC, PageRequest.of(0, 20));
 
             // when
-            BrandSearchCriteria criteria = BrandSearchCriteria.of(true, "테스트브랜드", queryContext);
+            BrandSearchCriteria criteria =
+                    BrandSearchCriteria.of(
+                            true, BrandSearchField.BRAND_NAME, "테스트브랜드", queryContext);
 
             // then
             assertThat(criteria.displayed()).isTrue();
-            assertThat(criteria.brandName()).isEqualTo("테스트브랜드");
+            assertThat(criteria.searchField()).isEqualTo(BrandSearchField.BRAND_NAME);
+            assertThat(criteria.searchWord()).isEqualTo("테스트브랜드");
             assertThat(criteria.queryContext()).isEqualTo(queryContext);
         }
 
@@ -43,7 +46,8 @@ class BrandSearchCriteriaTest {
 
             // then
             assertThat(criteria.displayed()).isNull();
-            assertThat(criteria.brandName()).isNull();
+            assertThat(criteria.searchField()).isNull();
+            assertThat(criteria.searchWord()).isNull();
             assertThat(criteria.queryContext().sortKey()).isEqualTo(BrandSortKey.DISPLAY_ORDER);
         }
 
@@ -55,7 +59,8 @@ class BrandSearchCriteriaTest {
 
             // then
             assertThat(criteria.displayed()).isTrue();
-            assertThat(criteria.brandName()).isNull();
+            assertThat(criteria.searchField()).isNull();
+            assertThat(criteria.searchWord()).isNull();
         }
     }
 
@@ -67,7 +72,7 @@ class BrandSearchCriteriaTest {
         @DisplayName("null queryContext는 기본값으로 대체된다")
         void nullQueryContextDefaultsToDefault() {
             // when
-            BrandSearchCriteria criteria = BrandSearchCriteria.of(null, null, null);
+            BrandSearchCriteria criteria = BrandSearchCriteria.of(null, null, null, null);
 
             // then
             assertThat(criteria.queryContext()).isNotNull();
@@ -75,27 +80,33 @@ class BrandSearchCriteriaTest {
         }
 
         @Test
-        @DisplayName("brandName은 trim된다")
-        void brandNameIsTrimmed() {
+        @DisplayName("searchWord는 trim된다")
+        void searchWordIsTrimmed() {
             // when
             BrandSearchCriteria criteria =
                     BrandSearchCriteria.of(
-                            null, "  테스트브랜드  ", QueryContext.defaultOf(BrandSortKey.DISPLAY_ORDER));
+                            null,
+                            BrandSearchField.BRAND_NAME,
+                            "  테스트브랜드  ",
+                            QueryContext.defaultOf(BrandSortKey.DISPLAY_ORDER));
 
             // then
-            assertThat(criteria.brandName()).isEqualTo("테스트브랜드");
+            assertThat(criteria.searchWord()).isEqualTo("테스트브랜드");
         }
 
         @Test
-        @DisplayName("빈 문자열 brandName은 null로 변환된다")
-        void blankBrandNameBecomesNull() {
+        @DisplayName("빈 문자열 searchWord는 null로 변환된다")
+        void blankSearchWordBecomesNull() {
             // when
             BrandSearchCriteria criteria =
                     BrandSearchCriteria.of(
-                            null, "   ", QueryContext.defaultOf(BrandSortKey.DISPLAY_ORDER));
+                            null,
+                            BrandSearchField.BRAND_NAME,
+                            "   ",
+                            QueryContext.defaultOf(BrandSortKey.DISPLAY_ORDER));
 
             // then
-            assertThat(criteria.brandName()).isNull();
+            assertThat(criteria.searchWord()).isNull();
         }
     }
 
@@ -104,25 +115,53 @@ class BrandSearchCriteriaTest {
     class ConvenienceMethodTest {
 
         @Test
-        @DisplayName("hasBrandNameFilter()는 브랜드명 필터가 있으면 true를 반환한다")
-        void hasBrandNameFilterReturnsTrueWhenBrandNameExists() {
+        @DisplayName("hasSearchCondition()은 검색어가 있으면 true를 반환한다")
+        void hasSearchConditionReturnsTrueWhenSearchWordExists() {
             // given
             BrandSearchCriteria criteria =
                     BrandSearchCriteria.of(
-                            null, "테스트", QueryContext.defaultOf(BrandSortKey.DISPLAY_ORDER));
+                            null,
+                            BrandSearchField.BRAND_NAME,
+                            "테스트",
+                            QueryContext.defaultOf(BrandSortKey.DISPLAY_ORDER));
 
             // then
-            assertThat(criteria.hasBrandNameFilter()).isTrue();
+            assertThat(criteria.hasSearchCondition()).isTrue();
         }
 
         @Test
-        @DisplayName("hasBrandNameFilter()는 브랜드명이 없으면 false를 반환한다")
-        void hasBrandNameFilterReturnsFalseWhenNoBrandName() {
+        @DisplayName("hasSearchCondition()은 검색어가 없으면 false를 반환한다")
+        void hasSearchConditionReturnsFalseWhenNoSearchWord() {
             // given
             BrandSearchCriteria criteria = BrandSearchCriteria.defaultOf();
 
             // then
-            assertThat(criteria.hasBrandNameFilter()).isFalse();
+            assertThat(criteria.hasSearchCondition()).isFalse();
+        }
+
+        @Test
+        @DisplayName("hasSearchField()는 검색 필드가 있으면 true를 반환한다")
+        void hasSearchFieldReturnsTrueWhenSearchFieldExists() {
+            // given
+            BrandSearchCriteria criteria =
+                    BrandSearchCriteria.of(
+                            null,
+                            BrandSearchField.BRAND_NAME,
+                            null,
+                            QueryContext.defaultOf(BrandSortKey.DISPLAY_ORDER));
+
+            // then
+            assertThat(criteria.hasSearchField()).isTrue();
+        }
+
+        @Test
+        @DisplayName("hasSearchField()는 검색 필드가 없으면 false를 반환한다")
+        void hasSearchFieldReturnsFalseWhenNoSearchField() {
+            // given
+            BrandSearchCriteria criteria = BrandSearchCriteria.defaultOf();
+
+            // then
+            assertThat(criteria.hasSearchField()).isFalse();
         }
 
         @Test
@@ -162,7 +201,7 @@ class BrandSearchCriteriaTest {
             QueryContext<BrandSortKey> queryContext =
                     QueryContext.of(
                             BrandSortKey.CREATED_AT, SortDirection.DESC, PageRequest.of(2, 20));
-            BrandSearchCriteria criteria = BrandSearchCriteria.of(null, null, queryContext);
+            BrandSearchCriteria criteria = BrandSearchCriteria.of(null, null, null, queryContext);
 
             // then
             assertThat(criteria.offset()).isEqualTo(40);
@@ -175,7 +214,7 @@ class BrandSearchCriteriaTest {
             QueryContext<BrandSortKey> queryContext =
                     QueryContext.of(
                             BrandSortKey.CREATED_AT, SortDirection.DESC, PageRequest.of(3, 20));
-            BrandSearchCriteria criteria = BrandSearchCriteria.of(null, null, queryContext);
+            BrandSearchCriteria criteria = BrandSearchCriteria.of(null, null, null, queryContext);
 
             // then
             assertThat(criteria.page()).isEqualTo(3);

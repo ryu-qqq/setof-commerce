@@ -1,6 +1,7 @@
 package com.ryuqq.setof.application.sellerapplication.service.command;
 
 import com.ryuqq.setof.application.common.component.TransactionEventRegistry;
+import com.ryuqq.setof.application.common.dto.command.StatusChangeContext;
 import com.ryuqq.setof.application.sellerapplication.dto.command.RejectSellerApplicationCommand;
 import com.ryuqq.setof.application.sellerapplication.factory.SellerApplicationCommandFactory;
 import com.ryuqq.setof.application.sellerapplication.manager.SellerApplicationCommandManager;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 /**
  * RejectSellerApplicationService - 셀러 입점 신청 거절 Service.
+ *
+ * <p>APP-TIM-001: TimeProvider 직접 사용 금지 - Factory에서 처리
  *
  * <p>대기 상태의 입점 신청을 거절합니다.
  *
@@ -38,10 +41,12 @@ public class RejectSellerApplicationService implements RejectSellerApplicationUs
 
     @Override
     public void execute(RejectSellerApplicationCommand command) {
-        SellerApplicationId applicationId = SellerApplicationId.of(command.sellerApplicationId());
-        SellerApplication application = validator.findExistingOrThrow(applicationId);
+        StatusChangeContext<SellerApplicationId> context =
+                commandFactory.createRejectContext(command);
 
-        application.reject(command.rejectionReason(), command.processedBy(), commandFactory.now());
+        SellerApplication application = validator.findExistingOrThrow(context.id());
+
+        application.reject(command.rejectionReason(), command.processedBy(), context.changedAt());
         commandManager.persist(application);
 
         application.pollEvents().forEach(eventRegistry::registerForPublish);

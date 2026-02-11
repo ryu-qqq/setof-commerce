@@ -5,6 +5,7 @@ import static org.mockito.BDDMockito.given;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.ryuqq.setof.domain.commoncodetype.query.CommonCodeTypeSearchCriteria;
+import com.ryuqq.setof.domain.commoncodetype.query.CommonCodeTypeSearchField;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -286,41 +287,51 @@ class CommonCodeTypeConditionBuilderTest {
     }
 
     // ========================================================================
-    // 8. keywordContains (String) 테스트
+    // 8. searchFieldContains 테스트
     // ========================================================================
 
     @Nested
-    @DisplayName("keywordContains (String) 메서드 테스트")
-    class KeywordContainsStringTest {
+    @DisplayName("searchFieldContains 메서드 테스트")
+    class SearchFieldContainsTest {
 
         @Test
-        @DisplayName("유효한 키워드 입력 시 BooleanExpression을 반환합니다")
-        void keywordContains_WithValidKeyword_ReturnsBooleanExpression() {
-            // given
-            String keyword = "결제";
-
+        @DisplayName("유효한 검색어 입력 시 (null 필드) BooleanExpression을 반환합니다")
+        void searchFieldContains_WithNullField_ReturnsBooleanExpression() {
             // when
-            BooleanExpression result = conditionBuilder.keywordContains(keyword);
+            BooleanExpression result = conditionBuilder.searchFieldContains(null, "결제");
 
             // then
             assertThat(result).isNotNull();
         }
 
         @Test
-        @DisplayName("null 키워드 입력 시 null을 반환합니다")
-        void keywordContains_WithNullKeyword_ReturnsNull() {
+        @DisplayName("CODE 필드 + 검색어 입력 시 BooleanExpression을 반환합니다")
+        void searchFieldContains_WithCodeField_ReturnsBooleanExpression() {
             // when
-            BooleanExpression result = conditionBuilder.keywordContains((String) null);
+            BooleanExpression result =
+                    conditionBuilder.searchFieldContains(CommonCodeTypeSearchField.CODE, "결제");
+
+            // then
+            assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("null 검색어 입력 시 null을 반환합니다")
+        void searchFieldContains_WithNullSearchWord_ReturnsNull() {
+            // when
+            BooleanExpression result =
+                    conditionBuilder.searchFieldContains(CommonCodeTypeSearchField.CODE, null);
 
             // then
             assertThat(result).isNull();
         }
 
         @Test
-        @DisplayName("빈 키워드 입력 시 null을 반환합니다")
-        void keywordContains_WithBlankKeyword_ReturnsNull() {
+        @DisplayName("빈 검색어 입력 시 null을 반환합니다")
+        void searchFieldContains_WithBlankSearchWord_ReturnsNull() {
             // when
-            BooleanExpression result = conditionBuilder.keywordContains("   ");
+            BooleanExpression result =
+                    conditionBuilder.searchFieldContains(CommonCodeTypeSearchField.NAME, "   ");
 
             // then
             assertThat(result).isNull();
@@ -328,35 +339,92 @@ class CommonCodeTypeConditionBuilderTest {
     }
 
     // ========================================================================
-    // 9. keywordContains (Criteria) 테스트
+    // 9. searchCondition (Criteria) 테스트
     // ========================================================================
 
     @Nested
-    @DisplayName("keywordContains (Criteria) 메서드 테스트")
-    class KeywordContainsCriteriaTest {
+    @DisplayName("searchCondition (Criteria) 메서드 테스트")
+    class SearchConditionCriteriaTest {
 
         @Test
-        @DisplayName("키워드가 있으면 BooleanExpression을 반환합니다")
-        void keywordContains_WithKeyword_ReturnsBooleanExpression() {
+        @DisplayName("검색어가 있으면 BooleanExpression을 반환합니다")
+        void searchCondition_WithSearchWord_ReturnsBooleanExpression() {
             // given
-            given(criteria.hasKeyword()).willReturn(true);
-            given(criteria.keyword()).willReturn("결제");
+            given(criteria.hasSearchWord()).willReturn(true);
+            given(criteria.searchField()).willReturn(CommonCodeTypeSearchField.CODE);
+            given(criteria.searchWord()).willReturn("결제");
 
             // when
-            BooleanExpression result = conditionBuilder.keywordContains(criteria);
+            BooleanExpression result = conditionBuilder.searchCondition(criteria);
 
             // then
             assertThat(result).isNotNull();
         }
 
         @Test
-        @DisplayName("키워드가 없으면 null을 반환합니다")
-        void keywordContains_WithoutKeyword_ReturnsNull() {
+        @DisplayName("검색어가 없으면 null을 반환합니다")
+        void searchCondition_WithoutSearchWord_ReturnsNull() {
             // given
-            given(criteria.hasKeyword()).willReturn(false);
+            given(criteria.hasSearchWord()).willReturn(false);
 
             // when
-            BooleanExpression result = conditionBuilder.keywordContains(criteria);
+            BooleanExpression result = conditionBuilder.searchCondition(criteria);
+
+            // then
+            assertThat(result).isNull();
+        }
+    }
+
+    // ========================================================================
+    // 10. typeHasCommonCodeValue 테스트
+    // ========================================================================
+
+    @Nested
+    @DisplayName("typeHasCommonCodeValue 메서드 테스트")
+    class TypeHasCommonCodeValueTest {
+
+        @Test
+        @DisplayName("유효한 type 입력 시 BooleanExpression을 반환합니다")
+        void typeHasCommonCodeValue_WithValidType_ReturnsBooleanExpression() {
+            // when
+            BooleanExpression result = conditionBuilder.typeHasCommonCodeValue("CARD");
+
+            // then
+            assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("null type 입력 시 null을 반환합니다")
+        void typeHasCommonCodeValue_WithNullType_ReturnsNull() {
+            // when
+            BooleanExpression result = conditionBuilder.typeHasCommonCodeValue((String) null);
+
+            // then
+            assertThat(result).isNull();
+        }
+
+        @Test
+        @DisplayName("type이 있으면 (Criteria) BooleanExpression을 반환합니다")
+        void typeHasCommonCodeValue_WithCriteria_ReturnsBooleanExpression() {
+            // given
+            given(criteria.hasType()).willReturn(true);
+            given(criteria.type()).willReturn("CARD");
+
+            // when
+            BooleanExpression result = conditionBuilder.typeHasCommonCodeValue(criteria);
+
+            // then
+            assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("type이 없으면 (Criteria) null을 반환합니다")
+        void typeHasCommonCodeValue_WithoutType_ReturnsNull() {
+            // given
+            given(criteria.hasType()).willReturn(false);
+
+            // when
+            BooleanExpression result = conditionBuilder.typeHasCommonCodeValue(criteria);
 
             // then
             assertThat(result).isNull();

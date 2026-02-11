@@ -100,6 +100,6 @@ public class SellerAssembler {
     public SellerPageResult toPageResult(
             List<Seller> sellers, int page, int size, long totalCount) {
         List<SellerResult> results = toResults(sellers);
-        return SellerPageResult.of(results, totalCount, page, size);
+        return SellerPageResult.of(results, page, size, totalCount);
     }
 }

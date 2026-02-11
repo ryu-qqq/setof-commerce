@@ -10,6 +10,7 @@ import com.ryuqq.setof.application.sellerapplication.dto.response.SellerApplicat
 import com.ryuqq.setof.application.sellerapplication.dto.response.SellerApplicationResult;
 import com.ryuqq.setof.domain.sellerapplication.vo.ApplicationStatus;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.stereotype.Component;
 
 /**
@@ -57,7 +58,7 @@ public class SellerApplicationQueryApiMapper {
         CommonSearchParams searchParams =
                 CommonSearchParams.of(false, null, null, sortKey, sortDirection, page, size);
 
-        ApplicationStatus status = parseStatus(request.status());
+        List<ApplicationStatus> status = parseStatusList(request.status());
 
         return SellerApplicationSearchParams.of(
                 status, request.searchField(), request.searchWord(), searchParams);
@@ -73,7 +74,10 @@ public class SellerApplicationQueryApiMapper {
             SellerApplicationPageResult pageResult) {
         List<SellerApplicationApiResponse> responses = toResponses(pageResult.content());
         return PageApiResponse.of(
-                responses, pageResult.page(), pageResult.size(), pageResult.totalCount());
+                responses,
+                pageResult.pageMeta().page(),
+                pageResult.pageMeta().size(),
+                pageResult.pageMeta().totalElements());
     }
 
     /**
@@ -181,6 +185,13 @@ public class SellerApplicationQueryApiMapper {
                 DateTimeFormatUtils.formatIso8601(agreement.agreedAt()),
                 agreement.termsAgreed(),
                 agreement.privacyAgreed());
+    }
+
+    private List<ApplicationStatus> parseStatusList(List<String> statusList) {
+        if (statusList == null || statusList.isEmpty()) {
+            return List.of();
+        }
+        return statusList.stream().map(this::parseStatus).filter(Objects::nonNull).toList();
     }
 
     private ApplicationStatus parseStatus(String status) {

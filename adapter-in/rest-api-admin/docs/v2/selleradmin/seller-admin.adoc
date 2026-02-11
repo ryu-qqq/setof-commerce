@@ -1,0 +1,122 @@
+[[seller-admin-api]]
+= 셀러 관리자 가입 신청 관리
+
+`/api/v2/admin/seller-admin-applications`
+
+[[seller-admin-apply]]
+== POST 셀러 관리자 가입 신청
+
+include::{snippets}/apply-seller-admin-test/apply-seller-admin_-success/http-request.adoc[]
+
+=== Request Fields
+include::{snippets}/apply-seller-admin-test/apply-seller-admin_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/apply-seller-admin-test/apply-seller-admin_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/apply-seller-admin-test/apply-seller-admin_-success/response-fields.adoc[]
+
+[[seller-admin-approve]]
+== POST 셀러 관리자 가입 승인
+
+`POST /api/v2/admin/seller-admin-applications/{sellerAdminId}/approve`
+
+include::{snippets}/approve-seller-admin-test/approve-seller-admin_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/approve-seller-admin-test/approve-seller-admin_-success/path-parameters.adoc[]
+
+=== Response
+include::{snippets}/approve-seller-admin-test/approve-seller-admin_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/approve-seller-admin-test/approve-seller-admin_-success/response-fields.adoc[]
+
+[[seller-admin-reject]]
+== POST 셀러 관리자 가입 거절
+
+`POST /api/v2/admin/seller-admin-applications/{sellerAdminId}/reject`
+
+include::{snippets}/reject-seller-admin-test/reject-seller-admin_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/reject-seller-admin-test/reject-seller-admin_-success/path-parameters.adoc[]
+
+=== Request Fields
+include::{snippets}/reject-seller-admin-test/reject-seller-admin_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/reject-seller-admin-test/reject-seller-admin_-success/http-response.adoc[]
+
+[[seller-admin-bulk-approve]]
+== POST 셀러 관리자 가입 일괄 승인
+
+`POST /api/v2/admin/seller-admin-applications/bulk-approve`
+
+include::{snippets}/bulk-approve-seller-admin-test/bulk-approve-seller-admin_-success/http-request.adoc[]
+
+=== Request Fields
+include::{snippets}/bulk-approve-seller-admin-test/bulk-approve-seller-admin_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/bulk-approve-seller-admin-test/bulk-approve-seller-admin_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/bulk-approve-seller-admin-test/bulk-approve-seller-admin_-success/response-fields.adoc[]
+
+[[seller-admin-bulk-reject]]
+== POST 셀러 관리자 가입 일괄 거절
+
+`POST /api/v2/admin/seller-admin-applications/bulk-reject`
+
+include::{snippets}/bulk-reject-seller-admin-test/bulk-reject-seller-admin_-success/http-request.adoc[]
+
+=== Request Fields
+include::{snippets}/bulk-reject-seller-admin-test/bulk-reject-seller-admin_-success/request-fields.adoc[]
+
+=== Response
+include::{snippets}/bulk-reject-seller-admin-test/bulk-reject-seller-admin_-success/http-response.adoc[]
+
+[[seller-admin-reset-password]]
+== POST 셀러 관리자 비밀번호 초기화
+
+`POST /api/v2/admin/seller-admin-applications/{sellerAdminId}/reset-password`
+
+include::{snippets}/reset-password-seller-admin-test/reset-password-seller-admin_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/reset-password-seller-admin-test/reset-password-seller-admin_-success/path-parameters.adoc[]
+
+=== Response
+include::{snippets}/reset-password-seller-admin-test/reset-password-seller-admin_-success/http-response.adoc[]
+
+[[seller-admin-search]]
+== GET 셀러 관리자 가입 신청 목록 조회
+
+include::{snippets}/search-seller-admin-test/search-seller-admin_-success/http-request.adoc[]
+
+=== Query Parameters
+include::{snippets}/search-seller-admin-test/search-seller-admin_-success/query-parameters.adoc[]
+
+=== Response
+include::{snippets}/search-seller-admin-test/search-seller-admin_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/search-seller-admin-test/search-seller-admin_-success/response-fields.adoc[]
+
+[[seller-admin-get]]
+== GET 셀러 관리자 가입 신청 상세 조회
+
+`GET /api/v2/admin/seller-admin-applications/{sellerAdminId}`
+
+include::{snippets}/get-seller-admin-test/get-seller-admin_-success/http-request.adoc[]
+
+=== Path Parameters
+include::{snippets}/get-seller-admin-test/get-seller-admin_-success/path-parameters.adoc[]
+
+=== Response
+include::{snippets}/get-seller-admin-test/get-seller-admin_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/get-seller-admin-test/get-seller-admin_-success/response-fields.adoc[]

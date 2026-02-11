@@ -1,6 +1,6 @@
 package com.ryuqq.setof.application.seller.service.command;
 
-import com.ryuqq.setof.application.common.dto.BatchProcessingResult;
+import com.ryuqq.setof.application.common.dto.result.SchedulerBatchProcessingResult;
 import com.ryuqq.setof.application.seller.dto.command.ProcessPendingOutboxCommand;
 import com.ryuqq.setof.application.seller.internal.SellerAuthOutboxProcessor;
 import com.ryuqq.setof.application.seller.manager.SellerAuthOutboxReadManager;
@@ -32,7 +32,7 @@ public class ProcessPendingOutboxService implements ProcessPendingOutboxUseCase 
     }
 
     @Override
-    public BatchProcessingResult execute(ProcessPendingOutboxCommand command) {
+    public SchedulerBatchProcessingResult execute(ProcessPendingOutboxCommand command) {
         List<SellerAuthOutbox> outboxes =
                 outboxReadManager.findPendingOutboxesForRetry(
                         command.beforeTime(), command.batchSize());
@@ -50,6 +50,6 @@ public class ProcessPendingOutboxService implements ProcessPendingOutboxUseCase 
             }
         }
 
-        return BatchProcessingResult.of(total, successCount, failedCount);
+        return SchedulerBatchProcessingResult.of(total, successCount, failedCount);
     }
 }

@@ -45,7 +45,7 @@ class SearchCategoryByOffsetServiceTest {
         void execute_ReturnsPagedResult() {
             // given
             CategorySearchParams params =
-                    CategoryQueryFixtures.searchParams(null, null, null, 0, 20);
+                    CategoryQueryFixtures.searchParams(null, null, null, null, 0, 20);
             CategorySearchCriteria criteria = CategorySearchCriteria.defaultOf();
 
             List<Category> categories =
@@ -62,10 +62,14 @@ class SearchCategoryByOffsetServiceTest {
                                                     c.parentCategoryIdValue(),
                                                     c.categoryDepthValue(),
                                                     c.isDisplayed(),
-                                                    c.pathValue()))
+                                                    c.pathValue(),
+                                                    c.pathValue(),
+                                                    c.targetGroup() != null
+                                                            ? c.targetGroup().name()
+                                                            : null))
                             .toList();
             CategoryPageResult expected =
-                    CategoryPageResult.of(results, totalElements, params.page(), params.size());
+                    CategoryPageResult.of(results, params.page(), params.size(), totalElements);
 
             given(queryFactory.createCriteria(params)).willReturn(criteria);
             given(readManager.findByCriteria(criteria)).willReturn(categories);
@@ -111,7 +115,7 @@ class SearchCategoryByOffsetServiceTest {
 
             // then
             assertThat(result.content()).isEmpty();
-            assertThat(result.totalCount()).isZero();
+            assertThat(result.pageMeta().totalElements()).isZero();
         }
     }
 }

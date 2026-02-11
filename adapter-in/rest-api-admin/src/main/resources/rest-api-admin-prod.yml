@@ -1,0 +1,35 @@
+# ============================================================
+# REST API Admin Adapter 운영 환경 설정
+# ============================================================
+# 활성화: spring.profiles.active=prod
+#
+# @since 1.0.0
+# ============================================================
+
+# ============================================================
+# API Documentation (운영: 비활성화)
+# ============================================================
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+# ============================================================
+# Error Response (운영: 상세 URL 제공)
+# ============================================================
+api:
+  server:
+    url: ${API_SERVER_URL:https://admin-api.set-of.com}
+  error:
+    base-url: ${API_ERROR_DOCS_URL:https://admin-api.set-of.com/problems}
+    use-about-blank: false
+
+# ============================================================
+# Logging (운영: 최소화)
+# ============================================================
+logging:
+  level:
+    com.ryuqq.setof.adapter.in.rest.admin: INFO
+    org.springframework.security: WARN
+    org.springframework.web: WARN

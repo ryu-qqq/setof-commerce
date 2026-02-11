@@ -6,6 +6,7 @@ import com.ryuqq.setof.domain.common.vo.PageRequest;
 import com.ryuqq.setof.domain.common.vo.QueryContext;
 import com.ryuqq.setof.domain.common.vo.SortDirection;
 import com.ryuqq.setof.domain.commoncodetype.query.CommonCodeTypeSearchCriteria;
+import com.ryuqq.setof.domain.commoncodetype.query.CommonCodeTypeSearchField;
 import com.ryuqq.setof.domain.commoncodetype.query.CommonCodeTypeSortKey;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +38,10 @@ public class CommonCodeTypeQueryFactory {
                         pageRequest,
                         params.searchParams().includeDeleted());
 
-        return new CommonCodeTypeSearchCriteria(params.active(), params.keyword(), queryContext);
+        CommonCodeTypeSearchField searchField =
+                CommonCodeTypeSearchField.fromString(params.searchField());
+        return new CommonCodeTypeSearchCriteria(
+                params.active(), searchField, params.searchWord(), params.type(), queryContext);
     }
 
     private CommonCodeTypeSortKey resolveSortKey(String sortKeyString) {

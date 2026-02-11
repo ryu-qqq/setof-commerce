@@ -8,14 +8,18 @@ import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.dto.response.S
 import com.ryuqq.setof.adapter.in.rest.admin.v2.sellerapplication.mapper.SellerApplicationQueryApiMapper;
 import com.ryuqq.setof.application.sellerapplication.dto.query.SellerApplicationSearchParams;
 import com.ryuqq.setof.application.sellerapplication.dto.response.SellerApplicationPageResult;
+import com.ryuqq.setof.application.sellerapplication.dto.response.SellerApplicationResult;
+import com.ryuqq.setof.application.sellerapplication.port.in.query.GetSellerApplicationUseCase;
 import com.ryuqq.setof.application.sellerapplication.port.in.query.SearchSellerApplicationByOffsetUseCase;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,18 +47,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class SellerApplicationQueryController {
 
     private final SearchSellerApplicationByOffsetUseCase searchUseCase;
+    private final GetSellerApplicationUseCase getUseCase;
     private final SellerApplicationQueryApiMapper mapper;
 
     /**
      * SellerApplicationQueryController 생성자.
      *
      * @param searchUseCase 입점 신청 검색 UseCase
+     * @param getUseCase 입점 신청 상세 조회 UseCase
      * @param mapper Query API 매퍼
      */
     public SellerApplicationQueryController(
             SearchSellerApplicationByOffsetUseCase searchUseCase,
+            GetSellerApplicationUseCase getUseCase,
             SellerApplicationQueryApiMapper mapper) {
         this.searchUseCase = searchUseCase;
+        this.getUseCase = getUseCase;
         this.mapper = mapper;
     }
 
@@ -81,5 +89,32 @@ public class SellerApplicationQueryController {
         PageApiResponse<SellerApplicationApiResponse> response = mapper.toPageResponse(pageResult);
 
         return ResponseEntity.ok(ApiResponse.of(response));
+    }
+
+    /**
+     * 셀러 입점 신청 상세 조회 API.
+     *
+     * <p>특정 입점 신청의 상세 정보를 조회합니다.
+     *
+     * @param applicationId 신청 ID
+     * @return 입점 신청 상세 정보
+     */
+    @Operation(summary = "셀러 입점 신청 상세 조회", description = "셀러 입점 신청의 상세 정보를 조회합니다.")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                responseCode = "200",
+                description = "조회 성공"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                responseCode = "404",
+                description = "신청을 찾을 수 없음")
+    })
+    @GetMapping(SellerApplicationAdminEndpoints.ID)
+    public ResponseEntity<ApiResponse<SellerApplicationApiResponse>> get(
+            @Parameter(description = "신청 ID", required = true)
+                    @PathVariable(SellerApplicationAdminEndpoints.PATH_APPLICATION_ID)
+                    Long applicationId) {
+
+        SellerApplicationResult result = getUseCase.execute(applicationId);
+        return ResponseEntity.ok(ApiResponse.of(mapper.toResponse(result)));
     }
 }

@@ -1,65 +1,81 @@
 [[category-v1-api]]
 = 카테고리 V1
 
-`/api/v1/category`
+`/api/v1/categories`
 
 [[category-v1-tree]]
 == GET 전체 카테고리 트리 조회
 
 전체 카테고리를 트리 구조로 조회합니다.
 
-include::{snippets}/get-all-categories-as-tree-test/get-all-categories-as-tree_-success/http-request.adoc[]
+include::{snippets}/fetch-all-categories-as-tree-test/fetch-all-categories-as-tree_-success/http-request.adoc[]
 
 === Response
-include::{snippets}/get-all-categories-as-tree-test/get-all-categories-as-tree_-success/http-response.adoc[]
+include::{snippets}/fetch-all-categories-as-tree-test/fetch-all-categories-as-tree_-success/http-response.adoc[]
 
 === Response Fields
-include::{snippets}/get-all-categories-as-tree-test/get-all-categories-as-tree_-success/response-fields.adoc[]
+include::{snippets}/fetch-all-categories-as-tree-test/fetch-all-categories-as-tree_-success/response-fields.adoc[]
 
 [[category-v1-children]]
 == GET 자식 카테고리 조회
 
-특정 카테고리의 자식 카테고리 목록을 조회합니다.
+특정 카테고리의 하위 카테고리 목록을 조회합니다.
 
-include::{snippets}/get-child-categories-test/get-child-categories_-success/http-request.adoc[]
+include::{snippets}/fetch-all-child-categories-test/fetch-all-child-categories_-success/http-request.adoc[]
 
 === Path Parameters
-include::{snippets}/get-child-categories-test/get-child-categories_-success/path-parameters.adoc[]
+include::{snippets}/fetch-all-child-categories-test/fetch-all-child-categories_-success/path-parameters.adoc[]
 
 === Response
-include::{snippets}/get-child-categories-test/get-child-categories_-success/http-response.adoc[]
+include::{snippets}/fetch-all-child-categories-test/fetch-all-child-categories_-success/http-response.adoc[]
 
 === Response Fields
-include::{snippets}/get-child-categories-test/get-child-categories_-success/response-fields.adoc[]
+include::{snippets}/fetch-all-child-categories-test/fetch-all-child-categories_-success/response-fields.adoc[]
 
 [[category-v1-parents]]
 == GET 부모 카테고리 조회
 
-특정 카테고리의 부모 카테고리 목록을 조회합니다 (루트부터 순서대로).
+특정 카테고리의 상위 카테고리 경로를 조회합니다 (루트부터 순서대로).
 
-include::{snippets}/get-parent-categories-test/get-parent-categories_-success/http-request.adoc[]
+include::{snippets}/fetch-all-parent-categories-test/fetch-all-parent-categories_-success/http-request.adoc[]
 
 === Path Parameters
-include::{snippets}/get-parent-categories-test/get-parent-categories_-success/path-parameters.adoc[]
+include::{snippets}/fetch-all-parent-categories-test/fetch-all-parent-categories_-success/path-parameters.adoc[]
 
 === Response
-include::{snippets}/get-parent-categories-test/get-parent-categories_-success/http-response.adoc[]
+include::{snippets}/fetch-all-parent-categories-test/fetch-all-parent-categories_-success/http-response.adoc[]
 
 === Response Fields
-include::{snippets}/get-parent-categories-test/get-parent-categories_-success/response-fields.adoc[]
+include::{snippets}/fetch-all-parent-categories-test/fetch-all-parent-categories_-success/response-fields.adoc[]
+
+[[category-v1-parents-bulk]]
+== GET 부모 카테고리 다건 조회
+
+여러 카테고리의 상위 카테고리 경로를 한 번에 조회합니다.
+
+include::{snippets}/fetch-all-parent-categories-bulk-test/fetch-all-parent-categories-bulk_-success/http-request.adoc[]
+
+=== Query Parameters
+include::{snippets}/fetch-all-parent-categories-bulk-test/fetch-all-parent-categories-bulk_-success/query-parameters.adoc[]
+
+=== Response
+include::{snippets}/fetch-all-parent-categories-bulk-test/fetch-all-parent-categories-bulk_-success/http-response.adoc[]
+
+=== Response Fields
+include::{snippets}/fetch-all-parent-categories-bulk-test/fetch-all-parent-categories-bulk_-success/response-fields.adoc[]
 
 [[category-v1-search]]
 == GET 카테고리 목록 페이징 조회
 
 카테고리 목록을 페이징하여 조회합니다.
 
-include::{snippets}/search-categories-test/search-categories_-success/http-request.adoc[]
+include::{snippets}/fetch-categories-test/fetch-categories_-success/http-request.adoc[]
 
 === Query Parameters
-include::{snippets}/search-categories-test/search-categories_-success/query-parameters.adoc[]
+include::{snippets}/fetch-categories-test/fetch-categories_-success/query-parameters.adoc[]
 
 === Response
-include::{snippets}/search-categories-test/search-categories_-success/http-response.adoc[]
+include::{snippets}/fetch-categories-test/fetch-categories_-success/http-response.adoc[]
 
 === Response Fields
-include::{snippets}/search-categories-test/search-categories_-success/response-fields.adoc[]
+include::{snippets}/fetch-categories-test/fetch-categories_-success/response-fields.adoc[]

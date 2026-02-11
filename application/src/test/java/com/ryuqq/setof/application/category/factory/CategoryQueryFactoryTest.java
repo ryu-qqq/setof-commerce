@@ -26,14 +26,14 @@ class CategoryQueryFactoryTest {
         void createCriteria_CreatesSearchCriteria() {
             // given
             CategorySearchParams params =
-                    CategoryQueryFixtures.searchParams("테스트카테고리", null, true, 0, 20);
+                    CategoryQueryFixtures.searchParams(null, "테스트카테고리", null, true, 0, 20);
 
             // when
             CategorySearchCriteria result = sut.createCriteria(params);
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.categoryName()).isEqualTo("테스트카테고리");
+            assertThat(result.searchWord()).isEqualTo("테스트카테고리");
             assertThat(result.queryContext()).isNotNull();
         }
 

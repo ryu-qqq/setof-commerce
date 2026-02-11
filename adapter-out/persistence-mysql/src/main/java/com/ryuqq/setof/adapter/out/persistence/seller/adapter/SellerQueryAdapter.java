@@ -9,6 +9,7 @@ import com.ryuqq.setof.domain.seller.id.SellerId;
 import com.ryuqq.setof.domain.seller.query.SellerSearchCriteria;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,8 +24,11 @@ import org.springframework.stereotype.Component;
  * <p>PER-ADP-003: Domain 반환 (DTO 반환 금지).
  *
  * <p>PER-ADP-005: Entity -> Domain 변환 (Mapper 사용).
+ *
+ * <p>활성화 조건: persistence.legacy.seller.enabled=false
  */
 @Component
+@ConditionalOnProperty(name = "persistence.legacy.seller.enabled", havingValue = "false")
 public class SellerQueryAdapter implements SellerQueryPort {
 
     private final SellerQueryDslRepository queryDslRepository;

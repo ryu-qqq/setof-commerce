@@ -3,24 +3,24 @@ package com.ryuqq.setof.adapter.in.rest.admin.v1.category.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * ProductCategoryV1ApiResponse - 상품 카테고리 V1 응답 DTO.
+ * ProductCategoryV1ApiResponse - 상품 카테고리 응답 DTO.
  *
- * <p>레거시 ProductCategoryContext와 동일한 필드 구조입니다.
+ * <p>레거시 ProductCategoryContext 기반 변환.
  *
- * @param categoryId 카테고리 ID
- * @param categoryName 카테고리명
- * @param displayName 표시명
- * @param categoryDepth 카테고리 깊이
- * @param targetGroup 타겟 그룹 (MEN, WOMEN, KIDS 등)
- * @param categoryFullPath 카테고리 전체 경로
+ * <p>GET /api/v1/category/page - 카테고리 페이징 조회
+ *
  * @author ryu-qqq
  * @since 1.0.0
  */
-@Schema(description = "상품 카테고리 V1 응답 (레거시 호환)")
+@Schema(description = "상품 카테고리 응답")
 public record ProductCategoryV1ApiResponse(
-        @Schema(description = "카테고리 ID", example = "1") long categoryId,
-        @Schema(description = "카테고리명", example = "상의") String categoryName,
-        @Schema(description = "표시명", example = "상의") String displayName,
-        @Schema(description = "카테고리 깊이", example = "2") int categoryDepth,
-        @Schema(description = "타겟 그룹", example = "MEN") String targetGroup,
-        @Schema(description = "카테고리 전체 경로", example = "의류 > 상의") String categoryFullPath) {}
+        @Schema(description = "카테고리 ID", example = "100") long categoryId,
+        @Schema(description = "카테고리명", example = "티셔츠") String categoryName,
+        @Schema(description = "노출명", example = "티셔츠") String displayName,
+        @Schema(description = "카테고리 depth (1=대분류, 2=중분류, 3=소분류)", example = "3") int categoryDepth,
+        @Schema(description = "카테고리 전체 경로", example = "의류 > 상의 > 티셔츠") String categoryFullPath,
+        @Schema(
+                        description = "대상 그룹",
+                        example = "ALL",
+                        allowableValues = {"ALL", "MALE", "FEMALE", "KIDS"})
+                String targetGroup) {}

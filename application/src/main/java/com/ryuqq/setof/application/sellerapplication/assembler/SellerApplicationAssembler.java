@@ -126,6 +126,6 @@ public class SellerApplicationAssembler {
     public SellerApplicationPageResult toPageResult(
             List<SellerApplication> applications, int page, int size, long totalCount) {
         List<SellerApplicationResult> results = toResults(applications);
-        return SellerApplicationPageResult.of(results, totalCount, page, size);
+        return SellerApplicationPageResult.of(results, page, size, totalCount);
     }
 }

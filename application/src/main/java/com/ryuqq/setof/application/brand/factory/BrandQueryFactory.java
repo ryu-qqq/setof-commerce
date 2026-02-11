@@ -4,6 +4,7 @@ import com.ryuqq.setof.application.brand.dto.query.BrandDisplaySearchParams;
 import com.ryuqq.setof.application.brand.dto.query.BrandSearchParams;
 import com.ryuqq.setof.application.common.factory.CommonVoFactory;
 import com.ryuqq.setof.domain.brand.query.BrandSearchCriteria;
+import com.ryuqq.setof.domain.brand.query.BrandSearchField;
 import com.ryuqq.setof.domain.brand.query.BrandSortKey;
 import com.ryuqq.setof.domain.common.vo.PageRequest;
 import com.ryuqq.setof.domain.common.vo.QueryContext;
@@ -49,7 +50,11 @@ public class BrandQueryFactory {
                         pageRequest,
                         params.searchParams().includeDeleted());
 
-        return BrandSearchCriteria.of(null, params.brandName(), queryContext);
+        return BrandSearchCriteria.of(
+                null,
+                BrandSearchField.fromString(params.searchField()),
+                params.searchWord(),
+                queryContext);
     }
 
     /**
@@ -63,7 +68,11 @@ public class BrandQueryFactory {
     public BrandSearchCriteria createDisplayCriteria(BrandDisplaySearchParams params) {
         Boolean displayed = params.displayed() != null ? params.displayed() : true;
         QueryContext<BrandSortKey> queryContext = QueryContext.defaultOf(BrandSortKey.defaultKey());
-        return BrandSearchCriteria.of(displayed, params.brandName(), queryContext);
+        return BrandSearchCriteria.of(
+                displayed,
+                BrandSearchField.fromString(params.searchField()),
+                params.searchWord(),
+                queryContext);
     }
 
     private BrandSortKey resolveSortKey(String sortKeyString) {
