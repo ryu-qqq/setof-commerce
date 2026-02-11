@@ -31,12 +31,6 @@ public class LegacyBannerEntity {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "image_url")
-    private String imageUrl;
-
-    @Column(name = "link_url")
-    private String linkUrl;
-
     @Column(name = "banner_type")
     @Enumerated(EnumType.STRING)
     private BannerType bannerType;
@@ -69,14 +63,6 @@ public class LegacyBannerEntity {
 
     public String getTitle() {
         return title;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public String getLinkUrl() {
-        return linkUrl;
     }
 
     public BannerType getBannerType() {
