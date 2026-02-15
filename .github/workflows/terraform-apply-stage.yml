@@ -2,7 +2,7 @@
 # SetOf Commerce Terraform Apply (Stage)
 #
 # Stage 환경 인프라 적용 워크플로우
-# 트리거: stage-build-deploy.yml에서 호출
+# 트리거: deploy-stage.yml에서 호출
 #
 # 적용 대상 모듈:
 # - ecr-stage: Stage ECR 레포지토리

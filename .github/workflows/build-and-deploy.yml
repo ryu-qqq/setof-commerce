@@ -20,7 +20,7 @@
 # 5. ECS 배포 및 Terraform 업데이트
 # ============================================================================
 
-name: Build and Deploy to ECS (Production)
+name: Build and Deploy
 
 on:
   workflow_dispatch:
