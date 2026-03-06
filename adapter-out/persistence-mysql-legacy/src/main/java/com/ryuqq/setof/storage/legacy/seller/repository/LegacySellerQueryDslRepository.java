@@ -159,8 +159,8 @@ public class LegacySellerQueryDslRepository {
         return switch (sortKey) {
             case CREATED_AT ->
                     isAsc
-                            ? legacySellerEntity.createdAt.asc()
-                            : legacySellerEntity.createdAt.desc();
+                            ? legacySellerEntity.insertDate.asc()
+                            : legacySellerEntity.insertDate.desc();
             case SELLER_NAME ->
                     isAsc
                             ? legacySellerEntity.sellerName.asc()

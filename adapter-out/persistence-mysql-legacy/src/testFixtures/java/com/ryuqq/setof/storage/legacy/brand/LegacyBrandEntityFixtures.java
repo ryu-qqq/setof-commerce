@@ -30,7 +30,7 @@ public class LegacyBrandEntityFixtures {
     public static final String DEFAULT_BRAND_ICON_IMAGE_URL = "https://example.com/icon.png";
     public static final String DEFAULT_DISPLAY_KOREAN_NAME = "테스트 브랜드 한국어";
     public static final String DEFAULT_DISPLAY_ENGLISH_NAME = "Test Brand English";
-    public static final MainDisplayNameType DEFAULT_MAIN_DISPLAY_TYPE = MainDisplayNameType.KOREAN;
+    public static final MainDisplayNameType DEFAULT_MAIN_DISPLAY_TYPE = MainDisplayNameType.KR;
     public static final int DEFAULT_DISPLAY_ORDER = 1;
     public static final Yn DEFAULT_DISPLAY_YN = Yn.Y;
 

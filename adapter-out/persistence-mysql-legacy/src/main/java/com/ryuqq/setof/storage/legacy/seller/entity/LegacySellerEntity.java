@@ -1,10 +1,10 @@
 package com.ryuqq.setof.storage.legacy.seller.entity;
 
+import com.ryuqq.setof.storage.legacy.common.entity.LegacyBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 
 /**
  * LegacySellerEntity - 레거시 판매자 엔티티.
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "seller")
-public class LegacySellerEntity {
+public class LegacySellerEntity extends LegacyBaseEntity {
 
     @Id
     @Column(name = "seller_id")
@@ -37,12 +37,6 @@ public class LegacySellerEntity {
 
     @Column(name = "commission_rate")
     private Double commissionRate;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     protected LegacySellerEntity() {}
 
@@ -64,13 +58,5 @@ public class LegacySellerEntity {
 
     public Double getCommissionRate() {
         return commissionRate;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 }

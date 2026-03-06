@@ -43,8 +43,8 @@ public class LegacySellerEntityMapper {
      * @return Seller 도메인 객체
      */
     public Seller toDomain(LegacySellerEntity entity) {
-        Instant createdAt = toInstant(entity.getCreatedAt());
-        Instant updatedAt = toInstant(entity.getUpdatedAt());
+        Instant createdAt = toInstant(entity.getInsertDate());
+        Instant updatedAt = toInstant(entity.getUpdateDate());
 
         return Seller.reconstitute(
                 SellerId.of(entity.getId()),

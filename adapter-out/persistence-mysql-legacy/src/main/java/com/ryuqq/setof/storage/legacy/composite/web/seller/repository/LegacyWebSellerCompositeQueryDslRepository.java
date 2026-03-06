@@ -97,7 +97,7 @@ public class LegacyWebSellerCompositeQueryDslRepository {
                 legacySellerBusinessInfoEntity.bankName,
                 legacySellerBusinessInfoEntity.accountNumber,
                 legacySellerBusinessInfoEntity.accountHolderName,
-                legacySellerEntity.createdAt,
-                legacySellerEntity.updatedAt);
+                legacySellerEntity.insertDate,
+                legacySellerEntity.updateDate);
     }
 }

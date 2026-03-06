@@ -34,7 +34,7 @@ class LegacyBrandEntityMapperTest {
     class ToDomainTest {
 
         @Test
-        @DisplayName("정상 변환 - KOREAN 타입일 때 한글 표시명 사용")
+        @DisplayName("정상 변환 - KR 타입일 때 한글 표시명 사용")
         void shouldConvertEntityToDomainWithKoreanDisplayName() {
             // given
             LegacyBrandEntity entity =
@@ -44,7 +44,7 @@ class LegacyBrandEntityMapperTest {
                             .brandIconImageUrl("https://example.com/nike-icon.png")
                             .displayEnglishName("Nike")
                             .displayKoreanName("나이키 코리아")
-                            .mainDisplayType(MainDisplayNameType.KOREAN)
+                            .mainDisplayType(MainDisplayNameType.KR)
                             .displayOrder(5)
                             .displayYn(Yn.Y)
                             .insertDate(LocalDateTime.of(2024, 1, 15, 10, 30))
@@ -76,14 +76,14 @@ class LegacyBrandEntityMapperTest {
         }
 
         @Test
-        @DisplayName("ENGLISH 타입일 때 영문 표시명 사용")
+        @DisplayName("US 타입일 때 영문 표시명 사용")
         void shouldUseEnglishDisplayNameWhenTypeIsEnglish() {
             // given
             LegacyBrandEntity entity =
                     LegacyBrandEntityFixtures.builder()
                             .displayEnglishName("Adidas")
                             .displayKoreanName("아디다스 코리아")
-                            .mainDisplayType(MainDisplayNameType.ENGLISH)
+                            .mainDisplayType(MainDisplayNameType.US)
                             .build();
 
             // when
@@ -94,14 +94,14 @@ class LegacyBrandEntityMapperTest {
         }
 
         @Test
-        @DisplayName("KOREAN 타입이지만 한글 표시명이 null일 때 영문 표시명 폴백")
+        @DisplayName("KR 타입이지만 한글 표시명이 null일 때 영문 표시명 폴백")
         void shouldFallbackToEnglishWhenKoreanNameIsNull() {
             // given
             LegacyBrandEntity entity =
                     LegacyBrandEntityFixtures.builder()
                             .displayEnglishName("Puma")
                             .displayKoreanName(null)
-                            .mainDisplayType(MainDisplayNameType.KOREAN)
+                            .mainDisplayType(MainDisplayNameType.KR)
                             .build();
 
             // when
@@ -112,14 +112,14 @@ class LegacyBrandEntityMapperTest {
         }
 
         @Test
-        @DisplayName("ENGLISH 타입이지만 영문 표시명이 null일 때 한글 표시명 폴백")
+        @DisplayName("US 타입이지만 영문 표시명이 null일 때 한글 표시명 폴백")
         void shouldFallbackToKoreanWhenEnglishNameIsNull() {
             // given
             LegacyBrandEntity entity =
                     LegacyBrandEntityFixtures.builder()
                             .displayEnglishName(null)
                             .displayKoreanName("뉴발란스 코리아")
-                            .mainDisplayType(MainDisplayNameType.ENGLISH)
+                            .mainDisplayType(MainDisplayNameType.US)
                             .build();
 
             // when

@@ -95,7 +95,7 @@ public class LegacyBrandEntity extends LegacyBaseEntity {
 
     /** MainDisplayNameType - 메인 표시명 타입. */
     public enum MainDisplayNameType {
-        KOREAN,
-        ENGLISH
+        KR,
+        US
     }
 }

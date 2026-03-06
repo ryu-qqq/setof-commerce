@@ -61,7 +61,7 @@ public class LegacyBrandEntityMapper {
 
     private String resolveDisplayName(
             String englishName, String koreanName, MainDisplayNameType type) {
-        if (type == MainDisplayNameType.KOREAN) {
+        if (type == MainDisplayNameType.KR) {
             return koreanName != null ? koreanName : englishName;
         }
         return englishName != null ? englishName : koreanName;
