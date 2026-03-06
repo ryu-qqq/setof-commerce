@@ -101,6 +101,39 @@ variable "dashboard_url" {
 }
 
 # ========================================
+# CloudWatch Alarm Variables
+# ========================================
+variable "alarm_diff_rate_threshold" {
+  description = "DiffRate threshold (%) to trigger alarm"
+  type        = number
+  default     = 10
+}
+
+variable "alarm_evaluation_periods" {
+  description = "Number of consecutive periods to evaluate before triggering alarm"
+  type        = number
+  default     = 3
+}
+
+variable "alarm_period" {
+  description = "Evaluation period in seconds"
+  type        = number
+  default     = 300
+}
+
+variable "alert_email" {
+  description = "Email address for alarm notifications (optional)"
+  type        = string
+  default     = ""
+}
+
+variable "alarm_domains" {
+  description = "List of domains to create alarms for"
+  type        = list(string)
+  default     = ["brand", "category", "faq", "seller"]
+}
+
+# ========================================
 # Shared Resource References (SSM)
 # ========================================
 data "aws_ssm_parameter" "vpc_id" {

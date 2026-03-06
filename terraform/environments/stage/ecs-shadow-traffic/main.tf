@@ -392,6 +392,65 @@ module "log_streaming" {
 }
 
 # ========================================
+# SNS Topic for Shadow Traffic Alarms
+# ========================================
+module "alarm_topic" {
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/sns?ref=main"
+
+  name         = "${var.project_name}-shadow-traffic-alarm-${var.environment}"
+  display_name = "Shadow Traffic Diff Alerts (Stage)"
+  kms_key_id   = aws_kms_key.logs.arn
+
+  subscriptions = var.alert_email != "" ? {
+    email = {
+      protocol = "email"
+      endpoint = var.alert_email
+    }
+  } : {}
+
+  enable_cloudwatch_alarms = false
+
+  environment  = "staging"
+  service      = "shadow-traffic"
+  team         = local.common_tags.team
+  owner        = local.common_tags.owner
+  cost_center  = local.common_tags.cost_center
+  project      = local.common_tags.project
+  data_class   = local.common_tags.data_class
+}
+
+# ========================================
+# CloudWatch Alarms - DiffRate per Domain
+# ========================================
+resource "aws_cloudwatch_metric_alarm" "diff_rate" {
+  for_each = toset(var.alarm_domains)
+
+  alarm_name        = "${var.project_name}-shadow-traffic-${each.value}-diff-rate-${var.environment}"
+  alarm_description = "Shadow traffic diff rate exceeded ${var.alarm_diff_rate_threshold}% for domain: ${each.value}"
+
+  namespace   = "ShadowTraffic"
+  metric_name = "DiffRate"
+  dimensions = {
+    Domain = each.value
+  }
+
+  statistic           = "Average"
+  period              = var.alarm_period
+  evaluation_periods  = var.alarm_evaluation_periods
+  threshold           = var.alarm_diff_rate_threshold
+  comparison_operator = "GreaterThanThreshold"
+  treat_missing_data  = "notBreaching"
+
+  alarm_actions = [module.alarm_topic.topic_arn]
+  ok_actions    = [module.alarm_topic.topic_arn]
+
+  tags = merge(local.common_tags, {
+    Name   = "${var.project_name}-shadow-traffic-${each.value}-diff-rate-${var.environment}"
+    Domain = each.value
+  })
+}
+
+# ========================================
 # Outputs
 # ========================================
 output "task_definition_arn" {
@@ -412,4 +471,9 @@ output "security_group_id" {
 output "log_group_name" {
   description = "CloudWatch Log Group name"
   value       = module.shadow_traffic_logs.log_group_name
+}
+
+output "alarm_topic_arn" {
+  description = "SNS Topic ARN for shadow traffic alarms"
+  value       = module.alarm_topic.topic_arn
 }
