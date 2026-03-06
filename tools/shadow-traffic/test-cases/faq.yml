@@ -2,38 +2,38 @@ domain: faq
 description: "FAQ API shadow traffic test cases"
 
 test_cases:
-  - name: "faq_list_general"
+  - name: "faq_list_member_login"
     path: "/api/v1/faq"
     method: GET
     auth: none
     body:
-      faqType: "GENERAL"
+      faqType: "MEMBER_LOGIN"
     compare_mode: full
     ignore_fields: []
 
-  - name: "faq_list_order"
+  - name: "faq_list_order_payment"
     path: "/api/v1/faq"
     method: GET
     auth: none
     body:
-      faqType: "ORDER"
+      faqType: "ORDER_PAYMENT"
     compare_mode: full
     ignore_fields: []
 
-  - name: "faq_list_delivery"
+  - name: "faq_list_shipping"
     path: "/api/v1/faq"
     method: GET
     auth: none
     body:
-      faqType: "DELIVERY"
+      faqType: "SHIPPING"
     compare_mode: full
     ignore_fields: []
 
-  - name: "faq_list_return"
+  - name: "faq_list_exchange_return"
     path: "/api/v1/faq"
     method: GET
     auth: none
     body:
-      faqType: "RETURN"
+      faqType: "EXCHANGE_RETURN"
     compare_mode: full
     ignore_fields: []

@@ -125,7 +125,7 @@ async def main() -> int:
     total_passed = 0
     total_failed = 0
 
-    async with httpx.AsyncClient(follow_redirects=True) as http_client:
+    async with httpx.AsyncClient(follow_redirects=False) as http_client:
         for suite in suites:
             domain = suite["domain"]
             logger.info(f"--- Running suite: {domain} ---")
