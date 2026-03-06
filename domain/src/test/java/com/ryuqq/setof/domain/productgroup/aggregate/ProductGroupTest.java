@@ -7,15 +7,15 @@ import com.ryuqq.setof.domain.brand.id.BrandId;
 import com.ryuqq.setof.domain.category.id.CategoryId;
 import com.ryuqq.setof.domain.common.CommonVoFixtures;
 import com.ryuqq.setof.domain.productgroup.ProductGroupFixtures;
-import com.ryuqq.setof.domain.productgroup.vo.ImageType;
-import com.ryuqq.setof.domain.productgroup.vo.ImageUrl;
+import com.ryuqq.setof.domain.productgroup.exception.ProductGroupInvalidStatusTransitionException;
+import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import com.ryuqq.setof.domain.productgroup.vo.OptionType;
 import com.ryuqq.setof.domain.productgroup.vo.ProductGroupName;
 import com.ryuqq.setof.domain.productgroup.vo.ProductGroupStatus;
+import com.ryuqq.setof.domain.productgroup.vo.ProductGroupUpdateData;
 import com.ryuqq.setof.domain.refundpolicy.id.RefundPolicyId;
 import com.ryuqq.setof.domain.shippingpolicy.id.ShippingPolicyId;
 import java.time.Instant;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -39,19 +39,19 @@ class ProductGroupTest {
             assertThat(productGroup.isNew()).isTrue();
             assertThat(productGroup.productGroupNameValue())
                     .isEqualTo(ProductGroupFixtures.DEFAULT_PRODUCT_GROUP_NAME);
-            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.DRAFT);
+            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.ACTIVE);
             assertThat(productGroup.optionType()).isEqualTo(OptionType.SINGLE);
         }
 
         @Test
-        @DisplayName("신규 생성 시 DRAFT 상태이다")
-        void initialStatusIsDraft() {
+        @DisplayName("신규 생성 시 ACTIVE 상태이다")
+        void initialStatusIsActive() {
             // when
             var productGroup = ProductGroupFixtures.newProductGroup();
 
             // then
-            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.DRAFT);
-            assertThat(productGroup.isDisplayed()).isFalse();
+            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.ACTIVE);
+            assertThat(productGroup.isDisplayed()).isTrue();
             assertThat(productGroup.isSoldOut()).isFalse();
             assertThat(productGroup.isDeleted()).isFalse();
         }
@@ -85,6 +85,7 @@ class ProductGroupTest {
             assertThat(productGroup.salePriceValue())
                     .isEqualTo(ProductGroupFixtures.DEFAULT_SALE_PRICE);
             assertThat(productGroup.images()).isEmpty();
+            assertThat(productGroup.sellerOptionGroups()).isEmpty();
             assertThat(productGroup.createdAt()).isNotNull();
             assertThat(productGroup.updatedAt()).isNotNull();
         }
@@ -119,24 +120,13 @@ class ProductGroupTest {
         }
 
         @Test
-        @DisplayName("INACTIVE 상태의 상품그룹을 복원한다")
-        void reconstituteInactiveProductGroup() {
-            // when
-            var productGroup = ProductGroupFixtures.inactiveProductGroup();
-
-            // then
-            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.INACTIVE);
-            assertThat(productGroup.isDisplayed()).isFalse();
-        }
-
-        @Test
-        @DisplayName("SOLDOUT 상태의 상품그룹을 복원한다")
+        @DisplayName("SOLD_OUT 상태의 상품그룹을 복원한다")
         void reconstituteSoldOutProductGroup() {
             // when
             var productGroup = ProductGroupFixtures.soldOutProductGroup();
 
             // then
-            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.SOLDOUT);
+            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.SOLD_OUT);
             assertThat(productGroup.isSoldOut()).isTrue();
         }
 
@@ -152,16 +142,6 @@ class ProductGroupTest {
         }
 
         @Test
-        @DisplayName("DRAFT 상태의 상품그룹을 복원한다")
-        void reconstituteDraftProductGroup() {
-            // when
-            var productGroup = ProductGroupFixtures.draftProductGroup();
-
-            // then
-            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.DRAFT);
-        }
-
-        @Test
         @DisplayName("복원된 상품그룹은 이미지를 포함한다")
         void reconstituteWithImages() {
             // when
@@ -174,41 +154,59 @@ class ProductGroupTest {
     }
 
     @Nested
+    @DisplayName("changeStatus() - 통합 상태 전이")
+    class ChangeStatusTest {
+
+        @Test
+        @DisplayName("SOLD_OUT에서 ACTIVE로 전환한다")
+        void changeStatusToActive() {
+            // given
+            var productGroup = ProductGroupFixtures.soldOutProductGroup();
+            Instant now = CommonVoFixtures.now();
+
+            // when
+            productGroup.changeStatus(ProductGroupStatus.ACTIVE, now);
+
+            // then
+            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.ACTIVE);
+            assertThat(productGroup.updatedAt()).isEqualTo(now);
+        }
+
+        @Test
+        @DisplayName("ACTIVE에서 SOLD_OUT으로 전환한다")
+        void changeStatusToSoldOut() {
+            // given
+            var productGroup = ProductGroupFixtures.activeProductGroup();
+            Instant now = CommonVoFixtures.now();
+
+            // when
+            productGroup.changeStatus(ProductGroupStatus.SOLD_OUT, now);
+
+            // then
+            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.SOLD_OUT);
+        }
+
+        @Test
+        @DisplayName("ACTIVE에서 DELETED로 전환한다")
+        void changeStatusToDeleted() {
+            // given
+            var productGroup = ProductGroupFixtures.activeProductGroup();
+            Instant now = CommonVoFixtures.now();
+
+            // when
+            productGroup.changeStatus(ProductGroupStatus.DELETED, now);
+
+            // then
+            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.DELETED);
+        }
+    }
+
+    @Nested
     @DisplayName("activate() - 상품그룹 활성화")
     class ActivateTest {
 
         @Test
-        @DisplayName("DRAFT 상태에서 활성화할 수 있다")
-        void activateFromDraft() {
-            // given
-            var productGroup = ProductGroupFixtures.draftProductGroup();
-            Instant now = CommonVoFixtures.now();
-
-            // when
-            productGroup.activate(now);
-
-            // then
-            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.ACTIVE);
-            assertThat(productGroup.updatedAt()).isEqualTo(now);
-        }
-
-        @Test
-        @DisplayName("INACTIVE 상태에서 재활성화할 수 있다")
-        void activateFromInactive() {
-            // given
-            var productGroup = ProductGroupFixtures.inactiveProductGroup();
-            Instant now = CommonVoFixtures.now();
-
-            // when
-            productGroup.activate(now);
-
-            // then
-            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.ACTIVE);
-            assertThat(productGroup.updatedAt()).isEqualTo(now);
-        }
-
-        @Test
-        @DisplayName("SOLDOUT 상태에서 재활성화할 수 있다")
+        @DisplayName("SOLD_OUT 상태에서 활성화할 수 있다")
         void activateFromSoldOut() {
             // given
             var productGroup = ProductGroupFixtures.soldOutProductGroup();
@@ -219,19 +217,21 @@ class ProductGroupTest {
 
             // then
             assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.ACTIVE);
+            assertThat(productGroup.updatedAt()).isEqualTo(now);
         }
 
         @Test
-        @DisplayName("ACTIVE 상태에서 활성화하면 예외가 발생한다")
-        void activateFromActiveThrowsException() {
+        @DisplayName("ACTIVE 상태에서 멱등 활성화가 가능하다")
+        void activateFromActiveIdempotent() {
             // given
             var productGroup = ProductGroupFixtures.activeProductGroup();
             Instant now = CommonVoFixtures.now();
 
-            // when & then
-            assertThatThrownBy(() -> productGroup.activate(now))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("활성화할 수 없습니다");
+            // when
+            productGroup.activate(now);
+
+            // then
+            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.ACTIVE);
         }
 
         @Test
@@ -243,67 +243,7 @@ class ProductGroupTest {
 
             // when & then
             assertThatThrownBy(() -> productGroup.activate(now))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("활성화할 수 없습니다");
-        }
-    }
-
-    @Nested
-    @DisplayName("deactivate() - 상품그룹 비활성화")
-    class DeactivateTest {
-
-        @Test
-        @DisplayName("ACTIVE 상태에서 비활성화할 수 있다")
-        void deactivateFromActive() {
-            // given
-            var productGroup = ProductGroupFixtures.activeProductGroup();
-            Instant now = CommonVoFixtures.now();
-
-            // when
-            productGroup.deactivate(now);
-
-            // then
-            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.INACTIVE);
-            assertThat(productGroup.updatedAt()).isEqualTo(now);
-        }
-
-        @Test
-        @DisplayName("DRAFT 상태에서 비활성화하면 예외가 발생한다")
-        void deactivateFromDraftThrowsException() {
-            // given
-            var productGroup = ProductGroupFixtures.draftProductGroup();
-            Instant now = CommonVoFixtures.now();
-
-            // when & then
-            assertThatThrownBy(() -> productGroup.deactivate(now))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("비활성화할 수 없습니다");
-        }
-
-        @Test
-        @DisplayName("INACTIVE 상태에서 비활성화하면 예외가 발생한다")
-        void deactivateFromInactiveThrowsException() {
-            // given
-            var productGroup = ProductGroupFixtures.inactiveProductGroup();
-            Instant now = CommonVoFixtures.now();
-
-            // when & then
-            assertThatThrownBy(() -> productGroup.deactivate(now))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("비활성화할 수 없습니다");
-        }
-
-        @Test
-        @DisplayName("DELETED 상태에서 비활성화하면 예외가 발생한다")
-        void deactivateFromDeletedThrowsException() {
-            // given
-            var productGroup = ProductGroupFixtures.deletedProductGroup();
-            Instant now = CommonVoFixtures.now();
-
-            // when & then
-            assertThatThrownBy(() -> productGroup.deactivate(now))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("비활성화할 수 없습니다");
+                    .isInstanceOf(ProductGroupInvalidStatusTransitionException.class);
         }
     }
 
@@ -322,35 +262,33 @@ class ProductGroupTest {
             productGroup.markSoldOut(now);
 
             // then
-            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.SOLDOUT);
+            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.SOLD_OUT);
             assertThat(productGroup.isSoldOut()).isTrue();
             assertThat(productGroup.updatedAt()).isEqualTo(now);
         }
 
         @Test
-        @DisplayName("DRAFT 상태에서 품절 처리하면 예외가 발생한다")
-        void markSoldOutFromDraftThrowsException() {
+        @DisplayName("SOLD_OUT 상태에서 품절 처리하면 예외가 발생한다")
+        void markSoldOutFromSoldOutThrowsException() {
             // given
-            var productGroup = ProductGroupFixtures.draftProductGroup();
+            var productGroup = ProductGroupFixtures.soldOutProductGroup();
             Instant now = CommonVoFixtures.now();
 
             // when & then
             assertThatThrownBy(() -> productGroup.markSoldOut(now))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("품절 처리할 수 없습니다");
+                    .isInstanceOf(ProductGroupInvalidStatusTransitionException.class);
         }
 
         @Test
-        @DisplayName("INACTIVE 상태에서 품절 처리하면 예외가 발생한다")
-        void markSoldOutFromInactiveThrowsException() {
+        @DisplayName("DELETED 상태에서 품절 처리하면 예외가 발생한다")
+        void markSoldOutFromDeletedThrowsException() {
             // given
-            var productGroup = ProductGroupFixtures.inactiveProductGroup();
+            var productGroup = ProductGroupFixtures.deletedProductGroup();
             Instant now = CommonVoFixtures.now();
 
             // when & then
             assertThatThrownBy(() -> productGroup.markSoldOut(now))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("품절 처리할 수 없습니다");
+                    .isInstanceOf(ProductGroupInvalidStatusTransitionException.class);
         }
     }
 
@@ -375,35 +313,7 @@ class ProductGroupTest {
         }
 
         @Test
-        @DisplayName("DRAFT 상태에서 삭제할 수 있다")
-        void deleteFromDraft() {
-            // given
-            var productGroup = ProductGroupFixtures.draftProductGroup();
-            Instant now = CommonVoFixtures.now();
-
-            // when
-            productGroup.delete(now);
-
-            // then
-            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.DELETED);
-        }
-
-        @Test
-        @DisplayName("INACTIVE 상태에서 삭제할 수 있다")
-        void deleteFromInactive() {
-            // given
-            var productGroup = ProductGroupFixtures.inactiveProductGroup();
-            Instant now = CommonVoFixtures.now();
-
-            // when
-            productGroup.delete(now);
-
-            // then
-            assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.DELETED);
-        }
-
-        @Test
-        @DisplayName("SOLDOUT 상태에서 삭제할 수 있다")
+        @DisplayName("SOLD_OUT 상태에서 삭제할 수 있다")
         void deleteFromSoldOut() {
             // given
             var productGroup = ProductGroupFixtures.soldOutProductGroup();
@@ -425,35 +335,33 @@ class ProductGroupTest {
 
             // when & then
             assertThatThrownBy(() -> productGroup.delete(now))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("이미 삭제된 상품그룹입니다");
+                    .isInstanceOf(ProductGroupInvalidStatusTransitionException.class);
         }
     }
 
     @Nested
-    @DisplayName("updateBasicInfo() - 기본 정보 수정")
-    class UpdateBasicInfoTest {
+    @DisplayName("update() - 기본 정보 수정")
+    class UpdateTest {
 
         @Test
         @DisplayName("기본 정보를 수정한다")
         void updateBasicInfo() {
             // given
             var productGroup = ProductGroupFixtures.activeProductGroup();
-            ProductGroupName newName = ProductGroupName.of("수정된 상품그룹명");
-            BrandId newBrandId = BrandId.of(99L);
-            CategoryId newCategoryId = CategoryId.of(99L);
-            ShippingPolicyId newShippingPolicyId = ShippingPolicyId.of(99L);
-            RefundPolicyId newRefundPolicyId = RefundPolicyId.of(99L);
             Instant now = CommonVoFixtures.now();
+            var updateData =
+                    ProductGroupUpdateData.of(
+                            ProductGroupId.of(1L),
+                            ProductGroupName.of("수정된 상품그룹명"),
+                            BrandId.of(99L),
+                            CategoryId.of(99L),
+                            ShippingPolicyId.of(99L),
+                            RefundPolicyId.of(99L),
+                            OptionType.COMBINATION,
+                            now);
 
             // when
-            productGroup.updateBasicInfo(
-                    newName,
-                    newBrandId,
-                    newCategoryId,
-                    newShippingPolicyId,
-                    newRefundPolicyId,
-                    now);
+            productGroup.update(updateData);
 
             // then
             assertThat(productGroup.productGroupNameValue()).isEqualTo("수정된 상품그룹명");
@@ -461,6 +369,7 @@ class ProductGroupTest {
             assertThat(productGroup.categoryIdValue()).isEqualTo(99L);
             assertThat(productGroup.shippingPolicyIdValue()).isEqualTo(99L);
             assertThat(productGroup.refundPolicyIdValue()).isEqualTo(99L);
+            assertThat(productGroup.optionType()).isEqualTo(OptionType.COMBINATION);
             assertThat(productGroup.updatedAt()).isEqualTo(now);
         }
     }
@@ -487,60 +396,6 @@ class ProductGroupTest {
             assertThat(productGroup.currentPriceValue()).isEqualTo(90000);
             assertThat(productGroup.salePriceValue()).isEqualTo(80000);
             assertThat(productGroup.updatedAt()).isEqualTo(now);
-        }
-    }
-
-    @Nested
-    @DisplayName("replaceImages() - 이미지 교체")
-    class ReplaceImagesTest {
-
-        @Test
-        @DisplayName("이미지를 교체한다")
-        void replaceImages() {
-            // given
-            var productGroup = ProductGroupFixtures.activeProductGroup();
-            var newImage =
-                    ProductGroupImage.forNew(
-                            ImageType.THUMBNAIL, ImageUrl.of("https://new-image.com/img.png"), 1);
-            Instant now = CommonVoFixtures.now();
-
-            // when
-            productGroup.replaceImages(List.of(newImage), now);
-
-            // then
-            assertThat(productGroup.images()).hasSize(1);
-            assertThat(productGroup.images().get(0).imageUrlValue())
-                    .isEqualTo("https://new-image.com/img.png");
-            assertThat(productGroup.updatedAt()).isEqualTo(now);
-        }
-
-        @Test
-        @DisplayName("null로 교체하면 이미지가 비워진다")
-        void replaceWithNullClearsImages() {
-            // given
-            var productGroup = ProductGroupFixtures.activeProductGroup();
-            Instant now = CommonVoFixtures.now();
-
-            // when
-            productGroup.replaceImages(null, now);
-
-            // then
-            assertThat(productGroup.images()).isEmpty();
-            assertThat(productGroup.updatedAt()).isEqualTo(now);
-        }
-
-        @Test
-        @DisplayName("빈 목록으로 교체하면 이미지가 비워진다")
-        void replaceWithEmptyListClearsImages() {
-            // given
-            var productGroup = ProductGroupFixtures.activeProductGroup();
-            Instant now = CommonVoFixtures.now();
-
-            // when
-            productGroup.replaceImages(List.of(), now);
-
-            // then
-            assertThat(productGroup.images()).isEmpty();
         }
     }
 
@@ -620,7 +475,6 @@ class ProductGroupTest {
             // given
             var productGroup = ProductGroupFixtures.activeProductGroup();
             Instant now = CommonVoFixtures.now();
-            // salePrice를 currentPrice보다 크게 설정 -> 세일 아님
             productGroup.updatePrices(
                     CommonVoFixtures.money(50000),
                     CommonVoFixtures.money(45000),
@@ -661,63 +515,13 @@ class ProductGroupTest {
         }
 
         @Test
-        @DisplayName("isSoldOut() - SOLDOUT 상태이면 true를 반환한다")
-        void isSoldOutReturnsTrue() {
+        @DisplayName("totalOptionValueCount() - 옵션 값 수를 반환한다")
+        void totalOptionValueCount() {
             // given
-            var productGroup = ProductGroupFixtures.soldOutProductGroup();
+            var productGroup = ProductGroupFixtures.newProductGroup();
 
             // when & then
-            assertThat(productGroup.isSoldOut()).isTrue();
-        }
-
-        @Test
-        @DisplayName("isSoldOut() - SOLDOUT 상태가 아니면 false를 반환한다")
-        void isSoldOutReturnsFalse() {
-            // given
-            var productGroup = ProductGroupFixtures.activeProductGroup();
-
-            // when & then
-            assertThat(productGroup.isSoldOut()).isFalse();
-        }
-
-        @Test
-        @DisplayName("isDisplayed() - ACTIVE 상태이면 true를 반환한다")
-        void isDisplayedReturnsTrue() {
-            // given
-            var productGroup = ProductGroupFixtures.activeProductGroup();
-
-            // when & then
-            assertThat(productGroup.isDisplayed()).isTrue();
-        }
-
-        @Test
-        @DisplayName("isDisplayed() - ACTIVE 상태가 아니면 false를 반환한다")
-        void isDisplayedReturnsFalse() {
-            // given
-            var productGroup = ProductGroupFixtures.inactiveProductGroup();
-
-            // when & then
-            assertThat(productGroup.isDisplayed()).isFalse();
-        }
-
-        @Test
-        @DisplayName("isDeleted() - DELETED 상태이면 true를 반환한다")
-        void isDeletedReturnsTrue() {
-            // given
-            var productGroup = ProductGroupFixtures.deletedProductGroup();
-
-            // when & then
-            assertThat(productGroup.isDeleted()).isTrue();
-        }
-
-        @Test
-        @DisplayName("isDeleted() - DELETED 상태가 아니면 false를 반환한다")
-        void isDeletedReturnsFalse() {
-            // given
-            var productGroup = ProductGroupFixtures.activeProductGroup();
-
-            // when & then
-            assertThat(productGroup.isDeleted()).isFalse();
+            assertThat(productGroup.totalOptionValueCount()).isZero();
         }
     }
 
@@ -783,24 +587,6 @@ class ProductGroupTest {
             assertThat(productGroup.regularPrice()).isNotNull();
             assertThat(productGroup.regularPriceValue())
                     .isEqualTo(ProductGroupFixtures.DEFAULT_REGULAR_PRICE);
-        }
-
-        @Test
-        @DisplayName("currentPrice()는 Money를 반환한다")
-        void returnsCurrentPrice() {
-            var productGroup = ProductGroupFixtures.activeProductGroup();
-            assertThat(productGroup.currentPrice()).isNotNull();
-            assertThat(productGroup.currentPriceValue())
-                    .isEqualTo(ProductGroupFixtures.DEFAULT_CURRENT_PRICE);
-        }
-
-        @Test
-        @DisplayName("salePrice()는 Money를 반환한다")
-        void returnsSalePrice() {
-            var productGroup = ProductGroupFixtures.activeProductGroup();
-            assertThat(productGroup.salePrice()).isNotNull();
-            assertThat(productGroup.salePriceValue())
-                    .isEqualTo(ProductGroupFixtures.DEFAULT_SALE_PRICE);
         }
 
         @Test

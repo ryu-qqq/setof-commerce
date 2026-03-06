@@ -1,9 +1,12 @@
 package com.ryuqq.setof.storage.legacy.banner.entity;
 
+import com.ryuqq.setof.storage.legacy.common.Yn;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -25,6 +28,7 @@ import java.time.LocalDateTime;
 public class LegacyBannerEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "banner_id")
     private Long id;
 
@@ -56,6 +60,58 @@ public class LegacyBannerEntity {
     private LocalDateTime updateDate;
 
     protected LegacyBannerEntity() {}
+
+    /**
+     * 신규 배너 엔티티 생성.
+     *
+     * @return LegacyBannerEntity
+     */
+    public static LegacyBannerEntity create(
+            String title,
+            BannerType bannerType,
+            Yn displayYn,
+            LocalDateTime displayStartDate,
+            LocalDateTime displayEndDate,
+            LocalDateTime insertDate,
+            LocalDateTime updateDate) {
+        LegacyBannerEntity entity = new LegacyBannerEntity();
+        entity.title = title;
+        entity.bannerType = bannerType;
+        entity.displayYn = displayYn;
+        entity.deleteYn = Yn.N;
+        entity.displayStartDate = displayStartDate;
+        entity.displayEndDate = displayEndDate;
+        entity.insertDate = insertDate;
+        entity.updateDate = updateDate;
+        return entity;
+    }
+
+    /** 배너 정보 수정. */
+    public void updateDetails(
+            String title,
+            BannerType bannerType,
+            Yn displayYn,
+            LocalDateTime displayStartDate,
+            LocalDateTime displayEndDate,
+            LocalDateTime updateDate) {
+        this.title = title;
+        this.bannerType = bannerType;
+        this.displayYn = displayYn;
+        this.displayStartDate = displayStartDate;
+        this.displayEndDate = displayEndDate;
+        this.updateDate = updateDate;
+    }
+
+    /**
+     * 배너 삭제 마킹.
+     *
+     * @param updateDate 삭제 시각
+     */
+    public void markDeleted(LocalDateTime updateDate) {
+        this.displayYn = Yn.N;
+        this.deleteYn = Yn.Y;
+        this.updateDate = updateDate;
+    }
 
     public Long getId() {
         return id;
@@ -101,11 +157,5 @@ public class LegacyBannerEntity {
         PRODUCT_DETAIL_DESCRIPTION,
         RECOMMEND,
         LOGIN
-    }
-
-    /** Yn - Y/N 구분 Enum. */
-    public enum Yn {
-        Y,
-        N
     }
 }

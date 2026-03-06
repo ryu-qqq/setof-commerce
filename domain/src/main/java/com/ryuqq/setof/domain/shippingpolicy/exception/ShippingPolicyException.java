@@ -16,16 +16,4 @@ public class ShippingPolicyException extends DomainException {
     public ShippingPolicyException(ShippingPolicyErrorCode errorCode, Throwable cause) {
         super(errorCode, cause);
     }
-
-    public static ShippingPolicyException policyNotFound() {
-        return new ShippingPolicyException(ShippingPolicyErrorCode.SHIPPING_POLICY_NOT_FOUND);
-    }
-
-    public static ShippingPolicyException policyInactive() {
-        return new ShippingPolicyException(ShippingPolicyErrorCode.SHIPPING_POLICY_INACTIVE);
-    }
-
-    public static ShippingPolicyException invalidFreeThreshold() {
-        return new ShippingPolicyException(ShippingPolicyErrorCode.INVALID_FREE_THRESHOLD);
-    }
 }

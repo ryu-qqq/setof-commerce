@@ -28,9 +28,9 @@ class ProductStatusTest {
         }
 
         @Test
-        @DisplayName("SOLDOUT 상태에서는 활성화할 수 있다")
+        @DisplayName("SOLD_OUT 상태에서는 활성화할 수 있다")
         void soldOutCanActivate() {
-            assertThat(ProductStatus.SOLDOUT.canActivate()).isTrue();
+            assertThat(ProductStatus.SOLD_OUT.canActivate()).isTrue();
         }
 
         @Test
@@ -57,9 +57,9 @@ class ProductStatusTest {
         }
 
         @Test
-        @DisplayName("SOLDOUT 상태에서는 비활성화할 수 없다")
+        @DisplayName("SOLD_OUT 상태에서는 비활성화할 수 없다")
         void soldOutCannotDeactivate() {
-            assertThat(ProductStatus.SOLDOUT.canDeactivate()).isFalse();
+            assertThat(ProductStatus.SOLD_OUT.canDeactivate()).isFalse();
         }
 
         @Test
@@ -86,9 +86,9 @@ class ProductStatusTest {
         }
 
         @Test
-        @DisplayName("SOLDOUT 상태에서는 품절 처리할 수 없다")
+        @DisplayName("SOLD_OUT 상태에서는 품절 처리할 수 없다")
         void soldOutCannotMarkSoldOut() {
-            assertThat(ProductStatus.SOLDOUT.canMarkSoldOut()).isFalse();
+            assertThat(ProductStatus.SOLD_OUT.canMarkSoldOut()).isFalse();
         }
 
         @Test
@@ -115,9 +115,9 @@ class ProductStatusTest {
         }
 
         @Test
-        @DisplayName("SOLDOUT 상태에서는 삭제할 수 있다")
+        @DisplayName("SOLD_OUT 상태에서는 삭제할 수 있다")
         void soldOutCanDelete() {
-            assertThat(ProductStatus.SOLDOUT.canDelete()).isTrue();
+            assertThat(ProductStatus.SOLD_OUT.canDelete()).isTrue();
         }
 
         @Test
@@ -136,14 +136,14 @@ class ProductStatusTest {
         void isActiveOnlyForActive() {
             assertThat(ProductStatus.ACTIVE.isActive()).isTrue();
             assertThat(ProductStatus.INACTIVE.isActive()).isFalse();
-            assertThat(ProductStatus.SOLDOUT.isActive()).isFalse();
+            assertThat(ProductStatus.SOLD_OUT.isActive()).isFalse();
             assertThat(ProductStatus.DELETED.isActive()).isFalse();
         }
 
         @Test
-        @DisplayName("isSoldOut()은 SOLDOUT 상태에서만 true를 반환한다")
+        @DisplayName("isSoldOut()은 SOLD_OUT 상태에서만 true를 반환한다")
         void isSoldOutOnlyForSoldOut() {
-            assertThat(ProductStatus.SOLDOUT.isSoldOut()).isTrue();
+            assertThat(ProductStatus.SOLD_OUT.isSoldOut()).isTrue();
             assertThat(ProductStatus.ACTIVE.isSoldOut()).isFalse();
             assertThat(ProductStatus.INACTIVE.isSoldOut()).isFalse();
             assertThat(ProductStatus.DELETED.isSoldOut()).isFalse();
@@ -155,7 +155,7 @@ class ProductStatusTest {
             assertThat(ProductStatus.DELETED.isDeleted()).isTrue();
             assertThat(ProductStatus.ACTIVE.isDeleted()).isFalse();
             assertThat(ProductStatus.INACTIVE.isDeleted()).isFalse();
-            assertThat(ProductStatus.SOLDOUT.isDeleted()).isFalse();
+            assertThat(ProductStatus.SOLD_OUT.isDeleted()).isFalse();
         }
     }
 
@@ -186,13 +186,13 @@ class ProductStatusTest {
         }
 
         @Test
-        @DisplayName("soldOutYn=Y이면 SOLDOUT을 반환한다")
+        @DisplayName("soldOutYn=Y이면 SOLD_OUT을 반환한다")
         void soldOutWhenSoldOutYnIsY() {
             // when
             ProductStatus status = ProductStatus.fromLegacyFlags("N", "Y", "Y");
 
             // then
-            assertThat(status).isEqualTo(ProductStatus.SOLDOUT);
+            assertThat(status).isEqualTo(ProductStatus.SOLD_OUT);
         }
 
         @Test
@@ -222,7 +222,7 @@ class ProductStatusTest {
             assertThat(ProductStatus.fromLegacyFlags("y", "n", "y"))
                     .isEqualTo(ProductStatus.DELETED);
             assertThat(ProductStatus.fromLegacyFlags("n", "y", "y"))
-                    .isEqualTo(ProductStatus.SOLDOUT);
+                    .isEqualTo(ProductStatus.SOLD_OUT);
             assertThat(ProductStatus.fromLegacyFlags("n", "n", "n"))
                     .isEqualTo(ProductStatus.INACTIVE);
             assertThat(ProductStatus.fromLegacyFlags("n", "n", "y"))
@@ -242,7 +242,7 @@ class ProductStatusTest {
                     .containsExactly(
                             ProductStatus.ACTIVE,
                             ProductStatus.INACTIVE,
-                            ProductStatus.SOLDOUT,
+                            ProductStatus.SOLD_OUT,
                             ProductStatus.DELETED);
         }
     }

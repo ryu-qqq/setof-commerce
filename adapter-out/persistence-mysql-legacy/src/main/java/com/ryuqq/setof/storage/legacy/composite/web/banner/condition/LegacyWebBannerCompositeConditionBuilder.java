@@ -5,7 +5,7 @@ import static com.ryuqq.setof.storage.legacy.banner.entity.QLegacyBannerItemEnti
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.ryuqq.setof.storage.legacy.banner.entity.LegacyBannerEntity;
-import com.ryuqq.setof.storage.legacy.banner.entity.LegacyBannerItemEntity;
+import com.ryuqq.setof.storage.legacy.common.Yn;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +52,7 @@ public class LegacyWebBannerCompositeConditionBuilder {
      * @return BooleanExpression
      */
     public BooleanExpression bannerNotDeleted() {
-        return legacyBannerEntity.deleteYn.eq(LegacyBannerEntity.Yn.N);
+        return legacyBannerEntity.deleteYn.eq(Yn.N);
     }
 
     /**
@@ -61,7 +61,7 @@ public class LegacyWebBannerCompositeConditionBuilder {
      * @return BooleanExpression
      */
     public BooleanExpression bannerDisplayed() {
-        return legacyBannerEntity.displayYn.eq(LegacyBannerEntity.Yn.Y);
+        return legacyBannerEntity.displayYn.eq(Yn.Y);
     }
 
     /**
@@ -85,7 +85,7 @@ public class LegacyWebBannerCompositeConditionBuilder {
      * @return BooleanExpression
      */
     public BooleanExpression bannerItemNotDeleted() {
-        return legacyBannerItemEntity.deleteYn.eq(LegacyBannerItemEntity.Yn.N);
+        return legacyBannerItemEntity.deleteYn.eq(Yn.N);
     }
 
     /**
@@ -94,7 +94,7 @@ public class LegacyWebBannerCompositeConditionBuilder {
      * @return BooleanExpression
      */
     public BooleanExpression bannerItemDisplayed() {
-        return legacyBannerItemEntity.displayYn.eq(LegacyBannerItemEntity.Yn.Y);
+        return legacyBannerItemEntity.displayYn.eq(Yn.Y);
     }
 
     /**

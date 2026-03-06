@@ -234,7 +234,7 @@ class CategoryQueryDslRepositoryTest extends RepositoryTestBase {
             QueryContext<CategorySortKey> queryContext =
                     QueryContext.defaultOf(CategorySortKey.CREATED_AT);
             CategorySearchCriteria criteria =
-                    CategorySearchCriteria.of(null, null, null, null, "카테고리", queryContext);
+                    CategorySearchCriteria.of(null, null, null, null, null, "카테고리", queryContext);
 
             // when
             List<CategoryJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -255,7 +255,7 @@ class CategoryQueryDslRepositoryTest extends RepositoryTestBase {
                     QueryContext.defaultOf(CategorySortKey.CREATED_AT);
             CategorySearchCriteria criteria =
                     CategorySearchCriteria.of(
-                            null, null, TargetGroup.FEMALE, null, null, queryContext);
+                            null, null, TargetGroup.FEMALE, null, null, null, queryContext);
 
             // when
             List<CategoryJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -276,7 +276,7 @@ class CategoryQueryDslRepositoryTest extends RepositoryTestBase {
                     QueryContext.defaultOf(CategorySortKey.CREATED_AT);
             CategorySearchCriteria criteria =
                     CategorySearchCriteria.of(
-                            null, null, null, CategoryType.SHOSE, null, queryContext);
+                            null, null, null, CategoryType.SHOSE, null, null, queryContext);
 
             // when
             List<CategoryJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -301,7 +301,7 @@ class CategoryQueryDslRepositoryTest extends RepositoryTestBase {
                                 PageRequest.defaultPage(),
                                 false);
                 CategorySearchCriteria criteria =
-                        CategorySearchCriteria.of(null, true, null, null, null, queryContext);
+                        CategorySearchCriteria.of(null, true, null, null, null, null, queryContext);
 
                 // when
                 List<CategoryJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -329,7 +329,7 @@ class CategoryQueryDslRepositoryTest extends RepositoryTestBase {
                                 PageRequest.of(0, 2),
                                 false);
                 CategorySearchCriteria criteria =
-                        CategorySearchCriteria.of(null, true, null, null, null, queryContext);
+                        CategorySearchCriteria.of(null, true, null, null, null, null, queryContext);
 
                 // when
                 List<CategoryJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -349,7 +349,7 @@ class CategoryQueryDslRepositoryTest extends RepositoryTestBase {
                                 PageRequest.of(1, 2),
                                 false);
                 CategorySearchCriteria criteria =
-                        CategorySearchCriteria.of(null, true, null, null, null, queryContext);
+                        CategorySearchCriteria.of(null, true, null, null, null, null, queryContext);
 
                 // when
                 List<CategoryJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -394,7 +394,7 @@ class CategoryQueryDslRepositoryTest extends RepositoryTestBase {
             QueryContext<CategorySortKey> queryContext =
                     QueryContext.defaultOf(CategorySortKey.CREATED_AT);
             CategorySearchCriteria criteria =
-                    CategorySearchCriteria.of(null, null, null, null, "카테고리", queryContext);
+                    CategorySearchCriteria.of(null, null, null, null, null, "카테고리", queryContext);
 
             // when
             long count = queryDslRepository.countByCriteria(criteria);
@@ -410,7 +410,7 @@ class CategoryQueryDslRepositoryTest extends RepositoryTestBase {
             QueryContext<CategorySortKey> queryContext =
                     QueryContext.defaultOf(CategorySortKey.CREATED_AT);
             CategorySearchCriteria criteria =
-                    CategorySearchCriteria.of(null, null, null, null, "존재하지않음", queryContext);
+                    CategorySearchCriteria.of(null, null, null, null, null, "존재하지않음", queryContext);
 
             // when
             long count = queryDslRepository.countByCriteria(criteria);
@@ -525,7 +525,13 @@ class CategoryQueryDslRepositoryTest extends RepositoryTestBase {
                     QueryContext.defaultOf(CategorySortKey.CREATED_AT);
             CategorySearchCriteria criteria =
                     CategorySearchCriteria.of(
-                            CategoryId.of(parent.getId()), null, null, null, null, queryContext);
+                            CategoryId.of(parent.getId()),
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            queryContext);
 
             // when
             List<CategoryJpaEntity> result = queryDslRepository.findByCriteria(criteria);

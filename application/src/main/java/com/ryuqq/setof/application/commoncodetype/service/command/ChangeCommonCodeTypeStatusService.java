@@ -54,7 +54,7 @@ public class ChangeCommonCodeTypeStatusService implements ChangeCommonCodeTypeSt
         // 비활성화 시 활성화된 하위 공통 코드 존재 여부 검증
         if (!command.active()) {
             for (CommonCodeType cct : commonCodeTypes) {
-                validator.validateNoActiveCommonCodes(cct.id().value());
+                validator.validateNoActiveCommonCodes(cct.idValue());
             }
         }
 

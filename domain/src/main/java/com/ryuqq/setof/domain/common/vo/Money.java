@@ -55,4 +55,13 @@ public record Money(int value) {
     public boolean isLessThanOrEqual(Money other) {
         return this.value <= other.value;
     }
+
+    /** regularPrice 대비 currentPrice의 할인율 계산 (정수 퍼센트). */
+    public static int discountRate(Money regularPrice, Money currentPrice) {
+        if (regularPrice.isZero()) {
+            return 0;
+        }
+        int diff = regularPrice.value - currentPrice.value;
+        return (int) ((diff * 100L) / regularPrice.value);
+    }
 }

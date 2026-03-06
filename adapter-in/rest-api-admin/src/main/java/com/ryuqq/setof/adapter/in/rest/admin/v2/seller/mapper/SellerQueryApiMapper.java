@@ -7,7 +7,6 @@ import com.ryuqq.setof.adapter.in.rest.admin.v2.seller.dto.response.SellerApiRes
 import com.ryuqq.setof.adapter.in.rest.admin.v2.seller.dto.response.SellerDetailApiResponse;
 import com.ryuqq.setof.application.common.dto.query.CommonSearchParams;
 import com.ryuqq.setof.application.seller.dto.composite.SellerCompositeResult;
-import com.ryuqq.setof.application.seller.dto.composite.SellerFullCompositeResult;
 import com.ryuqq.setof.application.seller.dto.query.SellerSearchParams;
 import com.ryuqq.setof.application.seller.dto.response.SellerPageResult;
 import com.ryuqq.setof.application.seller.dto.response.SellerResult;
@@ -21,8 +20,6 @@ import org.springframework.stereotype.Component;
  *
  * <p>API-MAP-001: Mapper는 @Component로 등록.
  *
- * <p>API-MAP-002: 양방향 변환 지원.
- *
  * <p>API-MAP-003: Application Result -> API Response 변환.
  *
  * <p>API-MAP-004: Slice/Page 변환 지원.
@@ -30,6 +27,8 @@ import org.springframework.stereotype.Component;
  * <p>API-MAP-005: 순수 변환 로직만.
  *
  * <p>API-DTO-005: 날짜 String 변환 필수.
+ *
+ * <p>CQRS 분리: Query 전용 Mapper (CommandApiMapper와 분리).
  *
  * @author ryu-qqq
  * @since 1.0.0
@@ -39,37 +38,27 @@ public class SellerQueryApiMapper {
 
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_SIZE = 20;
-    private static final String DEFAULT_SORT_KEY = "createdAt";
-    private static final String DEFAULT_SORT_DIRECTION = "DESC";
 
     /**
      * SearchSellersApiRequest -> SellerSearchParams 변환.
      *
-     * <p>API-CTR-007: Controller 비즈니스 로직 금지 → Mapper에서 변환 처리.
-     *
-     * <p>API-MAP-006: 기본값 처리 담당.
-     *
-     * @param request 검색 요청 DTO
+     * @param request 조회 요청 DTO
      * @return SellerSearchParams 객체
      */
     public SellerSearchParams toSearchParams(SearchSellersApiRequest request) {
         int page = request.page() != null ? request.page() : DEFAULT_PAGE;
         int size = request.size() != null ? request.size() : DEFAULT_SIZE;
-        String sortKey = request.sortKey() != null ? request.sortKey() : DEFAULT_SORT_KEY;
-        String sortDirection =
-                request.sortDirection() != null ? request.sortDirection() : DEFAULT_SORT_DIRECTION;
 
         CommonSearchParams searchParams =
-                CommonSearchParams.of(false, null, null, sortKey, sortDirection, page, size);
+                CommonSearchParams.of(
+                        null, null, null, request.sortKey(), request.sortDirection(), page, size);
 
         return SellerSearchParams.of(
                 request.active(), request.searchField(), request.searchWord(), searchParams);
     }
 
     /**
-     * SellerResult -> SellerApiResponse 변환.
-     *
-     * <p>API-DTO-005: Response DTO는 String 타입으로 날짜/시간 표현.
+     * 단일 SellerResult -> SellerApiResponse 변환.
      *
      * @param result SellerResult
      * @return SellerApiResponse
@@ -87,25 +76,14 @@ public class SellerQueryApiMapper {
     }
 
     /**
-     * SellerResult 목록 -> SellerApiResponse 목록 변환.
-     *
-     * @param results SellerResult 목록
-     * @return SellerApiResponse 목록
-     */
-    public List<SellerApiResponse> toResponses(List<SellerResult> results) {
-        return results.stream().map(this::toResponse).toList();
-    }
-
-    /**
      * SellerPageResult -> PageApiResponse 변환.
-     *
-     * <p>API-CTR-011: List 직접 반환 금지 -> PageApiResponse 페이징 필수.
      *
      * @param pageResult Application 페이지 결과 DTO
      * @return API 페이지 응답 DTO
      */
     public PageApiResponse<SellerApiResponse> toPageResponse(SellerPageResult pageResult) {
-        List<SellerApiResponse> responses = toResponses(pageResult.content());
+        List<SellerApiResponse> responses =
+                pageResult.results().stream().map(this::toResponse).toList();
         return PageApiResponse.of(
                 responses,
                 pageResult.pageMeta().page(),
@@ -114,124 +92,57 @@ public class SellerQueryApiMapper {
     }
 
     /**
-     * SellerFullCompositeResult -> SellerDetailApiResponse 변환.
+     * SellerCompositeResult -> SellerDetailApiResponse 변환.
      *
-     * <p>상세 조회 결과를 API 응답으로 변환합니다.
-     *
-     * @param result SellerFullCompositeResult
+     * @param result SellerCompositeResult
      * @return SellerDetailApiResponse
      */
-    public SellerDetailApiResponse toDetailResponse(SellerFullCompositeResult result) {
-        SellerCompositeResult composite = result.sellerComposite();
-
-        SellerDetailApiResponse.SellerInfo sellerInfo = toSellerInfo(composite.seller());
-        SellerDetailApiResponse.AddressInfo addressInfo = toAddressInfo(composite.address());
-        SellerDetailApiResponse.BusinessInfo businessInfo =
-                toBusinessInfo(composite.businessInfo());
-        SellerDetailApiResponse.CsInfo csInfo = toCsInfo(composite.csInfo());
-        SellerDetailApiResponse.ContractInfo contractInfo = toContractInfo(result.contractInfo());
-        SellerDetailApiResponse.SettlementInfo settlementInfo =
-                toSettlementInfo(result.settlementInfo());
-
-        return new SellerDetailApiResponse(
-                sellerInfo, addressInfo, businessInfo, csInfo, contractInfo, settlementInfo);
-    }
-
-    private SellerDetailApiResponse.SellerInfo toSellerInfo(
-            SellerCompositeResult.SellerInfo seller) {
-        return new SellerDetailApiResponse.SellerInfo(
-                seller.id(),
-                seller.sellerName(),
-                seller.displayName(),
-                seller.logoUrl(),
-                seller.description(),
-                seller.active(),
-                DateTimeFormatUtils.formatIso8601(seller.createdAt()),
-                DateTimeFormatUtils.formatIso8601(seller.updatedAt()));
-    }
-
-    private SellerDetailApiResponse.AddressInfo toAddressInfo(
-            SellerCompositeResult.AddressInfo address) {
-        if (address == null) {
-            return null;
+    public SellerDetailApiResponse toDetailResponse(SellerCompositeResult result) {
+        SellerDetailApiResponse.SellerInfo sellerInfo = null;
+        if (result.seller() != null) {
+            SellerCompositeResult.SellerInfo s = result.seller();
+            sellerInfo =
+                    new SellerDetailApiResponse.SellerInfo(
+                            s.id(),
+                            s.sellerName(),
+                            s.displayName(),
+                            s.logoUrl(),
+                            s.description(),
+                            s.active(),
+                            DateTimeFormatUtils.formatIso8601(s.createdAt()),
+                            DateTimeFormatUtils.formatIso8601(s.updatedAt()));
         }
-        return new SellerDetailApiResponse.AddressInfo(
-                address.id(),
-                address.addressType(),
-                address.addressName(),
-                address.zipcode(),
-                address.address(),
-                address.addressDetail(),
-                address.contactName(),
-                address.contactPhone(),
-                address.defaultAddress());
-    }
 
-    private SellerDetailApiResponse.BusinessInfo toBusinessInfo(
-            SellerCompositeResult.BusinessInfo business) {
-        if (business == null) {
-            return null;
+        SellerDetailApiResponse.BusinessInfo businessInfo = null;
+        if (result.businessInfo() != null) {
+            SellerCompositeResult.BusinessInfo b = result.businessInfo();
+            businessInfo =
+                    new SellerDetailApiResponse.BusinessInfo(
+                            b.id(),
+                            b.registrationNumber(),
+                            b.companyName(),
+                            b.representative(),
+                            b.saleReportNumber(),
+                            b.businessZipcode(),
+                            b.businessAddress(),
+                            b.businessAddressDetail());
         }
-        return new SellerDetailApiResponse.BusinessInfo(
-                business.id(),
-                business.registrationNumber(),
-                business.companyName(),
-                business.representative(),
-                business.saleReportNumber(),
-                business.businessZipcode(),
-                business.businessAddress(),
-                business.businessAddressDetail());
-    }
 
-    private SellerDetailApiResponse.CsInfo toCsInfo(SellerCompositeResult.CsInfo cs) {
-        if (cs == null) {
-            return null;
+        SellerDetailApiResponse.CsInfo csInfo = null;
+        if (result.csInfo() != null) {
+            SellerCompositeResult.CsInfo c = result.csInfo();
+            csInfo =
+                    new SellerDetailApiResponse.CsInfo(
+                            c.id(),
+                            c.csPhone(),
+                            c.csMobile(),
+                            c.csEmail(),
+                            c.operatingStartTime(),
+                            c.operatingEndTime(),
+                            c.operatingDays(),
+                            c.kakaoChannelUrl());
         }
-        return new SellerDetailApiResponse.CsInfo(
-                cs.id(),
-                cs.csPhone(),
-                cs.csMobile(),
-                cs.csEmail(),
-                cs.operatingStartTime(),
-                cs.operatingEndTime(),
-                cs.operatingDays(),
-                cs.kakaoChannelUrl());
-    }
 
-    private SellerDetailApiResponse.ContractInfo toContractInfo(
-            SellerFullCompositeResult.ContractInfo contract) {
-        if (contract == null) {
-            return null;
-        }
-        return new SellerDetailApiResponse.ContractInfo(
-                contract.id(),
-                contract.commissionRate() != null ? contract.commissionRate().toString() : null,
-                contract.contractStartDate() != null
-                        ? contract.contractStartDate().toString()
-                        : null,
-                contract.contractEndDate() != null ? contract.contractEndDate().toString() : null,
-                contract.status(),
-                contract.specialTerms(),
-                DateTimeFormatUtils.formatIso8601(contract.createdAt()),
-                DateTimeFormatUtils.formatIso8601(contract.updatedAt()));
-    }
-
-    private SellerDetailApiResponse.SettlementInfo toSettlementInfo(
-            SellerFullCompositeResult.SettlementInfo settlement) {
-        if (settlement == null) {
-            return null;
-        }
-        return new SellerDetailApiResponse.SettlementInfo(
-                settlement.id(),
-                settlement.bankCode(),
-                settlement.bankName(),
-                settlement.accountNumber(),
-                settlement.accountHolderName(),
-                settlement.settlementCycle(),
-                settlement.settlementDay(),
-                settlement.verified(),
-                DateTimeFormatUtils.formatIso8601(settlement.verifiedAt()),
-                DateTimeFormatUtils.formatIso8601(settlement.createdAt()),
-                DateTimeFormatUtils.formatIso8601(settlement.updatedAt()));
+        return new SellerDetailApiResponse(sellerInfo, businessInfo, csInfo);
     }
 }

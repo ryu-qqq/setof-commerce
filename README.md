@@ -22,8 +22,7 @@ setof-commerce/
 │   ├── bootstrap-web-api-admin/  # 신규 Admin 서버
 │   ├── bootstrap-legacy-web-api/ # 레거시 API 서버
 │   ├── bootstrap-legacy-web-api-admin/
-│   ├── bootstrap-batch/          # 배치 서버
-│   └── bootstrap-migration/      # 마이그레이션 서버
+│   └── bootstrap-batch/          # 배치 서버
 └── terraform/                    # 인프라 코드
 ```
 

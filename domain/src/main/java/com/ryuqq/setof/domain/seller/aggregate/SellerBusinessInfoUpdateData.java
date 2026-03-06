@@ -29,4 +29,8 @@ public record SellerBusinessInfoUpdateData(
         return new SellerBusinessInfoUpdateData(
                 registrationNumber, companyName, representative, saleReportNumber, businessAddress);
     }
+
+    public String registrationNumberValue() {
+        return registrationNumber.value();
+    }
 }

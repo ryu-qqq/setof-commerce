@@ -3,22 +3,24 @@ package com.ryuqq.setof.commerce.adapter.out.fileflow.adapter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-import com.ryuqq.fileflow.sdk.api.FileAssetApi;
-import com.ryuqq.fileflow.sdk.api.UploadSessionApi;
-import com.ryuqq.fileflow.sdk.client.FileFlowClient;
+import com.ryuqq.fileflow.sdk.api.AssetApi;
+import com.ryuqq.fileflow.sdk.api.DownloadTaskApi;
+import com.ryuqq.fileflow.sdk.api.SingleUploadSessionApi;
 import com.ryuqq.fileflow.sdk.exception.FileFlowException;
-import com.ryuqq.fileflow.sdk.model.asset.DownloadUrlResponse;
-import com.ryuqq.fileflow.sdk.model.session.InitSingleUploadRequest;
-import com.ryuqq.fileflow.sdk.model.session.InitSingleUploadResponse;
+import com.ryuqq.fileflow.sdk.model.asset.AssetResponse;
+import com.ryuqq.fileflow.sdk.model.common.ApiResponse;
+import com.ryuqq.fileflow.sdk.model.download.CreateDownloadTaskRequest;
+import com.ryuqq.fileflow.sdk.model.download.DownloadTaskResponse;
+import com.ryuqq.fileflow.sdk.model.session.CreateSingleUploadSessionRequest;
+import com.ryuqq.fileflow.sdk.model.session.SingleUploadSessionResponse;
+import com.ryuqq.setof.application.common.port.out.FileStoragePort.ExternalDownloadRequest;
+import com.ryuqq.setof.application.common.port.out.FileStoragePort.ExternalDownloadResponse;
 import com.ryuqq.setof.application.common.port.out.FileStoragePort.PresignedUploadUrlRequest;
 import com.ryuqq.setof.application.common.port.out.FileStoragePort.PresignedUrlResponse;
-import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,21 +32,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * FileflowStorageAdapter 단위 테스트
+ * FileflowStorageAdapter 단위 테스트 (v1.0.2)
  *
- * <p>FileFlow SDK를 사용한 파일 스토리지 Adapter의 비즈니스 로직을 검증합니다.
- *
- * <p>테스트 범위:
- *
- * <ul>
- *   <li>generateUploadUrl - 업로드 프리사인드 URL 발급
- *   <li>generateDownloadUrl - 다운로드 프리사인드 URL 발급
- *   <li>deleteFile - 단일 파일 삭제
- *   <li>deleteFiles - 배치 파일 삭제
- * </ul>
- *
- * @author development-team
- * @since 1.0.0
+ * @author ryu-qqq
+ * @since 1.1.0
  */
 @Tag("unit")
 @Tag("adapter")
@@ -53,41 +44,44 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayName("FileflowStorageAdapter 단위 테스트")
 class FileflowStorageAdapterTest {
 
-    @Mock private FileFlowClient fileFlowClient;
-
-    @Mock private UploadSessionApi uploadSessionApi;
-
-    @Mock private FileAssetApi fileAssetApi;
+    @Mock private SingleUploadSessionApi singleUploadSessionApi;
+    @Mock private AssetApi assetApi;
+    @Mock private DownloadTaskApi downloadTaskApi;
 
     private FileflowStorageAdapter adapter;
 
     @BeforeEach
     void setUp() {
-        adapter = new FileflowStorageAdapter(fileFlowClient);
+        adapter = new FileflowStorageAdapter(singleUploadSessionApi, assetApi, downloadTaskApi);
     }
 
     @Nested
-    @DisplayName("generateUploadUrl - 업로드 URL 발급")
+    @DisplayName("generateUploadUrl - 업로드 세션 생성")
     class GenerateUploadUrlTests {
 
         @Test
-        @DisplayName("성공 - SDK를 통해 업로드 프리사인드 URL 발급")
+        @DisplayName("성공 - SDK를 통해 업로드 세션 생성 및 프리사인드 URL 반환")
         void shouldGenerateUploadUrlSuccessfully() {
             // Given
             PresignedUploadUrlRequest request =
                     PresignedUploadUrlRequest.of(
                             "products/images", "product.jpg", "image/jpeg", 1024L);
 
-            InitSingleUploadResponse sdkResponse =
-                    new InitSingleUploadResponse(
+            SingleUploadSessionResponse session =
+                    new SingleUploadSessionResponse(
                             "session-123",
                             "https://s3.amazonaws.com/bucket/presigned-upload-url",
-                            LocalDateTime.now().plusMinutes(15),
-                            "products/images/abc123-product.jpg");
+                            "products/images/abc123-product.jpg",
+                            "test-bucket",
+                            "PRIVATE",
+                            "product.jpg",
+                            "image/jpeg",
+                            "CREATED",
+                            Instant.now().plusSeconds(900).toString(),
+                            Instant.now().toString());
 
-            given(fileFlowClient.uploadSessions()).willReturn(uploadSessionApi);
-            given(uploadSessionApi.initSingle(any(InitSingleUploadRequest.class)))
-                    .willReturn(sdkResponse);
+            given(singleUploadSessionApi.create(any(CreateSingleUploadSessionRequest.class)))
+                    .willReturn(new ApiResponse<>(session, Instant.now().toString(), "req-1"));
 
             // When
             PresignedUrlResponse result = adapter.generateUploadUrl(request);
@@ -97,7 +91,7 @@ class FileflowStorageAdapterTest {
                     .isEqualTo("https://s3.amazonaws.com/bucket/presigned-upload-url");
             assertThat(result.fileKey()).isEqualTo("products/images/abc123-product.jpg");
             assertThat(result.expiresAt()).isNotNull();
-            verify(uploadSessionApi).initSingle(any(InitSingleUploadRequest.class));
+            verify(singleUploadSessionApi).create(any(CreateSingleUploadSessionRequest.class));
         }
 
         @Test
@@ -108,8 +102,7 @@ class FileflowStorageAdapterTest {
                     PresignedUploadUrlRequest.of(
                             "products/images", "product.jpg", "image/jpeg", 1024L);
 
-            given(fileFlowClient.uploadSessions()).willReturn(uploadSessionApi);
-            given(uploadSessionApi.initSingle(any(InitSingleUploadRequest.class)))
+            given(singleUploadSessionApi.create(any(CreateSingleUploadSessionRequest.class)))
                     .willThrow(new FileFlowException("API Error"));
 
             // When & Then
@@ -120,49 +113,52 @@ class FileflowStorageAdapterTest {
     }
 
     @Nested
-    @DisplayName("generateDownloadUrl - 다운로드 URL 발급")
+    @DisplayName("generateDownloadUrl - 에셋 조회")
     class GenerateDownloadUrlTests {
 
         @Test
-        @DisplayName("성공 - SDK를 통해 다운로드 프리사인드 URL 발급")
+        @DisplayName("성공 - SDK를 통해 에셋 정보 조회 후 s3Key 반환")
         void shouldGenerateDownloadUrlSuccessfully() {
             // Given
-            String fileAssetId = "asset-123";
-            int expirationMinutes = 60;
-            DownloadUrlResponse sdkResponse =
-                    new DownloadUrlResponse(
-                            fileAssetId,
-                            "https://s3.amazonaws.com/bucket/presigned-download-url",
-                            LocalDateTime.now().plusMinutes(expirationMinutes));
+            String assetId = "asset-123";
+            AssetResponse asset =
+                    new AssetResponse(
+                            assetId,
+                            "products/images/abc123.jpg",
+                            "test-bucket",
+                            "PRIVATE",
+                            "product.jpg",
+                            1024L,
+                            "image/jpeg",
+                            "etag-123",
+                            "jpg",
+                            "UPLOAD",
+                            "session-123",
+                            "PRODUCT_IMAGE",
+                            "setof-commerce",
+                            Instant.now().toString());
 
-            given(fileFlowClient.fileAssets()).willReturn(fileAssetApi);
-            given(fileAssetApi.generateDownloadUrl(eq(fileAssetId), any(Duration.class)))
-                    .willReturn(sdkResponse);
+            given(assetApi.get(assetId))
+                    .willReturn(new ApiResponse<>(asset, Instant.now().toString(), "req-1"));
 
             // When
-            String result = adapter.generateDownloadUrl(fileAssetId, expirationMinutes);
+            String result = adapter.generateDownloadUrl(assetId, 60);
 
             // Then
-            assertThat(result).isEqualTo("https://s3.amazonaws.com/bucket/presigned-download-url");
-            verify(fileAssetApi)
-                    .generateDownloadUrl(
-                            eq(fileAssetId), eq(Duration.ofMinutes(expirationMinutes)));
+            assertThat(result).isEqualTo("products/images/abc123.jpg");
+            verify(assetApi).get(assetId);
         }
 
         @Test
         @DisplayName("실패 - FileFlowException 발생 시 RuntimeException 전파")
         void shouldThrowRuntimeExceptionWhenFileFlowExceptionOccurs() {
             // Given
-            String fileAssetId = "asset-123";
-
-            given(fileFlowClient.fileAssets()).willReturn(fileAssetApi);
-            given(fileAssetApi.generateDownloadUrl(anyString(), any(Duration.class)))
-                    .willThrow(new FileFlowException("API Error"));
+            given(assetApi.get("asset-123")).willThrow(new FileFlowException("API Error"));
 
             // When & Then
-            assertThatThrownBy(() -> adapter.generateDownloadUrl(fileAssetId, 60))
+            assertThatThrownBy(() -> adapter.generateDownloadUrl("asset-123", 60))
                     .isInstanceOf(RuntimeException.class)
-                    .hasMessageContaining("Failed to generate download URL");
+                    .hasMessageContaining("Failed to get asset");
         }
     }
 
@@ -174,30 +170,27 @@ class FileflowStorageAdapterTest {
         @DisplayName("성공 - SDK를 통해 파일 삭제")
         void shouldDeleteFileSuccessfully() {
             // Given
-            String fileAssetId = "asset-123";
-
-            given(fileFlowClient.fileAssets()).willReturn(fileAssetApi);
+            String assetId = "asset-123";
 
             // When
-            adapter.deleteFile(fileAssetId);
+            adapter.deleteFile(assetId);
 
             // Then
-            verify(fileAssetApi).delete(fileAssetId);
+            verify(assetApi).delete(assetId, "setof-commerce");
         }
 
         @Test
         @DisplayName("실패 - FileFlowException 발생 시 RuntimeException 전파")
         void shouldThrowRuntimeExceptionWhenFileFlowExceptionOccurs() {
             // Given
-            String fileAssetId = "asset-123";
+            String assetId = "asset-123";
 
-            given(fileFlowClient.fileAssets()).willReturn(fileAssetApi);
             org.mockito.Mockito.doThrow(new FileFlowException("API Error"))
-                    .when(fileAssetApi)
-                    .delete(fileAssetId);
+                    .when(assetApi)
+                    .delete(assetId, "setof-commerce");
 
             // When & Then
-            assertThatThrownBy(() -> adapter.deleteFile(fileAssetId))
+            assertThatThrownBy(() -> adapter.deleteFile(assetId))
                     .isInstanceOf(RuntimeException.class)
                     .hasMessageContaining("Failed to delete file");
         }
@@ -208,30 +201,27 @@ class FileflowStorageAdapterTest {
     class DeleteFilesTests {
 
         @Test
-        @DisplayName("성공 - SDK를 통해 여러 파일 삭제")
+        @DisplayName("성공 - 개별 삭제 호출로 여러 파일 삭제")
         void shouldDeleteFilesSuccessfully() {
             // Given
-            List<String> fileAssetIds = List.of("asset-1", "asset-2", "asset-3");
-
-            given(fileFlowClient.fileAssets()).willReturn(fileAssetApi);
+            List<String> assetIds = List.of("asset-1", "asset-2", "asset-3");
 
             // When
-            adapter.deleteFiles(fileAssetIds);
+            adapter.deleteFiles(assetIds);
 
             // Then
-            verify(fileAssetApi).batchDelete(fileAssetIds);
+            verify(assetApi).delete("asset-1", "setof-commerce");
+            verify(assetApi).delete("asset-2", "setof-commerce");
+            verify(assetApi).delete("asset-3", "setof-commerce");
         }
 
         @Test
         @DisplayName("빈 목록 - 삭제 스킵")
         void shouldSkipWhenEmptyList() {
-            // Given
-            List<String> fileAssetIds = List.of();
-
             // When
-            adapter.deleteFiles(fileAssetIds);
+            adapter.deleteFiles(List.of());
 
-            // Then - No interaction with fileFlowClient
+            // Then - No interaction with assetApi
         }
 
         @Test
@@ -240,24 +230,70 @@ class FileflowStorageAdapterTest {
             // When
             adapter.deleteFiles(null);
 
-            // Then - No interaction with fileFlowClient
+            // Then - No interaction with assetApi
+        }
+    }
+
+    @Nested
+    @DisplayName("downloadFromExternalUrl - 외부 URL 다운로드")
+    class DownloadFromExternalUrlTests {
+
+        @Test
+        @DisplayName("성공 - 다운로드 태스크 생성")
+        void shouldDownloadFromExternalUrlSuccessfully() {
+            // Given
+            ExternalDownloadRequest request =
+                    new ExternalDownloadRequest(
+                            "https://external.com/image.jpg", "products", "image.jpg");
+
+            DownloadTaskResponse task =
+                    new DownloadTaskResponse(
+                            "task-123",
+                            "https://external.com/image.jpg",
+                            "products/abc123.jpg",
+                            "test-bucket",
+                            "PRIVATE",
+                            "products",
+                            "setof-commerce",
+                            "COMPLETED",
+                            0,
+                            3,
+                            null,
+                            null,
+                            Instant.now().toString(),
+                            Instant.now().toString(),
+                            Instant.now().toString());
+
+            given(downloadTaskApi.create(any(CreateDownloadTaskRequest.class)))
+                    .willReturn(new ApiResponse<>(task, Instant.now().toString(), "req-1"));
+
+            // When
+            ExternalDownloadResponse result = adapter.downloadFromExternalUrl(request);
+
+            // Then
+            assertThat(result.success()).isTrue();
+            assertThat(result.sourceUrl()).isEqualTo("https://external.com/image.jpg");
+            assertThat(result.newCdnUrl()).isEqualTo("products/abc123.jpg");
+            assertThat(result.fileAssetId()).isEqualTo("task-123");
         }
 
         @Test
-        @DisplayName("실패 - FileFlowException 발생 시 RuntimeException 전파")
-        void shouldThrowRuntimeExceptionWhenFileFlowExceptionOccurs() {
+        @DisplayName("실패 - FileFlowException 발생 시 실패 응답 반환")
+        void shouldReturnFailureWhenFileFlowExceptionOccurs() {
             // Given
-            List<String> fileAssetIds = List.of("asset-1", "asset-2");
+            ExternalDownloadRequest request =
+                    new ExternalDownloadRequest(
+                            "https://external.com/image.jpg", "products", "image.jpg");
 
-            given(fileFlowClient.fileAssets()).willReturn(fileAssetApi);
-            org.mockito.Mockito.doThrow(new FileFlowException("API Error"))
-                    .when(fileAssetApi)
-                    .batchDelete(fileAssetIds);
+            given(downloadTaskApi.create(any(CreateDownloadTaskRequest.class)))
+                    .willThrow(new FileFlowException("API Error"));
 
-            // When & Then
-            assertThatThrownBy(() -> adapter.deleteFiles(fileAssetIds))
-                    .isInstanceOf(RuntimeException.class)
-                    .hasMessageContaining("Failed to delete files");
+            // When
+            ExternalDownloadResponse result = adapter.downloadFromExternalUrl(request);
+
+            // Then
+            assertThat(result.success()).isFalse();
+            assertThat(result.errorMessage()).isEqualTo("API Error");
         }
     }
 }

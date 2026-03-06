@@ -1,6 +1,6 @@
 package com.ryuqq.setof.application.brand.manager;
 
-import com.ryuqq.setof.application.brand.port.out.query.BrandQueryPort;
+import com.ryuqq.setof.application.brand.port.out.BrandQueryPort;
 import com.ryuqq.setof.domain.brand.aggregate.Brand;
 import com.ryuqq.setof.domain.brand.exception.BrandNotFoundException;
 import com.ryuqq.setof.domain.brand.id.BrandId;

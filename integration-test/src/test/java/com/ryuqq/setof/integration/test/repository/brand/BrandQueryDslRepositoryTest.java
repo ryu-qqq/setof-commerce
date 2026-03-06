@@ -251,7 +251,7 @@ class BrandQueryDslRepositoryTest extends RepositoryTestBase {
             // given
             QueryContext<BrandSortKey> queryContext =
                     QueryContext.defaultOf(BrandSortKey.CREATED_AT);
-            BrandSearchCriteria criteria = BrandSearchCriteria.of(null, "다스", queryContext);
+            BrandSearchCriteria criteria = BrandSearchCriteria.of(null, null, "다스", queryContext);
 
             // when
             List<BrandJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -270,7 +270,7 @@ class BrandQueryDslRepositoryTest extends RepositoryTestBase {
 
             QueryContext<BrandSortKey> queryContext =
                     QueryContext.defaultOf(BrandSortKey.CREATED_AT);
-            BrandSearchCriteria criteria = BrandSearchCriteria.of(null, "abc", queryContext);
+            BrandSearchCriteria criteria = BrandSearchCriteria.of(null, null, "abc", queryContext);
 
             // when
             List<BrandJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -294,7 +294,8 @@ class BrandQueryDslRepositoryTest extends RepositoryTestBase {
                                 SortDirection.DESC,
                                 PageRequest.defaultPage(),
                                 false);
-                BrandSearchCriteria criteria = BrandSearchCriteria.of(true, null, queryContext);
+                BrandSearchCriteria criteria =
+                        BrandSearchCriteria.of(true, null, null, queryContext);
 
                 // when
                 List<BrandJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -314,7 +315,8 @@ class BrandQueryDslRepositoryTest extends RepositoryTestBase {
                                 SortDirection.ASC,
                                 PageRequest.defaultPage(),
                                 false);
-                BrandSearchCriteria criteria = BrandSearchCriteria.of(true, null, queryContext);
+                BrandSearchCriteria criteria =
+                        BrandSearchCriteria.of(true, null, null, queryContext);
 
                 // when
                 List<BrandJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -341,7 +343,8 @@ class BrandQueryDslRepositoryTest extends RepositoryTestBase {
                                 SortDirection.ASC,
                                 PageRequest.of(0, 2),
                                 false);
-                BrandSearchCriteria criteria = BrandSearchCriteria.of(true, null, queryContext);
+                BrandSearchCriteria criteria =
+                        BrandSearchCriteria.of(true, null, null, queryContext);
 
                 // when
                 List<BrandJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -360,7 +363,8 @@ class BrandQueryDslRepositoryTest extends RepositoryTestBase {
                                 SortDirection.ASC,
                                 PageRequest.of(1, 2),
                                 false);
-                BrandSearchCriteria criteria = BrandSearchCriteria.of(true, null, queryContext);
+                BrandSearchCriteria criteria =
+                        BrandSearchCriteria.of(true, null, null, queryContext);
 
                 // when
                 List<BrandJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -379,7 +383,8 @@ class BrandQueryDslRepositoryTest extends RepositoryTestBase {
                                 SortDirection.ASC,
                                 PageRequest.of(10, 20),
                                 false);
-                BrandSearchCriteria criteria = BrandSearchCriteria.of(true, null, queryContext);
+                BrandSearchCriteria criteria =
+                        BrandSearchCriteria.of(true, null, null, queryContext);
 
                 // when
                 List<BrandJpaEntity> result = queryDslRepository.findByCriteria(criteria);
@@ -436,7 +441,7 @@ class BrandQueryDslRepositoryTest extends RepositoryTestBase {
             // given
             QueryContext<BrandSortKey> queryContext =
                     QueryContext.defaultOf(BrandSortKey.CREATED_AT);
-            BrandSearchCriteria criteria = BrandSearchCriteria.of(null, "브랜드", queryContext);
+            BrandSearchCriteria criteria = BrandSearchCriteria.of(null, null, "브랜드", queryContext);
 
             // when
             long count = queryDslRepository.countByCriteria(criteria);
@@ -452,7 +457,8 @@ class BrandQueryDslRepositoryTest extends RepositoryTestBase {
             // given
             QueryContext<BrandSortKey> queryContext =
                     QueryContext.defaultOf(BrandSortKey.CREATED_AT);
-            BrandSearchCriteria criteria = BrandSearchCriteria.of(null, "존재하지않는브랜드", queryContext);
+            BrandSearchCriteria criteria =
+                    BrandSearchCriteria.of(null, null, "존재하지않는브랜드", queryContext);
 
             // when
             long count = queryDslRepository.countByCriteria(criteria);

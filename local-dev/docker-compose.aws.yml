@@ -150,22 +150,4 @@ services:
       - batch
       - all
 
-  # ===============================================
-  # Migration
-  # ===============================================
-  migration:
-    build:
-      context: ..
-      dockerfile: bootstrap/bootstrap-migration/Dockerfile
-    container_name: setof-migration
-    environment:
-      <<: *common-env
-      SPRING_PROFILES_ACTIVE: stage
-      SERVER_PORT: 8080
-    ports:
-      - "48085:8080"
-    <<: *common-settings
-    profiles:
-      - migration
-      - all
 

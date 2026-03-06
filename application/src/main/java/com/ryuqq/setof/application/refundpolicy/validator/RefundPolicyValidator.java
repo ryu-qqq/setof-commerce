@@ -3,7 +3,7 @@ package com.ryuqq.setof.application.refundpolicy.validator;
 import com.ryuqq.setof.application.refundpolicy.manager.RefundPolicyReadManager;
 import com.ryuqq.setof.domain.refundpolicy.aggregate.RefundPolicy;
 import com.ryuqq.setof.domain.refundpolicy.exception.LastActiveRefundPolicyCannotBeDeactivatedException;
-import com.ryuqq.setof.domain.refundpolicy.exception.RefundPolicyException;
+import com.ryuqq.setof.domain.refundpolicy.exception.RefundPolicyNotFoundException;
 import com.ryuqq.setof.domain.refundpolicy.id.RefundPolicyId;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import java.util.List;
@@ -55,7 +55,7 @@ public class RefundPolicyValidator {
     public RefundPolicy findExistingBySellerOrThrow(SellerId sellerId, RefundPolicyId policyId) {
         return refundPolicyReadManager
                 .findBySellerIdAndId(sellerId, policyId)
-                .orElseThrow(RefundPolicyException::policyNotFound);
+                .orElseThrow(RefundPolicyNotFoundException::new);
     }
 
     /**
@@ -83,7 +83,7 @@ public class RefundPolicyValidator {
                         id -> {
                             RefundPolicy rp = foundMap.get(id);
                             if (rp == null) {
-                                throw RefundPolicyException.policyNotFound();
+                                throw new RefundPolicyNotFoundException();
                             }
                             return rp;
                         })

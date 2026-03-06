@@ -3,10 +3,10 @@ package com.ryuqq.setof.adapter.out.persistence.seller.repository;
 import static com.ryuqq.setof.adapter.out.persistence.seller.entity.QSellerJpaEntity.sellerJpaEntity;
 
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ryuqq.setof.adapter.out.persistence.seller.condition.SellerConditionBuilder;
 import com.ryuqq.setof.adapter.out.persistence.seller.entity.SellerJpaEntity;
+import com.ryuqq.setof.domain.common.vo.QueryContext;
 import com.ryuqq.setof.domain.common.vo.SortDirection;
 import com.ryuqq.setof.domain.seller.query.SellerSearchCriteria;
 import com.ryuqq.setof.domain.seller.query.SellerSortKey;
@@ -17,11 +17,12 @@ import org.springframework.stereotype.Repository;
 /**
  * SellerQueryDslRepository - 셀러 QueryDSL 레포지토리.
  *
- * <p>복잡한 쿼리를 위한 QueryDSL 기반 조회를 제공합니다.
+ * <p>PER-REP-002: 모든 조회 로직은 QueryDslRepository에서 처리.
  *
- * <p>PER-REP-003: 모든 조회는 QueryDslRepository.
+ * <p>PER-REP-004: ConditionBuilder를 사용하여 동적 쿼리 구성.
  *
- * <p>PER-CND-001: BooleanExpression은 ConditionBuilder로 분리.
+ * @author ryu-qqq
+ * @since 1.0.0
  */
 @Repository
 public class SellerQueryDslRepository {
@@ -45,7 +46,7 @@ public class SellerQueryDslRepository {
         SellerJpaEntity entity =
                 queryFactory
                         .selectFrom(sellerJpaEntity)
-                        .where(conditionBuilder.idEq(id), notDeleted())
+                        .where(conditionBuilder.idEq(id), conditionBuilder.notDeleted())
                         .fetchOne();
         return Optional.ofNullable(entity);
     }
@@ -53,13 +54,16 @@ public class SellerQueryDslRepository {
     /**
      * ID 목록으로 셀러 목록 조회.
      *
-     * @param ids ID 목록
-     * @return 셀러 엔티티 목록
+     * @param ids 셀러 ID 목록
+     * @return 셀러 목록
      */
     public List<SellerJpaEntity> findByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
         return queryFactory
                 .selectFrom(sellerJpaEntity)
-                .where(conditionBuilder.idIn(ids), notDeleted())
+                .where(sellerJpaEntity.id.in(ids), conditionBuilder.notDeleted())
                 .fetch();
     }
 
@@ -67,68 +71,71 @@ public class SellerQueryDslRepository {
      * ID 존재 여부 확인.
      *
      * @param id 셀러 ID
-     * @return 존재하면 true
+     * @return 존재 여부
      */
     public boolean existsById(Long id) {
-        Integer fetchOne =
+        Integer result =
                 queryFactory
                         .selectOne()
                         .from(sellerJpaEntity)
-                        .where(conditionBuilder.idEq(id), notDeleted())
+                        .where(conditionBuilder.idEq(id), conditionBuilder.notDeleted())
                         .fetchFirst();
-        return fetchOne != null;
+        return result != null;
     }
 
     /**
      * 셀러명 존재 여부 확인.
      *
      * @param sellerName 셀러명
-     * @return 존재하면 true
+     * @return 존재 여부
      */
     public boolean existsBySellerName(String sellerName) {
-        Integer fetchOne =
+        Integer result =
                 queryFactory
                         .selectOne()
                         .from(sellerJpaEntity)
-                        .where(conditionBuilder.sellerNameEq(sellerName), notDeleted())
+                        .where(
+                                conditionBuilder.sellerNameEq(sellerName),
+                                conditionBuilder.notDeleted())
                         .fetchFirst();
-        return fetchOne != null;
+        return result != null;
     }
 
     /**
-     * 셀러명 존재 여부 확인 (특정 ID 제외).
+     * 특정 ID를 제외한 셀러명 존재 여부 확인.
      *
      * @param sellerName 셀러명
      * @param excludeId 제외할 셀러 ID
-     * @return 존재하면 true
+     * @return 존재 여부
      */
     public boolean existsBySellerNameExcluding(String sellerName, Long excludeId) {
-        Integer fetchOne =
+        Integer result =
                 queryFactory
                         .selectOne()
                         .from(sellerJpaEntity)
                         .where(
                                 conditionBuilder.sellerNameEq(sellerName),
                                 conditionBuilder.idNe(excludeId),
-                                notDeleted())
+                                conditionBuilder.notDeleted())
                         .fetchFirst();
-        return fetchOne != null;
+        return result != null;
     }
 
     /**
      * 검색 조건으로 셀러 목록 조회.
      *
      * @param criteria 검색 조건
-     * @return 셀러 엔티티 목록
+     * @return 셀러 목록
      */
     public List<SellerJpaEntity> findByCriteria(SellerSearchCriteria criteria) {
-        var qc = criteria.queryContext();
+        QueryContext<SellerSortKey> qc = criteria.queryContext();
+
         return queryFactory
                 .selectFrom(sellerJpaEntity)
                 .where(
-                        deletedAtFilter(criteria),
-                        conditionBuilder.activeEq(criteria),
-                        conditionBuilder.searchCondition(criteria))
+                        conditionBuilder.activeEq(criteria.active()),
+                        conditionBuilder.searchCondition(criteria),
+                        conditionBuilder.notDeleted())
                 .orderBy(createOrderSpecifier(qc.sortKey(), qc.sortDirection()))
                 .offset(criteria.offset())
                 .limit(criteria.size())
@@ -147,23 +154,16 @@ public class SellerQueryDslRepository {
                         .select(sellerJpaEntity.count())
                         .from(sellerJpaEntity)
                         .where(
-                                deletedAtFilter(criteria),
-                                conditionBuilder.activeEq(criteria),
-                                conditionBuilder.searchCondition(criteria))
+                                conditionBuilder.activeEq(criteria.active()),
+                                conditionBuilder.searchCondition(criteria),
+                                conditionBuilder.notDeleted())
                         .fetchOne();
         return count != null ? count : 0L;
     }
 
-    private BooleanExpression notDeleted() {
-        return sellerJpaEntity.deletedAt.isNull();
-    }
-
-    private BooleanExpression deletedAtFilter(SellerSearchCriteria criteria) {
-        return criteria.queryContext().includeDeleted() ? null : notDeleted();
-    }
-
     private OrderSpecifier<?> createOrderSpecifier(SellerSortKey sortKey, SortDirection direction) {
-        boolean isAsc = direction.isAscending();
+        boolean isAsc = direction == SortDirection.ASC;
+
         return switch (sortKey) {
             case CREATED_AT ->
                     isAsc ? sellerJpaEntity.createdAt.asc() : sellerJpaEntity.createdAt.desc();

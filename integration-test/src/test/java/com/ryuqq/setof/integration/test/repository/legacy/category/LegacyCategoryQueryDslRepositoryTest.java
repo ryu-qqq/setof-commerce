@@ -8,8 +8,8 @@ import com.ryuqq.setof.integration.test.common.tag.TestTags;
 import com.ryuqq.setof.storage.legacy.category.LegacyCategoryEntityFixtures;
 import com.ryuqq.setof.storage.legacy.category.dto.LegacyCategoryTreeDto;
 import com.ryuqq.setof.storage.legacy.category.entity.LegacyCategoryEntity;
-import com.ryuqq.setof.storage.legacy.category.repository.LegacyCategoryJpaRepository;
 import com.ryuqq.setof.storage.legacy.category.repository.LegacyCategoryQueryDslRepository;
+import com.ryuqq.setof.storage.legacy.common.Yn;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -28,8 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Tag(TestTags.CATEGORY)
 class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
 
-    @Autowired private LegacyCategoryJpaRepository jpaRepository;
-
     @Autowired private LegacyCategoryQueryDslRepository queryDslRepository;
 
     @Nested
@@ -41,7 +39,7 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
         void shouldFindActiveCategory() {
             // given
             LegacyCategoryEntity saved =
-                    jpaRepository.save(
+                    persist(
                             LegacyCategoryEntityFixtures.builder()
                                     .id(100L)
                                     .categoryName("상의")
@@ -62,8 +60,7 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
         void shouldNotFindDeletedCategory() {
             // given
             LegacyCategoryEntity saved =
-                    jpaRepository.save(
-                            LegacyCategoryEntityFixtures.builder().id(101L).deleteYn("Y").build());
+                    persist(LegacyCategoryEntityFixtures.builder().id(101L).deleteYn("Y").build());
             flushAndClear();
 
             // when
@@ -93,19 +90,19 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
         void shouldFindByIds() {
             // given
             LegacyCategoryEntity entity1 =
-                    jpaRepository.save(
+                    persist(
                             LegacyCategoryEntityFixtures.builder()
                                     .id(200L)
                                     .categoryName("카테고리A")
                                     .build());
             LegacyCategoryEntity entity2 =
-                    jpaRepository.save(
+                    persist(
                             LegacyCategoryEntityFixtures.builder()
                                     .id(201L)
                                     .categoryName("카테고리B")
                                     .build());
             LegacyCategoryEntity entity3 =
-                    jpaRepository.save(
+                    persist(
                             LegacyCategoryEntityFixtures.builder()
                                     .id(202L)
                                     .categoryName("카테고리C")
@@ -128,14 +125,14 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
         void shouldExcludeDeletedCategories() {
             // given
             LegacyCategoryEntity active =
-                    jpaRepository.save(
+                    persist(
                             LegacyCategoryEntityFixtures.builder()
                                     .id(210L)
                                     .categoryName("활성카테고리")
                                     .deleteYn("N")
                                     .build());
             LegacyCategoryEntity deleted =
-                    jpaRepository.save(
+                    persist(
                             LegacyCategoryEntityFixtures.builder()
                                     .id(211L)
                                     .categoryName("삭제카테고리")
@@ -162,8 +159,7 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
         void shouldReturnTrueForExistingActiveCategory() {
             // given
             LegacyCategoryEntity saved =
-                    jpaRepository.save(
-                            LegacyCategoryEntityFixtures.builder().id(300L).deleteYn("N").build());
+                    persist(LegacyCategoryEntityFixtures.builder().id(300L).deleteYn("N").build());
             flushAndClear();
 
             // when
@@ -178,8 +174,7 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
         void shouldReturnFalseForDeletedCategory() {
             // given
             LegacyCategoryEntity saved =
-                    jpaRepository.save(
-                            LegacyCategoryEntityFixtures.builder().id(301L).deleteYn("Y").build());
+                    persist(LegacyCategoryEntityFixtures.builder().id(301L).deleteYn("Y").build());
             flushAndClear();
 
             // when
@@ -208,13 +203,13 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
         @DisplayName("기본 검색 조건으로 전체 조회")
         void shouldFindAllWithDefaultCriteria() {
             // given
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(400L)
                             .categoryName("상의")
                             .categoryDepth(1)
                             .build());
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(401L)
                             .categoryName("하의")
@@ -239,19 +234,19 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
         @DisplayName("검색 조건으로 카테고리 개수 조회")
         void shouldCountByCriteria() {
             // given
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(500L)
                             .categoryName("개수테스트1")
                             .deleteYn("N")
                             .build());
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(501L)
                             .categoryName("개수테스트2")
                             .deleteYn("N")
                             .build());
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(502L)
                             .categoryName("삭제됨")
@@ -275,14 +270,14 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
         @DisplayName("표시 중인 카테고리만 조회")
         void shouldFindOnlyDisplayedCategories() {
             // given
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(600L)
                             .categoryName("표시카테고리")
                             .displayYn("Y")
                             .deleteYn("N")
                             .build());
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(601L)
                             .categoryName("비표시카테고리")
@@ -295,14 +290,14 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
             List<LegacyCategoryEntity> result = queryDslRepository.findAllDisplayed();
 
             // then
-            assertThat(result).allMatch(LegacyCategoryEntity::isDisplayed);
+            assertThat(result).allMatch(e -> e.getDisplayYn() == Yn.Y);
         }
 
         @Test
         @DisplayName("depth와 path 순으로 정렬")
         void shouldOrderByDepthAndPath() {
             // given
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(610L)
                             .categoryDepth(2)
@@ -310,7 +305,7 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
                             .displayYn("Y")
                             .deleteYn("N")
                             .build());
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(611L)
                             .categoryDepth(1)
@@ -347,21 +342,21 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
         void shouldFindChildrenByParentId() {
             // given
             Long parentId = 700L;
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(parentId)
                             .parentCategoryId(0L)
                             .categoryDepth(1)
                             .categoryName("부모")
                             .build());
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(701L)
                             .parentCategoryId(parentId)
                             .categoryDepth(2)
                             .categoryName("자식1")
                             .build());
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(702L)
                             .parentCategoryId(parentId)
@@ -386,14 +381,14 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
         void shouldExcludeDeletedChildren() {
             // given
             Long parentId = 710L;
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(parentId)
                             .parentCategoryId(0L)
                             .categoryDepth(1)
                             .categoryName("부모")
                             .build());
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(711L)
                             .parentCategoryId(parentId)
@@ -401,7 +396,7 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
                             .categoryName("활성자식")
                             .deleteYn("N")
                             .build());
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(712L)
                             .parentCategoryId(parentId)
@@ -429,7 +424,7 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
         @DisplayName("자식 ID로 부모 카테고리들 조회 (Recursive CTE)")
         void shouldFindParentsByChildId() {
             // given: root(800) -> parent(801) -> child(802)
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(800L)
                             .parentCategoryId(0L)
@@ -438,7 +433,7 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
                             .path("/800")
                             .deleteYn("N")
                             .build());
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(801L)
                             .parentCategoryId(800L)
@@ -447,7 +442,7 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
                             .path("/800/801")
                             .deleteYn("N")
                             .build());
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(802L)
                             .parentCategoryId(801L)
@@ -472,7 +467,7 @@ class LegacyCategoryQueryDslRepositoryTest extends RepositoryTestBase {
         @DisplayName("루트 카테고리 ID로 조회 시 해당 카테고리만 반환")
         void shouldReturnSingleRootForRootCategoryId() {
             // given
-            jpaRepository.save(
+            persist(
                     LegacyCategoryEntityFixtures.builder()
                             .id(810L)
                             .parentCategoryId(0L)

@@ -33,7 +33,6 @@ include 'bootstrap:bootstrap-web-api'
 include 'bootstrap:bootstrap-web-api-admin'
 include 'bootstrap:bootstrap-legacy-web-api'
 include 'bootstrap:bootstrap-legacy-web-api-admin'
-include 'bootstrap:bootstrap-migration'
 include 'bootstrap:bootstrap-batch'
 include 'bootstrap:bootstrap-scheduler'
 
@@ -63,7 +62,6 @@ project(':bootstrap:bootstrap-web-api').projectDir = file('bootstrap/bootstrap-w
 project(':bootstrap:bootstrap-web-api-admin').projectDir = file('bootstrap/bootstrap-web-api-admin')
 project(':bootstrap:bootstrap-legacy-web-api').projectDir = file('bootstrap/bootstrap-legacy-web-api')
 project(':bootstrap:bootstrap-legacy-web-api-admin').projectDir = file('bootstrap/bootstrap-legacy-web-api-admin')
-project(':bootstrap:bootstrap-migration').projectDir = file('bootstrap/bootstrap-migration')
 project(':bootstrap:bootstrap-batch').projectDir = file('bootstrap/bootstrap-batch')
 project(':bootstrap:bootstrap-scheduler').projectDir = file('bootstrap/bootstrap-scheduler')
 

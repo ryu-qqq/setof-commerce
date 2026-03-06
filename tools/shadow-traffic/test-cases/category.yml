@@ -1,0 +1,10 @@
+domain: category
+description: "Category API shadow traffic test cases"
+
+test_cases:
+  - name: "category_tree_all"
+    path: "/api/v1/category"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []

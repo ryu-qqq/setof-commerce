@@ -2,6 +2,7 @@ package com.ryuqq.setof.domain.productdescription.aggregate;
 
 import com.ryuqq.setof.domain.productdescription.id.ProductGroupDescriptionId;
 import com.ryuqq.setof.domain.productdescription.vo.DescriptionHtml;
+import com.ryuqq.setof.domain.productdescription.vo.DescriptionUpdateData;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class ProductGroupDescription {
     private final ProductGroupDescriptionId id;
     private final ProductGroupId productGroupId;
     private DescriptionHtml content;
+    private String cdnPath;
     private final List<DescriptionImage> images;
     private final Instant createdAt;
     private Instant updatedAt;
@@ -29,12 +31,14 @@ public class ProductGroupDescription {
             ProductGroupDescriptionId id,
             ProductGroupId productGroupId,
             DescriptionHtml content,
+            String cdnPath,
             List<DescriptionImage> images,
             Instant createdAt,
             Instant updatedAt) {
         this.id = id;
         this.productGroupId = productGroupId;
         this.content = content;
+        this.cdnPath = cdnPath;
         this.images = images != null ? new ArrayList<>(images) : new ArrayList<>();
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -47,15 +51,17 @@ public class ProductGroupDescription {
      *
      * @param productGroupId 상품그룹 ID (필수)
      * @param content 상세설명 HTML
+     * @param cdnPath CDN 경로 (nullable)
      * @param now 생성 시각
      * @return 새 ProductGroupDescription 인스턴스
      */
     public static ProductGroupDescription forNew(
-            ProductGroupId productGroupId, DescriptionHtml content, Instant now) {
+            ProductGroupId productGroupId, DescriptionHtml content, String cdnPath, Instant now) {
         return new ProductGroupDescription(
                 ProductGroupDescriptionId.forNew(),
                 productGroupId,
                 content,
+                cdnPath,
                 new ArrayList<>(),
                 now,
                 now);
@@ -67,6 +73,7 @@ public class ProductGroupDescription {
      * @param id 식별자
      * @param productGroupId 상품그룹 ID
      * @param content 상세설명 HTML
+     * @param cdnPath CDN 경로
      * @param images 이미지 목록
      * @param createdAt 생성일시
      * @param updatedAt 수정일시
@@ -76,11 +83,12 @@ public class ProductGroupDescription {
             ProductGroupDescriptionId id,
             ProductGroupId productGroupId,
             DescriptionHtml content,
+            String cdnPath,
             List<DescriptionImage> images,
             Instant createdAt,
             Instant updatedAt) {
         return new ProductGroupDescription(
-                id, productGroupId, content, images, createdAt, updatedAt);
+                id, productGroupId, content, cdnPath, images, createdAt, updatedAt);
     }
 
     // ========== Business Methods ==========
@@ -91,6 +99,21 @@ public class ProductGroupDescription {
     }
 
     /**
+     * 수정 데이터 일괄 반영.
+     *
+     * <p>컨텐츠, CDN 경로, 이미지를 모두 교체합니다.
+     *
+     * @param updateData 수정 데이터 (컨텐츠, CDN 경로, 새 이미지 목록, 수정 시각)
+     */
+    public void update(DescriptionUpdateData updateData) {
+        this.content = updateData.content();
+        this.cdnPath = updateData.cdnPath();
+        this.images.clear();
+        this.images.addAll(updateData.newImages());
+        this.updatedAt = updateData.updatedAt();
+    }
+
+    /**
      * 상세설명 내용 수정.
      *
      * @param content 새 상세설명 HTML
@@ -98,6 +121,17 @@ public class ProductGroupDescription {
      */
     public void updateContent(DescriptionHtml content, Instant now) {
         this.content = content;
+        this.updatedAt = now;
+    }
+
+    /**
+     * CDN 경로 수정.
+     *
+     * @param cdnPath 새 CDN 경로
+     * @param now 수정 시각
+     */
+    public void updateCdnPath(String cdnPath, Instant now) {
+        this.cdnPath = cdnPath;
         this.updatedAt = now;
     }
 
@@ -125,6 +159,11 @@ public class ProductGroupDescription {
         return !images.isEmpty();
     }
 
+    /** CDN 경로 존재 여부 확인 */
+    public boolean hasCdnPath() {
+        return cdnPath != null && !cdnPath.isBlank();
+    }
+
     // ========== Accessor Methods ==========
 
     public ProductGroupDescriptionId id() {
@@ -149,6 +188,10 @@ public class ProductGroupDescription {
 
     public String contentValue() {
         return content != null ? content.value() : null;
+    }
+
+    public String cdnPath() {
+        return cdnPath;
     }
 
     public List<DescriptionImage> images() {

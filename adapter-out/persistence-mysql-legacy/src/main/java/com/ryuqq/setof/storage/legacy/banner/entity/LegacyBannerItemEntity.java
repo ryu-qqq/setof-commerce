@@ -1,9 +1,12 @@
 package com.ryuqq.setof.storage.legacy.banner.entity;
 
+import com.ryuqq.setof.storage.legacy.common.Yn;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -25,6 +28,7 @@ import java.time.LocalDateTime;
 public class LegacyBannerItemEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "banner_item_id")
     private Long id;
 
@@ -64,6 +68,68 @@ public class LegacyBannerItemEntity {
     private LocalDateTime updateDate;
 
     protected LegacyBannerItemEntity() {}
+
+    /**
+     * 신규 배너 아이템 엔티티 생성.
+     *
+     * @return LegacyBannerItemEntity
+     */
+    public static LegacyBannerItemEntity create(
+            long bannerId,
+            String title,
+            String imageUrl,
+            String linkUrl,
+            int displayOrder,
+            Yn displayYn,
+            LocalDateTime displayStartDate,
+            LocalDateTime displayEndDate,
+            LocalDateTime insertDate,
+            LocalDateTime updateDate) {
+        LegacyBannerItemEntity entity = new LegacyBannerItemEntity();
+        entity.bannerId = bannerId;
+        entity.title = title;
+        entity.imageUrl = imageUrl;
+        entity.linkUrl = linkUrl;
+        entity.displayOrder = displayOrder;
+        entity.displayYn = displayYn;
+        entity.deleteYn = Yn.N;
+        entity.displayStartDate = displayStartDate;
+        entity.displayEndDate = displayEndDate;
+        entity.insertDate = insertDate;
+        entity.updateDate = updateDate;
+        return entity;
+    }
+
+    /** 배너 아이템 정보 수정. */
+    public void updateDetails(
+            String title,
+            String imageUrl,
+            String linkUrl,
+            int displayOrder,
+            Yn displayYn,
+            LocalDateTime displayStartDate,
+            LocalDateTime displayEndDate,
+            LocalDateTime updateDate) {
+        this.title = title;
+        this.imageUrl = imageUrl;
+        this.linkUrl = linkUrl;
+        this.displayOrder = displayOrder;
+        this.displayYn = displayYn;
+        this.displayStartDate = displayStartDate;
+        this.displayEndDate = displayEndDate;
+        this.updateDate = updateDate;
+    }
+
+    /**
+     * 배너 아이템 삭제 마킹.
+     *
+     * @param updateDate 삭제 시각
+     */
+    public void markDeleted(LocalDateTime updateDate) {
+        this.displayYn = Yn.N;
+        this.deleteYn = Yn.Y;
+        this.updateDate = updateDate;
+    }
 
     public Long getId() {
         return id;
@@ -111,11 +177,5 @@ public class LegacyBannerItemEntity {
 
     public LocalDateTime getUpdateDate() {
         return updateDate;
-    }
-
-    /** Yn - Y/N 구분 Enum. */
-    public enum Yn {
-        Y,
-        N
     }
 }

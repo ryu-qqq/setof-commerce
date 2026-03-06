@@ -4,14 +4,12 @@ import com.ryuqq.setof.adapter.out.persistence.seller.mapper.SellerBusinessInfoJ
 import com.ryuqq.setof.adapter.out.persistence.seller.repository.SellerBusinessInfoQueryDslRepository;
 import com.ryuqq.setof.application.seller.port.out.query.SellerBusinessInfoQueryPort;
 import com.ryuqq.setof.domain.seller.aggregate.SellerBusinessInfo;
-import com.ryuqq.setof.domain.seller.id.SellerBusinessInfoId;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import java.util.Optional;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
- * SellerBusinessInfoQueryAdapter - 셀러 사업자 정보 조회 어댑터.
+ * SellerBusinessInfoQueryAdapter - 셀러 사업자 정보 Query 어댑터.
  *
  * <p>SellerBusinessInfoQueryPort를 구현하여 영속성 계층과 연결합니다.
  *
@@ -19,16 +17,10 @@ import org.springframework.stereotype.Component;
  *
  * <p>PER-ADP-002: Adapter에서 @Transactional 금지.
  *
- * <p>PER-ADP-003: Domain 반환 (DTO 반환 금지).
- *
- * <p>PER-ADP-005: Entity -> Domain 변환 (Mapper 사용).
- *
- * <p>활성화 조건: persistence.legacy.seller-business-info.enabled=false
+ * @author ryu-qqq
+ * @since 1.0.0
  */
 @Component
-@ConditionalOnProperty(
-        name = "persistence.legacy.seller-business-info.enabled",
-        havingValue = "false")
 public class SellerBusinessInfoQueryAdapter implements SellerBusinessInfoQueryPort {
 
     private final SellerBusinessInfoQueryDslRepository queryDslRepository;
@@ -41,57 +33,26 @@ public class SellerBusinessInfoQueryAdapter implements SellerBusinessInfoQueryPo
         this.mapper = mapper;
     }
 
-    /**
-     * ID로 사업자 정보 조회.
-     *
-     * @param id 사업자 정보 ID
-     * @return 사업자 정보 Optional
-     */
     @Override
-    public Optional<SellerBusinessInfo> findById(SellerBusinessInfoId id) {
-        return queryDslRepository.findById(id.value()).map(mapper::toDomain);
+    public Optional<SellerBusinessInfo> findById(Long id) {
+        return queryDslRepository.findById(id).map(mapper::toDomain);
     }
 
-    /**
-     * 셀러 ID로 사업자 정보 조회.
-     *
-     * @param sellerId 셀러 ID
-     * @return 사업자 정보 Optional
-     */
     @Override
     public Optional<SellerBusinessInfo> findBySellerId(SellerId sellerId) {
         return queryDslRepository.findBySellerId(sellerId.value()).map(mapper::toDomain);
     }
 
-    /**
-     * 셀러 ID 존재 여부 확인.
-     *
-     * @param sellerId 셀러 ID
-     * @return 존재하면 true
-     */
     @Override
     public boolean existsBySellerId(SellerId sellerId) {
         return queryDslRepository.existsBySellerId(sellerId.value());
     }
 
-    /**
-     * 사업자등록번호 존재 여부 확인.
-     *
-     * @param registrationNumber 사업자등록번호
-     * @return 존재하면 true
-     */
     @Override
     public boolean existsByRegistrationNumber(String registrationNumber) {
         return queryDslRepository.existsByRegistrationNumber(registrationNumber);
     }
 
-    /**
-     * 사업자등록번호 존재 여부 확인 (특정 셀러 ID 제외).
-     *
-     * @param registrationNumber 사업자등록번호
-     * @param excludeId 제외할 셀러 ID
-     * @return 존재하면 true
-     */
     @Override
     public boolean existsByRegistrationNumberExcluding(
             String registrationNumber, SellerId excludeId) {

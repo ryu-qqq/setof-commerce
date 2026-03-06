@@ -23,19 +23,13 @@ dependencies {
     api project(':application')
     api project(':domain')
 
-    // FileFlow SDK (v1.0.0)
-    implementation 'com.github.ryu-qqq.fileflow:fileflow-sdk-core:v1.0.0'
+    // FileFlow SDK (v1.0.2) - Spring Boot Starter (auto-configuration 포함)
+    implementation 'com.github.ryu-qqq.fileflow:fileflow-sdk-spring-boot-starter:v1.0.2'
 
     // ========================================
-    // Spring Boot Web
+    // Spring Boot
     // ========================================
     implementation 'org.springframework.boot:spring-boot-starter-web'
-
-    // ========================================
-    // Spring Boot (for @Component, @ConfigurationProperties)
-    // ========================================
-    implementation 'org.springframework.boot:spring-boot-autoconfigure'
-    annotationProcessor libs.spring.boot.configuration.processor
 
     // ========================================
     // Test Dependencies

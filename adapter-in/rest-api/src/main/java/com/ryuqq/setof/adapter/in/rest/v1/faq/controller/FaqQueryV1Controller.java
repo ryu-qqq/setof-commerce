@@ -7,7 +7,7 @@ import com.ryuqq.setof.adapter.in.rest.v1.faq.dto.response.FaqV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.faq.mapper.FaqV1ApiMapper;
 import com.ryuqq.setof.application.faq.dto.query.FaqSearchParams;
 import com.ryuqq.setof.application.faq.dto.response.FaqResult;
-import com.ryuqq.setof.application.faq.port.in.query.GetFaqsByTypeUseCase;
+import com.ryuqq.setof.application.faq.port.in.GetFaqsByTypeUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;

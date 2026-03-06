@@ -28,7 +28,7 @@ import java.time.Instant;
  * @since 1.0.0
  */
 @Entity
-@Table(name = "categories")
+@Table(name = "category")
 public class CategoryJpaEntity extends SoftDeletableEntity {
 
     @Id

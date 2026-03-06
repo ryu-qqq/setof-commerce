@@ -1,75 +1,55 @@
 package com.ryuqq.setof.domain.productgroup.vo;
 
-/**
- * 상품그룹 상태.
- *
- * <p>상태 전이 규칙:
- *
- * <ul>
- *   <li>DRAFT → ACTIVE (활성화)
- *   <li>ACTIVE → INACTIVE (비활성화)
- *   <li>ACTIVE → SOLDOUT (품절)
- *   <li>INACTIVE → ACTIVE (재활성화)
- *   <li>SOLDOUT → ACTIVE (재입고)
- *   <li>* → DELETED (삭제, 어떤 상태에서든 가능)
- * </ul>
- */
+/** 상품 그룹 상태. */
 public enum ProductGroupStatus {
+    ACTIVE("판매중"),
+    SOLD_OUT("품절"),
+    DELETED("삭제");
 
-    /** 초안 (신규 생성 시 기본 상태) */
-    DRAFT,
+    private final String displayName;
 
-    /** 활성 (판매 중) */
-    ACTIVE,
-
-    /** 비활성 (판매 중지) */
-    INACTIVE,
-
-    /** 품절 */
-    SOLDOUT,
-
-    /** 삭제됨 */
-    DELETED;
-
-    public boolean canActivate() {
-        return this == DRAFT || this == INACTIVE || this == SOLDOUT;
+    ProductGroupStatus(String displayName) {
+        this.displayName = displayName;
     }
 
-    public boolean canDeactivate() {
+    public String displayName() {
+        return displayName;
+    }
+
+    public boolean isActive() {
         return this == ACTIVE;
-    }
-
-    public boolean canMarkSoldOut() {
-        return this == ACTIVE;
-    }
-
-    public boolean canDelete() {
-        return this != DELETED;
-    }
-
-    public boolean isDisplayed() {
-        return this == ACTIVE;
-    }
-
-    public boolean isSoldOut() {
-        return this == SOLDOUT;
     }
 
     public boolean isDeleted() {
         return this == DELETED;
     }
 
+    public boolean isSoldOut() {
+        return this == SOLD_OUT;
+    }
+
+    /** ACTIVE로 전환 가능한지 확인. DELETED가 아니면 가능. */
+    public boolean canActivate() {
+        return this != DELETED;
+    }
+
+    /** 품절 처리 가능한지 확인. ACTIVE에서만 가능. */
+    public boolean canMarkSoldOut() {
+        return this == ACTIVE;
+    }
+
+    /** 삭제 가능한지 확인. 이미 삭제된 상태가 아니면 가능. */
+    public boolean canDelete() {
+        return this != DELETED;
+    }
+
+    /** 노출 가능 상태 (ACTIVE). */
+    public boolean isDisplayed() {
+        return this == ACTIVE;
+    }
+
     /**
      * 레거시 플래그 조합에서 상태를 복원합니다.
-     *
-     * <p>매핑 로직:
-     *
-     * <ul>
-     *   <li>delete_yn=Y → DELETED
-     *   <li>sold_out_yn=Y → SOLDOUT
-     *   <li>display_yn=N → INACTIVE
-     *   <li>그 외 → ACTIVE
-     * </ul>
      *
      * @param deleteYn 삭제 여부 (Y/N)
      * @param soldOutYn 품절 여부 (Y/N)
@@ -82,10 +62,7 @@ public enum ProductGroupStatus {
             return DELETED;
         }
         if ("Y".equalsIgnoreCase(soldOutYn)) {
-            return SOLDOUT;
-        }
-        if ("N".equalsIgnoreCase(displayYn)) {
-            return INACTIVE;
+            return SOLD_OUT;
         }
         return ACTIVE;
     }

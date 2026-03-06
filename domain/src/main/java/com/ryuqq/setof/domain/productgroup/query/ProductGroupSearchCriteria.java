@@ -5,6 +5,7 @@ import com.ryuqq.setof.domain.category.id.CategoryId;
 import com.ryuqq.setof.domain.common.vo.CursorQueryContext;
 import com.ryuqq.setof.domain.productgroup.vo.ProductGroupStatus;
 import com.ryuqq.setof.domain.seller.id.SellerId;
+import java.util.List;
 
 /**
  * 상품그룹 검색 조건.
@@ -14,22 +15,36 @@ import com.ryuqq.setof.domain.seller.id.SellerId;
  * @param sellerId 셀러 ID (nullable)
  * @param brandId 브랜드 ID (nullable)
  * @param categoryId 카테고리 ID (nullable)
+ * @param categoryIds 카테고리 ID 목록 필터 (empty이면 전체)
+ * @param brandIds 브랜드 ID 목록 필터 (empty이면 전체)
  * @param status 상품그룹 상태 (nullable)
- * @param keyword 검색 키워드 (nullable, 상품그룹명 검색)
+ * @param searchField 검색 필드 (nullable, null이면 전체 필드 검색)
+ * @param searchWord 검색어 (nullable)
+ * @param lowestPrice 최저가 필터 (nullable)
+ * @param highestPrice 최고가 필터 (nullable)
+ * @param cursorValue 커서 정렬 키 값 (nullable, 비-ID 정렬 시 사용)
  * @param queryContext 정렬 + 커서 페이징 컨텍스트 (필수)
  */
 public record ProductGroupSearchCriteria(
         SellerId sellerId,
         BrandId brandId,
         CategoryId categoryId,
+        List<Long> categoryIds,
+        List<Long> brandIds,
         ProductGroupStatus status,
-        String keyword,
+        ProductGroupSearchField searchField,
+        String searchWord,
+        Long lowestPrice,
+        Long highestPrice,
+        String cursorValue,
         CursorQueryContext<ProductGroupSortKey, Long> queryContext) {
 
     public ProductGroupSearchCriteria {
         if (queryContext == null) {
             throw new IllegalArgumentException("queryContext는 필수입니다");
         }
+        categoryIds = categoryIds != null ? List.copyOf(categoryIds) : List.of();
+        brandIds = brandIds != null ? List.copyOf(brandIds) : List.of();
     }
 
     /**
@@ -40,7 +55,19 @@ public record ProductGroupSearchCriteria(
      */
     public static ProductGroupSearchCriteria of(
             CursorQueryContext<ProductGroupSortKey, Long> queryContext) {
-        return new ProductGroupSearchCriteria(null, null, null, null, null, queryContext);
+        return new ProductGroupSearchCriteria(
+                null,
+                null,
+                null,
+                List.of(),
+                List.of(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                queryContext);
     }
 
     public boolean hasSellerId() {
@@ -55,11 +82,31 @@ public record ProductGroupSearchCriteria(
         return categoryId != null;
     }
 
+    public boolean hasCategoryIds() {
+        return !categoryIds.isEmpty();
+    }
+
+    public boolean hasBrandIds() {
+        return !brandIds.isEmpty();
+    }
+
     public boolean hasStatus() {
         return status != null;
     }
 
-    public boolean hasKeyword() {
-        return keyword != null && !keyword.isBlank();
+    public boolean hasSearchField() {
+        return searchField != null;
+    }
+
+    public boolean hasSearchCondition() {
+        return searchWord != null && !searchWord.isBlank();
+    }
+
+    public boolean hasPriceFilter() {
+        return lowestPrice != null || highestPrice != null;
+    }
+
+    public boolean hasCursorValue() {
+        return cursorValue != null && !cursorValue.isBlank();
     }
 }

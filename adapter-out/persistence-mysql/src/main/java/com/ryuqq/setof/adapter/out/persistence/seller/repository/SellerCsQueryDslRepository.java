@@ -2,7 +2,6 @@ package com.ryuqq.setof.adapter.out.persistence.seller.repository;
 
 import static com.ryuqq.setof.adapter.out.persistence.seller.entity.QSellerCsJpaEntity.sellerCsJpaEntity;
 
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ryuqq.setof.adapter.out.persistence.seller.condition.SellerCsConditionBuilder;
 import com.ryuqq.setof.adapter.out.persistence.seller.entity.SellerCsJpaEntity;
@@ -12,11 +11,12 @@ import org.springframework.stereotype.Repository;
 /**
  * SellerCsQueryDslRepository - 셀러 CS 정보 QueryDSL 레포지토리.
  *
- * <p>복잡한 쿼리를 위한 QueryDSL 기반 조회를 제공합니다.
+ * <p>PER-REP-002: 모든 조회 로직은 QueryDslRepository에서 처리.
  *
- * <p>PER-REP-003: 모든 조회는 QueryDslRepository.
+ * <p>PER-REP-004: ConditionBuilder를 사용하여 동적 쿼리 구성.
  *
- * <p>PER-CND-001: BooleanExpression은 ConditionBuilder로 분리.
+ * @author ryu-qqq
+ * @since 1.0.0
  */
 @Repository
 public class SellerCsQueryDslRepository {
@@ -31,16 +31,16 @@ public class SellerCsQueryDslRepository {
     }
 
     /**
-     * ID로 CS 정보 조회.
+     * ID로 셀러 CS 정보 조회.
      *
-     * @param id CS ID
+     * @param id CS 정보 ID
      * @return CS 정보 Optional
      */
     public Optional<SellerCsJpaEntity> findById(Long id) {
         SellerCsJpaEntity entity =
                 queryFactory
                         .selectFrom(sellerCsJpaEntity)
-                        .where(conditionBuilder.idEq(id), notDeleted())
+                        .where(conditionBuilder.idEq(id), conditionBuilder.notDeleted())
                         .fetchOne();
         return Optional.ofNullable(entity);
     }
@@ -55,28 +55,24 @@ public class SellerCsQueryDslRepository {
         SellerCsJpaEntity entity =
                 queryFactory
                         .selectFrom(sellerCsJpaEntity)
-                        .where(conditionBuilder.sellerIdEq(sellerId), notDeleted())
+                        .where(conditionBuilder.sellerIdEq(sellerId), conditionBuilder.notDeleted())
                         .fetchOne();
         return Optional.ofNullable(entity);
     }
 
     /**
-     * 셀러 ID로 CS 정보 존재 여부 확인.
+     * 셀러 ID 존재 여부 확인.
      *
      * @param sellerId 셀러 ID
-     * @return 존재하면 true
+     * @return 존재 여부
      */
     public boolean existsBySellerId(Long sellerId) {
-        Integer fetchOne =
+        Integer result =
                 queryFactory
                         .selectOne()
                         .from(sellerCsJpaEntity)
-                        .where(conditionBuilder.sellerIdEq(sellerId), notDeleted())
+                        .where(conditionBuilder.sellerIdEq(sellerId), conditionBuilder.notDeleted())
                         .fetchFirst();
-        return fetchOne != null;
-    }
-
-    private BooleanExpression notDeleted() {
-        return sellerCsJpaEntity.deletedAt.isNull();
+        return result != null;
     }
 }

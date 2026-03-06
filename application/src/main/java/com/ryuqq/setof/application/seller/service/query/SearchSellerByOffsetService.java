@@ -11,38 +11,29 @@ import com.ryuqq.setof.domain.seller.query.SellerSearchCriteria;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
-/**
- * 셀러 검색 Service (Offset 기반 페이징).
- *
- * <p>APP-UC-001: Offset 페이징은 Search{Domain}ByOffsetService
- *
- * <p>QueryFactory를 통해 Params → Criteria 변환
- *
- * <p>Assembler를 통해 SellerPageResult 생성
- */
 @Service
 public class SearchSellerByOffsetService implements SearchSellerByOffsetUseCase {
 
-    private final SellerReadManager readManager;
-    private final SellerQueryFactory queryFactory;
-    private final SellerAssembler assembler;
+    private final SellerReadManager sellerReadManager;
+    private final SellerQueryFactory sellerQueryFactory;
+    private final SellerAssembler sellerAssembler;
 
     public SearchSellerByOffsetService(
-            SellerReadManager readManager,
-            SellerQueryFactory queryFactory,
-            SellerAssembler assembler) {
-        this.readManager = readManager;
-        this.queryFactory = queryFactory;
-        this.assembler = assembler;
+            SellerReadManager sellerReadManager,
+            SellerQueryFactory sellerQueryFactory,
+            SellerAssembler sellerAssembler) {
+        this.sellerReadManager = sellerReadManager;
+        this.sellerQueryFactory = sellerQueryFactory;
+        this.sellerAssembler = sellerAssembler;
     }
 
     @Override
     public SellerPageResult execute(SellerSearchParams params) {
-        SellerSearchCriteria criteria = queryFactory.createCriteria(params);
+        SellerSearchCriteria criteria = sellerQueryFactory.createCriteria(params);
 
-        List<Seller> sellers = readManager.findByCriteria(criteria);
-        long totalElements = readManager.countByCriteria(criteria);
+        List<Seller> sellers = sellerReadManager.findByCriteria(criteria);
+        long totalElements = sellerReadManager.countByCriteria(criteria);
 
-        return assembler.toPageResult(sellers, params.page(), params.size(), totalElements);
+        return sellerAssembler.toPageResult(sellers, params.page(), params.size(), totalElements);
     }
 }

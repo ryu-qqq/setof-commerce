@@ -4,25 +4,22 @@ import com.ryuqq.setof.application.seller.port.out.command.SellerBusinessInfoCom
 import com.ryuqq.setof.domain.seller.aggregate.SellerBusinessInfo;
 import java.util.List;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-/** SellerBusinessInfo Command Manager. */
 @Component
 public class SellerBusinessInfoCommandManager {
 
-    private final SellerBusinessInfoCommandPort commandPort;
+    private final SellerBusinessInfoCommandPort sellerBusinessInfoCommandPort;
 
-    public SellerBusinessInfoCommandManager(SellerBusinessInfoCommandPort commandPort) {
-        this.commandPort = commandPort;
+    public SellerBusinessInfoCommandManager(
+            SellerBusinessInfoCommandPort sellerBusinessInfoCommandPort) {
+        this.sellerBusinessInfoCommandPort = sellerBusinessInfoCommandPort;
     }
 
-    @Transactional
-    public Long persist(SellerBusinessInfo businessInfo) {
-        return commandPort.persist(businessInfo);
+    public SellerBusinessInfo persist(SellerBusinessInfo businessInfo) {
+        return sellerBusinessInfoCommandPort.persist(businessInfo);
     }
 
-    @Transactional
-    public void persistAll(List<SellerBusinessInfo> businessInfos) {
-        commandPort.persistAll(businessInfos);
+    public List<SellerBusinessInfo> persistAll(List<SellerBusinessInfo> businessInfos) {
+        return sellerBusinessInfoCommandPort.persistAll(businessInfos);
     }
 }

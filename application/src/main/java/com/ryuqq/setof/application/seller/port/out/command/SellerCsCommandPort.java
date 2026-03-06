@@ -3,27 +3,8 @@ package com.ryuqq.setof.application.seller.port.out.command;
 import com.ryuqq.setof.domain.seller.aggregate.SellerCs;
 import java.util.List;
 
-/**
- * SellerCs Command Port.
- *
- * <p>CS 정보 저장/수정 포트입니다.
- *
- * @author ryu-qqq
- */
 public interface SellerCsCommandPort {
+    SellerCs persist(SellerCs sellerCs);
 
-    /**
-     * CS 정보를 저장합니다.
-     *
-     * @param sellerCs 저장할 CS 정보
-     * @return 저장된 ID
-     */
-    Long persist(SellerCs sellerCs);
-
-    /**
-     * 다건의 CS 정보를 저장합니다.
-     *
-     * @param sellerCsList 저장할 CS 정보 목록
-     */
-    void persistAll(List<SellerCs> sellerCsList);
+    List<SellerCs> persistAll(List<SellerCs> sellerCsList);
 }

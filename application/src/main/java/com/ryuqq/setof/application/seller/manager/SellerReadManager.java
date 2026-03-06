@@ -7,50 +7,41 @@ import com.ryuqq.setof.domain.seller.id.SellerId;
 import com.ryuqq.setof.domain.seller.query.SellerSearchCriteria;
 import java.util.List;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-/** Seller Read Manager. */
 @Component
 public class SellerReadManager {
 
-    private final SellerQueryPort queryPort;
+    private final SellerQueryPort sellerQueryPort;
 
-    public SellerReadManager(SellerQueryPort queryPort) {
-        this.queryPort = queryPort;
+    public SellerReadManager(SellerQueryPort sellerQueryPort) {
+        this.sellerQueryPort = sellerQueryPort;
     }
 
-    @Transactional(readOnly = true)
-    public Seller getById(SellerId id) {
-        return queryPort.findById(id).orElseThrow(() -> new SellerNotFoundException(id.value()));
+    public Seller getById(Long id) {
+        return sellerQueryPort.findById(id).orElseThrow(() -> new SellerNotFoundException(id));
     }
 
-    @Transactional(readOnly = true)
-    public List<Seller> getByIds(List<SellerId> ids) {
-        return queryPort.findByIds(ids);
+    public List<Seller> getByIds(List<Long> ids) {
+        return sellerQueryPort.findByIds(ids);
     }
 
-    @Transactional(readOnly = true)
-    public boolean existsById(SellerId id) {
-        return queryPort.existsById(id);
+    public boolean existsById(Long id) {
+        return sellerQueryPort.existsById(id);
     }
 
-    @Transactional(readOnly = true)
     public boolean existsBySellerName(String sellerName) {
-        return queryPort.existsBySellerName(sellerName);
+        return sellerQueryPort.existsBySellerName(sellerName);
     }
 
-    @Transactional(readOnly = true)
     public boolean existsBySellerNameExcluding(String sellerName, SellerId excludeId) {
-        return queryPort.existsBySellerNameExcluding(sellerName, excludeId);
+        return sellerQueryPort.existsBySellerNameExcluding(sellerName, excludeId);
     }
 
-    @Transactional(readOnly = true)
     public List<Seller> findByCriteria(SellerSearchCriteria criteria) {
-        return queryPort.findByCriteria(criteria);
+        return sellerQueryPort.findByCriteria(criteria);
     }
 
-    @Transactional(readOnly = true)
     public long countByCriteria(SellerSearchCriteria criteria) {
-        return queryPort.countByCriteria(criteria);
+        return sellerQueryPort.countByCriteria(criteria);
     }
 }

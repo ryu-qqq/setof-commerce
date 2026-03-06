@@ -1,25 +1,37 @@
 package com.ryuqq.setof.domain.productgroup.vo;
 
-/**
- * 옵션 유형.
- *
- * <p>상품그룹의 옵션 구성 방식을 정의합니다.
- */
+/** 상품 그룹 옵션 유형. */
 public enum OptionType {
+    NONE("옵션 없음"),
+    SINGLE("단일 옵션"),
+    COMBINATION("조합 옵션");
 
-    /** 옵션 없음 (단일 상품) */
-    NONE,
+    private final String displayName;
 
-    /** 단일 옵션 (예: 사이즈만) */
-    SINGLE,
+    OptionType(String displayName) {
+        this.displayName = displayName;
+    }
 
-    /** 조합 옵션 (예: 색상 + 사이즈) */
-    COMBINATION;
+    public String displayName() {
+        return displayName;
+    }
+
+    /** 옵션 그룹이 필요한 유형인지 확인. */
+    public boolean requiresOptionGroup() {
+        return this == SINGLE || this == COMBINATION;
+    }
+
+    /** 예상되는 옵션 그룹 수 반환. NONE은 0, SINGLE은 1, COMBINATION은 2. */
+    public int expectedOptionGroupCount() {
+        return switch (this) {
+            case NONE -> 0;
+            case SINGLE -> 1;
+            case COMBINATION -> 2;
+        };
+    }
 
     /**
      * 레거시 매핑용 팩토리 메서드.
-     *
-     * <p>레거시 DB의 option_type 문자열을 OptionType으로 변환합니다.
      *
      * @param legacyValue 레거시 옵션 타입 문자열
      * @return OptionType

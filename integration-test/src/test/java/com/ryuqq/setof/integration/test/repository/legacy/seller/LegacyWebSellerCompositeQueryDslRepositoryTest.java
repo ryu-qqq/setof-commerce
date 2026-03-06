@@ -2,7 +2,6 @@ package com.ryuqq.setof.integration.test.repository.legacy.seller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ryuqq.setof.domain.legacy.seller.dto.query.LegacySellerSearchCondition;
 import com.ryuqq.setof.integration.test.common.base.RepositoryTestBase;
 import com.ryuqq.setof.integration.test.common.tag.TestTags;
 import com.ryuqq.setof.storage.legacy.composite.web.seller.dto.LegacyWebSellerQueryDto;
@@ -74,11 +73,8 @@ class LegacyWebSellerCompositeQueryDslRepositoryTest extends RepositoryTestBase 
             persist(businessInfo);
             flushAndClear();
 
-            LegacySellerSearchCondition condition =
-                    LegacySellerSearchCondition.ofSellerId(sellerId);
-
             // when
-            Optional<LegacyWebSellerQueryDto> result = repository.fetchSeller(condition);
+            Optional<LegacyWebSellerQueryDto> result = repository.fetchSeller(sellerId);
 
             // then
             assertThat(result).isPresent();
@@ -109,11 +105,9 @@ class LegacyWebSellerCompositeQueryDslRepositoryTest extends RepositoryTestBase 
         void fetchSeller_WithNonExistingSeller_ReturnsEmptyOptional() {
             // given
             Long nonExistingSellerId = 999999L;
-            LegacySellerSearchCondition condition =
-                    LegacySellerSearchCondition.ofSellerId(nonExistingSellerId);
 
             // when
-            Optional<LegacyWebSellerQueryDto> result = repository.fetchSeller(condition);
+            Optional<LegacyWebSellerQueryDto> result = repository.fetchSeller(nonExistingSellerId);
 
             // then
             assertThat(result).isEmpty();
@@ -134,11 +128,8 @@ class LegacyWebSellerCompositeQueryDslRepositoryTest extends RepositoryTestBase 
             persist(seller);
             flushAndClear();
 
-            LegacySellerSearchCondition condition =
-                    LegacySellerSearchCondition.ofSellerId(sellerId);
-
             // when
-            Optional<LegacyWebSellerQueryDto> result = repository.fetchSeller(condition);
+            Optional<LegacyWebSellerQueryDto> result = repository.fetchSeller(sellerId);
 
             // then
             assertThat(result).isEmpty();

@@ -16,7 +16,7 @@ import com.ryuqq.setof.adapter.in.rest.v1.faq.FaqV1Endpoints;
 import com.ryuqq.setof.adapter.in.rest.v1.faq.dto.response.FaqV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.faq.mapper.FaqV1ApiMapper;
 import com.ryuqq.setof.application.faq.dto.response.FaqResult;
-import com.ryuqq.setof.application.faq.port.in.query.GetFaqsByTypeUseCase;
+import com.ryuqq.setof.application.faq.port.in.GetFaqsByTypeUseCase;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

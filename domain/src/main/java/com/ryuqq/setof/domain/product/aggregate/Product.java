@@ -1,251 +1,257 @@
 package com.ryuqq.setof.domain.product.aggregate;
 
 import com.ryuqq.setof.domain.common.vo.Money;
+import com.ryuqq.setof.domain.product.exception.ProductInvalidPriceException;
+import com.ryuqq.setof.domain.product.exception.ProductInvalidStatusTransitionException;
 import com.ryuqq.setof.domain.product.id.ProductId;
 import com.ryuqq.setof.domain.product.vo.ProductStatus;
+import com.ryuqq.setof.domain.product.vo.SkuCode;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-/**
- * Product - 상품(SKU) Aggregate Root.
- *
- * <p>개별 SKU 정보를 관리합니다. 옵션, 추가 가격, 재고를 내장합니다.
- *
- * <p>주요 불변식:
- *
- * <ul>
- *   <li>productGroupId는 필수
- *   <li>stockQuantity >= 0
- *   <li>additionalPrice >= 0
- * </ul>
- *
- * @author ryu-qqq
- * @since 1.0.0
- */
+/** 상품(SKU) Aggregate Root. 실제 판매/재고 관리 대상. ProductGroup의 옵션 조합별로 생성된다. */
 public class Product {
 
     private final ProductId id;
     private final ProductGroupId productGroupId;
-    private String option1Name;
-    private String option1Value;
-    private String option2Name;
-    private String option2Value;
-    private Money additionalPrice;
+    private SkuCode skuCode;
+    private Money regularPrice;
+    private Money currentPrice;
+    private Money salePrice;
+    private int discountRate;
     private int stockQuantity;
     private ProductStatus status;
+    private int sortOrder;
+    private final List<ProductOptionMapping> optionMappings;
     private final Instant createdAt;
     private Instant updatedAt;
 
     private Product(
             ProductId id,
             ProductGroupId productGroupId,
-            String option1Name,
-            String option1Value,
-            String option2Name,
-            String option2Value,
-            Money additionalPrice,
+            SkuCode skuCode,
+            Money regularPrice,
+            Money currentPrice,
+            Money salePrice,
+            int discountRate,
             int stockQuantity,
             ProductStatus status,
+            int sortOrder,
+            List<ProductOptionMapping> optionMappings,
             Instant createdAt,
             Instant updatedAt) {
         this.id = id;
         this.productGroupId = productGroupId;
-        this.option1Name = option1Name;
-        this.option1Value = option1Value;
-        this.option2Name = option2Name;
-        this.option2Value = option2Value;
-        this.additionalPrice = additionalPrice;
+        this.skuCode = skuCode;
+        this.regularPrice = regularPrice;
+        this.currentPrice = currentPrice;
+        this.salePrice = salePrice;
+        this.discountRate = discountRate;
         this.stockQuantity = stockQuantity;
         this.status = status;
+        this.sortOrder = sortOrder;
+        this.optionMappings = new ArrayList<>(optionMappings);
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    // ========== Factory Methods ==========
-
     /**
-     * 새 상품(SKU) 생성.
+     * 신규 상품 생성. ACTIVE 상태로 시작.
      *
-     * @param productGroupId 상품그룹 ID (필수)
-     * @param option1Name 옵션1 이름 (예: "색상")
-     * @param option1Value 옵션1 값 (예: "블랙")
-     * @param option2Name 옵션2 이름 (예: "사이즈")
-     * @param option2Value 옵션2 값 (예: "M")
-     * @param additionalPrice 옵션 추가금
-     * @param stockQuantity 초기 재고
-     * @param now 생성 시각
-     * @return 새 Product 인스턴스 (ACTIVE 상태)
+     * <p>salePrice는 currentPrice와 동일하게, discountRate는 regularPrice 대비 currentPrice로 자동 계산합니다.
      */
     public static Product forNew(
             ProductGroupId productGroupId,
-            String option1Name,
-            String option1Value,
-            String option2Name,
-            String option2Value,
-            Money additionalPrice,
+            SkuCode skuCode,
+            Money regularPrice,
+            Money currentPrice,
             int stockQuantity,
+            int sortOrder,
+            List<ProductOptionMapping> optionMappings,
             Instant now) {
-        if (stockQuantity < 0) {
-            throw new IllegalArgumentException("재고 수량은 0 이상이어야 합니다");
-        }
+        validateCurrentPrice(regularPrice, currentPrice);
+        validateStockQuantity(stockQuantity);
         return new Product(
                 ProductId.forNew(),
                 productGroupId,
-                option1Name,
-                option1Value,
-                option2Name,
-                option2Value,
-                additionalPrice != null ? additionalPrice : Money.zero(),
+                skuCode,
+                regularPrice,
+                currentPrice,
+                currentPrice,
+                Money.discountRate(regularPrice, currentPrice),
                 stockQuantity,
                 ProductStatus.ACTIVE,
+                sortOrder,
+                optionMappings,
                 now,
                 now);
     }
 
-    /**
-     * 영속성 계층에서 엔티티 복원.
-     *
-     * @param id 식별자
-     * @param productGroupId 상품그룹 ID
-     * @param option1Name 옵션1 이름
-     * @param option1Value 옵션1 값
-     * @param option2Name 옵션2 이름
-     * @param option2Value 옵션2 값
-     * @param additionalPrice 옵션 추가금
-     * @param stockQuantity 재고 수량
-     * @param status 상태
-     * @param createdAt 생성일시
-     * @param updatedAt 수정일시
-     * @return 복원된 Product 인스턴스
-     */
+    /** 영속성에서 복원 시 사용. */
     public static Product reconstitute(
             ProductId id,
             ProductGroupId productGroupId,
-            String option1Name,
-            String option1Value,
-            String option2Name,
-            String option2Value,
-            Money additionalPrice,
+            SkuCode skuCode,
+            Money regularPrice,
+            Money currentPrice,
+            Money salePrice,
+            int discountRate,
             int stockQuantity,
             ProductStatus status,
+            int sortOrder,
+            List<ProductOptionMapping> optionMappings,
             Instant createdAt,
             Instant updatedAt) {
         return new Product(
                 id,
                 productGroupId,
-                option1Name,
-                option1Value,
-                option2Name,
-                option2Value,
-                additionalPrice,
+                skuCode,
+                regularPrice,
+                currentPrice,
+                salePrice,
+                discountRate,
                 stockQuantity,
                 status,
+                sortOrder,
+                optionMappings,
                 createdAt,
                 updatedAt);
     }
 
-    // ========== Business Methods ==========
+    // ── 비즈니스 메서드 ──
+
+    /** targetStatus에 따라 적절한 상태 전이 메서드를 호출한다. */
+    public void changeStatus(ProductStatus targetStatus, Instant now) {
+        switch (targetStatus) {
+            case ACTIVE -> activate(now);
+            case INACTIVE -> deactivate(now);
+            case SOLD_OUT -> markSoldOut(now);
+            case DELETED -> delete(now);
+            default -> throw new IllegalArgumentException("지원하지 않는 상태 변경입니다: " + targetStatus);
+        }
+    }
+
+    /** 판매 재개. INACTIVE, SOLD_OUT에서만 가능. */
+    public void activate(Instant now) {
+        if (!status.canActivate()) {
+            throw new ProductInvalidStatusTransitionException(status, ProductStatus.ACTIVE);
+        }
+        this.status = ProductStatus.ACTIVE;
+        this.updatedAt = now;
+    }
+
+    /** 판매 중지. */
+    public void deactivate(Instant now) {
+        if (!status.isActive()) {
+            throw new ProductInvalidStatusTransitionException(status, ProductStatus.INACTIVE);
+        }
+        this.status = ProductStatus.INACTIVE;
+        this.updatedAt = now;
+    }
+
+    /** 품절 처리. */
+    public void markSoldOut(Instant now) {
+        if (!status.isActive()) {
+            throw new ProductInvalidStatusTransitionException(status, ProductStatus.SOLD_OUT);
+        }
+        this.status = ProductStatus.SOLD_OUT;
+        this.updatedAt = now;
+    }
+
+    /** 소프트 삭제. 옵션 매핑도 함께 삭제한다. */
+    public void delete(Instant now) {
+        if (!status.canDelete()) {
+            throw new ProductInvalidStatusTransitionException(status, ProductStatus.DELETED);
+        }
+        this.status = ProductStatus.DELETED;
+        this.updatedAt = now;
+        optionMappings.forEach(m -> m.delete(now));
+    }
+
+    /**
+     * 가격 수정.
+     *
+     * <p>salePrice는 currentPrice와 동일하게, discountRate는 자동 계산합니다.
+     */
+    public void updatePrice(Money regularPrice, Money currentPrice, Instant now) {
+        validateCurrentPrice(regularPrice, currentPrice);
+        this.regularPrice = regularPrice;
+        this.currentPrice = currentPrice;
+        this.salePrice = currentPrice;
+        this.discountRate = Money.discountRate(regularPrice, currentPrice);
+        this.updatedAt = now;
+    }
+
+    /** 재고 수정. */
+    public void updateStock(int stockQuantity, Instant now) {
+        validateStockQuantity(stockQuantity);
+        this.stockQuantity = stockQuantity;
+        this.updatedAt = now;
+    }
+
+    /** SKU 코드 수정. */
+    public void updateSkuCode(SkuCode skuCode, Instant now) {
+        this.skuCode = skuCode;
+        this.updatedAt = now;
+    }
+
+    /** 정렬 순서 수정. */
+    public void updateSortOrder(int sortOrder, Instant now) {
+        this.sortOrder = sortOrder;
+        this.updatedAt = now;
+    }
+
+    /** 전체 속성 일괄 수정 (가격 + 재고 + SKU + 정렬 순서). */
+    public void update(
+            SkuCode skuCode,
+            Money regularPrice,
+            Money currentPrice,
+            int stockQuantity,
+            int sortOrder,
+            Instant now) {
+        updatePrice(regularPrice, currentPrice, now);
+        updateStock(stockQuantity, now);
+        updateSkuCode(skuCode, now);
+        updateSortOrder(sortOrder, now);
+    }
+
+    // ── 검증 메서드 ──
+
+    private static void validateCurrentPrice(Money regularPrice, Money currentPrice) {
+        if (currentPrice.isGreaterThan(regularPrice)) {
+            throw new ProductInvalidPriceException(regularPrice.value(), currentPrice.value());
+        }
+    }
+
+    private static void validateStockQuantity(int stockQuantity) {
+        if (stockQuantity < 0) {
+            throw new IllegalArgumentException("재고 수량은 0 이상이어야 합니다: " + stockQuantity);
+        }
+    }
+
+    // ── 조회 메서드 ──
 
     /** 신규 생성 여부 확인 */
     public boolean isNew() {
         return id.isNew();
     }
 
-    /**
-     * 재고 수량 업데이트.
-     *
-     * @param quantity 새 재고 수량 (0 이상)
-     * @param now 수정 시각
-     */
-    public void updateStock(int quantity, Instant now) {
-        if (quantity < 0) {
-            throw new IllegalArgumentException("재고 수량은 0 이상이어야 합니다");
-        }
-        this.stockQuantity = quantity;
-        this.updatedAt = now;
-        if (quantity == 0 && status.canMarkSoldOut()) {
-            this.status = ProductStatus.SOLDOUT;
-        }
-    }
-
-    /**
-     * 품절 처리.
-     *
-     * @param now 품절 시각
-     */
-    public void markSoldOut(Instant now) {
-        if (!status.canMarkSoldOut()) {
-            throw new IllegalStateException(String.format("상태 %s에서 품절 처리할 수 없습니다", status));
-        }
-        this.status = ProductStatus.SOLDOUT;
-        this.stockQuantity = 0;
-        this.updatedAt = now;
-    }
-
-    /**
-     * 활성화.
-     *
-     * @param now 활성화 시각
-     */
-    public void activate(Instant now) {
-        if (!status.canActivate()) {
-            throw new IllegalStateException(String.format("상태 %s에서 활성화할 수 없습니다", status));
-        }
-        this.status = ProductStatus.ACTIVE;
-        this.updatedAt = now;
-    }
-
-    /**
-     * 비활성화.
-     *
-     * @param now 비활성화 시각
-     */
-    public void deactivate(Instant now) {
-        if (!status.canDeactivate()) {
-            throw new IllegalStateException(String.format("상태 %s에서 비활성화할 수 없습니다", status));
-        }
-        this.status = ProductStatus.INACTIVE;
-        this.updatedAt = now;
-    }
-
-    /**
-     * 삭제 처리.
-     *
-     * @param now 삭제 시각
-     */
-    public void delete(Instant now) {
-        if (!status.canDelete()) {
-            throw new IllegalStateException("이미 삭제된 상품입니다");
-        }
-        this.status = ProductStatus.DELETED;
-        this.updatedAt = now;
-    }
-
-    /**
-     * 옵션 정보 수정.
-     *
-     * @param option1Name 옵션1 이름
-     * @param option1Value 옵션1 값
-     * @param option2Name 옵션2 이름
-     * @param option2Value 옵션2 값
-     * @param now 수정 시각
-     */
-    public void updateOptions(
-            String option1Name,
-            String option1Value,
-            String option2Name,
-            String option2Value,
-            Instant now) {
-        this.option1Name = option1Name;
-        this.option1Value = option1Value;
-        this.option2Name = option2Name;
-        this.option2Value = option2Value;
-        this.updatedAt = now;
-    }
-
-    /** 재고 보유 여부 확인 */
+    /** 재고 존재 여부. */
     public boolean hasStock() {
         return stockQuantity > 0;
+    }
+
+    /** 세일 적용 여부. */
+    public boolean isOnSale() {
+        return salePrice != null && !salePrice.isZero() && discountRate > 0;
+    }
+
+    /** 실제 판매 가격 (세일 중이면 salePrice, 아니면 currentPrice). */
+    public Money effectivePrice() {
+        return isOnSale() ? salePrice : currentPrice;
     }
 
     /** 품절 상태 확인 */
@@ -263,17 +269,7 @@ public class Product {
         return status.isDeleted();
     }
 
-    /** 옵션 보유 여부 확인 */
-    public boolean hasOptions() {
-        return option1Name != null && !option1Name.isBlank();
-    }
-
-    /** 조합 옵션 보유 여부 확인 */
-    public boolean hasCombinationOptions() {
-        return hasOptions() && option2Name != null && !option2Name.isBlank();
-    }
-
-    // ========== Accessor Methods ==========
+    // ── Accessor 메서드 ──
 
     public ProductId id() {
         return id;
@@ -291,28 +287,40 @@ public class Product {
         return productGroupId.value();
     }
 
-    public String option1Name() {
-        return option1Name;
+    public SkuCode skuCode() {
+        return skuCode;
     }
 
-    public String option1Value() {
-        return option1Value;
+    public String skuCodeValue() {
+        return skuCode != null ? skuCode.value() : null;
     }
 
-    public String option2Name() {
-        return option2Name;
+    public Money regularPrice() {
+        return regularPrice;
     }
 
-    public String option2Value() {
-        return option2Value;
+    public int regularPriceValue() {
+        return regularPrice.value();
     }
 
-    public Money additionalPrice() {
-        return additionalPrice;
+    public Money currentPrice() {
+        return currentPrice;
     }
 
-    public int additionalPriceValue() {
-        return additionalPrice != null ? additionalPrice.value() : 0;
+    public int currentPriceValue() {
+        return currentPrice.value();
+    }
+
+    public Money salePrice() {
+        return salePrice;
+    }
+
+    public Integer salePriceValue() {
+        return salePrice != null ? salePrice.value() : null;
+    }
+
+    public int discountRate() {
+        return discountRate;
     }
 
     public int stockQuantity() {
@@ -321,6 +329,14 @@ public class Product {
 
     public ProductStatus status() {
         return status;
+    }
+
+    public int sortOrder() {
+        return sortOrder;
+    }
+
+    public List<ProductOptionMapping> optionMappings() {
+        return Collections.unmodifiableList(optionMappings);
     }
 
     public Instant createdAt() {

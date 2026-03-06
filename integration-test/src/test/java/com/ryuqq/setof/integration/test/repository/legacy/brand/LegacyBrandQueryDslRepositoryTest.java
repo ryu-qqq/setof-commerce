@@ -265,7 +265,7 @@ class LegacyBrandQueryDslRepositoryTest extends RepositoryTestBase {
             // given
             BrandSearchCriteria criteria =
                     BrandSearchCriteria.of(
-                            null, "다스", QueryContext.defaultOf(BrandSortKey.defaultKey()));
+                            null, null, "다스", QueryContext.defaultOf(BrandSortKey.defaultKey()));
 
             // when
             List<LegacyBrandEntity> result = queryDslRepository.findByCriteria(criteria);

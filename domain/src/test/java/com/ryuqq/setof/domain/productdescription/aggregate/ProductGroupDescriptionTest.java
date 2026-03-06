@@ -34,6 +34,8 @@ class ProductGroupDescriptionTest {
                     .isEqualTo(ProductDescriptionFixtures.DEFAULT_DESCRIPTION_HTML);
             assertThat(description.productGroupIdValue())
                     .isEqualTo(ProductDescriptionFixtures.DEFAULT_PRODUCT_GROUP_ID);
+            assertThat(description.cdnPath())
+                    .isEqualTo(ProductDescriptionFixtures.DEFAULT_CDN_PATH);
             assertThat(description.images()).isEmpty();
             assertThat(description.createdAt()).isNotNull();
             assertThat(description.updatedAt()).isNotNull();
@@ -60,11 +62,13 @@ class ProductGroupDescriptionTest {
             Instant now = CommonVoFixtures.now();
 
             // when
-            var description = ProductGroupDescription.forNew(ProductGroupId.of(1L), content, now);
+            var description =
+                    ProductGroupDescription.forNew(ProductGroupId.of(1L), content, null, now);
 
             // then
             assertThat(description.contentValue()).isEqualTo("<h1>상세설명</h1>");
             assertThat(description.isNew()).isTrue();
+            assertThat(description.hasCdnPath()).isFalse();
         }
 
         @Test
@@ -93,6 +97,8 @@ class ProductGroupDescriptionTest {
             assertThat(description.idValue()).isEqualTo(1L);
             assertThat(description.contentValue())
                     .isEqualTo(ProductDescriptionFixtures.DEFAULT_DESCRIPTION_HTML);
+            assertThat(description.cdnPath())
+                    .isEqualTo(ProductDescriptionFixtures.DEFAULT_CDN_PATH);
             assertThat(description.images()).hasSize(3);
             assertThat(description.createdAt()).isNotNull();
             assertThat(description.updatedAt()).isNotNull();
@@ -118,6 +124,7 @@ class ProductGroupDescriptionTest {
             assertThat(description.isNew()).isFalse();
             assertThat(description.contentValue()).isNull();
             assertThat(description.images()).isEmpty();
+            assertThat(description.hasCdnPath()).isFalse();
         }
     }
 
@@ -154,6 +161,42 @@ class ProductGroupDescriptionTest {
             // then
             assertThat(description.updatedAt()).isEqualTo(now);
             assertThat(description.updatedAt()).isNotEqualTo(originalUpdatedAt);
+        }
+    }
+
+    @Nested
+    @DisplayName("updateCdnPath() - CDN 경로 수정")
+    class UpdateCdnPathTest {
+
+        @Test
+        @DisplayName("CDN 경로를 수정한다")
+        void updateCdnPathSuccessfully() {
+            // given
+            var description = ProductDescriptionFixtures.activeDescription();
+            Instant now = CommonVoFixtures.now();
+
+            // when
+            description.updateCdnPath("https://cdn.new.com/desc/100", now);
+
+            // then
+            assertThat(description.cdnPath()).isEqualTo("https://cdn.new.com/desc/100");
+            assertThat(description.hasCdnPath()).isTrue();
+            assertThat(description.updatedAt()).isEqualTo(now);
+        }
+
+        @Test
+        @DisplayName("CDN 경로를 null로 수정한다")
+        void updateCdnPathToNull() {
+            // given
+            var description = ProductDescriptionFixtures.activeDescription();
+            Instant now = CommonVoFixtures.now();
+
+            // when
+            description.updateCdnPath(null, now);
+
+            // then
+            assertThat(description.cdnPath()).isNull();
+            assertThat(description.hasCdnPath()).isFalse();
         }
     }
 
@@ -234,6 +277,7 @@ class ProductGroupDescriptionTest {
                             ProductGroupDescriptionId.of(1L),
                             ProductGroupId.of(1L),
                             DescriptionHtml.of("<p>내용</p>"),
+                            null,
                             List.of(),
                             CommonVoFixtures.yesterday(),
                             CommonVoFixtures.yesterday());
@@ -251,12 +295,38 @@ class ProductGroupDescriptionTest {
                             ProductGroupDescriptionId.of(1L),
                             ProductGroupId.of(1L),
                             DescriptionHtml.empty(),
+                            null,
                             ProductDescriptionFixtures.defaultImages(),
                             CommonVoFixtures.yesterday(),
                             CommonVoFixtures.yesterday());
 
             // then
             assertThat(description.isEmpty()).isFalse();
+        }
+    }
+
+    @Nested
+    @DisplayName("hasCdnPath() - CDN 경로 존재 여부")
+    class HasCdnPathTest {
+
+        @Test
+        @DisplayName("CDN 경로가 있으면 true를 반환한다")
+        void hasCdnPathReturnsTrue() {
+            // given
+            var description = ProductDescriptionFixtures.activeDescription();
+
+            // then
+            assertThat(description.hasCdnPath()).isTrue();
+        }
+
+        @Test
+        @DisplayName("CDN 경로가 null이면 false를 반환한다")
+        void hasCdnPathReturnsFalseWhenNull() {
+            // given
+            var description = ProductDescriptionFixtures.emptyDescription();
+
+            // then
+            assertThat(description.hasCdnPath()).isFalse();
         }
     }
 
@@ -333,12 +403,24 @@ class ProductGroupDescriptionTest {
                             ProductGroupDescriptionId.of(1L),
                             ProductGroupId.of(1L),
                             null,
+                            null,
                             List.of(),
                             CommonVoFixtures.yesterday(),
                             CommonVoFixtures.yesterday());
 
             // then
             assertThat(description.contentValue()).isNull();
+        }
+
+        @Test
+        @DisplayName("cdnPath()는 CDN 경로를 반환한다")
+        void returnsCdnPath() {
+            // given
+            var description = ProductDescriptionFixtures.activeDescription();
+
+            // then
+            assertThat(description.cdnPath())
+                    .isEqualTo(ProductDescriptionFixtures.DEFAULT_CDN_PATH);
         }
 
         @Test

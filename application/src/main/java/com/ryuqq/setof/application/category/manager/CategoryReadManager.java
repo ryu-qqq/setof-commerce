@@ -1,6 +1,6 @@
 package com.ryuqq.setof.application.category.manager;
 
-import com.ryuqq.setof.application.category.port.out.query.CategoryQueryPort;
+import com.ryuqq.setof.application.category.port.out.CategoryQueryPort;
 import com.ryuqq.setof.domain.category.aggregate.Category;
 import com.ryuqq.setof.domain.category.exception.CategoryNotFoundException;
 import com.ryuqq.setof.domain.category.id.CategoryId;

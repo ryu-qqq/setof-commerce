@@ -3,58 +3,30 @@ package com.ryuqq.setof.application.seller.validator;
 import com.ryuqq.setof.application.seller.manager.SellerReadManager;
 import com.ryuqq.setof.domain.seller.aggregate.Seller;
 import com.ryuqq.setof.domain.seller.exception.SellerNameDuplicateException;
-import com.ryuqq.setof.domain.seller.exception.SellerNotFoundException;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import org.springframework.stereotype.Component;
 
-/**
- * Seller Validator.
- *
- * <p>APP-VAL-001: 검증 성공 시 Domain 객체를 반환합니다.
- *
- * <p>APP-VAL-002: 도메인 전용 예외를 발생시킵니다.
- */
 @Component
 public class SellerValidator {
 
-    private final SellerReadManager readManager;
+    private final SellerReadManager sellerReadManager;
 
-    public SellerValidator(SellerReadManager readManager) {
-        this.readManager = readManager;
+    public SellerValidator(SellerReadManager sellerReadManager) {
+        this.sellerReadManager = sellerReadManager;
     }
 
-    /**
-     * 셀러 존재 여부 검증 후 Domain 객체 반환.
-     *
-     * @param id 셀러 ID
-     * @return Seller 도메인 객체
-     * @throws SellerNotFoundException 존재하지 않는 경우
-     */
-    public Seller findExistingOrThrow(SellerId id) {
-        return readManager.getById(id);
+    public Seller findExistingOrThrow(SellerId sellerId) {
+        return sellerReadManager.getById(sellerId.value());
     }
 
-    /**
-     * 셀러명 중복 여부 검증. (등록 시 사용)
-     *
-     * @param sellerName 셀러명
-     * @throws SellerNameDuplicateException 이미 존재하는 경우
-     */
     public void validateSellerNameNotDuplicate(String sellerName) {
-        if (readManager.existsBySellerName(sellerName)) {
+        if (sellerReadManager.existsBySellerName(sellerName)) {
             throw new SellerNameDuplicateException(sellerName);
         }
     }
 
-    /**
-     * 셀러명 중복 여부 검증 (자기 자신 제외). (수정 시 사용)
-     *
-     * @param sellerName 셀러명
-     * @param excludeId 제외할 셀러 ID
-     * @throws SellerNameDuplicateException 이미 존재하는 경우
-     */
     public void validateSellerNameNotDuplicateExcluding(String sellerName, SellerId excludeId) {
-        if (readManager.existsBySellerNameExcluding(sellerName, excludeId)) {
+        if (sellerReadManager.existsBySellerNameExcluding(sellerName, excludeId)) {
             throw new SellerNameDuplicateException(sellerName);
         }
     }

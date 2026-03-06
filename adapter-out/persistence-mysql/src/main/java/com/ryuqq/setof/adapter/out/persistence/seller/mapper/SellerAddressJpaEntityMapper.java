@@ -13,17 +13,24 @@ import org.springframework.stereotype.Component;
 /**
  * SellerAddressJpaEntityMapper - 셀러 주소 Entity-Domain 매퍼.
  *
- * <p>Entity ↔ Domain 변환을 담당합니다.
- *
  * <p>PER-MAP-001: Mapper는 @Component로 등록.
  *
  * <p>PER-MAP-002: toEntity(Domain) + toDomain(Entity) 메서드 제공.
  *
  * <p>PER-MAP-003: 순수 변환 로직만.
+ *
+ * @author ryu-qqq
+ * @since 1.0.0
  */
 @Component
 public class SellerAddressJpaEntityMapper {
 
+    /**
+     * Domain → Entity 변환.
+     *
+     * @param domain SellerAddress 도메인 객체
+     * @return SellerAddressJpaEntity
+     */
     public SellerAddressJpaEntity toEntity(SellerAddress domain) {
         return SellerAddressJpaEntity.create(
                 domain.idValue(),
@@ -41,14 +48,31 @@ public class SellerAddressJpaEntityMapper {
                 domain.deletedAt());
     }
 
+    /**
+     * Entity → Domain 변환.
+     *
+     * @param entity SellerAddressJpaEntity
+     * @return SellerAddress 도메인 객체
+     */
     public SellerAddress toDomain(SellerAddressJpaEntity entity) {
+        Address address =
+                entity.getZipcode() != null && entity.getAddress() != null
+                        ? Address.of(
+                                entity.getZipcode(), entity.getAddress(), entity.getAddressDetail())
+                        : null;
+
+        ContactInfo contactInfo =
+                entity.getContactName() != null && entity.getContactPhone() != null
+                        ? ContactInfo.of(entity.getContactName(), entity.getContactPhone())
+                        : null;
+
         return SellerAddress.reconstitute(
                 SellerAddressId.of(entity.getId()),
                 SellerId.of(entity.getSellerId()),
                 AddressType.valueOf(entity.getAddressType()),
                 AddressName.of(entity.getAddressName()),
-                Address.of(entity.getZipcode(), entity.getAddress(), entity.getAddressDetail()),
-                ContactInfo.of(entity.getContactName(), entity.getContactPhone()),
+                address,
+                contactInfo,
                 entity.isDefaultAddress(),
                 entity.getDeletedAt(),
                 entity.getCreatedAt(),

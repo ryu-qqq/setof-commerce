@@ -2,7 +2,6 @@ package com.ryuqq.setof.adapter.out.persistence.seller.repository;
 
 import static com.ryuqq.setof.adapter.out.persistence.seller.entity.QSellerBusinessInfoJpaEntity.sellerBusinessInfoJpaEntity;
 
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ryuqq.setof.adapter.out.persistence.seller.condition.SellerBusinessInfoConditionBuilder;
 import com.ryuqq.setof.adapter.out.persistence.seller.entity.SellerBusinessInfoJpaEntity;
@@ -12,11 +11,12 @@ import org.springframework.stereotype.Repository;
 /**
  * SellerBusinessInfoQueryDslRepository - 셀러 사업자 정보 QueryDSL 레포지토리.
  *
- * <p>복잡한 쿼리를 위한 QueryDSL 기반 조회를 제공합니다.
+ * <p>PER-REP-002: 모든 조회 로직은 QueryDslRepository에서 처리.
  *
- * <p>PER-REP-003: 모든 조회는 QueryDslRepository.
+ * <p>PER-REP-004: ConditionBuilder를 사용하여 동적 쿼리 구성.
  *
- * <p>PER-CND-001: BooleanExpression은 ConditionBuilder로 분리.
+ * @author ryu-qqq
+ * @since 1.0.0
  */
 @Repository
 public class SellerBusinessInfoQueryDslRepository {
@@ -31,7 +31,7 @@ public class SellerBusinessInfoQueryDslRepository {
     }
 
     /**
-     * ID로 사업자 정보 조회.
+     * ID로 셀러 사업자 정보 조회.
      *
      * @param id 사업자 정보 ID
      * @return 사업자 정보 Optional
@@ -40,7 +40,7 @@ public class SellerBusinessInfoQueryDslRepository {
         SellerBusinessInfoJpaEntity entity =
                 queryFactory
                         .selectFrom(sellerBusinessInfoJpaEntity)
-                        .where(conditionBuilder.idEq(id), notDeleted())
+                        .where(conditionBuilder.idEq(id), conditionBuilder.notDeleted())
                         .fetchOne();
         return Optional.ofNullable(entity);
     }
@@ -55,7 +55,7 @@ public class SellerBusinessInfoQueryDslRepository {
         SellerBusinessInfoJpaEntity entity =
                 queryFactory
                         .selectFrom(sellerBusinessInfoJpaEntity)
-                        .where(conditionBuilder.sellerIdEq(sellerId), notDeleted())
+                        .where(conditionBuilder.sellerIdEq(sellerId), conditionBuilder.notDeleted())
                         .fetchOne();
         return Optional.ofNullable(entity);
     }
@@ -64,58 +64,54 @@ public class SellerBusinessInfoQueryDslRepository {
      * 셀러 ID 존재 여부 확인.
      *
      * @param sellerId 셀러 ID
-     * @return 존재하면 true
+     * @return 존재 여부
      */
     public boolean existsBySellerId(Long sellerId) {
-        Integer fetchOne =
+        Integer result =
                 queryFactory
                         .selectOne()
                         .from(sellerBusinessInfoJpaEntity)
-                        .where(conditionBuilder.sellerIdEq(sellerId), notDeleted())
+                        .where(conditionBuilder.sellerIdEq(sellerId), conditionBuilder.notDeleted())
                         .fetchFirst();
-        return fetchOne != null;
+        return result != null;
     }
 
     /**
      * 사업자등록번호 존재 여부 확인.
      *
      * @param registrationNumber 사업자등록번호
-     * @return 존재하면 true
+     * @return 존재 여부
      */
     public boolean existsByRegistrationNumber(String registrationNumber) {
-        Integer fetchOne =
+        Integer result =
                 queryFactory
                         .selectOne()
                         .from(sellerBusinessInfoJpaEntity)
                         .where(
                                 conditionBuilder.registrationNumberEq(registrationNumber),
-                                notDeleted())
+                                conditionBuilder.notDeleted())
                         .fetchFirst();
-        return fetchOne != null;
+        return result != null;
     }
 
     /**
-     * 사업자등록번호 존재 여부 확인 (특정 셀러 ID 제외).
+     * 특정 셀러 ID를 제외한 사업자등록번호 존재 여부 확인.
      *
      * @param registrationNumber 사업자등록번호
      * @param excludeSellerId 제외할 셀러 ID
-     * @return 존재하면 true
+     * @return 존재 여부
      */
     public boolean existsByRegistrationNumberExcluding(
             String registrationNumber, Long excludeSellerId) {
-        Integer fetchOne =
+        Integer result =
                 queryFactory
                         .selectOne()
                         .from(sellerBusinessInfoJpaEntity)
                         .where(
                                 conditionBuilder.registrationNumberEq(registrationNumber),
-                                conditionBuilder.sellerIdNe(excludeSellerId),
-                                notDeleted())
+                                sellerBusinessInfoJpaEntity.sellerId.ne(excludeSellerId),
+                                conditionBuilder.notDeleted())
                         .fetchFirst();
-        return fetchOne != null;
-    }
-
-    private BooleanExpression notDeleted() {
-        return sellerBusinessInfoJpaEntity.deletedAt.isNull();
+        return result != null;
     }
 }

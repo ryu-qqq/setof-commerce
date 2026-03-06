@@ -1,6 +1,5 @@
 package com.ryuqq.setof.application.seller.port.out.query;
 
-import com.ryuqq.setof.application.seller.dto.composite.SellerAdminCompositeResult;
 import com.ryuqq.setof.application.seller.dto.composite.SellerCompositeResult;
 import com.ryuqq.setof.application.seller.dto.composite.SellerPolicyCompositeResult;
 import java.util.Optional;
@@ -19,14 +18,6 @@ public interface SellerCompositionQueryPort {
      * @return 셀러 Composite 결과
      */
     Optional<SellerCompositeResult> findSellerCompositeById(Long sellerId);
-
-    /**
-     * Admin용 셀러 Composite 조회 (Seller + Address + BusinessInfo + CS + Contract + Settlement).
-     *
-     * @param sellerId 셀러 ID
-     * @return Admin용 셀러 Composite 결과
-     */
-    Optional<SellerAdminCompositeResult> findAdminCompositeById(Long sellerId);
 
     Optional<SellerPolicyCompositeResult> findPolicyCompositeById(Long sellerId);
 

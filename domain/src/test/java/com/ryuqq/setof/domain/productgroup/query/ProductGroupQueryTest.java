@@ -8,6 +8,7 @@ import com.ryuqq.setof.domain.category.id.CategoryId;
 import com.ryuqq.setof.domain.common.vo.CursorQueryContext;
 import com.ryuqq.setof.domain.productgroup.vo.ProductGroupStatus;
 import com.ryuqq.setof.domain.seller.id.SellerId;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -28,10 +29,15 @@ class ProductGroupQueryTest {
         }
 
         @Test
-        @DisplayName("PRODUCT_GROUP_NAME의 fieldName은 'productGroupName'이다")
-        void productGroupNameFieldName() {
-            assertThat(ProductGroupSortKey.PRODUCT_GROUP_NAME.fieldName())
-                    .isEqualTo("productGroupName");
+        @DisplayName("UPDATED_AT의 fieldName은 'updatedAt'이다")
+        void updatedAtFieldName() {
+            assertThat(ProductGroupSortKey.UPDATED_AT.fieldName()).isEqualTo("updatedAt");
+        }
+
+        @Test
+        @DisplayName("NAME의 fieldName은 'productGroupName'이다")
+        void nameFieldName() {
+            assertThat(ProductGroupSortKey.NAME.fieldName()).isEqualTo("productGroupName");
         }
 
         @Test
@@ -58,7 +64,8 @@ class ProductGroupQueryTest {
             assertThat(ProductGroupSortKey.values())
                     .containsExactly(
                             ProductGroupSortKey.CREATED_AT,
-                            ProductGroupSortKey.PRODUCT_GROUP_NAME,
+                            ProductGroupSortKey.UPDATED_AT,
+                            ProductGroupSortKey.NAME,
                             ProductGroupSortKey.CURRENT_PRICE,
                             ProductGroupSortKey.SALE_PRICE);
         }
@@ -91,7 +98,7 @@ class ProductGroupQueryTest {
                 assertThat(criteria.brandId()).isNull();
                 assertThat(criteria.categoryId()).isNull();
                 assertThat(criteria.status()).isNull();
-                assertThat(criteria.keyword()).isNull();
+                assertThat(criteria.searchWord()).isNull();
             }
 
             @Test
@@ -117,8 +124,14 @@ class ProductGroupQueryTest {
                                 sellerId,
                                 brandId,
                                 categoryId,
+                                List.of(),
+                                List.of(),
                                 ProductGroupStatus.ACTIVE,
+                                ProductGroupSearchField.PRODUCT_GROUP_NAME,
                                 "검색어",
+                                null,
+                                null,
+                                null,
                                 queryContext);
 
                 // then
@@ -126,7 +139,7 @@ class ProductGroupQueryTest {
                 assertThat(criteria.brandId()).isEqualTo(brandId);
                 assertThat(criteria.categoryId()).isEqualTo(categoryId);
                 assertThat(criteria.status()).isEqualTo(ProductGroupStatus.ACTIVE);
-                assertThat(criteria.keyword()).isEqualTo("검색어");
+                assertThat(criteria.searchWord()).isEqualTo("검색어");
             }
         }
 
@@ -139,7 +152,18 @@ class ProductGroupQueryTest {
             void hasSellerIdReturnsTrue() {
                 var criteria =
                         new ProductGroupSearchCriteria(
-                                SellerId.of(1L), null, null, null, null, defaultQueryContext());
+                                SellerId.of(1L),
+                                null,
+                                null,
+                                List.of(),
+                                List.of(),
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                defaultQueryContext());
                 assertThat(criteria.hasSellerId()).isTrue();
             }
 
@@ -155,7 +179,18 @@ class ProductGroupQueryTest {
             void hasBrandIdReturnsTrue() {
                 var criteria =
                         new ProductGroupSearchCriteria(
-                                null, BrandId.of(1L), null, null, null, defaultQueryContext());
+                                null,
+                                BrandId.of(1L),
+                                null,
+                                List.of(),
+                                List.of(),
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                defaultQueryContext());
                 assertThat(criteria.hasBrandId()).isTrue();
             }
 
@@ -171,7 +206,18 @@ class ProductGroupQueryTest {
             void hasCategoryIdReturnsTrue() {
                 var criteria =
                         new ProductGroupSearchCriteria(
-                                null, null, CategoryId.of(1L), null, null, defaultQueryContext());
+                                null,
+                                null,
+                                CategoryId.of(1L),
+                                List.of(),
+                                List.of(),
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                defaultQueryContext());
                 assertThat(criteria.hasCategoryId()).isTrue();
             }
 
@@ -190,7 +236,13 @@ class ProductGroupQueryTest {
                                 null,
                                 null,
                                 null,
+                                List.of(),
+                                List.of(),
                                 ProductGroupStatus.ACTIVE,
+                                null,
+                                null,
+                                null,
+                                null,
                                 null,
                                 defaultQueryContext());
                 assertThat(criteria.hasStatus()).isTrue();
@@ -204,28 +256,50 @@ class ProductGroupQueryTest {
             }
 
             @Test
-            @DisplayName("hasKeyword() - keyword가 있으면 true를 반환한다")
-            void hasKeywordReturnsTrue() {
+            @DisplayName("hasSearchCondition() - searchWord가 있으면 true를 반환한다")
+            void hasSearchConditionReturnsTrue() {
                 var criteria =
                         new ProductGroupSearchCriteria(
-                                null, null, null, null, "검색어", defaultQueryContext());
-                assertThat(criteria.hasKeyword()).isTrue();
+                                null,
+                                null,
+                                null,
+                                List.of(),
+                                List.of(),
+                                null,
+                                null,
+                                "검색어",
+                                null,
+                                null,
+                                null,
+                                defaultQueryContext());
+                assertThat(criteria.hasSearchCondition()).isTrue();
             }
 
             @Test
-            @DisplayName("hasKeyword() - keyword가 null이면 false를 반환한다")
-            void hasKeywordReturnsFalseForNull() {
+            @DisplayName("hasSearchCondition() - searchWord가 null이면 false를 반환한다")
+            void hasSearchConditionReturnsFalseForNull() {
                 var criteria = ProductGroupSearchCriteria.of(defaultQueryContext());
-                assertThat(criteria.hasKeyword()).isFalse();
+                assertThat(criteria.hasSearchCondition()).isFalse();
             }
 
             @Test
-            @DisplayName("hasKeyword() - keyword가 빈 값이면 false를 반환한다")
-            void hasKeywordReturnsFalseForBlank() {
+            @DisplayName("hasSearchCondition() - searchWord가 빈 값이면 false를 반환한다")
+            void hasSearchConditionReturnsFalseForBlank() {
                 var criteria =
                         new ProductGroupSearchCriteria(
-                                null, null, null, null, "  ", defaultQueryContext());
-                assertThat(criteria.hasKeyword()).isFalse();
+                                null,
+                                null,
+                                null,
+                                List.of(),
+                                List.of(),
+                                null,
+                                null,
+                                "  ",
+                                null,
+                                null,
+                                null,
+                                defaultQueryContext());
+                assertThat(criteria.hasSearchCondition()).isFalse();
             }
         }
     }

@@ -19,7 +19,15 @@ persistence:
       enabled: false
     brand:
       enabled: false
-    board:
-      enabled: false
     faq:
+      enabled: false
+    productgroup:
+      enabled: false
+    member:
+      enabled: false
+    refundaccount:
+      enabled: false
+    shippingaddress:
+      enabled: false
+    wishlist:
       enabled: false

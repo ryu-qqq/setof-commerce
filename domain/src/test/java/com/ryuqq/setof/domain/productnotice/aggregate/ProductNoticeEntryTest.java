@@ -2,7 +2,9 @@ package com.ryuqq.setof.domain.productnotice.aggregate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.ryuqq.setof.domain.productnotice.id.NoticeFieldId;
 import com.ryuqq.setof.domain.productnotice.id.ProductNoticeEntryId;
+import com.ryuqq.setof.domain.productnotice.id.ProductNoticeId;
 import com.ryuqq.setof.domain.productnotice.vo.NoticeFieldValue;
 import com.setof.commerce.domain.productnotice.ProductNoticeFixtures;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +27,7 @@ class ProductNoticeEntryTest {
             NoticeFieldValue fieldValue = ProductNoticeFixtures.defaultFieldValue();
 
             // when
-            var entry = ProductNoticeEntry.forNew(fieldValue, 1);
+            var entry = ProductNoticeEntry.forNew(NoticeFieldId.forNew(), fieldValue, 1);
 
             // then
             assertThat(entry.isNew()).isTrue();
@@ -41,7 +43,7 @@ class ProductNoticeEntryTest {
             NoticeFieldValue fieldValue = NoticeFieldValue.of("세탁방법", "드라이클리닝");
 
             // when
-            var entry = ProductNoticeEntry.forNew(fieldValue, 5);
+            var entry = ProductNoticeEntry.forNew(NoticeFieldId.forNew(), fieldValue, 5);
 
             // then
             assertThat(entry.fieldName()).isEqualTo("세탁방법");
@@ -62,7 +64,9 @@ class ProductNoticeEntryTest {
             NoticeFieldValue fieldValue = ProductNoticeFixtures.defaultFieldValue();
 
             // when
-            var entry = ProductNoticeEntry.reconstitute(id, fieldValue, 3);
+            var entry =
+                    ProductNoticeEntry.reconstitute(
+                            id, ProductNoticeId.of(1L), NoticeFieldId.of(1L), fieldValue, 3);
 
             // then
             assertThat(entry.isNew()).isFalse();
@@ -93,6 +97,8 @@ class ProductNoticeEntryTest {
             var entry =
                     ProductNoticeEntry.reconstitute(
                             ProductNoticeEntryId.of(1L),
+                            ProductNoticeId.of(1L),
+                            NoticeFieldId.of(1L),
                             ProductNoticeFixtures.defaultFieldValue(),
                             1);
 
@@ -112,6 +118,8 @@ class ProductNoticeEntryTest {
             var entry =
                     ProductNoticeEntry.reconstitute(
                             ProductNoticeEntryId.of(7L),
+                            ProductNoticeId.of(1L),
+                            NoticeFieldId.of(1L),
                             ProductNoticeFixtures.defaultFieldValue(),
                             1);
 
@@ -158,7 +166,9 @@ class ProductNoticeEntryTest {
         @DisplayName("sortOrder()는 정렬 순서를 반환한다")
         void returnsSortOrder() {
             // given
-            var entry = ProductNoticeEntry.forNew(ProductNoticeFixtures.defaultFieldValue(), 99);
+            var entry =
+                    ProductNoticeEntry.forNew(
+                            NoticeFieldId.forNew(), ProductNoticeFixtures.defaultFieldValue(), 99);
 
             // then
             assertThat(entry.sortOrder()).isEqualTo(99);

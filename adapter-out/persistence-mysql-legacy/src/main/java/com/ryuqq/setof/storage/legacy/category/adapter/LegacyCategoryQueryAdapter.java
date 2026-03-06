@@ -1,6 +1,6 @@
 package com.ryuqq.setof.storage.legacy.category.adapter;
 
-import com.ryuqq.setof.application.category.port.out.query.CategoryQueryPort;
+import com.ryuqq.setof.application.category.port.out.CategoryQueryPort;
 import com.ryuqq.setof.domain.category.aggregate.Category;
 import com.ryuqq.setof.domain.category.id.CategoryId;
 import com.ryuqq.setof.domain.category.query.CategorySearchCriteria;
@@ -89,4 +89,5 @@ public class LegacyCategoryQueryAdapter implements CategoryQueryPort {
         List<LegacyCategoryTreeDto> dtos = queryDslRepository.findParentsByChildId(childId.value());
         return dtos.stream().map(mapper::toDomain).toList();
     }
+
 }

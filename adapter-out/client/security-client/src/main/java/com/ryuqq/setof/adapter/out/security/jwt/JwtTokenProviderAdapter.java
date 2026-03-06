@@ -1,8 +1,8 @@
 package com.ryuqq.setof.adapter.out.security.jwt;
 
 import com.ryuqq.setof.adapter.out.security.config.JwtProperties;
-import com.ryuqq.setof.application.auth.dto.response.TokenPairResponse;
-import com.ryuqq.setof.application.auth.port.out.client.TokenProviderPort;
+import com.ryuqq.setof.application.member.dto.response.TokenPairResponse;
+import com.ryuqq.setof.application.member.port.out.client.TokenProviderClient;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConditionalOnProperty(prefix = "security.jwt", name = "secret")
-public class JwtTokenProviderAdapter implements TokenProviderPort {
+public class JwtTokenProviderAdapter implements TokenProviderClient {
 
     private static final String TOKEN_TYPE_CLAIM = "token_type";
     private static final String ACCESS_TOKEN_TYPE = "access";

@@ -8,30 +8,30 @@ import org.springframework.stereotype.Component;
 /**
  * SellerCsConditionBuilder - 셀러 CS 정보 QueryDSL 조건 빌더.
  *
- * <p>BooleanExpression 조건을 재사용 가능한 형태로 제공합니다.
+ * <p>PER-CND-001: ConditionBuilder는 @Component로 등록.
  *
- * <p>PER-CND-001: BooleanExpression은 ConditionBuilder로 분리.
+ * <p>PER-CND-002: 각 조건은 BooleanExpression 반환.
+ *
+ * <p>PER-CND-003: null 입력 시 null 반환 (동적 쿼리 지원).
+ *
+ * @author ryu-qqq
+ * @since 1.0.0
  */
 @Component
 public class SellerCsConditionBuilder {
 
-    /**
-     * ID 일치 조건.
-     *
-     * @param id CS ID
-     * @return ID 일치 조건
-     */
+    /** ID 일치 조건 */
     public BooleanExpression idEq(Long id) {
         return id != null ? sellerCsJpaEntity.id.eq(id) : null;
     }
 
-    /**
-     * 셀러 ID 일치 조건.
-     *
-     * @param sellerId 셀러 ID
-     * @return 셀러 ID 일치 조건
-     */
+    /** 셀러 ID 일치 조건 */
     public BooleanExpression sellerIdEq(Long sellerId) {
         return sellerId != null ? sellerCsJpaEntity.sellerId.eq(sellerId) : null;
+    }
+
+    /** 삭제되지 않은 조건 */
+    public BooleanExpression notDeleted() {
+        return sellerCsJpaEntity.deletedAt.isNull();
     }
 }

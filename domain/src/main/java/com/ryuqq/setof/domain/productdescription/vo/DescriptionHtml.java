@@ -1,5 +1,11 @@
 package com.ryuqq.setof.domain.productdescription.vo;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * 상세설명 HTML 컨텐츠 Value Object.
  *
@@ -7,7 +13,10 @@ package com.ryuqq.setof.domain.productdescription.vo;
  */
 public record DescriptionHtml(String value) {
 
-    private static final int MAX_LENGTH = 100_000;
+    private static final int MAX_LENGTH = 500_000;
+
+    private static final Pattern IMG_SRC_PATTERN =
+            Pattern.compile("<img[^>]+src=[\"']([^\"']+)[\"']", Pattern.CASE_INSENSITIVE);
 
     public DescriptionHtml {
         if (value != null) {
@@ -31,5 +40,18 @@ public record DescriptionHtml(String value) {
 
     public boolean isEmpty() {
         return value == null || value.isBlank();
+    }
+
+    /** HTML 콘텐츠에서 &lt;img&gt; 태그의 src URL을 등장 순서대로 추출합니다. */
+    public List<String> extractImageUrls() {
+        if (isEmpty()) {
+            return Collections.emptyList();
+        }
+        Matcher matcher = IMG_SRC_PATTERN.matcher(value);
+        List<String> urls = new ArrayList<>();
+        while (matcher.find()) {
+            urls.add(matcher.group(1));
+        }
+        return Collections.unmodifiableList(urls);
     }
 }

@@ -96,49 +96,26 @@ class ProductErrorCodeTest {
     }
 
     @Nested
-    @DisplayName("INSUFFICIENT_STOCK 테스트")
-    class InsufficientStockTest {
+    @DisplayName("PRODUCT_INVALID_PRICE 테스트")
+    class ProductInvalidPriceTest {
 
         @Test
         @DisplayName("에러 코드는 'PRD-004'이다")
         void hasCorrectCode() {
-            assertThat(ProductErrorCode.INSUFFICIENT_STOCK.getCode()).isEqualTo("PRD-004");
+            assertThat(ProductErrorCode.PRODUCT_INVALID_PRICE.getCode()).isEqualTo("PRD-004");
         }
 
         @Test
         @DisplayName("HTTP 상태 코드는 400이다")
         void hasCorrectHttpStatus() {
-            assertThat(ProductErrorCode.INSUFFICIENT_STOCK.getHttpStatus()).isEqualTo(400);
+            assertThat(ProductErrorCode.PRODUCT_INVALID_PRICE.getHttpStatus()).isEqualTo(400);
         }
 
         @Test
-        @DisplayName("메시지는 '재고가 부족합니다'이다")
+        @DisplayName("메시지는 '가격 체계가 유효하지 않습니다'이다")
         void hasCorrectMessage() {
-            assertThat(ProductErrorCode.INSUFFICIENT_STOCK.getMessage()).isEqualTo("재고가 부족합니다");
-        }
-    }
-
-    @Nested
-    @DisplayName("INVALID_STOCK_QUANTITY 테스트")
-    class InvalidStockQuantityTest {
-
-        @Test
-        @DisplayName("에러 코드는 'PRD-005'이다")
-        void hasCorrectCode() {
-            assertThat(ProductErrorCode.INVALID_STOCK_QUANTITY.getCode()).isEqualTo("PRD-005");
-        }
-
-        @Test
-        @DisplayName("HTTP 상태 코드는 400이다")
-        void hasCorrectHttpStatus() {
-            assertThat(ProductErrorCode.INVALID_STOCK_QUANTITY.getHttpStatus()).isEqualTo(400);
-        }
-
-        @Test
-        @DisplayName("메시지는 '유효하지 않은 재고 수량입니다'이다")
-        void hasCorrectMessage() {
-            assertThat(ProductErrorCode.INVALID_STOCK_QUANTITY.getMessage())
-                    .isEqualTo("유효하지 않은 재고 수량입니다");
+            assertThat(ProductErrorCode.PRODUCT_INVALID_PRICE.getMessage())
+                    .isEqualTo("가격 체계가 유효하지 않습니다");
         }
     }
 
@@ -155,8 +132,7 @@ class ProductErrorCodeTest {
                             ProductErrorCode.PRODUCT_NOT_FOUND,
                             ProductErrorCode.PRODUCT_ALREADY_DELETED,
                             ProductErrorCode.INVALID_STATUS_TRANSITION,
-                            ProductErrorCode.INSUFFICIENT_STOCK,
-                            ProductErrorCode.INVALID_STOCK_QUANTITY);
+                            ProductErrorCode.PRODUCT_INVALID_PRICE);
         }
     }
 }

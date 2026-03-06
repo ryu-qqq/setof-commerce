@@ -7,30 +7,22 @@ import com.ryuqq.setof.application.seller.internal.SellerRegistrationCoordinator
 import com.ryuqq.setof.application.seller.port.in.command.RegisterSellerUseCase;
 import org.springframework.stereotype.Service;
 
-/**
- * RegisterSellerService - 셀러 등록 Service.
- *
- * <p>Seller + BusinessInfo + Addresses 한번에 등록
- *
- * <p>Factory에서 번들 생성 → Coordinator를 통해 검증 및 저장
- *
- * @author ryu-qqq
- */
 @Service
 public class RegisterSellerService implements RegisterSellerUseCase {
 
-    private final SellerCommandFactory commandFactory;
-    private final SellerRegistrationCoordinator coordinator;
+    private final SellerCommandFactory sellerCommandFactory;
+    private final SellerRegistrationCoordinator sellerRegistrationCoordinator;
 
     public RegisterSellerService(
-            SellerCommandFactory commandFactory, SellerRegistrationCoordinator coordinator) {
-        this.commandFactory = commandFactory;
-        this.coordinator = coordinator;
+            SellerCommandFactory sellerCommandFactory,
+            SellerRegistrationCoordinator sellerRegistrationCoordinator) {
+        this.sellerCommandFactory = sellerCommandFactory;
+        this.sellerRegistrationCoordinator = sellerRegistrationCoordinator;
     }
 
     @Override
     public Long execute(RegisterSellerCommand command) {
-        SellerRegistrationBundle bundle = commandFactory.createRegistrationBundle(command);
-        return coordinator.register(bundle);
+        SellerRegistrationBundle bundle = sellerCommandFactory.createRegistrationBundle(command);
+        return sellerRegistrationCoordinator.register(bundle);
     }
 }

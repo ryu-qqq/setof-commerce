@@ -13,10 +13,18 @@ persistence:
     seller:
       enabled: true
     category:
-      enabled: true
+      enabled: false
     brand:
-      enabled: true
-    board:
-      enabled: true
+      enabled: false
     faq:
-      enabled: true
+      enabled: false
+    productgroup:
+      enabled: false
+    member:
+      enabled: false
+    refundaccount:
+      enabled: false
+    shippingaddress:
+      enabled: false
+    wishlist:
+      enabled: false

@@ -3,34 +3,24 @@ package com.ryuqq.setof.domain.productgroup.aggregate;
 import com.ryuqq.setof.domain.brand.id.BrandId;
 import com.ryuqq.setof.domain.category.id.CategoryId;
 import com.ryuqq.setof.domain.common.vo.Money;
+import com.ryuqq.setof.domain.productgroup.exception.ProductGroupInvalidStatusTransitionException;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import com.ryuqq.setof.domain.productgroup.vo.OptionType;
 import com.ryuqq.setof.domain.productgroup.vo.ProductGroupName;
 import com.ryuqq.setof.domain.productgroup.vo.ProductGroupStatus;
+import com.ryuqq.setof.domain.productgroup.vo.ProductGroupUpdateData;
+import com.ryuqq.setof.domain.productgroup.vo.SellerOptionGroups;
+import com.ryuqq.setof.domain.productgroupimage.aggregate.ProductGroupImage;
+import com.ryuqq.setof.domain.productgroupimage.vo.ProductGroupImages;
 import com.ryuqq.setof.domain.refundpolicy.id.RefundPolicyId;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import com.ryuqq.setof.domain.shippingpolicy.id.ShippingPolicyId;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
- * ProductGroup - 상품그룹 Aggregate Root.
- *
- * <p>상품의 기본 정보, 대표 가격, 이미지를 관리합니다. 하위 Product(SKU) 목록은 별도 Aggregate로 분리합니다.
- *
- * <p>주요 불변식:
- *
- * <ul>
- *   <li>productGroupName, sellerId는 필수
- *   <li>regularPrice >= currentPrice >= 0
- *   <li>salePrice가 존재하면 salePrice <= currentPrice
- *   <li>상태 전이 규칙 준수 (ProductGroupStatus)
- * </ul>
- *
- * @author ryu-qqq
- * @since 1.0.0
+ * 상품 그룹 Aggregate Root. 상품의 상위 개념으로, 공통 속성과 셀러 옵션 구조를 관리한다. 상세설명(ProductGroupDescription)은 별도
+ * Aggregate로 분리되어 ProductGroupId로 연결된다.
  */
 public class ProductGroup {
 
@@ -41,12 +31,13 @@ public class ProductGroup {
     private ShippingPolicyId shippingPolicyId;
     private RefundPolicyId refundPolicyId;
     private ProductGroupName productGroupName;
-    private final OptionType optionType;
+    private OptionType optionType;
     private Money regularPrice;
     private Money currentPrice;
     private Money salePrice;
     private ProductGroupStatus status;
-    private final List<ProductGroupImage> images;
+    private ProductGroupImages productGroupImages;
+    private SellerOptionGroups sellerOptionGroups;
     private final Instant createdAt;
     private Instant updatedAt;
 
@@ -63,7 +54,8 @@ public class ProductGroup {
             Money currentPrice,
             Money salePrice,
             ProductGroupStatus status,
-            List<ProductGroupImage> images,
+            ProductGroupImages productGroupImages,
+            SellerOptionGroups sellerOptionGroups,
             Instant createdAt,
             Instant updatedAt) {
         this.id = id;
@@ -78,29 +70,13 @@ public class ProductGroup {
         this.currentPrice = currentPrice;
         this.salePrice = salePrice;
         this.status = status;
-        this.images = images != null ? new ArrayList<>(images) : new ArrayList<>();
+        this.productGroupImages = productGroupImages;
+        this.sellerOptionGroups = sellerOptionGroups;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    // ========== Factory Methods ==========
-
-    /**
-     * 새 상품그룹 생성 (DRAFT 상태).
-     *
-     * @param sellerId 셀러 ID (필수)
-     * @param brandId 브랜드 ID
-     * @param categoryId 카테고리 ID
-     * @param shippingPolicyId 배송정책 ID
-     * @param refundPolicyId 환불정책 ID
-     * @param productGroupName 상품그룹명 (필수)
-     * @param optionType 옵션 유형
-     * @param regularPrice 정상가
-     * @param currentPrice 현재가
-     * @param salePrice 할인가
-     * @param now 생성 시각
-     * @return 새 ProductGroup 인스턴스 (DRAFT 상태)
-     */
+    /** 신규 상품 그룹 생성. ACTIVE 상태로 시작. 이미지/옵션은 별도 persist. */
     public static ProductGroup forNew(
             SellerId sellerId,
             BrandId brandId,
@@ -125,32 +101,14 @@ public class ProductGroup {
                 regularPrice,
                 currentPrice,
                 salePrice,
-                ProductGroupStatus.DRAFT,
-                new ArrayList<>(),
+                ProductGroupStatus.ACTIVE,
+                ProductGroupImages.reconstitute(List.of()),
+                SellerOptionGroups.reconstitute(List.of()),
                 now,
                 now);
     }
 
-    /**
-     * 영속성 계층에서 엔티티 복원.
-     *
-     * @param id 식별자
-     * @param sellerId 셀러 ID
-     * @param brandId 브랜드 ID
-     * @param categoryId 카테고리 ID
-     * @param shippingPolicyId 배송정책 ID
-     * @param refundPolicyId 환불정책 ID
-     * @param productGroupName 상품그룹명
-     * @param optionType 옵션 유형
-     * @param regularPrice 정상가
-     * @param currentPrice 현재가
-     * @param salePrice 할인가
-     * @param status 상태
-     * @param images 이미지 목록
-     * @param createdAt 생성일시
-     * @param updatedAt 수정일시
-     * @return 복원된 ProductGroup 인스턴스
-     */
+    /** 영속성에서 복원 시 사용. */
     public static ProductGroup reconstitute(
             ProductGroupId id,
             SellerId sellerId,
@@ -165,6 +123,7 @@ public class ProductGroup {
             Money salePrice,
             ProductGroupStatus status,
             List<ProductGroupImage> images,
+            List<SellerOptionGroup> sellerOptionGroups,
             Instant createdAt,
             Instant updatedAt) {
         return new ProductGroup(
@@ -180,107 +139,65 @@ public class ProductGroup {
                 currentPrice,
                 salePrice,
                 status,
-                images,
+                ProductGroupImages.reconstitute(images),
+                SellerOptionGroups.reconstitute(sellerOptionGroups),
                 createdAt,
                 updatedAt);
     }
 
-    // ========== Business Methods ==========
+    // ── 비즈니스 메서드 ──
 
-    /** 신규 생성 여부 확인 */
-    public boolean isNew() {
-        return id.isNew();
+    /** targetStatus에 따라 적절한 상태 전이 메서드를 호출한다. */
+    public void changeStatus(ProductGroupStatus targetStatus, Instant now) {
+        switch (targetStatus) {
+            case ACTIVE -> activate(now);
+            case SOLD_OUT -> markSoldOut(now);
+            case DELETED -> delete(now);
+        }
     }
 
-    /**
-     * 상품그룹 활성화.
-     *
-     * @param now 활성화 시각
-     * @throws IllegalStateException 현재 상태에서 활성화할 수 없는 경우
-     */
+    /** 판매 활성화. */
     public void activate(Instant now) {
         if (!status.canActivate()) {
-            throw new IllegalStateException(String.format("상태 %s에서 활성화할 수 없습니다", status));
+            throw new ProductGroupInvalidStatusTransitionException(
+                    status, ProductGroupStatus.ACTIVE);
         }
         this.status = ProductGroupStatus.ACTIVE;
         this.updatedAt = now;
     }
 
-    /**
-     * 상품그룹 비활성화.
-     *
-     * @param now 비활성화 시각
-     * @throws IllegalStateException 현재 상태에서 비활성화할 수 없는 경우
-     */
-    public void deactivate(Instant now) {
-        if (!status.canDeactivate()) {
-            throw new IllegalStateException(String.format("상태 %s에서 비활성화할 수 없습니다", status));
-        }
-        this.status = ProductGroupStatus.INACTIVE;
-        this.updatedAt = now;
-    }
-
-    /**
-     * 품절 처리.
-     *
-     * @param now 품절 시각
-     * @throws IllegalStateException 현재 상태에서 품절 처리할 수 없는 경우
-     */
+    /** 품절 처리. */
     public void markSoldOut(Instant now) {
         if (!status.canMarkSoldOut()) {
-            throw new IllegalStateException(String.format("상태 %s에서 품절 처리할 수 없습니다", status));
+            throw new ProductGroupInvalidStatusTransitionException(
+                    status, ProductGroupStatus.SOLD_OUT);
         }
-        this.status = ProductGroupStatus.SOLDOUT;
+        this.status = ProductGroupStatus.SOLD_OUT;
         this.updatedAt = now;
     }
 
-    /**
-     * 삭제 처리.
-     *
-     * @param now 삭제 시각
-     * @throws IllegalStateException 이미 삭제된 경우
-     */
+    /** 소프트 삭제. */
     public void delete(Instant now) {
         if (!status.canDelete()) {
-            throw new IllegalStateException("이미 삭제된 상품그룹입니다");
+            throw new ProductGroupInvalidStatusTransitionException(
+                    status, ProductGroupStatus.DELETED);
         }
         this.status = ProductGroupStatus.DELETED;
         this.updatedAt = now;
     }
 
-    /**
-     * 기본 정보 수정.
-     *
-     * @param productGroupName 상품그룹명
-     * @param brandId 브랜드 ID
-     * @param categoryId 카테고리 ID
-     * @param shippingPolicyId 배송정책 ID
-     * @param refundPolicyId 환불정책 ID
-     * @param now 수정 시각
-     */
-    public void updateBasicInfo(
-            ProductGroupName productGroupName,
-            BrandId brandId,
-            CategoryId categoryId,
-            ShippingPolicyId shippingPolicyId,
-            RefundPolicyId refundPolicyId,
-            Instant now) {
-        this.productGroupName = productGroupName;
-        this.brandId = brandId;
-        this.categoryId = categoryId;
-        this.shippingPolicyId = shippingPolicyId;
-        this.refundPolicyId = refundPolicyId;
-        this.updatedAt = now;
+    /** 기본 정보 수정. */
+    public void update(ProductGroupUpdateData updateData) {
+        this.productGroupName = updateData.productGroupName();
+        this.brandId = updateData.brandId();
+        this.categoryId = updateData.categoryId();
+        this.shippingPolicyId = updateData.shippingPolicyId();
+        this.refundPolicyId = updateData.refundPolicyId();
+        this.optionType = updateData.optionType();
+        this.updatedAt = updateData.updatedAt();
     }
 
-    /**
-     * 가격 수정.
-     *
-     * @param regularPrice 정상가
-     * @param currentPrice 현재가
-     * @param salePrice 할인가
-     * @param now 수정 시각
-     */
+    /** 가격 수정. */
     public void updatePrices(Money regularPrice, Money currentPrice, Money salePrice, Instant now) {
         this.regularPrice = regularPrice;
         this.currentPrice = currentPrice;
@@ -288,25 +205,40 @@ public class ProductGroup {
         this.updatedAt = now;
     }
 
-    /**
-     * 이미지 교체 (기존 이미지 전체 대체).
-     *
-     * @param newImages 새 이미지 목록
-     * @param now 수정 시각
-     */
-    public void replaceImages(List<ProductGroupImage> newImages, Instant now) {
-        this.images.clear();
-        if (newImages != null) {
-            this.images.addAll(newImages);
-        }
-        this.updatedAt = now;
+    /** 이미지 전체 교체. ProductGroupImages VO가 검증/정렬을 보장. */
+    public void replaceImages(ProductGroupImages images) {
+        this.productGroupImages = images;
     }
 
-    // ========== Query Methods ==========
+    /** 셀러 옵션 그룹 전체 교체. SellerOptionGroups VO가 불변식을 보장. */
+    public void replaceSellerOptionGroups(SellerOptionGroups optionGroups) {
+        this.sellerOptionGroups = optionGroups;
+        validateOptionStructure();
+    }
+
+    // ── 검증 메서드 ──
+
+    /** optionType과 내부 셀러 옵션 그룹 수 정합성 검증. */
+    private void validateOptionStructure() {
+        sellerOptionGroups.validateStructure(optionType);
+    }
+
+    // ── 조회 메서드 ──
+
+    /** 신규 생성 여부 확인 */
+    public boolean isNew() {
+        return id.isNew();
+    }
+
+    /** 총 옵션 값 수 (전체 그룹 합산). */
+    public int totalOptionValueCount() {
+        return sellerOptionGroups.totalOptionValueCount();
+    }
 
     /** 썸네일 이미지 존재 여부 */
     public boolean hasThumbnailImage() {
-        return images.stream().anyMatch(ProductGroupImage::isThumbnail);
+        return !productGroupImages.isEmpty()
+                && productGroupImages.toList().stream().anyMatch(ProductGroupImage::isThumbnail);
     }
 
     /**
@@ -329,14 +261,16 @@ public class ProductGroup {
      * 유효 판매가 반환.
      *
      * <p>세일 중이면 salePrice, 아니면 currentPrice를 반환합니다.
-     *
-     * @return 유효 판매가
      */
     public Money effectivePrice() {
         if (isOnSale()) {
             return salePrice;
         }
         return currentPrice;
+    }
+
+    public int effectivePriceValue() {
+        return effectivePrice().value();
     }
 
     /** 세일 중인지 확인 (salePrice가 currentPrice보다 낮은 경우) */
@@ -359,7 +293,7 @@ public class ProductGroup {
         return status.isDeleted();
     }
 
-    // ========== Accessor Methods ==========
+    // ── Accessor 메서드 ──
 
     public ProductGroupId id() {
         return id;
@@ -450,7 +384,11 @@ public class ProductGroup {
     }
 
     public List<ProductGroupImage> images() {
-        return Collections.unmodifiableList(images);
+        return productGroupImages.toList();
+    }
+
+    public List<SellerOptionGroup> sellerOptionGroups() {
+        return sellerOptionGroups.groups();
     }
 
     public Instant createdAt() {

@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 /**
  * SellerErrorMapper - 셀러 도메인 예외를 HTTP 응답으로 변환.
  *
- * <p>API-ERR-001: 도메인별 ErrorMapper를 구현하여 DomainException을 HTTP 응답으로 매핑.
- *
  * <p>OCP(Open-Closed Principle) 준수를 위해 도메인별로 구현체를 생성합니다.
  *
  * @author ryu-qqq

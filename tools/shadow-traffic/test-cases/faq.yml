@@ -1,0 +1,39 @@
+domain: faq
+description: "FAQ API shadow traffic test cases"
+
+test_cases:
+  - name: "faq_list_general"
+    path: "/api/v1/faq"
+    method: GET
+    auth: none
+    body:
+      faqType: "GENERAL"
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "faq_list_order"
+    path: "/api/v1/faq"
+    method: GET
+    auth: none
+    body:
+      faqType: "ORDER"
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "faq_list_delivery"
+    path: "/api/v1/faq"
+    method: GET
+    auth: none
+    body:
+      faqType: "DELIVERY"
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "faq_list_return"
+    path: "/api/v1/faq"
+    method: GET
+    auth: none
+    body:
+      faqType: "RETURN"
+    compare_mode: full
+    ignore_fields: []

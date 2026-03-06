@@ -23,6 +23,11 @@ public abstract class LegacyBaseEntity {
 
     protected LegacyBaseEntity() {}
 
+    protected LegacyBaseEntity(LocalDateTime insertDate, LocalDateTime updateDate) {
+        this.insertDate = insertDate;
+        this.updateDate = updateDate;
+    }
+
     public LocalDateTime getInsertDate() {
         return insertDate;
     }

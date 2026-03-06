@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.dto.SellerCompositeDto;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.dto.SellerCompositeDtoFixtures;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.dto.SellerPolicyCompositeDto;
+import com.ryuqq.setof.adapter.out.persistence.composite.seller.mapper.SellerCompositeMapper;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.repository.SellerCompositeQueryDslRepository;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.repository.SellerPolicyCompositeQueryDslRepository;
 import com.ryuqq.setof.application.seller.dto.composite.SellerCompositeResult;
@@ -39,6 +40,8 @@ class SellerCompositionQueryAdapterTest {
 
     @Mock private SellerPolicyCompositeQueryDslRepository policyCompositeRepository;
 
+    @Mock private SellerCompositeMapper compositeMapper;
+
     @InjectMocks private SellerCompositionQueryAdapter queryAdapter;
 
     // ========================================================================
@@ -55,7 +58,47 @@ class SellerCompositionQueryAdapterTest {
             // given
             Long sellerId = 1L;
             SellerCompositeDto dto = SellerCompositeDtoFixtures.activeSellerCompositeDto(sellerId);
+            SellerCompositeResult expectedResult =
+                    new SellerCompositeResult(
+                            new SellerCompositeResult.SellerInfo(
+                                    dto.sellerId(),
+                                    dto.sellerName(),
+                                    dto.displayName(),
+                                    dto.logoUrl(),
+                                    dto.description(),
+                                    dto.active(),
+                                    dto.sellerCreatedAt(),
+                                    dto.sellerUpdatedAt()),
+                            new SellerCompositeResult.AddressInfo(
+                                    dto.addressId(),
+                                    dto.addressType(),
+                                    dto.addressName(),
+                                    dto.zipcode(),
+                                    dto.address(),
+                                    dto.addressDetail(),
+                                    dto.contactName(),
+                                    dto.contactPhone(),
+                                    dto.defaultAddress()),
+                            new SellerCompositeResult.BusinessInfo(
+                                    dto.businessInfoId(),
+                                    dto.registrationNumber(),
+                                    dto.companyName(),
+                                    dto.representative(),
+                                    dto.saleReportNumber(),
+                                    dto.businessZipcode(),
+                                    dto.businessAddress(),
+                                    dto.businessAddressDetail()),
+                            new SellerCompositeResult.CsInfo(
+                                    dto.csId(),
+                                    dto.csPhone(),
+                                    dto.csMobile(),
+                                    dto.csEmail(),
+                                    dto.operatingStartTime(),
+                                    dto.operatingEndTime(),
+                                    dto.operatingDays(),
+                                    dto.kakaoChannelUrl()));
             given(compositeRepository.findBySellerId(sellerId)).willReturn(Optional.of(dto));
+            given(compositeMapper.toResult(dto)).willReturn(expectedResult);
 
             // when
             Optional<SellerCompositeResult> result = queryAdapter.findSellerCompositeById(sellerId);
@@ -105,7 +148,47 @@ class SellerCompositionQueryAdapterTest {
             // given
             Long sellerId = 2L;
             SellerCompositeDto dto = SellerCompositeDtoFixtures.inactiveSellerCompositeDto();
+            SellerCompositeResult inactiveResult =
+                    new SellerCompositeResult(
+                            new SellerCompositeResult.SellerInfo(
+                                    dto.sellerId(),
+                                    dto.sellerName(),
+                                    dto.displayName(),
+                                    dto.logoUrl(),
+                                    dto.description(),
+                                    false,
+                                    dto.sellerCreatedAt(),
+                                    dto.sellerUpdatedAt()),
+                            new SellerCompositeResult.AddressInfo(
+                                    dto.addressId(),
+                                    dto.addressType(),
+                                    dto.addressName(),
+                                    dto.zipcode(),
+                                    dto.address(),
+                                    dto.addressDetail(),
+                                    dto.contactName(),
+                                    dto.contactPhone(),
+                                    dto.defaultAddress()),
+                            new SellerCompositeResult.BusinessInfo(
+                                    dto.businessInfoId(),
+                                    dto.registrationNumber(),
+                                    dto.companyName(),
+                                    dto.representative(),
+                                    dto.saleReportNumber(),
+                                    dto.businessZipcode(),
+                                    dto.businessAddress(),
+                                    dto.businessAddressDetail()),
+                            new SellerCompositeResult.CsInfo(
+                                    dto.csId(),
+                                    dto.csPhone(),
+                                    dto.csMobile(),
+                                    dto.csEmail(),
+                                    dto.operatingStartTime(),
+                                    dto.operatingEndTime(),
+                                    dto.operatingDays(),
+                                    dto.kakaoChannelUrl()));
             given(compositeRepository.findBySellerId(sellerId)).willReturn(Optional.of(dto));
+            given(compositeMapper.toResult(dto)).willReturn(inactiveResult);
 
             // when
             Optional<SellerCompositeResult> result = queryAdapter.findSellerCompositeById(sellerId);

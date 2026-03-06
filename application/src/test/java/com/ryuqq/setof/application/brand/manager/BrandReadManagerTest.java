@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-import com.ryuqq.setof.application.brand.port.out.query.BrandQueryPort;
+import com.ryuqq.setof.application.brand.port.out.BrandQueryPort;
 import com.ryuqq.setof.domain.brand.BrandFixtures;
 import com.ryuqq.setof.domain.brand.aggregate.Brand;
 import com.ryuqq.setof.domain.brand.exception.BrandNotFoundException;

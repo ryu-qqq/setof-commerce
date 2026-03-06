@@ -1,6 +1,6 @@
 package com.ryuqq.setof.storage.legacy.faq;
 
-import com.ryuqq.setof.domain.legacy.faq.FaqType;
+import com.ryuqq.setof.domain.faq.vo.FaqType;
 import com.ryuqq.setof.storage.legacy.faq.entity.LegacyFaqEntity;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;

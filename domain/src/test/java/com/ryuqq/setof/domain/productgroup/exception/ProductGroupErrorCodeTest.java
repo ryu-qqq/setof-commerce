@@ -138,7 +138,11 @@ class ProductGroupErrorCodeTest {
                             ProductGroupErrorCode.PRODUCT_GROUP_NOT_FOUND,
                             ProductGroupErrorCode.PRODUCT_GROUP_ALREADY_DELETED,
                             ProductGroupErrorCode.INVALID_STATUS_TRANSITION,
-                            ProductGroupErrorCode.INVALID_PRICE);
+                            ProductGroupErrorCode.INVALID_PRICE,
+                            ProductGroupErrorCode.INVALID_OPTION_STRUCTURE,
+                            ProductGroupErrorCode.OPTION_GROUP_EMPTY_VALUES,
+                            ProductGroupErrorCode.OPTION_GROUP_DUPLICATE_NAME,
+                            ProductGroupErrorCode.OPTION_VALUE_DUPLICATE_NAME);
         }
     }
 }

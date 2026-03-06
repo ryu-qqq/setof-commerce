@@ -12,17 +12,24 @@ import org.springframework.stereotype.Component;
 /**
  * SellerJpaEntityMapper - 셀러 Entity-Domain 매퍼.
  *
- * <p>Entity ↔ Domain 변환을 담당합니다.
- *
  * <p>PER-MAP-001: Mapper는 @Component로 등록.
  *
  * <p>PER-MAP-002: toEntity(Domain) + toDomain(Entity) 메서드 제공.
  *
  * <p>PER-MAP-003: 순수 변환 로직만.
+ *
+ * @author ryu-qqq
+ * @since 1.0.0
  */
 @Component
 public class SellerJpaEntityMapper {
 
+    /**
+     * Domain → Entity 변환.
+     *
+     * @param domain Seller 도메인 객체
+     * @return SellerJpaEntity
+     */
     public SellerJpaEntity toEntity(Seller domain) {
         return SellerJpaEntity.create(
                 domain.idValue(),
@@ -38,13 +45,19 @@ public class SellerJpaEntityMapper {
                 domain.deletedAt());
     }
 
+    /**
+     * Entity → Domain 변환.
+     *
+     * @param entity SellerJpaEntity
+     * @return Seller 도메인 객체
+     */
     public Seller toDomain(SellerJpaEntity entity) {
         return Seller.reconstitute(
                 SellerId.of(entity.getId()),
                 SellerName.of(entity.getSellerName()),
                 DisplayName.of(entity.getDisplayName()),
-                LogoUrl.of(entity.getLogoUrl()),
-                Description.of(entity.getDescription()),
+                entity.getLogoUrl() != null ? LogoUrl.of(entity.getLogoUrl()) : null,
+                entity.getDescription() != null ? Description.of(entity.getDescription()) : null,
                 entity.isActive(),
                 entity.getDeletedAt(),
                 entity.getAuthTenantId(),

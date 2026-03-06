@@ -6,14 +6,11 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.ryuqq.setof.application.auth.dto.response.LoginResult;
-import com.ryuqq.setof.application.auth.dto.response.MyInfoResult;
-import com.ryuqq.setof.application.auth.dto.response.TokenPairResponse;
-import com.ryuqq.setof.application.auth.port.out.cache.RefreshTokenCacheCommandPort;
-import com.ryuqq.setof.application.auth.port.out.cache.RefreshTokenCacheQueryPort;
-import com.ryuqq.setof.application.auth.port.out.client.AuthClient;
-import com.ryuqq.setof.application.auth.port.out.client.TokenProviderPort;
-import com.ryuqq.setof.domain.auth.vo.RefreshTokenCacheKey;
+import com.ryuqq.setof.application.member.dto.response.TokenPairResponse;
+import com.ryuqq.setof.application.member.port.out.client.TokenProviderClient;
+import com.ryuqq.setof.application.member.port.out.command.RefreshTokenCacheCommandPort;
+import com.ryuqq.setof.application.member.port.out.query.RefreshTokenCacheQueryPort;
+import com.ryuqq.setof.domain.member.vo.RefreshTokenCacheKey;
 import java.util.Optional;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -29,45 +26,13 @@ import org.springframework.context.annotation.Profile;
 public class TestSecurityConfig {
 
     /**
-     * 테스트용 AuthClient Mock.
-     *
-     * @return AuthClient Mock
-     */
-    @Bean
-    public AuthClient authClient() {
-        AuthClient mock = mock(AuthClient.class);
-        when(mock.login(anyString(), anyString()))
-                .thenReturn(
-                        LoginResult.success(
-                                "test-user-id",
-                                "test-access-token",
-                                "test-refresh-token",
-                                3600L,
-                                "Bearer"));
-        doNothing().when(mock).logout(anyString());
-        when(mock.getMyInfo(anyString()))
-                .thenReturn(
-                        new MyInfoResult(
-                                "test-user-id",
-                                "test@example.com",
-                                "테스트유저",
-                                "tenant-1",
-                                "테스트테넌트",
-                                "org-1",
-                                "테스트조직",
-                                java.util.List.of(),
-                                java.util.List.of()));
-        return mock;
-    }
-
-    /**
      * 테스트용 TokenProviderPort Mock.
      *
      * @return TokenProviderPort Mock
      */
     @Bean
-    public TokenProviderPort tokenProviderPort() {
-        TokenProviderPort mock = mock(TokenProviderPort.class);
+    public TokenProviderClient tokenProviderPort() {
+        TokenProviderClient mock = mock(TokenProviderClient.class);
         when(mock.generateTokenPair(anyString()))
                 .thenReturn(
                         new TokenPairResponse(

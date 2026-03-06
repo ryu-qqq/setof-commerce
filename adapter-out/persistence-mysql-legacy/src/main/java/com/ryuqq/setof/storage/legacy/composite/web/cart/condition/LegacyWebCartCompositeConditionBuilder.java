@@ -3,7 +3,7 @@ package com.ryuqq.setof.storage.legacy.composite.web.cart.condition;
 import static com.ryuqq.setof.storage.legacy.cart.entity.QLegacyCartEntity.legacyCartEntity;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.ryuqq.setof.storage.legacy.cart.entity.LegacyCartEntity;
+import com.ryuqq.setof.storage.legacy.common.Yn;
 import org.springframework.stereotype.Component;
 
 /**
@@ -41,7 +41,7 @@ public class LegacyWebCartCompositeConditionBuilder {
      * @return BooleanExpression
      */
     public BooleanExpression notDeleted() {
-        return legacyCartEntity.deleteYn.eq(LegacyCartEntity.Yn.N);
+        return legacyCartEntity.deleteYn.eq(Yn.N);
     }
 
     // ===== 커서 페이징 조건 =====

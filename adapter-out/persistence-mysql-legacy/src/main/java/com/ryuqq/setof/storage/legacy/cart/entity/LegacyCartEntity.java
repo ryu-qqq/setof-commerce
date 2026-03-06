@@ -1,9 +1,12 @@
 package com.ryuqq.setof.storage.legacy.cart.entity;
 
+import com.ryuqq.setof.storage.legacy.common.Yn;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -25,6 +28,7 @@ import java.time.LocalDateTime;
 public class LegacyCartEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cart_id")
     private Long id;
 
@@ -54,6 +58,49 @@ public class LegacyCartEntity {
     private LocalDateTime updatedAt;
 
     protected LegacyCartEntity() {}
+
+    private LegacyCartEntity(
+            Long id,
+            Long userId,
+            Long productGroupId,
+            Long productId,
+            Integer quantity,
+            Long sellerId,
+            Yn deleteYn,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
+        this.id = id;
+        this.userId = userId;
+        this.productGroupId = productGroupId;
+        this.productId = productId;
+        this.quantity = quantity;
+        this.sellerId = sellerId;
+        this.deleteYn = deleteYn;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public static LegacyCartEntity create(
+            Long id,
+            Long userId,
+            Long productGroupId,
+            Long productId,
+            Integer quantity,
+            Long sellerId,
+            Yn deleteYn,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
+        return new LegacyCartEntity(
+                id,
+                userId,
+                productGroupId,
+                productId,
+                quantity,
+                sellerId,
+                deleteYn,
+                createdAt,
+                updatedAt);
+    }
 
     public Long getId() {
         return id;
@@ -89,11 +136,5 @@ public class LegacyCartEntity {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
-    }
-
-    /** Yn - Y/N 구분 Enum. */
-    public enum Yn {
-        Y,
-        N
     }
 }

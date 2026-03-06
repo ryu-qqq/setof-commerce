@@ -3,7 +3,7 @@ package com.ryuqq.setof.storage.legacy.composite.web.gnb.condition;
 import static com.ryuqq.setof.storage.legacy.gnb.entity.QLegacyGnbEntity.legacyGnbEntity;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.ryuqq.setof.storage.legacy.gnb.entity.LegacyGnbEntity;
+import com.ryuqq.setof.storage.legacy.common.Yn;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +30,7 @@ public class LegacyWebGnbCompositeConditionBuilder {
      * @return BooleanExpression
      */
     public BooleanExpression gnbNotDeleted() {
-        return legacyGnbEntity.deleteYn.eq(LegacyGnbEntity.Yn.N);
+        return legacyGnbEntity.deleteYn.eq(Yn.N);
     }
 
     /**
@@ -39,7 +39,7 @@ public class LegacyWebGnbCompositeConditionBuilder {
      * @return BooleanExpression
      */
     public BooleanExpression gnbDisplayed() {
-        return legacyGnbEntity.displayYn.eq(LegacyGnbEntity.Yn.Y);
+        return legacyGnbEntity.displayYn.eq(Yn.Y);
     }
 
     /**

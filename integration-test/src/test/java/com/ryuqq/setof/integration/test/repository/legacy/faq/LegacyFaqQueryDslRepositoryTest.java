@@ -44,7 +44,7 @@ class LegacyFaqQueryDslRepositoryTest extends RepositoryTestBase {
             LegacyFaqEntity entity1 =
                     LegacyFaqEntityFixtures.builder()
                             .id(null)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.MEMBER_LOGIN)
+                            .faqType(com.ryuqq.setof.domain.faq.vo.FaqType.MEMBER_LOGIN)
                             .title("회원 FAQ 1")
                             .displayOrder(1)
                             .build();
@@ -52,7 +52,7 @@ class LegacyFaqQueryDslRepositoryTest extends RepositoryTestBase {
             LegacyFaqEntity entity2 =
                     LegacyFaqEntityFixtures.builder()
                             .id(null)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.MEMBER_LOGIN)
+                            .faqType(com.ryuqq.setof.domain.faq.vo.FaqType.MEMBER_LOGIN)
                             .title("회원 FAQ 2")
                             .displayOrder(2)
                             .build();
@@ -60,7 +60,7 @@ class LegacyFaqQueryDslRepositoryTest extends RepositoryTestBase {
             LegacyFaqEntity entity3 =
                     LegacyFaqEntityFixtures.builder()
                             .id(null)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.SHIPPING)
+                            .faqType(com.ryuqq.setof.domain.faq.vo.FaqType.SHIPPING)
                             .title("배송 FAQ")
                             .displayOrder(1)
                             .build();
@@ -81,8 +81,7 @@ class LegacyFaqQueryDslRepositoryTest extends RepositoryTestBase {
                     .allMatch(
                             e ->
                                     e.getFaqType()
-                                            == com.ryuqq.setof.domain.legacy.faq.FaqType
-                                                    .MEMBER_LOGIN);
+                                            == com.ryuqq.setof.domain.faq.vo.FaqType.MEMBER_LOGIN);
             assertThat(results.get(0).getTitle()).isEqualTo("회원 FAQ 1");
             assertThat(results.get(1).getTitle()).isEqualTo("회원 FAQ 2");
         }
@@ -94,7 +93,7 @@ class LegacyFaqQueryDslRepositoryTest extends RepositoryTestBase {
             LegacyFaqEntity top1 =
                     LegacyFaqEntityFixtures.builder()
                             .id(null)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.TOP)
+                            .faqType(com.ryuqq.setof.domain.faq.vo.FaqType.TOP)
                             .title("TOP FAQ 3")
                             .topDisplayOrder(3)
                             .displayOrder(100)
@@ -103,7 +102,7 @@ class LegacyFaqQueryDslRepositoryTest extends RepositoryTestBase {
             LegacyFaqEntity top2 =
                     LegacyFaqEntityFixtures.builder()
                             .id(null)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.TOP)
+                            .faqType(com.ryuqq.setof.domain.faq.vo.FaqType.TOP)
                             .title("TOP FAQ 1")
                             .topDisplayOrder(1)
                             .displayOrder(200)
@@ -112,7 +111,7 @@ class LegacyFaqQueryDslRepositoryTest extends RepositoryTestBase {
             LegacyFaqEntity top3 =
                     LegacyFaqEntityFixtures.builder()
                             .id(null)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.TOP)
+                            .faqType(com.ryuqq.setof.domain.faq.vo.FaqType.TOP)
                             .title("TOP FAQ 2")
                             .topDisplayOrder(2)
                             .displayOrder(50)
@@ -145,7 +144,7 @@ class LegacyFaqQueryDslRepositoryTest extends RepositoryTestBase {
             LegacyFaqEntity entity1 =
                     LegacyFaqEntityFixtures.builder()
                             .id(null)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.SHIPPING)
+                            .faqType(com.ryuqq.setof.domain.faq.vo.FaqType.SHIPPING)
                             .title("배송 FAQ C")
                             .displayOrder(30)
                             .build();
@@ -153,7 +152,7 @@ class LegacyFaqQueryDslRepositoryTest extends RepositoryTestBase {
             LegacyFaqEntity entity2 =
                     LegacyFaqEntityFixtures.builder()
                             .id(null)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.SHIPPING)
+                            .faqType(com.ryuqq.setof.domain.faq.vo.FaqType.SHIPPING)
                             .title("배송 FAQ A")
                             .displayOrder(10)
                             .build();
@@ -161,7 +160,7 @@ class LegacyFaqQueryDslRepositoryTest extends RepositoryTestBase {
             LegacyFaqEntity entity3 =
                     LegacyFaqEntityFixtures.builder()
                             .id(null)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.SHIPPING)
+                            .faqType(com.ryuqq.setof.domain.faq.vo.FaqType.SHIPPING)
                             .title("배송 FAQ B")
                             .displayOrder(20)
                             .build();
@@ -193,7 +192,7 @@ class LegacyFaqQueryDslRepositoryTest extends RepositoryTestBase {
             LegacyFaqEntity entity =
                     LegacyFaqEntityFixtures.builder()
                             .id(null)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.MEMBER_LOGIN)
+                            .faqType(com.ryuqq.setof.domain.faq.vo.FaqType.MEMBER_LOGIN)
                             .build();
 
             persist(entity);
@@ -215,19 +214,19 @@ class LegacyFaqQueryDslRepositoryTest extends RepositoryTestBase {
             persist(
                     LegacyFaqEntityFixtures.builder()
                             .id(null)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.MEMBER_LOGIN)
+                            .faqType(com.ryuqq.setof.domain.faq.vo.FaqType.MEMBER_LOGIN)
                             .title("회원 FAQ")
                             .build());
             persist(
                     LegacyFaqEntityFixtures.builder()
                             .id(null)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.SHIPPING)
+                            .faqType(com.ryuqq.setof.domain.faq.vo.FaqType.SHIPPING)
                             .title("배송 FAQ")
                             .build());
             persist(
                     LegacyFaqEntityFixtures.builder()
                             .id(null)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.ORDER_PAYMENT)
+                            .faqType(com.ryuqq.setof.domain.faq.vo.FaqType.ORDER_PAYMENT)
                             .title("주문 FAQ")
                             .build());
             flushAndClear();
@@ -258,7 +257,7 @@ class LegacyFaqQueryDslRepositoryTest extends RepositoryTestBase {
             LegacyFaqEntity entity1 =
                     LegacyFaqEntityFixtures.builder()
                             .id(null)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.CANCEL_REFUND)
+                            .faqType(com.ryuqq.setof.domain.faq.vo.FaqType.CANCEL_REFUND)
                             .title("취소 FAQ 1")
                             .displayOrder(10)
                             .build();
@@ -266,7 +265,7 @@ class LegacyFaqQueryDslRepositoryTest extends RepositoryTestBase {
             LegacyFaqEntity entity2 =
                     LegacyFaqEntityFixtures.builder()
                             .id(null)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.CANCEL_REFUND)
+                            .faqType(com.ryuqq.setof.domain.faq.vo.FaqType.CANCEL_REFUND)
                             .title("취소 FAQ 2")
                             .displayOrder(10)
                             .build();

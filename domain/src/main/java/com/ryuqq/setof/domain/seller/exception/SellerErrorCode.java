@@ -24,6 +24,7 @@ public enum SellerErrorCode implements ErrorCode {
     ADDRESS_TYPE_MISMATCH("SEL-201", 400, "주소 유형이 일치하지 않습니다"),
     DEFAULT_ADDRESS_REQUIRED("SEL-202", 400, "기본 주소는 삭제할 수 없습니다"),
     DEFAULT_ADDRESS_ALREADY_EXISTS("SEL-203", 400, "이미 기본 주소가 설정되어 있습니다"),
+    ADDRESS_ALREADY_EXISTS("SEL-204", 409, "이미 존재하는 주소명입니다"),
 
     // CS 정보 관련 (SEL-300 ~ SEL-399)
     CS_NOT_FOUND("SEL-300", 404, "CS 정보를 찾을 수 없습니다"),

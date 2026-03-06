@@ -4,7 +4,7 @@ import com.ryuqq.setof.adapter.out.persistence.category.dto.CategoryTreeDto;
 import com.ryuqq.setof.adapter.out.persistence.category.entity.CategoryJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.category.mapper.CategoryJpaEntityMapper;
 import com.ryuqq.setof.adapter.out.persistence.category.repository.CategoryQueryDslRepository;
-import com.ryuqq.setof.application.category.port.out.query.CategoryQueryPort;
+import com.ryuqq.setof.application.category.port.out.CategoryQueryPort;
 import com.ryuqq.setof.domain.category.aggregate.Category;
 import com.ryuqq.setof.domain.category.id.CategoryId;
 import com.ryuqq.setof.domain.category.query.CategorySearchCriteria;

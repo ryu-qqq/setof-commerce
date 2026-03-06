@@ -121,6 +121,11 @@ public record CategorySearchCriteria(
                 QueryContext.defaultOf(CategorySortKey.defaultKey()));
     }
 
+    /** 부모 카테고리 ID 원시값 반환 (null이면 null) */
+    public Long parentCategoryIdValue() {
+        return parentCategoryId != null ? parentCategoryId.value() : null;
+    }
+
     /** 부모 카테고리 필터가 있는지 확인 */
     public boolean hasParentFilter() {
         return parentCategoryId != null;

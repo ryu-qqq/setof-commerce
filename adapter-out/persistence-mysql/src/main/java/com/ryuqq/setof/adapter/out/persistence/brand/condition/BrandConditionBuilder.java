@@ -43,7 +43,7 @@ public class BrandConditionBuilder {
     /**
      * 검색 필드 기반 검색 조건.
      *
-     * <p>persistence-mysql brands 테이블은 displayName 단일 필드만 있음. DISPLAY_KOREAN_NAME,
+     * <p>persistence-mysql brand 테이블은 displayName 단일 필드만 있음. DISPLAY_KOREAN_NAME,
      * DISPLAY_ENGLISH_NAME은 displayName으로 매핑.
      */
     public BooleanExpression searchFieldContains(BrandSearchField searchField, String searchWord) {

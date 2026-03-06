@@ -60,14 +60,14 @@ class ShippingPolicyExceptionTest {
     }
 
     @Nested
-    @DisplayName("정적 팩토리 메서드 테스트")
-    class StaticFactoryMethodTest {
+    @DisplayName("구체적 예외 클래스 테스트")
+    class ConcreteExceptionTest {
 
         @Test
-        @DisplayName("policyNotFound()로 예외를 생성한다")
-        void createWithPolicyNotFound() {
+        @DisplayName("ShippingPolicyNotFoundException을 생성한다")
+        void createShippingPolicyNotFoundException() {
             // when
-            ShippingPolicyException exception = ShippingPolicyException.policyNotFound();
+            ShippingPolicyNotFoundException exception = new ShippingPolicyNotFoundException();
 
             // then
             assertThat(exception.code()).isEqualTo("SHP-001");
@@ -76,10 +76,10 @@ class ShippingPolicyExceptionTest {
         }
 
         @Test
-        @DisplayName("policyInactive()로 예외를 생성한다")
-        void createWithPolicyInactive() {
+        @DisplayName("ShippingPolicyInactiveException을 생성한다")
+        void createShippingPolicyInactiveException() {
             // when
-            ShippingPolicyException exception = ShippingPolicyException.policyInactive();
+            ShippingPolicyInactiveException exception = new ShippingPolicyInactiveException();
 
             // then
             assertThat(exception.code()).isEqualTo("SHP-002");
@@ -88,10 +88,10 @@ class ShippingPolicyExceptionTest {
         }
 
         @Test
-        @DisplayName("invalidFreeThreshold()로 예외를 생성한다")
-        void createWithInvalidFreeThreshold() {
+        @DisplayName("InvalidFreeThresholdException을 생성한다")
+        void createInvalidFreeThresholdException() {
             // when
-            ShippingPolicyException exception = ShippingPolicyException.invalidFreeThreshold();
+            InvalidFreeThresholdException exception = new InvalidFreeThresholdException();
 
             // then
             assertThat(exception.code()).isEqualTo("SHP-005");
@@ -108,7 +108,7 @@ class ShippingPolicyExceptionTest {
         @DisplayName("DomainException을 상속한다")
         void extendsDomainException() {
             // given
-            ShippingPolicyException exception = ShippingPolicyException.policyNotFound();
+            ShippingPolicyException exception = new ShippingPolicyNotFoundException();
 
             // then
             assertThat(exception).isInstanceOf(DomainException.class);

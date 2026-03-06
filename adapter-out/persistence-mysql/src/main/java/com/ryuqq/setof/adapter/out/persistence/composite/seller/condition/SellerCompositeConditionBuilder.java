@@ -2,10 +2,8 @@ package com.ryuqq.setof.adapter.out.persistence.composite.seller.condition;
 
 import static com.ryuqq.setof.adapter.out.persistence.seller.entity.QSellerAddressJpaEntity.sellerAddressJpaEntity;
 import static com.ryuqq.setof.adapter.out.persistence.seller.entity.QSellerBusinessInfoJpaEntity.sellerBusinessInfoJpaEntity;
-import static com.ryuqq.setof.adapter.out.persistence.seller.entity.QSellerContractJpaEntity.sellerContractJpaEntity;
 import static com.ryuqq.setof.adapter.out.persistence.seller.entity.QSellerCsJpaEntity.sellerCsJpaEntity;
 import static com.ryuqq.setof.adapter.out.persistence.seller.entity.QSellerJpaEntity.sellerJpaEntity;
-import static com.ryuqq.setof.adapter.out.persistence.seller.entity.QSellerSettlementJpaEntity.sellerSettlementJpaEntity;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import java.util.List;
@@ -14,8 +12,7 @@ import org.springframework.stereotype.Component;
 /**
  * SellerCompositeConditionBuilder - 셀러 Composite QueryDSL 조건 빌더.
  *
- * <p>Seller + SellerAddress + SellerBusinessInfo + SellerCs + SellerContract + SellerSettlement 조인
- * 쿼리용 조건.
+ * <p>Seller + SellerAddress + SellerBusinessInfo + SellerCs 조인 쿼리용 조건.
  *
  * <p>PER-CND-001: BooleanExpression은 ConditionBuilder로 분리.
  */
@@ -84,33 +81,5 @@ public class SellerCompositeConditionBuilder {
 
     public BooleanExpression csJoinCondition() {
         return csSellerIdEq().and(csNotDeleted());
-    }
-
-    // ===== Contract 조건 =====
-
-    public BooleanExpression contractSellerIdEq() {
-        return sellerContractJpaEntity.sellerId.eq(sellerJpaEntity.id);
-    }
-
-    public BooleanExpression contractNotDeleted() {
-        return sellerContractJpaEntity.deletedAt.isNull();
-    }
-
-    public BooleanExpression contractJoinCondition() {
-        return contractSellerIdEq().and(contractNotDeleted());
-    }
-
-    // ===== Settlement 조건 =====
-
-    public BooleanExpression settlementSellerIdEq() {
-        return sellerSettlementJpaEntity.sellerId.eq(sellerJpaEntity.id);
-    }
-
-    public BooleanExpression settlementNotDeleted() {
-        return sellerSettlementJpaEntity.deletedAt.isNull();
-    }
-
-    public BooleanExpression settlementJoinCondition() {
-        return settlementSellerIdEq().and(settlementNotDeleted());
     }
 }

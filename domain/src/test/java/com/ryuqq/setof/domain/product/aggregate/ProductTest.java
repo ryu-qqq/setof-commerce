@@ -5,10 +5,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ryuqq.setof.domain.common.CommonVoFixtures;
 import com.ryuqq.setof.domain.common.vo.Money;
+import com.ryuqq.setof.domain.product.exception.ProductInvalidPriceException;
+import com.ryuqq.setof.domain.product.exception.ProductInvalidStatusTransitionException;
+import com.ryuqq.setof.domain.product.id.ProductId;
 import com.ryuqq.setof.domain.product.vo.ProductStatus;
+import com.ryuqq.setof.domain.product.vo.SkuCode;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
+import com.ryuqq.setof.domain.productgroup.id.SellerOptionValueId;
 import com.setof.commerce.domain.product.ProductFixtures;
 import java.time.Instant;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -30,54 +36,110 @@ class ProductTest {
 
             // then
             assertThat(product.isNew()).isTrue();
-            assertThat(product.option1Name()).isEqualTo(ProductFixtures.DEFAULT_OPTION1_NAME);
-            assertThat(product.option1Value()).isEqualTo(ProductFixtures.DEFAULT_OPTION1_VALUE);
-            assertThat(product.option2Name()).isEqualTo(ProductFixtures.DEFAULT_OPTION2_NAME);
-            assertThat(product.option2Value()).isEqualTo(ProductFixtures.DEFAULT_OPTION2_VALUE);
-            assertThat(product.stockQuantity()).isEqualTo(ProductFixtures.DEFAULT_STOCK);
-            assertThat(product.additionalPriceValue())
-                    .isEqualTo(ProductFixtures.DEFAULT_ADDITIONAL_PRICE);
+            assertThat(product.optionMappings()).hasSize(2);
+            assertThat(product.regularPriceValue())
+                    .isEqualTo(ProductFixtures.DEFAULT_REGULAR_PRICE);
+            assertThat(product.currentPriceValue())
+                    .isEqualTo(ProductFixtures.DEFAULT_CURRENT_PRICE);
+            assertThat(product.stockQuantity()).isEqualTo(ProductFixtures.DEFAULT_STOCK_QUANTITY);
+            assertThat(product.sortOrder()).isEqualTo(ProductFixtures.DEFAULT_SORT_ORDER);
             assertThat(product.status()).isEqualTo(ProductStatus.ACTIVE);
             assertThat(product.isActive()).isTrue();
         }
 
         @Test
-        @DisplayName("additionalPrice가 null이면 Money.zero()로 설정된다")
-        void createWithNullAdditionalPrice() {
+        @DisplayName("옵션 매핑 없이 상품을 생성할 수 있다")
+        void createWithoutOptionMappings() {
             // when
             var product =
                     Product.forNew(
                             ProductGroupId.of(1L),
-                            "색상",
-                            "블랙",
                             null,
-                            null,
-                            null,
-                            10,
+                            Money.of(10000),
+                            Money.of(10000),
+                            100,
+                            0,
+                            List.of(),
                             CommonVoFixtures.now());
 
             // then
-            assertThat(product.additionalPrice()).isEqualTo(Money.zero());
-            assertThat(product.additionalPriceValue()).isZero();
+            assertThat(product.optionMappings()).isEmpty();
         }
 
         @Test
-        @DisplayName("재고가 음수이면 IllegalArgumentException이 발생한다")
-        void throwExceptionForNegativeStock() {
+        @DisplayName("currentPrice가 regularPrice보다 크면 ProductInvalidPriceException이 발생한다")
+        void throwExceptionWhenCurrentPriceExceedsRegularPrice() {
             // when & then
             assertThatThrownBy(
                             () ->
                                     Product.forNew(
                                             ProductGroupId.of(1L),
-                                            "색상",
-                                            "블랙",
-                                            "사이즈",
-                                            "M",
-                                            Money.zero(),
+                                            null,
+                                            Money.of(5000),
+                                            Money.of(10000),
+                                            100,
+                                            0,
+                                            List.of(),
+                                            CommonVoFixtures.now()))
+                    .isInstanceOf(ProductInvalidPriceException.class);
+        }
+
+        @Test
+        @DisplayName("재고 수량이 음수이면 IllegalArgumentException이 발생한다")
+        void throwExceptionWhenNegativeStockQuantity() {
+            // when & then
+            assertThatThrownBy(
+                            () ->
+                                    Product.forNew(
+                                            ProductGroupId.of(1L),
+                                            null,
+                                            Money.of(10000),
+                                            Money.of(10000),
                                             -1,
+                                            0,
+                                            List.of(),
                                             CommonVoFixtures.now()))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("재고 수량은 0 이상이어야 합니다");
+                    .hasMessageContaining("재고 수량은 0 이상이어야 합니다");
+        }
+
+        @Test
+        @DisplayName("할인율이 자동 계산된다")
+        void discountRateIsAutoCalculated() {
+            // when
+            var product =
+                    Product.forNew(
+                            ProductGroupId.of(1L),
+                            null,
+                            Money.of(10000),
+                            Money.of(8000),
+                            100,
+                            0,
+                            List.of(),
+                            CommonVoFixtures.now());
+
+            // then
+            assertThat(product.discountRate()).isEqualTo(20);
+            assertThat(product.salePriceValue()).isEqualTo(8000);
+        }
+
+        @Test
+        @DisplayName("SKU 코드를 지정하여 상품을 생성할 수 있다")
+        void createWithSkuCode() {
+            // when
+            var product =
+                    Product.forNew(
+                            ProductGroupId.of(1L),
+                            SkuCode.of("SKU-001"),
+                            Money.of(10000),
+                            Money.of(10000),
+                            50,
+                            1,
+                            List.of(),
+                            CommonVoFixtures.now());
+
+            // then
+            assertThat(product.skuCodeValue()).isEqualTo("SKU-001");
         }
     }
 
@@ -116,9 +178,8 @@ class ProductTest {
             var product = ProductFixtures.soldOutProduct();
 
             // then
-            assertThat(product.status()).isEqualTo(ProductStatus.SOLDOUT);
+            assertThat(product.status()).isEqualTo(ProductStatus.SOLD_OUT);
             assertThat(product.isSoldOut()).isTrue();
-            assertThat(product.stockQuantity()).isZero();
         }
 
         @Test
@@ -130,69 +191,6 @@ class ProductTest {
             // then
             assertThat(product.status()).isEqualTo(ProductStatus.DELETED);
             assertThat(product.isDeleted()).isTrue();
-        }
-    }
-
-    @Nested
-    @DisplayName("updateStock() - 재고 수량 업데이트")
-    class UpdateStockTest {
-
-        @Test
-        @DisplayName("재고를 정상적으로 업데이트한다")
-        void updateStockSuccessfully() {
-            // given
-            var product = ProductFixtures.activeProduct();
-            Instant now = CommonVoFixtures.now();
-
-            // when
-            product.updateStock(50, now);
-
-            // then
-            assertThat(product.stockQuantity()).isEqualTo(50);
-            assertThat(product.updatedAt()).isEqualTo(now);
-        }
-
-        @Test
-        @DisplayName("재고를 0으로 업데이트하면 품절 상태로 전환된다")
-        void updateStockToZeroTriggersSoldOut() {
-            // given
-            var product = ProductFixtures.activeProduct();
-            Instant now = CommonVoFixtures.now();
-
-            // when
-            product.updateStock(0, now);
-
-            // then
-            assertThat(product.stockQuantity()).isZero();
-            assertThat(product.status()).isEqualTo(ProductStatus.SOLDOUT);
-            assertThat(product.isSoldOut()).isTrue();
-        }
-
-        @Test
-        @DisplayName("음수 재고로 업데이트하면 IllegalArgumentException이 발생한다")
-        void throwExceptionForNegativeStock() {
-            // given
-            var product = ProductFixtures.activeProduct();
-
-            // when & then
-            assertThatThrownBy(() -> product.updateStock(-1, CommonVoFixtures.now()))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("재고 수량은 0 이상이어야 합니다");
-        }
-
-        @Test
-        @DisplayName("비활성 상태에서 재고를 0으로 업데이트해도 품절로 전환되지 않는다")
-        void updateStockToZeroDoesNotTriggerSoldOutWhenInactive() {
-            // given
-            var product = ProductFixtures.inactiveProduct();
-            Instant now = CommonVoFixtures.now();
-
-            // when
-            product.updateStock(0, now);
-
-            // then
-            assertThat(product.stockQuantity()).isZero();
-            assertThat(product.status()).isEqualTo(ProductStatus.INACTIVE);
         }
     }
 
@@ -211,45 +209,41 @@ class ProductTest {
             product.markSoldOut(now);
 
             // then
-            assertThat(product.status()).isEqualTo(ProductStatus.SOLDOUT);
-            assertThat(product.stockQuantity()).isZero();
+            assertThat(product.status()).isEqualTo(ProductStatus.SOLD_OUT);
             assertThat(product.updatedAt()).isEqualTo(now);
         }
 
         @Test
-        @DisplayName("비활성 상태에서 품절 처리하면 IllegalStateException이 발생한다")
+        @DisplayName("비활성 상태에서 품절 처리하면 ProductInvalidStatusTransitionException이 발생한다")
         void throwExceptionWhenMarkSoldOutFromInactive() {
             // given
             var product = ProductFixtures.inactiveProduct();
 
             // when & then
             assertThatThrownBy(() -> product.markSoldOut(CommonVoFixtures.now()))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("품절 처리할 수 없습니다");
+                    .isInstanceOf(ProductInvalidStatusTransitionException.class);
         }
 
         @Test
-        @DisplayName("삭제된 상태에서 품절 처리하면 IllegalStateException이 발생한다")
+        @DisplayName("삭제된 상태에서 품절 처리하면 ProductInvalidStatusTransitionException이 발생한다")
         void throwExceptionWhenMarkSoldOutFromDeleted() {
             // given
             var product = ProductFixtures.deletedProduct();
 
             // when & then
             assertThatThrownBy(() -> product.markSoldOut(CommonVoFixtures.now()))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("품절 처리할 수 없습니다");
+                    .isInstanceOf(ProductInvalidStatusTransitionException.class);
         }
 
         @Test
-        @DisplayName("이미 품절된 상태에서 품절 처리하면 IllegalStateException이 발생한다")
+        @DisplayName("이미 품절된 상태에서 품절 처리하면 ProductInvalidStatusTransitionException이 발생한다")
         void throwExceptionWhenAlreadySoldOut() {
             // given
             var product = ProductFixtures.soldOutProduct();
 
             // when & then
             assertThatThrownBy(() -> product.markSoldOut(CommonVoFixtures.now()))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("품절 처리할 수 없습니다");
+                    .isInstanceOf(ProductInvalidStatusTransitionException.class);
         }
     }
 
@@ -289,27 +283,25 @@ class ProductTest {
         }
 
         @Test
-        @DisplayName("이미 활성 상태에서 활성화하면 IllegalStateException이 발생한다")
+        @DisplayName("이미 활성 상태에서 활성화하면 ProductInvalidStatusTransitionException이 발생한다")
         void throwExceptionWhenAlreadyActive() {
             // given
             var product = ProductFixtures.activeProduct();
 
             // when & then
             assertThatThrownBy(() -> product.activate(CommonVoFixtures.now()))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("활성화할 수 없습니다");
+                    .isInstanceOf(ProductInvalidStatusTransitionException.class);
         }
 
         @Test
-        @DisplayName("삭제된 상태에서 활성화하면 IllegalStateException이 발생한다")
+        @DisplayName("삭제된 상태에서 활성화하면 ProductInvalidStatusTransitionException이 발생한다")
         void throwExceptionWhenActivateFromDeleted() {
             // given
             var product = ProductFixtures.deletedProduct();
 
             // when & then
             assertThatThrownBy(() -> product.activate(CommonVoFixtures.now()))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("활성화할 수 없습니다");
+                    .isInstanceOf(ProductInvalidStatusTransitionException.class);
         }
     }
 
@@ -334,39 +326,36 @@ class ProductTest {
         }
 
         @Test
-        @DisplayName("비활성 상태에서 비활성화하면 IllegalStateException이 발생한다")
+        @DisplayName("비활성 상태에서 비활성화하면 ProductInvalidStatusTransitionException이 발생한다")
         void throwExceptionWhenAlreadyInactive() {
             // given
             var product = ProductFixtures.inactiveProduct();
 
             // when & then
             assertThatThrownBy(() -> product.deactivate(CommonVoFixtures.now()))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("비활성화할 수 없습니다");
+                    .isInstanceOf(ProductInvalidStatusTransitionException.class);
         }
 
         @Test
-        @DisplayName("품절 상태에서 비활성화하면 IllegalStateException이 발생한다")
+        @DisplayName("품절 상태에서 비활성화하면 ProductInvalidStatusTransitionException이 발생한다")
         void throwExceptionWhenDeactivateFromSoldOut() {
             // given
             var product = ProductFixtures.soldOutProduct();
 
             // when & then
             assertThatThrownBy(() -> product.deactivate(CommonVoFixtures.now()))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("비활성화할 수 없습니다");
+                    .isInstanceOf(ProductInvalidStatusTransitionException.class);
         }
 
         @Test
-        @DisplayName("삭제된 상태에서 비활성화하면 IllegalStateException이 발생한다")
+        @DisplayName("삭제된 상태에서 비활성화하면 ProductInvalidStatusTransitionException이 발생한다")
         void throwExceptionWhenDeactivateFromDeleted() {
             // given
             var product = ProductFixtures.deletedProduct();
 
             // when & then
             assertThatThrownBy(() -> product.deactivate(CommonVoFixtures.now()))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("비활성화할 수 없습니다");
+                    .isInstanceOf(ProductInvalidStatusTransitionException.class);
         }
     }
 
@@ -421,55 +410,192 @@ class ProductTest {
         }
 
         @Test
-        @DisplayName("이미 삭제된 상태에서 삭제하면 IllegalStateException이 발생한다")
+        @DisplayName("이미 삭제된 상태에서 삭제하면 ProductInvalidStatusTransitionException이 발생한다")
         void throwExceptionWhenAlreadyDeleted() {
             // given
             var product = ProductFixtures.deletedProduct();
 
             // when & then
             assertThatThrownBy(() -> product.delete(CommonVoFixtures.now()))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessage("이미 삭제된 상품입니다");
+                    .isInstanceOf(ProductInvalidStatusTransitionException.class);
+        }
+
+        @Test
+        @DisplayName("삭제 시 옵션 매핑도 함께 삭제된다")
+        void deleteAlsoDeletesOptionMappings() {
+            // given
+            var product = ProductFixtures.activeProduct();
+            Instant now = CommonVoFixtures.now();
+
+            // when
+            product.delete(now);
+
+            // then
+            assertThat(product.optionMappings()).allMatch(ProductOptionMapping::isDeleted);
         }
     }
 
     @Nested
-    @DisplayName("updateOptions() - 옵션 정보 수정")
-    class UpdateOptionsTest {
+    @DisplayName("updatePrice() - 가격 수정")
+    class UpdatePriceTest {
 
         @Test
-        @DisplayName("옵션 정보를 수정한다")
-        void updateOptionsSuccessfully() {
+        @DisplayName("가격을 수정한다")
+        void updatePriceSuccessfully() {
             // given
             var product = ProductFixtures.activeProduct();
             Instant now = CommonVoFixtures.now();
 
             // when
-            product.updateOptions("컬러", "화이트", "사이즈", "L", now);
+            product.updatePrice(Money.of(20000), Money.of(15000), now);
 
             // then
-            assertThat(product.option1Name()).isEqualTo("컬러");
-            assertThat(product.option1Value()).isEqualTo("화이트");
-            assertThat(product.option2Name()).isEqualTo("사이즈");
-            assertThat(product.option2Value()).isEqualTo("L");
+            assertThat(product.regularPriceValue()).isEqualTo(20000);
+            assertThat(product.currentPriceValue()).isEqualTo(15000);
+            assertThat(product.salePriceValue()).isEqualTo(15000);
+            assertThat(product.discountRate()).isEqualTo(25);
             assertThat(product.updatedAt()).isEqualTo(now);
         }
 
         @Test
-        @DisplayName("옵션을 null로 수정할 수 있다")
-        void updateOptionsToNull() {
+        @DisplayName("currentPrice가 regularPrice보다 크면 ProductInvalidPriceException이 발생한다")
+        void throwExceptionWhenCurrentPriceExceedsRegularPrice() {
+            // given
+            var product = ProductFixtures.activeProduct();
+
+            // when & then
+            assertThatThrownBy(
+                            () ->
+                                    product.updatePrice(
+                                            Money.of(5000),
+                                            Money.of(10000),
+                                            CommonVoFixtures.now()))
+                    .isInstanceOf(ProductInvalidPriceException.class);
+        }
+
+        @Test
+        @DisplayName("동일 가격으로 수정하면 할인율이 0이 된다")
+        void updatePriceWithSameValues() {
             // given
             var product = ProductFixtures.activeProduct();
             Instant now = CommonVoFixtures.now();
 
             // when
-            product.updateOptions(null, null, null, null, now);
+            product.updatePrice(Money.of(10000), Money.of(10000), now);
 
             // then
-            assertThat(product.option1Name()).isNull();
-            assertThat(product.option1Value()).isNull();
-            assertThat(product.option2Name()).isNull();
-            assertThat(product.option2Value()).isNull();
+            assertThat(product.discountRate()).isZero();
+        }
+    }
+
+    @Nested
+    @DisplayName("updateStock() - 재고 수정")
+    class UpdateStockTest {
+
+        @Test
+        @DisplayName("재고를 수정한다")
+        void updateStockSuccessfully() {
+            // given
+            var product = ProductFixtures.activeProduct();
+            Instant now = CommonVoFixtures.now();
+
+            // when
+            product.updateStock(200, now);
+
+            // then
+            assertThat(product.stockQuantity()).isEqualTo(200);
+            assertThat(product.updatedAt()).isEqualTo(now);
+        }
+
+        @Test
+        @DisplayName("재고를 0으로 수정할 수 있다")
+        void updateStockToZero() {
+            // given
+            var product = ProductFixtures.activeProduct();
+            Instant now = CommonVoFixtures.now();
+
+            // when
+            product.updateStock(0, now);
+
+            // then
+            assertThat(product.stockQuantity()).isZero();
+            assertThat(product.hasStock()).isFalse();
+        }
+
+        @Test
+        @DisplayName("음수 재고로 수정하면 IllegalArgumentException이 발생한다")
+        void throwExceptionWhenNegativeStock() {
+            // given
+            var product = ProductFixtures.activeProduct();
+
+            // when & then
+            assertThatThrownBy(() -> product.updateStock(-1, CommonVoFixtures.now()))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("재고 수량은 0 이상이어야 합니다");
+        }
+    }
+
+    @Nested
+    @DisplayName("updateSkuCode() - SKU 코드 수정")
+    class UpdateSkuCodeTest {
+
+        @Test
+        @DisplayName("SKU 코드를 수정한다")
+        void updateSkuCodeSuccessfully() {
+            // given
+            var product = ProductFixtures.activeProduct();
+            Instant now = CommonVoFixtures.now();
+
+            // when
+            product.updateSkuCode(SkuCode.of("NEW-SKU-001"), now);
+
+            // then
+            assertThat(product.skuCodeValue()).isEqualTo("NEW-SKU-001");
+            assertThat(product.updatedAt()).isEqualTo(now);
+        }
+    }
+
+    @Nested
+    @DisplayName("updateSortOrder() - 정렬 순서 수정")
+    class UpdateSortOrderTest {
+
+        @Test
+        @DisplayName("정렬 순서를 수정한다")
+        void updateSortOrderSuccessfully() {
+            // given
+            var product = ProductFixtures.activeProduct();
+            Instant now = CommonVoFixtures.now();
+
+            // when
+            product.updateSortOrder(5, now);
+
+            // then
+            assertThat(product.sortOrder()).isEqualTo(5);
+            assertThat(product.updatedAt()).isEqualTo(now);
+        }
+    }
+
+    @Nested
+    @DisplayName("update() - 전체 속성 일괄 수정")
+    class UpdateTest {
+
+        @Test
+        @DisplayName("전체 속성을 일괄 수정한다")
+        void updateAllPropertiesSuccessfully() {
+            // given
+            var product = ProductFixtures.activeProduct();
+            Instant now = CommonVoFixtures.now();
+
+            // when
+            product.update(SkuCode.of("BULK-SKU"), Money.of(20000), Money.of(16000), 50, 3, now);
+
+            // then
+            assertThat(product.skuCodeValue()).isEqualTo("BULK-SKU");
+            assertThat(product.regularPriceValue()).isEqualTo(20000);
+            assertThat(product.currentPriceValue()).isEqualTo(16000);
+            assertThat(product.stockQuantity()).isEqualTo(50);
+            assertThat(product.sortOrder()).isEqualTo(3);
+            assertThat(product.updatedAt()).isEqualTo(now);
         }
     }
 
@@ -478,27 +604,7 @@ class ProductTest {
     class BusinessMethodTest {
 
         @Test
-        @DisplayName("hasStock()은 재고가 있으면 true를 반환한다")
-        void hasStockReturnsTrue() {
-            // given
-            var product = ProductFixtures.productWithStock(10);
-
-            // then
-            assertThat(product.hasStock()).isTrue();
-        }
-
-        @Test
-        @DisplayName("hasStock()은 재고가 0이면 false를 반환한다")
-        void hasStockReturnsFalseWhenZero() {
-            // given
-            var product = ProductFixtures.productWithStock(0);
-
-            // then
-            assertThat(product.hasStock()).isFalse();
-        }
-
-        @Test
-        @DisplayName("isSoldOut()은 SOLDOUT 상태이면 true를 반환한다")
+        @DisplayName("isSoldOut()은 SOLD_OUT 상태이면 true를 반환한다")
         void isSoldOutReturnsTrue() {
             // given
             var product = ProductFixtures.soldOutProduct();
@@ -538,43 +644,33 @@ class ProductTest {
         }
 
         @Test
-        @DisplayName("hasOptions()은 option1Name이 존재하면 true를 반환한다")
-        void hasOptionsReturnsTrue() {
+        @DisplayName("hasStock()은 재고가 있으면 true를 반환한다")
+        void hasStockReturnsTrue() {
             // given
             var product = ProductFixtures.activeProduct();
 
             // then
-            assertThat(product.hasOptions()).isTrue();
+            assertThat(product.hasStock()).isTrue();
         }
 
         @Test
-        @DisplayName("hasOptions()은 option1Name이 null이면 false를 반환한다")
-        void hasOptionsReturnsFalseWhenNull() {
-            // given
-            var product = ProductFixtures.productWithoutOptions();
-
-            // then
-            assertThat(product.hasOptions()).isFalse();
-        }
-
-        @Test
-        @DisplayName("hasCombinationOptions()은 option1Name과 option2Name이 모두 존재하면 true를 반환한다")
-        void hasCombinationOptionsReturnsTrue() {
+        @DisplayName("optionMappings()의 크기를 확인한다")
+        void optionMappingsSize() {
             // given
             var product = ProductFixtures.activeProduct();
 
             // then
-            assertThat(product.hasCombinationOptions()).isTrue();
+            assertThat(product.optionMappings()).hasSize(2);
         }
 
         @Test
-        @DisplayName("hasCombinationOptions()은 option2Name이 null이면 false를 반환한다")
-        void hasCombinationOptionsReturnsFalseWhenOption2Null() {
+        @DisplayName("옵션 매핑이 없는 상품의 optionMappings()는 비어있다")
+        void optionMappingsEmptyWhenNoOptions() {
             // given
             var product = ProductFixtures.productWithoutOptions();
 
             // then
-            assertThat(product.hasCombinationOptions()).isFalse();
+            assertThat(product.optionMappings()).isEmpty();
         }
     }
 
@@ -606,15 +702,66 @@ class ProductTest {
         }
 
         @Test
-        @DisplayName("additionalPrice()는 Money를 반환한다")
-        void returnsAdditionalPrice() {
+        @DisplayName("optionMappings()는 불변 리스트를 반환한다")
+        void returnsUnmodifiableOptionMappings() {
             // given
             var product = ProductFixtures.activeProduct();
 
             // then
-            assertThat(product.additionalPrice()).isNotNull();
-            assertThat(product.additionalPriceValue())
-                    .isEqualTo(ProductFixtures.DEFAULT_ADDITIONAL_PRICE);
+            assertThat(product.optionMappings()).isNotNull();
+            assertThat(product.optionMappings()).hasSize(2);
+            assertThatThrownBy(
+                            () ->
+                                    product.optionMappings()
+                                            .add(
+                                                    ProductOptionMapping.forNew(
+                                                            ProductId.forNew(),
+                                                            SellerOptionValueId.of(99L))))
+                    .isInstanceOf(UnsupportedOperationException.class);
+        }
+
+        @Test
+        @DisplayName("regularPrice()는 Money를 반환한다")
+        void returnsRegularPrice() {
+            // given
+            var product = ProductFixtures.activeProduct();
+
+            // then
+            assertThat(product.regularPrice()).isNotNull();
+            assertThat(product.regularPriceValue())
+                    .isEqualTo(ProductFixtures.DEFAULT_REGULAR_PRICE);
+        }
+
+        @Test
+        @DisplayName("currentPrice()는 Money를 반환한다")
+        void returnsCurrentPrice() {
+            // given
+            var product = ProductFixtures.activeProduct();
+
+            // then
+            assertThat(product.currentPrice()).isNotNull();
+            assertThat(product.currentPriceValue())
+                    .isEqualTo(ProductFixtures.DEFAULT_CURRENT_PRICE);
+        }
+
+        @Test
+        @DisplayName("stockQuantity()는 재고 수량을 반환한다")
+        void returnsStockQuantity() {
+            // given
+            var product = ProductFixtures.activeProduct();
+
+            // then
+            assertThat(product.stockQuantity()).isEqualTo(ProductFixtures.DEFAULT_STOCK_QUANTITY);
+        }
+
+        @Test
+        @DisplayName("sortOrder()는 정렬 순서를 반환한다")
+        void returnsSortOrder() {
+            // given
+            var product = ProductFixtures.activeProduct();
+
+            // then
+            assertThat(product.sortOrder()).isEqualTo(ProductFixtures.DEFAULT_SORT_ORDER);
         }
 
         @Test

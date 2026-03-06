@@ -16,7 +16,13 @@ persistence:
       enabled: true
     brand:
       enabled: true
-    board:
-      enabled: true
     faq:
+      enabled: false
+    member:
       enabled: true
+    refundaccount:
+      enabled: false
+    shippingaddress:
+      enabled: false
+    wishlist:
+      enabled: false

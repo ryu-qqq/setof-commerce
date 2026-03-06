@@ -1,6 +1,6 @@
 package com.ryuqq.setof.storage.legacy.faq.adapter;
 
-import com.ryuqq.setof.application.faq.port.out.query.FaqQueryPort;
+import com.ryuqq.setof.application.faq.port.out.FaqQueryPort;
 import com.ryuqq.setof.domain.faq.aggregate.Faq;
 import com.ryuqq.setof.domain.faq.query.FaqSearchCriteria;
 import com.ryuqq.setof.storage.legacy.faq.entity.LegacyFaqEntity;

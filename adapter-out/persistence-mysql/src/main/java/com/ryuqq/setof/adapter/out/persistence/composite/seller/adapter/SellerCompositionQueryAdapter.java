@@ -6,7 +6,6 @@ import com.ryuqq.setof.adapter.out.persistence.composite.seller.dto.ShippingPoli
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.mapper.SellerCompositeMapper;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.repository.SellerCompositeQueryDslRepository;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.repository.SellerPolicyCompositeQueryDslRepository;
-import com.ryuqq.setof.application.seller.dto.composite.SellerAdminCompositeResult;
 import com.ryuqq.setof.application.seller.dto.composite.SellerCompositeResult;
 import com.ryuqq.setof.application.seller.dto.composite.SellerPolicyCompositeResult;
 import com.ryuqq.setof.application.seller.port.out.query.SellerCompositionQueryPort;
@@ -41,13 +40,6 @@ public class SellerCompositionQueryAdapter implements SellerCompositionQueryPort
     @Override
     public Optional<SellerCompositeResult> findSellerCompositeById(Long sellerId) {
         return compositeRepository.findBySellerId(sellerId).map(compositeMapper::toResult);
-    }
-
-    @Override
-    public Optional<SellerAdminCompositeResult> findAdminCompositeById(Long sellerId) {
-        return compositeRepository
-                .findAdminCompositeById(sellerId)
-                .map(compositeMapper::toAdminResult);
     }
 
     @Override

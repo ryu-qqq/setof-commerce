@@ -3,7 +3,7 @@ package com.ryuqq.setof.adapter.out.persistence.brand.adapter;
 import com.ryuqq.setof.adapter.out.persistence.brand.entity.BrandJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.brand.mapper.BrandJpaEntityMapper;
 import com.ryuqq.setof.adapter.out.persistence.brand.repository.BrandQueryDslRepository;
-import com.ryuqq.setof.application.brand.port.out.query.BrandQueryPort;
+import com.ryuqq.setof.application.brand.port.out.BrandQueryPort;
 import com.ryuqq.setof.domain.brand.aggregate.Brand;
 import com.ryuqq.setof.domain.brand.id.BrandId;
 import com.ryuqq.setof.domain.brand.query.BrandSearchCriteria;

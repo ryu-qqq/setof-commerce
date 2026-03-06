@@ -6,14 +6,12 @@ import com.ryuqq.setof.domain.seller.query.SellerSearchCriteria;
 import java.util.List;
 import java.util.Optional;
 
-/** Seller Query Port. */
 public interface SellerQueryPort {
+    Optional<Seller> findById(Long id);
 
-    Optional<Seller> findById(SellerId id);
+    List<Seller> findByIds(List<Long> ids);
 
-    List<Seller> findByIds(List<SellerId> ids);
-
-    boolean existsById(SellerId id);
+    boolean existsById(Long id);
 
     boolean existsBySellerName(String sellerName);
 

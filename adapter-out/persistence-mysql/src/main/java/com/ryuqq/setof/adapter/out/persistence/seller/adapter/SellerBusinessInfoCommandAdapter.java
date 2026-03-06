@@ -9,50 +9,54 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
- * SellerBusinessInfoCommandAdapter - 셀러 사업자 정보 명령 어댑터.
+ * SellerBusinessInfoCommandAdapter - 셀러 사업자 정보 Command 어댑터.
  *
  * <p>SellerBusinessInfoCommandPort를 구현하여 영속성 계층과 연결합니다.
  *
- * <p>PER-ADP-001: CommandAdapter는 JpaRepository만 사용.
+ * <p>PER-ADP-003: CommandAdapter는 JpaRepository만 사용.
  *
  * <p>PER-ADP-002: Adapter에서 @Transactional 금지.
  *
- * <p>PER-ADP-003: Domain 반환 (DTO 반환 금지).
+ * @author ryu-qqq
+ * @since 1.0.0
  */
 @Component
 public class SellerBusinessInfoCommandAdapter implements SellerBusinessInfoCommandPort {
 
-    private final SellerBusinessInfoJpaRepository repository;
+    private final SellerBusinessInfoJpaRepository jpaRepository;
     private final SellerBusinessInfoJpaEntityMapper mapper;
 
     public SellerBusinessInfoCommandAdapter(
-            SellerBusinessInfoJpaRepository repository, SellerBusinessInfoJpaEntityMapper mapper) {
-        this.repository = repository;
+            SellerBusinessInfoJpaRepository jpaRepository,
+            SellerBusinessInfoJpaEntityMapper mapper) {
+        this.jpaRepository = jpaRepository;
         this.mapper = mapper;
     }
 
     /**
-     * SellerBusinessInfo 영속화 (생성/수정).
+     * 셀러 사업자 정보 저장.
      *
-     * @param businessInfo 영속화할 SellerBusinessInfo
-     * @return 영속화된 SellerBusinessInfo ID
+     * @param businessInfo 사업자 정보 도메인 객체
+     * @return 저장된 사업자 정보 도메인 객체
      */
     @Override
-    public Long persist(SellerBusinessInfo businessInfo) {
+    public SellerBusinessInfo persist(SellerBusinessInfo businessInfo) {
         SellerBusinessInfoJpaEntity entity = mapper.toEntity(businessInfo);
-        SellerBusinessInfoJpaEntity saved = repository.save(entity);
-        return saved.getId();
+        SellerBusinessInfoJpaEntity saved = jpaRepository.save(entity);
+        return mapper.toDomain(saved);
     }
 
     /**
-     * SellerBusinessInfo 목록 일괄 영속화.
+     * 셀러 사업자 정보 목록 저장.
      *
-     * @param businessInfos 영속화할 SellerBusinessInfo 목록
+     * @param businessInfos 사업자 정보 도메인 객체 목록
+     * @return 저장된 사업자 정보 도메인 객체 목록
      */
     @Override
-    public void persistAll(List<SellerBusinessInfo> businessInfos) {
+    public List<SellerBusinessInfo> persistAll(List<SellerBusinessInfo> businessInfos) {
         List<SellerBusinessInfoJpaEntity> entities =
                 businessInfos.stream().map(mapper::toEntity).toList();
-        repository.saveAll(entities);
+        List<SellerBusinessInfoJpaEntity> saved = jpaRepository.saveAll(entities);
+        return saved.stream().map(mapper::toDomain).toList();
     }
 }

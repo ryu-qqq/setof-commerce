@@ -7,9 +7,9 @@ package com.ryuqq.setof.domain.product.vo;
  *
  * <ul>
  *   <li>ACTIVE → INACTIVE (비활성화)
- *   <li>ACTIVE → SOLDOUT (품절)
+ *   <li>ACTIVE → SOLD_OUT (품절)
  *   <li>INACTIVE → ACTIVE (재활성화)
- *   <li>SOLDOUT → ACTIVE (재입고)
+ *   <li>SOLD_OUT → ACTIVE (재입고)
  *   <li>* → DELETED (삭제)
  * </ul>
  */
@@ -22,13 +22,13 @@ public enum ProductStatus {
     INACTIVE,
 
     /** 품절 */
-    SOLDOUT,
+    SOLD_OUT,
 
     /** 삭제됨 */
     DELETED;
 
     public boolean canActivate() {
-        return this == INACTIVE || this == SOLDOUT;
+        return this == INACTIVE || this == SOLD_OUT;
     }
 
     public boolean canDeactivate() {
@@ -48,7 +48,7 @@ public enum ProductStatus {
     }
 
     public boolean isSoldOut() {
-        return this == SOLDOUT;
+        return this == SOLD_OUT;
     }
 
     public boolean isDeleted() {
@@ -69,7 +69,7 @@ public enum ProductStatus {
             return DELETED;
         }
         if ("Y".equalsIgnoreCase(soldOutYn)) {
-            return SOLDOUT;
+            return SOLD_OUT;
         }
         if ("N".equalsIgnoreCase(displayYn)) {
             return INACTIVE;

@@ -107,8 +107,7 @@ public class CategoryQueryDslRepository {
     public List<CategoryJpaEntity> findByCriteria(CategorySearchCriteria criteria) {
         QueryContext<CategorySortKey> qc = criteria.queryContext();
 
-        Long parentIdValue =
-                criteria.parentCategoryId() != null ? criteria.parentCategoryId().value() : null;
+        Long parentIdValue = criteria.parentCategoryIdValue();
 
         return queryFactory
                 .selectFrom(categoryJpaEntity)
@@ -132,8 +131,7 @@ public class CategoryQueryDslRepository {
      * @return 카테고리 개수
      */
     public long countByCriteria(CategorySearchCriteria criteria) {
-        Long parentIdValue =
-                criteria.parentCategoryId() != null ? criteria.parentCategoryId().value() : null;
+        Long parentIdValue = criteria.parentCategoryIdValue();
 
         Long count =
                 queryFactory

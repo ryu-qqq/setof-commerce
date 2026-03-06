@@ -1,0 +1,40 @@
+domain: brand
+description: "Brand API shadow traffic test cases"
+
+test_cases:
+  - name: "brand_list_all"
+    path: "/api/v1/brand"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "brand_list_search"
+    path: "/api/v1/brand"
+    method: GET
+    auth: none
+    body:
+      searchWord: "나이키"
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "brand_detail_id_1"
+    path: "/api/v1/brand/1"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "brand_detail_id_2"
+    path: "/api/v1/brand/2"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "brand_detail_not_found"
+    path: "/api/v1/brand/999999"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []

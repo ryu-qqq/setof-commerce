@@ -31,4 +31,8 @@ public record SellerUpdateData(
                 logoUrl != null ? LogoUrl.of(logoUrl) : null,
                 description != null ? Description.of(description) : null);
     }
+
+    public String sellerNameValue() {
+        return sellerName.value();
+    }
 }

@@ -9,6 +9,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * <p>PER-REP-001: JpaRepository는 save/saveAll만 사용.
  *
  * <p>PER-REP-003: 모든 조회는 QueryDslRepository에서 처리.
+ *
+ * @author ryu-qqq
+ * @since 1.0.0
  */
 public interface SellerBusinessInfoJpaRepository
         extends JpaRepository<SellerBusinessInfoJpaEntity, Long> {}

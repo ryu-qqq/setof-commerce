@@ -1,8 +1,8 @@
 package com.ryuqq.setof.adapter.out.persistence.redis.cache.adapter;
 
-import com.ryuqq.setof.application.auth.port.out.cache.RefreshTokenCacheCommandPort;
-import com.ryuqq.setof.application.auth.port.out.cache.RefreshTokenCacheQueryPort;
-import com.ryuqq.setof.domain.auth.vo.RefreshTokenCacheKey;
+import com.ryuqq.setof.application.member.port.out.command.RefreshTokenCacheCommandPort;
+import com.ryuqq.setof.application.member.port.out.query.RefreshTokenCacheQueryPort;
+import com.ryuqq.setof.domain.member.vo.RefreshTokenCacheKey;
 import java.time.Duration;
 import java.util.Optional;
 import org.springframework.data.redis.core.RedisTemplate;

@@ -5,7 +5,7 @@ import com.ryuqq.setof.adapter.in.rest.v1.category.dto.response.TreeCategoryV1Ap
 import com.ryuqq.setof.adapter.in.rest.v1.category.mapper.CategoryV1ApiMapper;
 import com.ryuqq.setof.adapter.in.rest.v1.common.dto.V1ApiResponse;
 import com.ryuqq.setof.application.category.dto.response.CategoryDisplayResult;
-import com.ryuqq.setof.application.category.port.in.query.GetCategoriesForDisplayUseCase;
+import com.ryuqq.setof.application.category.port.in.GetCategoriesForDisplayUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;

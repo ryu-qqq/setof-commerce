@@ -2,7 +2,7 @@ package com.ryuqq.setof.application.refundpolicy.manager;
 
 import com.ryuqq.setof.application.refundpolicy.port.out.query.RefundPolicyQueryPort;
 import com.ryuqq.setof.domain.refundpolicy.aggregate.RefundPolicy;
-import com.ryuqq.setof.domain.refundpolicy.exception.RefundPolicyException;
+import com.ryuqq.setof.domain.refundpolicy.exception.RefundPolicyNotFoundException;
 import com.ryuqq.setof.domain.refundpolicy.id.RefundPolicyId;
 import com.ryuqq.setof.domain.refundpolicy.query.RefundPolicySearchCriteria;
 import com.ryuqq.setof.domain.seller.id.SellerId;
@@ -23,7 +23,7 @@ public class RefundPolicyReadManager {
 
     @Transactional(readOnly = true)
     public RefundPolicy getById(RefundPolicyId id) {
-        return queryPort.findById(id).orElseThrow(RefundPolicyException::policyNotFound);
+        return queryPort.findById(id).orElseThrow(RefundPolicyNotFoundException::new);
     }
 
     @Transactional(readOnly = true)

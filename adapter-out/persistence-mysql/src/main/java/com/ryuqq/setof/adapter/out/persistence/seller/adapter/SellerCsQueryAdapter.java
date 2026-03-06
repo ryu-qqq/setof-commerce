@@ -4,13 +4,12 @@ import com.ryuqq.setof.adapter.out.persistence.seller.mapper.SellerCsJpaEntityMa
 import com.ryuqq.setof.adapter.out.persistence.seller.repository.SellerCsQueryDslRepository;
 import com.ryuqq.setof.application.seller.port.out.query.SellerCsQueryPort;
 import com.ryuqq.setof.domain.seller.aggregate.SellerCs;
-import com.ryuqq.setof.domain.seller.id.SellerCsId;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 /**
- * SellerCsQueryAdapter - 셀러 CS 정보 조회 어댑터.
+ * SellerCsQueryAdapter - 셀러 CS 정보 Query 어댑터.
  *
  * <p>SellerCsQueryPort를 구현하여 영속성 계층과 연결합니다.
  *
@@ -18,9 +17,8 @@ import org.springframework.stereotype.Component;
  *
  * <p>PER-ADP-002: Adapter에서 @Transactional 금지.
  *
- * <p>PER-ADP-003: Domain 반환 (DTO 반환 금지).
- *
- * <p>PER-ADP-005: Entity -> Domain 변환 (Mapper 사용).
+ * @author ryu-qqq
+ * @since 1.0.0
  */
 @Component
 public class SellerCsQueryAdapter implements SellerCsQueryPort {
@@ -34,34 +32,16 @@ public class SellerCsQueryAdapter implements SellerCsQueryPort {
         this.mapper = mapper;
     }
 
-    /**
-     * ID로 CS 정보 조회.
-     *
-     * @param id CS ID
-     * @return CS 정보 Optional
-     */
     @Override
-    public Optional<SellerCs> findById(SellerCsId id) {
-        return queryDslRepository.findById(id.value()).map(mapper::toDomain);
+    public Optional<SellerCs> findById(Long id) {
+        return queryDslRepository.findById(id).map(mapper::toDomain);
     }
 
-    /**
-     * 셀러 ID로 CS 정보 조회.
-     *
-     * @param sellerId 셀러 ID
-     * @return CS 정보 Optional
-     */
     @Override
     public Optional<SellerCs> findBySellerId(SellerId sellerId) {
         return queryDslRepository.findBySellerId(sellerId.value()).map(mapper::toDomain);
     }
 
-    /**
-     * 셀러 ID로 CS 정보 존재 여부 확인.
-     *
-     * @param sellerId 셀러 ID
-     * @return 존재하면 true
-     */
     @Override
     public boolean existsBySellerId(SellerId sellerId) {
         return queryDslRepository.existsBySellerId(sellerId.value());

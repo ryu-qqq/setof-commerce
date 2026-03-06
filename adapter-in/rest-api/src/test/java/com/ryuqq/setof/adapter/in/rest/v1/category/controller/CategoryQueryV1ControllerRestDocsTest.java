@@ -13,7 +13,7 @@ import com.ryuqq.setof.adapter.in.rest.v1.category.CategoryV1Endpoints;
 import com.ryuqq.setof.adapter.in.rest.v1.category.dto.response.TreeCategoryV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.category.mapper.CategoryV1ApiMapper;
 import com.ryuqq.setof.application.category.dto.response.CategoryDisplayResult;
-import com.ryuqq.setof.application.category.port.in.query.GetCategoriesForDisplayUseCase;
+import com.ryuqq.setof.application.category.port.in.GetCategoriesForDisplayUseCase;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

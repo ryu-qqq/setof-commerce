@@ -1,19 +1,17 @@
 package com.ryuqq.setof.domain.productgroup.vo;
 
-/** 상품그룹 이미지 유형. */
+/** 상품 그룹 이미지 유형. */
 public enum ImageType {
+    THUMBNAIL("대표 이미지"),
+    DETAIL("상세 이미지");
 
-    /** 썸네일 이미지 */
-    THUMBNAIL,
+    private final String displayName;
 
-    /** 상세 이미지 */
-    DETAIL;
-
-    public boolean isThumbnail() {
-        return this == THUMBNAIL;
+    ImageType(String displayName) {
+        this.displayName = displayName;
     }
 
-    public boolean isDetail() {
-        return this == DETAIL;
+    public String displayName() {
+        return displayName;
     }
 }

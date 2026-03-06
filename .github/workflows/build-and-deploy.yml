@@ -7,10 +7,8 @@
 # - legacy-api (bootstrap-legacy-web-api)
 # - legacy-api-admin (bootstrap-legacy-web-api-admin)
 # - legacy-batch (bootstrap-batch)
-# - scheduler (bootstrap-scheduler)
 # - web-api (bootstrap-web-api)
 # - web-api-admin (bootstrap-web-api-admin)
-# - migration (bootstrap-migration) - RunTask 전용
 #
 # 배포 프로세스:
 # 1. 변경 감지 및 테스트
@@ -66,10 +64,8 @@ jobs:
       legacy-api: ${{ steps.filter.outputs.legacy-api }}
       legacy-api-admin: ${{ steps.filter.outputs.legacy-api-admin }}
       legacy-batch: ${{ steps.filter.outputs.legacy-batch }}
-      scheduler: ${{ steps.filter.outputs.scheduler }}
       web-api: ${{ steps.filter.outputs.web-api }}
       web-api-admin: ${{ steps.filter.outputs.web-api-admin }}
-      migration: ${{ steps.filter.outputs.migration }}
       shared: ${{ steps.filter.outputs.shared }}
       any-changes: ${{ steps.check.outputs.any-changes }}
     steps:
@@ -97,17 +93,12 @@ jobs:
               - 'adapter-in/rest-api-admin/**'
             legacy-batch:
               - 'bootstrap/bootstrap-batch/**'
-            scheduler:
-              - 'bootstrap/bootstrap-scheduler/**'
-              - 'adapter-in/scheduler/**'
             web-api:
               - 'bootstrap/bootstrap-web-api/**'
               - 'adapter-in/rest-api/**'
             web-api-admin:
               - 'bootstrap/bootstrap-web-api-admin/**'
               - 'adapter-in/rest-api-admin/**'
-            migration:
-              - 'bootstrap/bootstrap-migration/**'
 
       - name: Check if any changes
         id: check
@@ -116,10 +107,8 @@ jobs:
              [[ "${{ steps.filter.outputs.legacy-api }}" == "true" ]] || \
              [[ "${{ steps.filter.outputs.legacy-api-admin }}" == "true" ]] || \
              [[ "${{ steps.filter.outputs.legacy-batch }}" == "true" ]] || \
-             [[ "${{ steps.filter.outputs.scheduler }}" == "true" ]] || \
              [[ "${{ steps.filter.outputs.web-api }}" == "true" ]] || \
              [[ "${{ steps.filter.outputs.web-api-admin }}" == "true" ]] || \
-             [[ "${{ steps.filter.outputs.migration }}" == "true" ]] || \
              [[ "${{ github.event.inputs.force-all }}" == "true" ]]; then
             echo "any-changes=true" >> $GITHUB_OUTPUT
           else
@@ -136,10 +125,8 @@ jobs:
           echo "| legacy-api | ${{ steps.filter.outputs.legacy-api }} |" >> $GITHUB_STEP_SUMMARY
           echo "| legacy-api-admin | ${{ steps.filter.outputs.legacy-api-admin }} |" >> $GITHUB_STEP_SUMMARY
           echo "| legacy-batch | ${{ steps.filter.outputs.legacy-batch }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| scheduler | ${{ steps.filter.outputs.scheduler }} |" >> $GITHUB_STEP_SUMMARY
           echo "| web-api | ${{ steps.filter.outputs.web-api }} |" >> $GITHUB_STEP_SUMMARY
           echo "| web-api-admin | ${{ steps.filter.outputs.web-api-admin }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| migration | ${{ steps.filter.outputs.migration }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Force All**: ${{ github.event.inputs.force-all || 'false' }}" >> $GITHUB_STEP_SUMMARY
           echo "**Skip Stage Check**: ${{ github.event.inputs.skip-stage-check || 'false' }}" >> $GITHUB_STEP_SUMMARY
@@ -172,10 +159,8 @@ jobs:
             :bootstrap:bootstrap-legacy-web-api:test \
             :bootstrap:bootstrap-legacy-web-api-admin:test \
             :bootstrap:bootstrap-batch:test \
-            :bootstrap:bootstrap-scheduler:test \
             :bootstrap:bootstrap-web-api:test \
             :bootstrap:bootstrap-web-api-admin:test \
-            :bootstrap:bootstrap-migration:test \
             --no-daemon
 
       - name: Test Summary
@@ -191,11 +176,9 @@ jobs:
           echo "**New Modules:**" >> $GITHUB_STEP_SUMMARY
           echo "- bootstrap-web-api" >> $GITHUB_STEP_SUMMARY
           echo "- bootstrap-web-api-admin" >> $GITHUB_STEP_SUMMARY
-          echo "- bootstrap-scheduler" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Batch/Migration Modules:**" >> $GITHUB_STEP_SUMMARY
+          echo "**Batch Modules:**" >> $GITHUB_STEP_SUMMARY
           echo "- bootstrap-batch (RunTask 전용)" >> $GITHUB_STEP_SUMMARY
-          echo "- bootstrap-migration (RunTask 전용)" >> $GITHUB_STEP_SUMMARY
 
   # ============================================================================
   # 빌드 Jobs - Legacy 모듈
@@ -260,25 +243,6 @@ jobs:
   # ============================================================================
   # 빌드 Jobs - New 모듈
   # ============================================================================
-  build-scheduler:
-    name: Build scheduler
-    needs: [detect-changes, test]
-    if: |
-      always() &&
-      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
-      (needs.detect-changes.outputs.shared == 'true' ||
-       needs.detect-changes.outputs.scheduler == 'true' ||
-       github.event.inputs.force-all == 'true')
-    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
-    with:
-      ecr-repository: setof-commerce-scheduler-prod
-      component: scheduler
-      dockerfile: bootstrap/bootstrap-scheduler/Dockerfile
-      gradle-task: ":bootstrap:bootstrap-scheduler:bootJar"
-      timeout-minutes: 30
-    secrets:
-      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
-
   build-web-api:
     name: Build web-api
     needs: [detect-changes, test]
@@ -318,35 +282,11 @@ jobs:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
   # ============================================================================
-  # 빌드 Jobs - Batch/Migration 모듈 (RunTask 전용)
-  # ============================================================================
-  build-migration:
-    name: Build migration
-    needs: [detect-changes, test]
-    if: |
-      always() &&
-      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
-      (needs.detect-changes.outputs.shared == 'true' ||
-       needs.detect-changes.outputs.migration == 'true' ||
-       github.event.inputs.force-all == 'true')
-    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-build-docker.yml@main
-    with:
-      ecr-repository: setof-commerce-migration-prod
-      component: migration
-      dockerfile: bootstrap/bootstrap-migration/Dockerfile
-      gradle-task: ":bootstrap:bootstrap-migration:bootJar"
-      timeout-minutes: 30
-    secrets:
-      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
-
-  # NOTE: migration은 ECS Service가 없음 (RunTask 전용, legacy-batch와 동일)
-
-  # ============================================================================
   # Stage 환경 헬스체크 (Prod 배포 전 검증)
   # ============================================================================
   verify-stage-health:
     name: Verify Stage Environment
-    needs: [build-legacy-api, build-legacy-api-admin, build-legacy-batch, build-scheduler, build-web-api, build-web-api-admin, build-migration]
+    needs: [build-legacy-api, build-legacy-api-admin, build-legacy-batch, build-web-api, build-web-api-admin]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     # 빌드가 하나라도 성공하면 실행, skip-stage-check가 true면 스킵
@@ -356,10 +296,8 @@ jobs:
       (needs.build-legacy-api.result == 'success' ||
        needs.build-legacy-api-admin.result == 'success' ||
        needs.build-legacy-batch.result == 'success' ||
-       needs.build-scheduler.result == 'success' ||
        needs.build-web-api.result == 'success' ||
-       needs.build-web-api-admin.result == 'success' ||
-       needs.build-migration.result == 'success')
+       needs.build-web-api-admin.result == 'success')
 
     steps:
       - name: Check Stage Legacy API Health
@@ -438,7 +376,7 @@ jobs:
   # ============================================================================
   approve-production:
     name: Approve Production Deployment
-    needs: [build-legacy-api, build-legacy-api-admin, build-legacy-batch, build-scheduler, build-web-api, build-web-api-admin, build-migration, verify-stage-health]
+    needs: [build-legacy-api, build-legacy-api-admin, build-legacy-batch, build-web-api, build-web-api-admin, verify-stage-health]
     runs-on: ubuntu-latest
     environment: production
     if: |
@@ -446,10 +384,8 @@ jobs:
       (needs.build-legacy-api.result == 'success' ||
        needs.build-legacy-api-admin.result == 'success' ||
        needs.build-legacy-batch.result == 'success' ||
-       needs.build-scheduler.result == 'success' ||
        needs.build-web-api.result == 'success' ||
-       needs.build-web-api-admin.result == 'success' ||
-       needs.build-migration.result == 'success') &&
+       needs.build-web-api-admin.result == 'success') &&
       (needs.verify-stage-health.result == 'success' ||
        needs.verify-stage-health.result == 'skipped' ||
        github.event.inputs.skip-stage-check == 'true')
@@ -502,20 +438,6 @@ jobs:
   # ============================================================================
   # 배포 Jobs - New 모듈 (승인 후 실행)
   # ============================================================================
-  deploy-scheduler:
-    name: Deploy scheduler
-    needs: [build-scheduler, approve-production]
-    if: |
-      needs.build-scheduler.result == 'success' &&
-      needs.approve-production.result == 'success'
-    uses: ryu-qqq/Infrastructure/.github/workflows/reusable-deploy-ecs.yml@main
-    with:
-      ecs-cluster: setof-commerce-cluster-prod
-      ecs-service: setof-commerce-scheduler-prod
-      image-uri: ${{ needs.build-scheduler.outputs.image-uri }}
-    secrets:
-      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
-
   deploy-web-api:
     name: Deploy web-api
     needs: [build-web-api, approve-production]
@@ -549,26 +471,23 @@ jobs:
   # ============================================================================
   update-terraform-tags:
     name: Update Terraform Image Tags
-    needs: [build-legacy-api, build-legacy-api-admin, build-legacy-batch, build-scheduler, build-web-api, build-web-api-admin, build-migration, approve-production]
+    needs: [build-legacy-api, build-legacy-api-admin, build-legacy-batch, build-web-api, build-web-api-admin, approve-production]
     if: |
       always() &&
       needs.approve-production.result == 'success' &&
       (needs.build-legacy-api.result == 'success' ||
        needs.build-legacy-api-admin.result == 'success' ||
        needs.build-legacy-batch.result == 'success' ||
-       needs.build-scheduler.result == 'success' ||
        needs.build-web-api.result == 'success' ||
-       needs.build-web-api-admin.result == 'success' ||
-       needs.build-migration.result == 'success')
+       needs.build-web-api-admin.result == 'success')
     uses: ./.github/workflows/terraform-apply.yml
     with:
       legacy-api-image-tag: ${{ needs.build-legacy-api.outputs.image-tag || '' }}
       legacy-api-admin-image-tag: ${{ needs.build-legacy-api-admin.outputs.image-tag || '' }}
       legacy-batch-image-tag: ${{ needs.build-legacy-batch.outputs.image-tag || '' }}
-      # NOTE: web-api, web-api-admin, migration Prod Terraform 모듈 추가 시 아래 주석 해제
+      # NOTE: web-api, web-api-admin Prod Terraform 모듈 추가 시 아래 주석 해제
       # web-api-image-tag: ${{ needs.build-web-api.outputs.image-tag || '' }}
       # web-api-admin-image-tag: ${{ needs.build-web-api-admin.outputs.image-tag || '' }}
-      # migration-image-tag: ${{ needs.build-migration.outputs.image-tag || '' }}
     secrets:
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
@@ -577,14 +496,13 @@ jobs:
   # ============================================================================
   verify-production-health:
     name: Verify Production Deployment
-    needs: [deploy-legacy-api, deploy-legacy-api-admin, deploy-scheduler, deploy-web-api, deploy-web-api-admin, update-terraform-tags]
+    needs: [deploy-legacy-api, deploy-legacy-api-admin, deploy-web-api, deploy-web-api-admin, update-terraform-tags]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     if: |
       always() &&
       (needs.deploy-legacy-api.result == 'success' ||
        needs.deploy-legacy-api-admin.result == 'success' ||
-       needs.deploy-scheduler.result == 'success' ||
        needs.deploy-web-api.result == 'success' ||
        needs.deploy-web-api-admin.result == 'success')
 

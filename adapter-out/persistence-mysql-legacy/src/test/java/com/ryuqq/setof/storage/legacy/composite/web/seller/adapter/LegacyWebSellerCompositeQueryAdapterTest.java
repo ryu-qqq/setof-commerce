@@ -5,10 +5,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
-import com.ryuqq.setof.application.seller.dto.composite.SellerAdminCompositeResult;
 import com.ryuqq.setof.application.seller.dto.composite.SellerCompositeResult;
 import com.ryuqq.setof.application.seller.dto.composite.SellerPolicyCompositeResult;
-import com.ryuqq.setof.domain.legacy.seller.dto.query.LegacySellerSearchCondition;
 import com.ryuqq.setof.storage.legacy.composite.web.seller.LegacyWebSellerQueryDtoFixtures;
 import com.ryuqq.setof.storage.legacy.composite.web.seller.dto.LegacyWebSellerQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.web.seller.mapper.LegacyWebSellerMapper;
@@ -49,13 +47,11 @@ class LegacyWebSellerCompositeQueryAdapterTest {
         void findSellerCompositeById_WithExistingSeller_ReturnsSellerCompositeResult() {
             // given
             Long sellerId = 1L;
-            LegacySellerSearchCondition condition =
-                    LegacySellerSearchCondition.ofSellerId(sellerId);
             LegacyWebSellerQueryDto dto = LegacyWebSellerQueryDtoFixtures.defaultDto();
             SellerCompositeResult expectedResult =
                     new SellerCompositeResult(null, null, null, null);
 
-            given(repository.fetchSeller(condition)).willReturn(Optional.of(dto));
+            given(repository.fetchSeller(sellerId)).willReturn(Optional.of(dto));
             given(mapper.toCompositeResult(Optional.of(dto)))
                     .willReturn(Optional.of(expectedResult));
 
@@ -65,7 +61,7 @@ class LegacyWebSellerCompositeQueryAdapterTest {
             // then
             assertThat(result).isPresent();
             assertThat(result.get()).isEqualTo(expectedResult);
-            then(repository).should(times(1)).fetchSeller(condition);
+            then(repository).should(times(1)).fetchSeller(sellerId);
             then(mapper).should(times(1)).toCompositeResult(Optional.of(dto));
         }
 
@@ -74,10 +70,8 @@ class LegacyWebSellerCompositeQueryAdapterTest {
         void findSellerCompositeById_WithNonExistingSeller_ReturnsEmptyOptional() {
             // given
             Long sellerId = 999L;
-            LegacySellerSearchCondition condition =
-                    LegacySellerSearchCondition.ofSellerId(sellerId);
 
-            given(repository.fetchSeller(condition)).willReturn(Optional.empty());
+            given(repository.fetchSeller(sellerId)).willReturn(Optional.empty());
             given(mapper.toCompositeResult(Optional.empty())).willReturn(Optional.empty());
 
             // when
@@ -85,58 +79,8 @@ class LegacyWebSellerCompositeQueryAdapterTest {
 
             // then
             assertThat(result).isEmpty();
-            then(repository).should(times(1)).fetchSeller(condition);
+            then(repository).should(times(1)).fetchSeller(sellerId);
             then(mapper).should(times(1)).toCompositeResult(Optional.empty());
-        }
-    }
-
-    @Nested
-    @DisplayName("findAdminCompositeById 메서드 테스트")
-    class FindAdminCompositeByIdTest {
-
-        @Test
-        @DisplayName("판매자가 존재할 때 SellerAdminCompositeResult를 반환합니다")
-        void findAdminCompositeById_WithExistingSeller_ReturnsSellerAdminCompositeResult() {
-            // given
-            Long sellerId = 1L;
-            LegacySellerSearchCondition condition =
-                    LegacySellerSearchCondition.ofSellerId(sellerId);
-            LegacyWebSellerQueryDto dto = LegacyWebSellerQueryDtoFixtures.defaultDto();
-            SellerAdminCompositeResult expectedResult =
-                    new SellerAdminCompositeResult(null, null, null, null, null, null);
-
-            given(repository.fetchSeller(condition)).willReturn(Optional.of(dto));
-            given(mapper.toAdminCompositeResult(Optional.of(dto)))
-                    .willReturn(Optional.of(expectedResult));
-
-            // when
-            Optional<SellerAdminCompositeResult> result = adapter.findAdminCompositeById(sellerId);
-
-            // then
-            assertThat(result).isPresent();
-            assertThat(result.get()).isEqualTo(expectedResult);
-            then(repository).should(times(1)).fetchSeller(condition);
-            then(mapper).should(times(1)).toAdminCompositeResult(Optional.of(dto));
-        }
-
-        @Test
-        @DisplayName("판매자가 존재하지 않을 때 빈 Optional을 반환합니다")
-        void findAdminCompositeById_WithNonExistingSeller_ReturnsEmptyOptional() {
-            // given
-            Long sellerId = 999L;
-            LegacySellerSearchCondition condition =
-                    LegacySellerSearchCondition.ofSellerId(sellerId);
-
-            given(repository.fetchSeller(condition)).willReturn(Optional.empty());
-            given(mapper.toAdminCompositeResult(Optional.empty())).willReturn(Optional.empty());
-
-            // when
-            Optional<SellerAdminCompositeResult> result = adapter.findAdminCompositeById(sellerId);
-
-            // then
-            assertThat(result).isEmpty();
-            then(repository).should(times(1)).fetchSeller(condition);
-            then(mapper).should(times(1)).toAdminCompositeResult(Optional.empty());
         }
     }
 

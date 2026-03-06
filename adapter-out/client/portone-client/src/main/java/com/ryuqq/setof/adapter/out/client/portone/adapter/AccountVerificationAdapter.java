@@ -3,7 +3,8 @@ package com.ryuqq.setof.adapter.out.client.portone.adapter;
 import com.ryuqq.setof.adapter.out.client.portone.client.PortOneClient;
 import com.ryuqq.setof.adapter.out.client.portone.config.PortOneProperties;
 import com.ryuqq.setof.adapter.out.client.portone.dto.PortOneBankHolderResponse;
-import com.ryuqq.setof.application.refundaccount.port.out.client.AccountVerificationPort;
+import com.ryuqq.setof.application.refundaccount.port.out.client.AccountClient;
+import com.ryuqq.setof.application.refundaccount.port.out.client.AccountHolderInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -11,28 +12,21 @@ import org.springframework.stereotype.Component;
 /**
  * Account Verification Adapter
  *
- * <p>포트원(PortOne) API를 사용하여 계좌 실명 검증을 수행합니다.
+ * <p>포트원(PortOne) API를 사용하여 계좌 예금주를 조회합니다.
  *
- * <p><strong>검증 로직:</strong>
- *
- * <ol>
- *   <li>포트원 API로 예금주 정보 조회
- *   <li>조회된 예금주명과 입력된 예금주명 비교
- *   <li>일치 시 true, 불일치 시 false 반환
- * </ol>
- *
- * <p><strong>주의사항:</strong>
+ * <p><strong>TODO: V2 API 마이그레이션 필요</strong>
  *
  * <ul>
- *   <li>포트원 API가 비활성화되면 항상 true 반환 (개발/테스트 환경)
- *   <li>예금주명 비교 시 공백 제거 후 비교
+ *   <li>현재: V1 {@code /vbanks/holder} 엔드포인트 사용
+ *   <li>변경: V2 {@code /platform/bank-accounts/{bank}/{accountNumber}/holder} 사용
+ *   <li>응답: {@code holderName} + {@code accountVerificationId}
  * </ul>
  *
  * @author development-team
  * @since 1.0.0
  */
 @Component
-public class AccountVerificationAdapter implements AccountVerificationPort {
+public class AccountVerificationAdapter implements AccountClient {
 
     private static final Logger log = LoggerFactory.getLogger(AccountVerificationAdapter.class);
 
@@ -45,14 +39,14 @@ public class AccountVerificationAdapter implements AccountVerificationPort {
     }
 
     @Override
-    public boolean verifyAccount(String bankCode, String accountNumber, String accountHolderName) {
+    public AccountHolderInfo fetchAccountHolder(String bankCode, String accountNumber) {
         if (!properties.isEnabled()) {
             log.info(
                     "PortOne is disabled. Skipping account verification. bankCode={},"
                             + " accountNumber={}",
                     bankCode,
                     maskAccountNumber(accountNumber));
-            return true;
+            return AccountHolderInfo.empty();
         }
 
         try {
@@ -64,48 +58,19 @@ public class AccountVerificationAdapter implements AccountVerificationPort {
                         "Bank holder not found. bankCode={}, accountNumber={}",
                         bankCode,
                         maskAccountNumber(accountNumber));
-                return false;
+                return AccountHolderInfo.empty();
             }
 
-            boolean matched =
-                    normalizeHolderName(response.bankHolderInfo())
-                            .equals(normalizeHolderName(accountHolderName));
-
-            if (!matched) {
-                log.warn(
-                        "Bank holder name mismatch. bankCode={}, accountNumber={}, "
-                                + "expected={}, actual={}",
-                        bankCode,
-                        maskAccountNumber(accountNumber),
-                        accountHolderName,
-                        response.bankHolderInfo());
-            }
-
-            return matched;
+            return new AccountHolderInfo(response.bankHolderInfo(), "");
 
         } catch (Exception e) {
             log.error(
-                    "Account verification failed. bankCode={}, accountNumber={}",
+                    "Failed to fetch bank holder. bankCode={}, accountNumber={}",
                     bankCode,
                     maskAccountNumber(accountNumber),
                     e);
-            return false;
+            return AccountHolderInfo.empty();
         }
-    }
-
-    /**
-     * 예금주명 정규화
-     *
-     * <p>공백 제거 및 소문자 변환
-     *
-     * @param holderName 예금주명
-     * @return 정규화된 예금주명
-     */
-    private String normalizeHolderName(String holderName) {
-        if (holderName == null) {
-            return "";
-        }
-        return holderName.replaceAll("\\s+", "").toLowerCase(java.util.Locale.ROOT);
     }
 
     /**

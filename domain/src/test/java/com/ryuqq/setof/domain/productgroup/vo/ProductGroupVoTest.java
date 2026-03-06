@@ -219,72 +219,38 @@ class ProductGroupVoTest {
     class ProductGroupStatusTest {
 
         @Nested
+        @DisplayName("displayName() 테스트")
+        class DisplayNameTest {
+
+            @Test
+            @DisplayName("각 상태의 한글 표시명을 반환한다")
+            void returnsDisplayName() {
+                assertThat(ProductGroupStatus.ACTIVE.displayName()).isEqualTo("판매중");
+                assertThat(ProductGroupStatus.SOLD_OUT.displayName()).isEqualTo("품절");
+                assertThat(ProductGroupStatus.DELETED.displayName()).isEqualTo("삭제");
+            }
+        }
+
+        @Nested
         @DisplayName("canActivate() 테스트")
         class CanActivateTest {
 
             @Test
-            @DisplayName("DRAFT에서 활성화할 수 있다")
-            void draftCanActivate() {
-                assertThat(ProductGroupStatus.DRAFT.canActivate()).isTrue();
+            @DisplayName("ACTIVE에서 멱등 활성화가 가능하다")
+            void activeCanActivate() {
+                assertThat(ProductGroupStatus.ACTIVE.canActivate()).isTrue();
             }
 
             @Test
-            @DisplayName("INACTIVE에서 활성화할 수 있다")
-            void inactiveCanActivate() {
-                assertThat(ProductGroupStatus.INACTIVE.canActivate()).isTrue();
-            }
-
-            @Test
-            @DisplayName("SOLDOUT에서 활성화할 수 있다")
+            @DisplayName("SOLD_OUT에서 활성화할 수 있다")
             void soldOutCanActivate() {
-                assertThat(ProductGroupStatus.SOLDOUT.canActivate()).isTrue();
-            }
-
-            @Test
-            @DisplayName("ACTIVE에서는 활성화할 수 없다")
-            void activeCannotActivate() {
-                assertThat(ProductGroupStatus.ACTIVE.canActivate()).isFalse();
+                assertThat(ProductGroupStatus.SOLD_OUT.canActivate()).isTrue();
             }
 
             @Test
             @DisplayName("DELETED에서는 활성화할 수 없다")
             void deletedCannotActivate() {
                 assertThat(ProductGroupStatus.DELETED.canActivate()).isFalse();
-            }
-        }
-
-        @Nested
-        @DisplayName("canDeactivate() 테스트")
-        class CanDeactivateTest {
-
-            @Test
-            @DisplayName("ACTIVE에서 비활성화할 수 있다")
-            void activeCanDeactivate() {
-                assertThat(ProductGroupStatus.ACTIVE.canDeactivate()).isTrue();
-            }
-
-            @Test
-            @DisplayName("DRAFT에서는 비활성화할 수 없다")
-            void draftCannotDeactivate() {
-                assertThat(ProductGroupStatus.DRAFT.canDeactivate()).isFalse();
-            }
-
-            @Test
-            @DisplayName("INACTIVE에서는 비활성화할 수 없다")
-            void inactiveCannotDeactivate() {
-                assertThat(ProductGroupStatus.INACTIVE.canDeactivate()).isFalse();
-            }
-
-            @Test
-            @DisplayName("SOLDOUT에서는 비활성화할 수 없다")
-            void soldOutCannotDeactivate() {
-                assertThat(ProductGroupStatus.SOLDOUT.canDeactivate()).isFalse();
-            }
-
-            @Test
-            @DisplayName("DELETED에서는 비활성화할 수 없다")
-            void deletedCannotDeactivate() {
-                assertThat(ProductGroupStatus.DELETED.canDeactivate()).isFalse();
             }
         }
 
@@ -299,21 +265,9 @@ class ProductGroupVoTest {
             }
 
             @Test
-            @DisplayName("DRAFT에서는 품절 처리할 수 없다")
-            void draftCannotMarkSoldOut() {
-                assertThat(ProductGroupStatus.DRAFT.canMarkSoldOut()).isFalse();
-            }
-
-            @Test
-            @DisplayName("INACTIVE에서는 품절 처리할 수 없다")
-            void inactiveCannotMarkSoldOut() {
-                assertThat(ProductGroupStatus.INACTIVE.canMarkSoldOut()).isFalse();
-            }
-
-            @Test
-            @DisplayName("SOLDOUT에서는 품절 처리할 수 없다")
+            @DisplayName("SOLD_OUT에서는 품절 처리할 수 없다")
             void soldOutCannotMarkSoldOut() {
-                assertThat(ProductGroupStatus.SOLDOUT.canMarkSoldOut()).isFalse();
+                assertThat(ProductGroupStatus.SOLD_OUT.canMarkSoldOut()).isFalse();
             }
 
             @Test
@@ -328,27 +282,15 @@ class ProductGroupVoTest {
         class CanDeleteTest {
 
             @Test
-            @DisplayName("DRAFT에서 삭제할 수 있다")
-            void draftCanDelete() {
-                assertThat(ProductGroupStatus.DRAFT.canDelete()).isTrue();
-            }
-
-            @Test
             @DisplayName("ACTIVE에서 삭제할 수 있다")
             void activeCanDelete() {
                 assertThat(ProductGroupStatus.ACTIVE.canDelete()).isTrue();
             }
 
             @Test
-            @DisplayName("INACTIVE에서 삭제할 수 있다")
-            void inactiveCanDelete() {
-                assertThat(ProductGroupStatus.INACTIVE.canDelete()).isTrue();
-            }
-
-            @Test
-            @DisplayName("SOLDOUT에서 삭제할 수 있다")
+            @DisplayName("SOLD_OUT에서 삭제할 수 있다")
             void soldOutCanDelete() {
-                assertThat(ProductGroupStatus.SOLDOUT.canDelete()).isTrue();
+                assertThat(ProductGroupStatus.SOLD_OUT.canDelete()).isTrue();
             }
 
             @Test
@@ -363,6 +305,19 @@ class ProductGroupVoTest {
         class StatusCheckTest {
 
             @Test
+            @DisplayName("isActive() - ACTIVE이면 true를 반환한다")
+            void isActiveReturnsTrue() {
+                assertThat(ProductGroupStatus.ACTIVE.isActive()).isTrue();
+            }
+
+            @Test
+            @DisplayName("isActive() - ACTIVE가 아니면 false를 반환한다")
+            void isActiveReturnsFalse() {
+                assertThat(ProductGroupStatus.SOLD_OUT.isActive()).isFalse();
+                assertThat(ProductGroupStatus.DELETED.isActive()).isFalse();
+            }
+
+            @Test
             @DisplayName("isDisplayed() - ACTIVE이면 true를 반환한다")
             void isDisplayedReturnsTrue() {
                 assertThat(ProductGroupStatus.ACTIVE.isDisplayed()).isTrue();
@@ -371,24 +326,20 @@ class ProductGroupVoTest {
             @Test
             @DisplayName("isDisplayed() - ACTIVE가 아니면 false를 반환한다")
             void isDisplayedReturnsFalse() {
-                assertThat(ProductGroupStatus.DRAFT.isDisplayed()).isFalse();
-                assertThat(ProductGroupStatus.INACTIVE.isDisplayed()).isFalse();
-                assertThat(ProductGroupStatus.SOLDOUT.isDisplayed()).isFalse();
+                assertThat(ProductGroupStatus.SOLD_OUT.isDisplayed()).isFalse();
                 assertThat(ProductGroupStatus.DELETED.isDisplayed()).isFalse();
             }
 
             @Test
-            @DisplayName("isSoldOut() - SOLDOUT이면 true를 반환한다")
+            @DisplayName("isSoldOut() - SOLD_OUT이면 true를 반환한다")
             void isSoldOutReturnsTrue() {
-                assertThat(ProductGroupStatus.SOLDOUT.isSoldOut()).isTrue();
+                assertThat(ProductGroupStatus.SOLD_OUT.isSoldOut()).isTrue();
             }
 
             @Test
-            @DisplayName("isSoldOut() - SOLDOUT이 아니면 false를 반환한다")
+            @DisplayName("isSoldOut() - SOLD_OUT이 아니면 false를 반환한다")
             void isSoldOutReturnsFalse() {
-                assertThat(ProductGroupStatus.DRAFT.isSoldOut()).isFalse();
                 assertThat(ProductGroupStatus.ACTIVE.isSoldOut()).isFalse();
-                assertThat(ProductGroupStatus.INACTIVE.isSoldOut()).isFalse();
                 assertThat(ProductGroupStatus.DELETED.isSoldOut()).isFalse();
             }
 
@@ -401,10 +352,8 @@ class ProductGroupVoTest {
             @Test
             @DisplayName("isDeleted() - DELETED가 아니면 false를 반환한다")
             void isDeletedReturnsFalse() {
-                assertThat(ProductGroupStatus.DRAFT.isDeleted()).isFalse();
                 assertThat(ProductGroupStatus.ACTIVE.isDeleted()).isFalse();
-                assertThat(ProductGroupStatus.INACTIVE.isDeleted()).isFalse();
-                assertThat(ProductGroupStatus.SOLDOUT.isDeleted()).isFalse();
+                assertThat(ProductGroupStatus.SOLD_OUT.isDeleted()).isFalse();
             }
         }
 
@@ -420,23 +369,23 @@ class ProductGroupVoTest {
             }
 
             @Test
-            @DisplayName("soldOutYn=Y이면 SOLDOUT을 반환한다")
+            @DisplayName("soldOutYn=Y이면 SOLD_OUT을 반환한다")
             void returnsSoldOutWhenSoldOutYnIsY() {
                 assertThat(ProductGroupStatus.fromLegacyFlags("N", "Y", "Y"))
-                        .isEqualTo(ProductGroupStatus.SOLDOUT);
-            }
-
-            @Test
-            @DisplayName("displayYn=N이면 INACTIVE를 반환한다")
-            void returnsInactiveWhenDisplayYnIsN() {
-                assertThat(ProductGroupStatus.fromLegacyFlags("N", "N", "N"))
-                        .isEqualTo(ProductGroupStatus.INACTIVE);
+                        .isEqualTo(ProductGroupStatus.SOLD_OUT);
             }
 
             @Test
             @DisplayName("기본 조건이면 ACTIVE를 반환한다")
             void returnsActiveByDefault() {
                 assertThat(ProductGroupStatus.fromLegacyFlags("N", "N", "Y"))
+                        .isEqualTo(ProductGroupStatus.ACTIVE);
+            }
+
+            @Test
+            @DisplayName("displayYn=N이어도 ACTIVE를 반환한다")
+            void returnsActiveWhenDisplayYnIsN() {
+                assertThat(ProductGroupStatus.fromLegacyFlags("N", "N", "N"))
                         .isEqualTo(ProductGroupStatus.ACTIVE);
             }
 
@@ -451,7 +400,7 @@ class ProductGroupVoTest {
             @DisplayName("soldOutYn이 displayYn보다 우선순위가 높다")
             void soldOutYnHigherThanDisplayYn() {
                 assertThat(ProductGroupStatus.fromLegacyFlags("N", "Y", "N"))
-                        .isEqualTo(ProductGroupStatus.SOLDOUT);
+                        .isEqualTo(ProductGroupStatus.SOLD_OUT);
             }
 
             @Test
@@ -468,27 +417,15 @@ class ProductGroupVoTest {
     class ImageTypeTest {
 
         @Test
-        @DisplayName("isThumbnail() - THUMBNAIL이면 true를 반환한다")
-        void thumbnailReturnsTrue() {
-            assertThat(ImageType.THUMBNAIL.isThumbnail()).isTrue();
+        @DisplayName("displayName() - THUMBNAIL의 표시명을 반환한다")
+        void thumbnailDisplayName() {
+            assertThat(ImageType.THUMBNAIL.displayName()).isEqualTo("대표 이미지");
         }
 
         @Test
-        @DisplayName("isThumbnail() - DETAIL이면 false를 반환한다")
-        void detailReturnsFalse() {
-            assertThat(ImageType.DETAIL.isThumbnail()).isFalse();
-        }
-
-        @Test
-        @DisplayName("isDetail() - DETAIL이면 true를 반환한다")
-        void detailReturnsTrue() {
-            assertThat(ImageType.DETAIL.isDetail()).isTrue();
-        }
-
-        @Test
-        @DisplayName("isDetail() - THUMBNAIL이면 false를 반환한다")
-        void thumbnailReturnsFalseForIsDetail() {
-            assertThat(ImageType.THUMBNAIL.isDetail()).isFalse();
+        @DisplayName("displayName() - DETAIL의 표시명을 반환한다")
+        void detailDisplayName() {
+            assertThat(ImageType.DETAIL.displayName()).isEqualTo("상세 이미지");
         }
     }
 }

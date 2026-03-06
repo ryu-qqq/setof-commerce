@@ -6,6 +6,7 @@ import com.ryuqq.setof.domain.productdescription.aggregate.ProductGroupDescripti
 import com.ryuqq.setof.domain.productdescription.id.DescriptionImageId;
 import com.ryuqq.setof.domain.productdescription.id.ProductGroupDescriptionId;
 import com.ryuqq.setof.domain.productdescription.vo.DescriptionHtml;
+import com.ryuqq.setof.domain.productdescription.vo.DescriptionUpdateData;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public final class ProductDescriptionFixtures {
     public static final String DEFAULT_DESCRIPTION_HTML = "<p>상품 상세설명입니다</p>";
     public static final String DEFAULT_IMAGE_URL = "https://cdn.example.com/desc/image1.jpg";
     public static final Long DEFAULT_PRODUCT_GROUP_ID = 100L;
+    public static final String DEFAULT_CDN_PATH = "https://cdn.example.com/descriptions/100";
 
     // ===== ProductGroupDescription Aggregate Fixtures =====
 
@@ -30,13 +32,14 @@ public final class ProductDescriptionFixtures {
         return ProductGroupDescription.forNew(
                 ProductGroupId.of(DEFAULT_PRODUCT_GROUP_ID),
                 defaultDescriptionHtml(),
+                DEFAULT_CDN_PATH,
                 CommonVoFixtures.now());
     }
 
     /** 신규 상세설명 생성 (특정 ProductGroupId 사용). */
     public static ProductGroupDescription newDescription(ProductGroupId productGroupId) {
         return ProductGroupDescription.forNew(
-                productGroupId, defaultDescriptionHtml(), CommonVoFixtures.now());
+                productGroupId, defaultDescriptionHtml(), DEFAULT_CDN_PATH, CommonVoFixtures.now());
     }
 
     /** 활성 상태의 상세설명 복원 (ID와 컨텐츠 포함). */
@@ -45,6 +48,7 @@ public final class ProductDescriptionFixtures {
                 ProductGroupDescriptionId.of(1L),
                 ProductGroupId.of(DEFAULT_PRODUCT_GROUP_ID),
                 defaultDescriptionHtml(),
+                DEFAULT_CDN_PATH,
                 defaultImages(),
                 CommonVoFixtures.yesterday(),
                 CommonVoFixtures.yesterday());
@@ -56,6 +60,7 @@ public final class ProductDescriptionFixtures {
                 ProductGroupDescriptionId.of(id),
                 ProductGroupId.of(DEFAULT_PRODUCT_GROUP_ID),
                 defaultDescriptionHtml(),
+                DEFAULT_CDN_PATH,
                 defaultImages(),
                 CommonVoFixtures.yesterday(),
                 CommonVoFixtures.yesterday());
@@ -67,6 +72,7 @@ public final class ProductDescriptionFixtures {
                 ProductGroupDescriptionId.of(2L),
                 ProductGroupId.of(DEFAULT_PRODUCT_GROUP_ID),
                 DescriptionHtml.empty(),
+                null,
                 List.of(),
                 CommonVoFixtures.yesterday(),
                 CommonVoFixtures.yesterday());
@@ -77,6 +83,23 @@ public final class ProductDescriptionFixtures {
     /** 기본 DescriptionHtml VO 생성. */
     public static DescriptionHtml defaultDescriptionHtml() {
         return DescriptionHtml.of(DEFAULT_DESCRIPTION_HTML);
+    }
+
+    // ===== DescriptionUpdateData Fixtures =====
+
+    /** 기본 DescriptionUpdateData VO 생성. */
+    public static DescriptionUpdateData defaultDescriptionUpdateData() {
+        return DescriptionUpdateData.of(
+                defaultDescriptionHtml(),
+                DEFAULT_CDN_PATH,
+                defaultImages(),
+                CommonVoFixtures.now());
+    }
+
+    /** 이미지 없는 DescriptionUpdateData VO 생성. */
+    public static DescriptionUpdateData descriptionUpdateDataWithoutImages() {
+        return DescriptionUpdateData.of(
+                defaultDescriptionHtml(), DEFAULT_CDN_PATH, List.of(), CommonVoFixtures.now());
     }
 
     // ===== DescriptionImage Fixtures =====

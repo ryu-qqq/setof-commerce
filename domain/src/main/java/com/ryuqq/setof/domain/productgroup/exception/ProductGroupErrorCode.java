@@ -7,7 +7,11 @@ public enum ProductGroupErrorCode implements ErrorCode {
     PRODUCT_GROUP_NOT_FOUND("PG-001", 404, "상품그룹을 찾을 수 없습니다"),
     PRODUCT_GROUP_ALREADY_DELETED("PG-002", 400, "이미 삭제된 상품그룹입니다"),
     INVALID_STATUS_TRANSITION("PG-003", 400, "유효하지 않은 상태 전이입니다"),
-    INVALID_PRICE("PG-004", 400, "유효하지 않은 가격 정보입니다");
+    INVALID_PRICE("PG-004", 400, "유효하지 않은 가격 정보입니다"),
+    INVALID_OPTION_STRUCTURE("PG-005", 400, "옵션 타입과 옵션 그룹 수가 일치하지 않습니다"),
+    OPTION_GROUP_EMPTY_VALUES("PG-007", 400, "옵션 그룹에 최소 1개의 옵션 값이 필요합니다"),
+    OPTION_GROUP_DUPLICATE_NAME("PG-008", 400, "옵션 그룹명이 중복되었습니다"),
+    OPTION_VALUE_DUPLICATE_NAME("PG-009", 400, "옵션 값 이름이 중복되었습니다");
 
     private final String code;
     private final int httpStatus;

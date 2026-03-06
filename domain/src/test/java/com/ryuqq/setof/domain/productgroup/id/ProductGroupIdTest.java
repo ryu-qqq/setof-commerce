@@ -3,6 +3,7 @@ package com.ryuqq.setof.domain.productgroup.id;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.ryuqq.setof.domain.productgroupimage.id.ProductGroupImageId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;

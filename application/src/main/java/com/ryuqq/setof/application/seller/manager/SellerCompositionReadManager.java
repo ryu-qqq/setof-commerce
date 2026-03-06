@@ -1,6 +1,5 @@
 package com.ryuqq.setof.application.seller.manager;
 
-import com.ryuqq.setof.application.seller.dto.composite.SellerAdminCompositeResult;
 import com.ryuqq.setof.application.seller.dto.composite.SellerCompositeResult;
 import com.ryuqq.setof.application.seller.dto.composite.SellerPolicyCompositeResult;
 import com.ryuqq.setof.application.seller.port.out.query.SellerCompositionQueryPort;
@@ -32,19 +31,6 @@ public class SellerCompositionReadManager {
     public SellerCompositeResult getSellerComposite(Long sellerId) {
         return compositionQueryPort
                 .findSellerCompositeById(sellerId)
-                .orElseThrow(() -> new SellerNotFoundException(sellerId));
-    }
-
-    /**
-     * Admin용 셀러 Composite 조회 (Seller + Address + BusinessInfo + CS + Contract + Settlement).
-     *
-     * @param sellerId 셀러 ID
-     * @return Admin용 셀러 Composite 결과
-     */
-    @Transactional(readOnly = true)
-    public SellerAdminCompositeResult getAdminComposite(Long sellerId) {
-        return compositionQueryPort
-                .findAdminCompositeById(sellerId)
                 .orElseThrow(() -> new SellerNotFoundException(sellerId));
     }
 

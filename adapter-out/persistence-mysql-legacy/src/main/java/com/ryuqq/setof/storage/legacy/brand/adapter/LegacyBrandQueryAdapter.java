@@ -1,6 +1,6 @@
 package com.ryuqq.setof.storage.legacy.brand.adapter;
 
-import com.ryuqq.setof.application.brand.port.out.query.BrandQueryPort;
+import com.ryuqq.setof.application.brand.port.out.BrandQueryPort;
 import com.ryuqq.setof.domain.brand.aggregate.Brand;
 import com.ryuqq.setof.domain.brand.id.BrandId;
 import com.ryuqq.setof.domain.brand.query.BrandSearchCriteria;

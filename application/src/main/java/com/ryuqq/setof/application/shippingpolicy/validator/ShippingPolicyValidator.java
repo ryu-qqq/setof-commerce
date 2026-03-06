@@ -4,7 +4,7 @@ import com.ryuqq.setof.application.shippingpolicy.manager.ShippingPolicyReadMana
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import com.ryuqq.setof.domain.shippingpolicy.aggregate.ShippingPolicy;
 import com.ryuqq.setof.domain.shippingpolicy.exception.LastActiveShippingPolicyCannotBeDeactivatedException;
-import com.ryuqq.setof.domain.shippingpolicy.exception.ShippingPolicyException;
+import com.ryuqq.setof.domain.shippingpolicy.exception.ShippingPolicyNotFoundException;
 import com.ryuqq.setof.domain.shippingpolicy.id.ShippingPolicyId;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +56,7 @@ public class ShippingPolicyValidator {
             SellerId sellerId, ShippingPolicyId policyId) {
         return shippingPolicyReadManager
                 .findBySellerIdAndId(sellerId, policyId)
-                .orElseThrow(ShippingPolicyException::policyNotFound);
+                .orElseThrow(ShippingPolicyNotFoundException::new);
     }
 
     /**
@@ -84,7 +84,7 @@ public class ShippingPolicyValidator {
                         id -> {
                             ShippingPolicy sp = foundMap.get(id);
                             if (sp == null) {
-                                throw ShippingPolicyException.policyNotFound();
+                                throw new ShippingPolicyNotFoundException();
                             }
                             return sp;
                         })

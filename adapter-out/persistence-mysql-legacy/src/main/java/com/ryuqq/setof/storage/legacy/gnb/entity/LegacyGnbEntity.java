@@ -1,9 +1,12 @@
 package com.ryuqq.setof.storage.legacy.gnb.entity;
 
+import com.ryuqq.setof.storage.legacy.common.Yn;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -25,6 +28,7 @@ import java.time.LocalDateTime;
 public class LegacyGnbEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "gnb_id")
     private Long id;
 
@@ -58,6 +62,51 @@ public class LegacyGnbEntity {
     private LocalDateTime updateDate;
 
     protected LegacyGnbEntity() {}
+
+    public static LegacyGnbEntity create(
+            String title,
+            String linkUrl,
+            int displayOrder,
+            Yn displayYn,
+            LocalDateTime displayStartDate,
+            LocalDateTime displayEndDate,
+            LocalDateTime insertDate,
+            LocalDateTime updateDate) {
+        LegacyGnbEntity entity = new LegacyGnbEntity();
+        entity.title = title;
+        entity.linkUrl = linkUrl;
+        entity.displayOrder = displayOrder;
+        entity.displayYn = displayYn;
+        entity.deleteYn = Yn.N;
+        entity.displayStartDate = displayStartDate;
+        entity.displayEndDate = displayEndDate;
+        entity.insertDate = insertDate;
+        entity.updateDate = updateDate;
+        return entity;
+    }
+
+    public void updateDetails(
+            String title,
+            String linkUrl,
+            int displayOrder,
+            Yn displayYn,
+            LocalDateTime displayStartDate,
+            LocalDateTime displayEndDate,
+            LocalDateTime updateDate) {
+        this.title = title;
+        this.linkUrl = linkUrl;
+        this.displayOrder = displayOrder;
+        this.displayYn = displayYn;
+        this.displayStartDate = displayStartDate;
+        this.displayEndDate = displayEndDate;
+        this.updateDate = updateDate;
+    }
+
+    public void markDeleted(LocalDateTime updateDate) {
+        this.displayYn = Yn.N;
+        this.deleteYn = Yn.Y;
+        this.updateDate = updateDate;
+    }
 
     public Long getId() {
         return id;
@@ -97,11 +146,5 @@ public class LegacyGnbEntity {
 
     public LocalDateTime getUpdateDate() {
         return updateDate;
-    }
-
-    /** Yn - Y/N 구분 Enum. */
-    public enum Yn {
-        Y,
-        N
     }
 }

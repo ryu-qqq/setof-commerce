@@ -50,7 +50,7 @@ public class ChangeShippingPolicyStatusService implements ChangeShippingPolicySt
         List<ShippingPolicyId> ids = contexts.stream().map(StatusChangeContext::id).toList();
         List<ShippingPolicy> shippingPolicies = validator.findAllExistingOrThrow(ids);
 
-        Instant changedAt = contexts.get(0).changedAt();
+        Instant changedAt = contexts.getFirst().changedAt();
 
         if (command.active()) {
             activateAll(shippingPolicies, changedAt);

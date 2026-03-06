@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ryuqq.setof.domain.common.CommonVoFixtures;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
+import com.ryuqq.setof.domain.productnotice.id.NoticeFieldId;
 import com.ryuqq.setof.domain.productnotice.vo.NoticeFieldValue;
 import com.setof.commerce.domain.productnotice.ProductNoticeFixtures;
 import java.time.Instant;
@@ -55,7 +56,11 @@ class ProductNoticeTest {
         void createWithEntries() {
             // given
             var entries =
-                    List.of(ProductNoticeEntry.forNew(NoticeFieldValue.of("소재", "면 100%"), 1));
+                    List.of(
+                            ProductNoticeEntry.forNew(
+                                    NoticeFieldId.forNew(),
+                                    NoticeFieldValue.of("소재", "면 100%"),
+                                    1));
 
             // when
             var notice =
@@ -119,8 +124,10 @@ class ProductNoticeTest {
             var notice = ProductNoticeFixtures.activeNotice();
             var newEntries =
                     List.of(
-                            ProductNoticeEntry.forNew(NoticeFieldValue.of("색상", "블랙"), 1),
-                            ProductNoticeEntry.forNew(NoticeFieldValue.of("사이즈", "FREE"), 2));
+                            ProductNoticeEntry.forNew(
+                                    NoticeFieldId.forNew(), NoticeFieldValue.of("색상", "블랙"), 1),
+                            ProductNoticeEntry.forNew(
+                                    NoticeFieldId.forNew(), NoticeFieldValue.of("사이즈", "FREE"), 2));
             Instant now = CommonVoFixtures.now();
 
             // when

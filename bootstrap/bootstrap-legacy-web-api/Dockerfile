@@ -58,8 +58,8 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 
 # JVM 옵션 (컨테이너 최적화)
 ENV JAVA_OPTS="-XX:+UseContainerSupport \
-    -XX:MaxRAMPercentage=75.0 \
-    -XX:InitialRAMPercentage=50.0 \
+    -XX:MaxRAMPercentage=60.0 \
+    -XX:InitialRAMPercentage=40.0 \
     -XX:+UseG1GC \
     -XX:+ExitOnOutOfMemoryError \
     -Djava.security.egd=file:/dev/./urandom"

@@ -59,14 +59,14 @@ class RefundPolicyExceptionTest {
     }
 
     @Nested
-    @DisplayName("정적 팩토리 메서드 테스트")
-    class StaticFactoryMethodTest {
+    @DisplayName("구체적 예외 클래스 테스트")
+    class ConcreteExceptionTest {
 
         @Test
-        @DisplayName("policyNotFound()로 예외를 생성한다")
-        void createWithPolicyNotFound() {
+        @DisplayName("RefundPolicyNotFoundException을 생성한다")
+        void createRefundPolicyNotFoundException() {
             // when
-            RefundPolicyException exception = RefundPolicyException.policyNotFound();
+            RefundPolicyNotFoundException exception = new RefundPolicyNotFoundException();
 
             // then
             assertThat(exception.code()).isEqualTo("RFP-001");
@@ -75,10 +75,10 @@ class RefundPolicyExceptionTest {
         }
 
         @Test
-        @DisplayName("policyInactive()로 예외를 생성한다")
-        void createWithPolicyInactive() {
+        @DisplayName("RefundPolicyInactiveException을 생성한다")
+        void createRefundPolicyInactiveException() {
             // when
-            RefundPolicyException exception = RefundPolicyException.policyInactive();
+            RefundPolicyInactiveException exception = new RefundPolicyInactiveException();
 
             // then
             assertThat(exception.code()).isEqualTo("RFP-002");
@@ -87,10 +87,10 @@ class RefundPolicyExceptionTest {
         }
 
         @Test
-        @DisplayName("returnPeriodExpired()로 예외를 생성한다")
-        void createWithReturnPeriodExpired() {
+        @DisplayName("ReturnPeriodExpiredException을 생성한다")
+        void createReturnPeriodExpiredException() {
             // when
-            RefundPolicyException exception = RefundPolicyException.returnPeriodExpired();
+            ReturnPeriodExpiredException exception = new ReturnPeriodExpiredException();
 
             // then
             assertThat(exception.code()).isEqualTo("RFP-007");
@@ -99,10 +99,10 @@ class RefundPolicyExceptionTest {
         }
 
         @Test
-        @DisplayName("exchangePeriodExpired()로 예외를 생성한다")
-        void createWithExchangePeriodExpired() {
+        @DisplayName("ExchangePeriodExpiredException을 생성한다")
+        void createExchangePeriodExpiredException() {
             // when
-            RefundPolicyException exception = RefundPolicyException.exchangePeriodExpired();
+            ExchangePeriodExpiredException exception = new ExchangePeriodExpiredException();
 
             // then
             assertThat(exception.code()).isEqualTo("RFP-008");
@@ -119,7 +119,7 @@ class RefundPolicyExceptionTest {
         @DisplayName("DomainException을 상속한다")
         void extendsDomainException() {
             // given
-            RefundPolicyException exception = RefundPolicyException.policyNotFound();
+            RefundPolicyException exception = new RefundPolicyNotFoundException();
 
             // then
             assertThat(exception).isInstanceOf(DomainException.class);

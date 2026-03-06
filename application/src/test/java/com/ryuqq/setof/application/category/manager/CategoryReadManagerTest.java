@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-import com.ryuqq.setof.application.category.port.out.query.CategoryQueryPort;
+import com.ryuqq.setof.application.category.port.out.CategoryQueryPort;
 import com.ryuqq.setof.domain.category.CategoryFixtures;
 import com.ryuqq.setof.domain.category.aggregate.Category;
 import com.ryuqq.setof.domain.category.exception.CategoryNotFoundException;

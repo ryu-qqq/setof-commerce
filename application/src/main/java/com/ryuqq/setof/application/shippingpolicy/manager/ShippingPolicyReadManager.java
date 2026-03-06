@@ -3,7 +3,7 @@ package com.ryuqq.setof.application.shippingpolicy.manager;
 import com.ryuqq.setof.application.shippingpolicy.port.out.query.ShippingPolicyQueryPort;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import com.ryuqq.setof.domain.shippingpolicy.aggregate.ShippingPolicy;
-import com.ryuqq.setof.domain.shippingpolicy.exception.ShippingPolicyException;
+import com.ryuqq.setof.domain.shippingpolicy.exception.ShippingPolicyNotFoundException;
 import com.ryuqq.setof.domain.shippingpolicy.id.ShippingPolicyId;
 import com.ryuqq.setof.domain.shippingpolicy.query.ShippingPolicySearchCriteria;
 import java.util.List;
@@ -23,7 +23,7 @@ public class ShippingPolicyReadManager {
 
     @Transactional(readOnly = true)
     public ShippingPolicy getById(ShippingPolicyId id) {
-        return queryPort.findById(id).orElseThrow(ShippingPolicyException::policyNotFound);
+        return queryPort.findById(id).orElseThrow(ShippingPolicyNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
