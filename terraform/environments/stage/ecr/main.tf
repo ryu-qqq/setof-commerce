@@ -211,6 +211,36 @@ module "ecr_migration" {
 }
 
 # ========================================
+# ECR Repository: shadow-traffic (Stage)
+# ========================================
+module "ecr_shadow_traffic" {
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/ecr?ref=main"
+
+  name                 = "${var.project_name}-shadow-traffic-${local.ecr_name_suffix}"
+  image_tag_mutability = "MUTABLE"
+  scan_on_push         = true
+  encryption_type      = "AES256"
+
+  # Lifecycle Policy
+  enable_lifecycle_policy    = true
+  max_image_count            = 10
+  lifecycle_tag_prefixes     = ["v", "stage", "latest"]
+  untagged_image_expiry_days = 3
+
+  # SSM Parameter
+  create_ssm_parameter = false
+
+  # Required Tags (governance compliance)
+  environment  = local.common_tags.environment
+  service_name = "${var.project_name}-shadow-traffic"
+  team         = local.common_tags.team
+  owner        = local.common_tags.owner
+  cost_center  = local.common_tags.cost_center
+  project      = local.common_tags.project
+  data_class   = local.common_tags.data_class
+}
+
+# ========================================
 # ECR Repository: scheduler (Stage)
 # ========================================
 module "ecr_scheduler" {

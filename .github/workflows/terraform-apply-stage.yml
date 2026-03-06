@@ -80,6 +80,9 @@ jobs:
           - name: ecs-web-api-admin-stage
             dir: terraform/environments/stage/ecs-web-api-admin
             order: 6
+          - name: ecs-shadow-traffic-stage
+            dir: terraform/environments/stage/ecs-shadow-traffic
+            order: 7
 
     steps:
       - name: Checkout code

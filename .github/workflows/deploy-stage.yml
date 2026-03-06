@@ -35,6 +35,7 @@ on:
       - '.github/workflows/terraform-*.yml'
       - '**.md'
       - 'docs/**'
+      - 'tools/**'
 
 permissions:
   contents: read
