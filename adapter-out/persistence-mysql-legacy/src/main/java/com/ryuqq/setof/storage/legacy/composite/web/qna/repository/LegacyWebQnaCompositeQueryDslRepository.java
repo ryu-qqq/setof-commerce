@@ -1,8 +1,8 @@
 package com.ryuqq.setof.storage.legacy.composite.web.qna.repository;
 
-import static com.ryuqq.setof.storage.legacy.member.entity.QLegacyUserEntity.legacyUserEntity;
 import static com.ryuqq.setof.storage.legacy.qna.entity.QLegacyQnaEntity.legacyQnaEntity;
 import static com.ryuqq.setof.storage.legacy.qna.entity.QLegacyQnaProductEntity.legacyQnaProductEntity;
+import static com.ryuqq.setof.storage.legacy.user.entity.QLegacyUserEntity.legacyUserEntity;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;

@@ -53,6 +53,21 @@ public class SellerAddressQueryDslRepository {
     }
 
     /**
+     * 셀러 ID로 주소 단건 조회.
+     *
+     * @param sellerId 셀러 ID
+     * @return 주소 Optional
+     */
+    public Optional<SellerAddressJpaEntity> findBySellerId(Long sellerId) {
+        SellerAddressJpaEntity entity =
+                queryFactory
+                        .selectFrom(sellerAddressJpaEntity)
+                        .where(conditionBuilder.sellerIdEq(sellerId), conditionBuilder.notDeleted())
+                        .fetchFirst();
+        return Optional.ofNullable(entity);
+    }
+
+    /**
      * 셀러 ID로 모든 주소 조회.
      *
      * @param sellerId 셀러 ID

@@ -1,6 +1,6 @@
 package com.ryuqq.setof.adapter.out.security.password;
 
-import com.ryuqq.setof.application.member.port.out.client.PasswordEncoderClient;
+import com.ryuqq.setof.application.member.port.out.client.PasswordEncoderPort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  */
 @Component
-public class BCryptPasswordEncoderAdapter implements PasswordEncoderClient {
+public class BCryptPasswordEncoderAdapter implements PasswordEncoderPort {
 
     private static final int BCRYPT_STRENGTH = 10;
 
