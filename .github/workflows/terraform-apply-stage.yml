@@ -12,8 +12,6 @@
 # - ecs-web-api-legacy-admin-stage: Stage Legacy Admin API
 # - ecs-web-api-stage: Stage Web API (New)
 # - ecs-web-api-admin-stage: Stage Web API Admin (New)
-# - ecs-scheduler-stage: Stage Scheduler (SellerAuthOutbox)
-# - ecs-migration-stage: Stage Migration
 # ============================================================================
 
 name: Terraform Apply (Stage)
@@ -36,14 +34,6 @@ on:
         type: string
       web-api-admin-image-tag:
         description: 'Web API Admin Docker image tag'
-        required: false
-        type: string
-      scheduler-image-tag:
-        description: 'Scheduler Docker image tag'
-        required: false
-        type: string
-      migration-image-tag:
-        description: 'Migration Docker image tag'
         required: false
         type: string
     secrets:
@@ -90,12 +80,6 @@ jobs:
           - name: ecs-web-api-admin-stage
             dir: terraform/environments/stage/ecs-web-api-admin
             order: 6
-          - name: ecs-scheduler-stage
-            dir: terraform/environments/stage/ecs-scheduler
-            order: 7
-          - name: ecs-migration-stage
-            dir: terraform/environments/stage/ecs-migration
-            order: 8
 
     steps:
       - name: Checkout code
@@ -139,7 +123,7 @@ jobs:
           # ECR Stage 모듈: 기존 리소스 import 시도 (state에 없는 경우만)
           if [ "${{ matrix.module.name }}" == "ecr-stage" ]; then
             echo "📦 ECR Stage Repository 리소스 Import 중..."
-            for REPO in legacy-api legacy-api-admin web-api web-api-admin legacy-batch migration scheduler; do
+            for REPO in legacy-api legacy-api-admin web-api web-api-admin legacy-batch; do
               REPO_NAME="setof-commerce-${REPO}-stage"
               MODULE_NAME="module.ecr_${REPO//-/_}.aws_ecr_repository.this"
 
@@ -173,12 +157,6 @@ jobs:
                 ;;
               "ecs-web-api-admin-stage")
                 SG_NAME="setof-commerce-web-api-admin-sg-stage"
-                ;;
-              "ecs-scheduler-stage")
-                SG_NAME="setof-commerce-scheduler-sg-stage"
-                ;;
-              "ecs-migration-stage")
-                SG_NAME="setof-commerce-migration-sg-stage"
                 ;;
               *)
                 SG_NAME=""
@@ -263,18 +241,6 @@ jobs:
                 EXTRA_VARS="-var=image_tag=${{ inputs.web-api-admin-image-tag }}"
               fi
               ;;
-            "ecs-scheduler-stage")
-              if [ -n "${{ inputs.scheduler-image-tag }}" ]; then
-                echo "📦 Using Scheduler Stage image tag: ${{ inputs.scheduler-image-tag }}"
-                EXTRA_VARS="-var=image_tag=${{ inputs.scheduler-image-tag }}"
-              fi
-              ;;
-            "ecs-migration-stage")
-              if [ -n "${{ inputs.migration-image-tag }}" ]; then
-                echo "📦 Using Migration Stage image tag: ${{ inputs.migration-image-tag }}"
-                EXTRA_VARS="-var=image_tag=${{ inputs.migration-image-tag }}"
-              fi
-              ;;
             *)
               echo "ℹ️ No image tag provided for ${{ matrix.module.name }}, using default"
               ;;
@@ -327,11 +293,7 @@ jobs:
           echo "- ✅ ECS Legacy Admin API (Stage)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ ECS Web API (Stage)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ ECS Web API Admin (Stage)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ ECS Scheduler (Stage)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ ECS Migration (Stage)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Stage Application URLs**:" >> $GITHUB_STEP_SUMMARY
           echo "- Legacy API: https://stage-server.set-of.com" >> $GITHUB_STEP_SUMMARY
           echo "- Legacy Admin API: https://stage-partner.set-of.com" >> $GITHUB_STEP_SUMMARY
-          echo "- Scheduler: Internal (Service Discovery)" >> $GITHUB_STEP_SUMMARY
-          echo "- Migration: Internal (Service Discovery)" >> $GITHUB_STEP_SUMMARY
