@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 from pathlib import Path
 from typing import Any
@@ -12,6 +13,19 @@ from client import CallResult, call_endpoint
 from diff_engine import CompareMode, DiffResult, compare_responses
 
 logger = logging.getLogger(__name__)
+
+MAX_BODY_LOG_SIZE = 3000
+
+
+def _truncate(obj: Any, max_size: int = MAX_BODY_LOG_SIZE) -> Any:
+    """Truncate large objects for logging."""
+    try:
+        s = json.dumps(obj, ensure_ascii=False, default=str)
+    except (TypeError, ValueError):
+        s = str(obj)
+    if len(s) <= max_size:
+        return obj
+    return s[:max_size] + f"... (truncated, total {len(s)} chars)"
 
 
 def load_test_suite(path: Path) -> dict[str, Any]:
@@ -35,7 +49,7 @@ async def run_test_case(
     new_url: str,
     test_case: dict,
     auth_headers: dict[str, str] | None = None,
-) -> DiffResult:
+) -> tuple[DiffResult, Any, Any]:
     name = test_case["name"]
     method = test_case.get("method", "GET")
     path = test_case["path"]
@@ -65,7 +79,7 @@ async def run_test_case(
             legacy_latency_ms=legacy_result.latency_ms,
             new_latency_ms=new_result.latency_ms,
             error=f"legacy error: {legacy_result.error}",
-        )
+        ), legacy_result.body, new_result.body
 
     if new_result.error:
         return DiffResult(
@@ -77,7 +91,7 @@ async def run_test_case(
             legacy_latency_ms=legacy_result.latency_ms,
             new_latency_ms=new_result.latency_ms,
             error=f"new error: {new_result.error}",
-        )
+        ), legacy_result.body, new_result.body
 
     return compare_responses(
         test_name=name,
@@ -89,7 +103,7 @@ async def run_test_case(
         new_latency_ms=new_result.latency_ms,
         compare_mode=compare_mode,
         ignore_fields=ignore_fields,
-    )
+    ), legacy_result.body, new_result.body
 
 
 async def run_suite(
@@ -103,7 +117,7 @@ async def run_suite(
     results = []
 
     for tc in suite.get("test_cases", []):
-        result = await run_test_case(
+        result, legacy_body, new_body = await run_test_case(
             http_client, legacy_url, new_url, tc, auth_headers
         )
         log_record = logger.makeRecord(
@@ -123,6 +137,10 @@ async def run_suite(
         }
         if result.body_diff:
             log_record.extra_data["diff_keys"] = list(result.body_diff.keys())
+            log_record.extra_data["diff_detail"] = _truncate(result.body_diff)
+        if not result.passed:
+            log_record.extra_data["legacy_body"] = _truncate(legacy_body)
+            log_record.extra_data["new_body"] = _truncate(new_body)
         if result.error:
             log_record.extra_data["error"] = result.error
         logger.handle(log_record)
