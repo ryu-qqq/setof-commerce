@@ -79,7 +79,7 @@ variable "image_tag" {
 variable "schedule_expression" {
   description = "EventBridge schedule expression"
   type        = string
-  default     = "rate(6 hours)"
+  default     = "rate(30 minutes)"
 }
 
 variable "enable_schedule" {
