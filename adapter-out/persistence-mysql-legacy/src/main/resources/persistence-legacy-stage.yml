@@ -13,11 +13,11 @@ persistence:
     seller:
       enabled: true
     category:
-      enabled: false
+      enabled: true
     brand:
-      enabled: false
+      enabled: true
     faq:
-      enabled: false
+      enabled: true
     productgroup:
       enabled: false
     member:
