@@ -46,8 +46,7 @@ spring:
         use_sql_comments: false
 
   flyway:
-    # ⚠️ 스테이징에서도 clean 비활성화
-    clean-disabled: true
+    enabled: false
 
 logging:
   level:

@@ -49,8 +49,7 @@ spring:
         use_sql_comments: false
 
   flyway:
-    # ⚠️ 운영에서 clean 절대 금지
-    clean-disabled: true
+    enabled: false
 
 logging:
   level:
