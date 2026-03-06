@@ -88,6 +88,18 @@ variable "enable_schedule" {
   default     = true
 }
 
+variable "slack_webhook_url" {
+  description = "Slack webhook URL for diff alerts"
+  type        = string
+  default     = ""
+}
+
+variable "dashboard_url" {
+  description = "Grafana dashboard URL for alert links"
+  type        = string
+  default     = ""
+}
+
 # ========================================
 # Shared Resource References (SSM)
 # ========================================

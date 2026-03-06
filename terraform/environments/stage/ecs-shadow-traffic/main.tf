@@ -228,7 +228,7 @@ module "task_role" {
             Resource = "*"
             Condition = {
               StringEquals = {
-                "cloudwatch:namespace" = "SetOfCommerce/ShadowTraffic"
+                "cloudwatch:namespace" = "ShadowTraffic"
               }
             }
           },
@@ -278,7 +278,9 @@ resource "aws_ecs_task_definition" "shadow_traffic" {
         { name = "NEW_URL", value = "http://web-api-${var.environment}.connectly.local:8080" },
         { name = "AWS_REGION", value = var.aws_region },
         { name = "DRY_RUN", value = "false" },
-        { name = "DOMAINS", value = "" }  # empty = all domains
+        { name = "DOMAINS", value = "" },
+        { name = "SLACK_WEBHOOK_URL", value = var.slack_webhook_url },
+        { name = "DASHBOARD_URL", value = var.dashboard_url }
       ]
 
       logConfiguration = {
@@ -376,6 +378,17 @@ resource "aws_scheduler_schedule" "shadow_traffic" {
   }
 
   state = "ENABLED"
+}
+
+# ========================================
+# Log Streaming to OpenSearch (V2 - Kinesis)
+# CloudWatch Logs -> Kinesis -> Lambda -> OpenSearch
+# ========================================
+module "log_streaming" {
+  source = "git::https://github.com/ryu-qqq/Infrastructure.git//terraform/modules/log-subscription-filter-v2?ref=main"
+
+  log_group_name = module.shadow_traffic_logs.log_group_name
+  service_name   = "shadow-traffic"
 }
 
 # ========================================

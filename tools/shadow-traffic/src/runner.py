@@ -106,8 +106,26 @@ async def run_suite(
         result = await run_test_case(
             http_client, legacy_url, new_url, tc, auth_headers
         )
-        status = "PASS" if result.passed else "FAIL"
-        logger.info(f"[{domain}] {status} {result.summary()}")
+        log_record = logger.makeRecord(
+            logger.name, logging.INFO, "", 0,
+            result.summary(), (), None,
+        )
+        log_record.extra_data = {
+            "event": "test_result",
+            "domain": domain,
+            "test_name": result.test_name,
+            "passed": result.passed,
+            "status_match": result.status_match,
+            "legacy_status": result.legacy_status,
+            "new_status": result.new_status,
+            "legacy_latency_ms": round(result.legacy_latency_ms, 1),
+            "new_latency_ms": round(result.new_latency_ms, 1),
+        }
+        if result.body_diff:
+            log_record.extra_data["diff_keys"] = list(result.body_diff.keys())
+        if result.error:
+            log_record.extra_data["error"] = result.error
+        logger.handle(log_record)
         results.append(result)
 
     return results

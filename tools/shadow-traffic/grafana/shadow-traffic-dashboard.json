@@ -1,0 +1,282 @@
+{
+  "dashboard": {
+    "title": "Shadow Traffic - Legacy vs New API",
+    "description": "Shadow traffic comparison results between legacy and new API servers",
+    "tags": ["shadow-traffic", "stage", "migration"],
+    "timezone": "Asia/Seoul",
+    "refresh": "5m",
+    "time": {
+      "from": "now-24h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Diff Rate by Domain (%)",
+        "description": "Percentage of responses that differ between legacy and new API",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+        "datasource": { "type": "cloudwatch", "uid": "${cloudwatch_ds}" },
+        "targets": [
+          {
+            "namespace": "ShadowTraffic",
+            "metricName": "DiffRate",
+            "dimensions": { "Domain": ["brand", "category", "faq", "seller"] },
+            "statistic": "Average",
+            "period": "3600",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 5 },
+                { "color": "red", "value": 20 }
+              ]
+            },
+            "custom": {
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "pointSize": 6,
+              "showPoints": "always"
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Current Diff Rate",
+        "description": "Latest diff rate per domain",
+        "type": "stat",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+        "datasource": { "type": "cloudwatch", "uid": "${cloudwatch_ds}" },
+        "targets": [
+          {
+            "namespace": "ShadowTraffic",
+            "metricName": "DiffRate",
+            "dimensions": { "Domain": ["brand"] },
+            "statistic": "Average",
+            "period": "3600",
+            "refId": "brand"
+          },
+          {
+            "namespace": "ShadowTraffic",
+            "metricName": "DiffRate",
+            "dimensions": { "Domain": ["category"] },
+            "statistic": "Average",
+            "period": "3600",
+            "refId": "category"
+          },
+          {
+            "namespace": "ShadowTraffic",
+            "metricName": "DiffRate",
+            "dimensions": { "Domain": ["faq"] },
+            "statistic": "Average",
+            "period": "3600",
+            "refId": "faq"
+          },
+          {
+            "namespace": "ShadowTraffic",
+            "metricName": "DiffRate",
+            "dimensions": { "Domain": ["seller"] },
+            "statistic": "Average",
+            "period": "3600",
+            "refId": "seller"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 5 },
+                { "color": "red", "value": 20 }
+              ]
+            }
+          }
+        },
+        "options": {
+          "orientation": "horizontal",
+          "colorMode": "background",
+          "graphMode": "area",
+          "textMode": "auto",
+          "reduceOptions": { "calcs": ["lastNotNull"] }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Test Results (Pass / Fail)",
+        "description": "Number of passed and failed test cases per domain",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+        "datasource": { "type": "cloudwatch", "uid": "${cloudwatch_ds}" },
+        "targets": [
+          {
+            "namespace": "ShadowTraffic",
+            "metricName": "TestCount",
+            "dimensions": { "Domain": ["brand", "category", "faq", "seller"] },
+            "statistic": "Sum",
+            "period": "3600",
+            "refId": "total"
+          },
+          {
+            "namespace": "ShadowTraffic",
+            "metricName": "DiffCount",
+            "dimensions": { "Domain": ["brand", "category", "faq", "seller"] },
+            "statistic": "Sum",
+            "period": "3600",
+            "refId": "failed"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "custom": {
+              "lineWidth": 2,
+              "fillOpacity": 20,
+              "drawStyle": "bars",
+              "stacking": { "mode": "normal" }
+            }
+          },
+          "overrides": [
+            {
+              "matcher": { "id": "byName", "options": "failed" },
+              "properties": [{ "id": "color", "value": { "fixedColor": "red" } }]
+            },
+            {
+              "matcher": { "id": "byName", "options": "total" },
+              "properties": [{ "id": "color", "value": { "fixedColor": "green" } }]
+            }
+          ]
+        }
+      },
+      {
+        "id": 4,
+        "title": "Latency Comparison (P99)",
+        "description": "P99 latency comparison between legacy and new API",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+        "datasource": { "type": "cloudwatch", "uid": "${cloudwatch_ds}" },
+        "targets": [
+          {
+            "namespace": "ShadowTraffic",
+            "metricName": "LegacyLatencyP99",
+            "dimensions": { "Domain": ["brand", "category", "faq", "seller"] },
+            "statistic": "Maximum",
+            "period": "3600",
+            "refId": "legacy"
+          },
+          {
+            "namespace": "ShadowTraffic",
+            "metricName": "NewLatencyP99",
+            "dimensions": { "Domain": ["brand", "category", "faq", "seller"] },
+            "statistic": "Maximum",
+            "period": "3600",
+            "refId": "new"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "custom": {
+              "lineWidth": 2,
+              "fillOpacity": 5,
+              "pointSize": 6,
+              "showPoints": "always"
+            }
+          },
+          "overrides": [
+            {
+              "matcher": { "id": "byRegexp", "options": ".*legacy.*" },
+              "properties": [
+                { "id": "color", "value": { "fixedColor": "orange" } },
+                { "id": "custom.lineStyle", "value": { "fill": "dash", "dash": [10, 10] } }
+              ]
+            },
+            {
+              "matcher": { "id": "byRegexp", "options": ".*new.*" },
+              "properties": [{ "id": "color", "value": { "fixedColor": "blue" } }]
+            }
+          ]
+        }
+      },
+      {
+        "id": 5,
+        "title": "Domain Detail - Diff Rate Gauge",
+        "description": "Per-domain diff rate gauge",
+        "type": "gauge",
+        "gridPos": { "h": 6, "w": 24, "x": 0, "y": 16 },
+        "datasource": { "type": "cloudwatch", "uid": "${cloudwatch_ds}" },
+        "targets": [
+          {
+            "namespace": "ShadowTraffic",
+            "metricName": "DiffRate",
+            "dimensions": { "Domain": ["brand"] },
+            "statistic": "Average",
+            "period": "21600",
+            "refId": "brand"
+          },
+          {
+            "namespace": "ShadowTraffic",
+            "metricName": "DiffRate",
+            "dimensions": { "Domain": ["category"] },
+            "statistic": "Average",
+            "period": "21600",
+            "refId": "category"
+          },
+          {
+            "namespace": "ShadowTraffic",
+            "metricName": "DiffRate",
+            "dimensions": { "Domain": ["faq"] },
+            "statistic": "Average",
+            "period": "21600",
+            "refId": "faq"
+          },
+          {
+            "namespace": "ShadowTraffic",
+            "metricName": "DiffRate",
+            "dimensions": { "Domain": ["seller"] },
+            "statistic": "Average",
+            "period": "21600",
+            "refId": "seller"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 5 },
+                { "color": "orange", "value": 15 },
+                { "color": "red", "value": 30 }
+              ]
+            }
+          }
+        },
+        "options": {
+          "orientation": "horizontal",
+          "showThresholdLabels": true,
+          "showThresholdMarkers": true,
+          "reduceOptions": { "calcs": ["lastNotNull"] }
+        }
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "cloudwatch_ds",
+          "type": "datasource",
+          "query": "cloudwatch",
+          "label": "CloudWatch DataSource"
+        }
+      ]
+    }
+  }
+}

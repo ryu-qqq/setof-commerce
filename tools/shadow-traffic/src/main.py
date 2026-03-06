@@ -23,11 +23,27 @@ from metrics import MetricsPublisher
 from notifier import SlackNotifier
 from runner import load_all_suites, run_suite
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s",
-    datefmt="%Y-%m-%dT%H:%M:%S",
-)
+class JsonFormatter(logging.Formatter):
+    """Structured JSON log format for OpenSearch/CloudWatch Insights."""
+
+    def format(self, record: logging.LogRecord) -> str:
+        import json as _json
+
+        log_entry = {
+            "timestamp": self.formatTime(record, "%Y-%m-%dT%H:%M:%S"),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+            "service": "shadow-traffic",
+        }
+        if hasattr(record, "extra_data"):
+            log_entry.update(record.extra_data)
+        return _json.dumps(log_entry, ensure_ascii=False, default=str)
+
+
+handler = logging.StreamHandler()
+handler.setFormatter(JsonFormatter())
+logging.basicConfig(level=logging.INFO, handlers=[handler])
 logger = logging.getLogger(__name__)
 
 
