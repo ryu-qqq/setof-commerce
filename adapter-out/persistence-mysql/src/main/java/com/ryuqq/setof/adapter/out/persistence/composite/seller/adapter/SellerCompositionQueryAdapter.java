@@ -10,6 +10,7 @@ import com.ryuqq.setof.application.seller.dto.composite.SellerCompositeResult;
 import com.ryuqq.setof.application.seller.dto.composite.SellerPolicyCompositeResult;
 import com.ryuqq.setof.application.seller.port.out.query.SellerCompositionQueryPort;
 import java.util.Optional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
  * <p>PER-ADP-002: Port 인터페이스 구현.
  */
 @Component
+@ConditionalOnProperty(name = "persistence.legacy.seller.enabled", havingValue = "false")
 public class SellerCompositionQueryAdapter implements SellerCompositionQueryPort {
 
     private final SellerCompositeQueryDslRepository compositeRepository;
