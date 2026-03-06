@@ -121,7 +121,7 @@ locals {
   private_subnets = split(",", data.aws_ssm_parameter.private_subnets.value)
 
   # Legacy API (Stage) - ECS Service Discovery DNS
-  legacy_api_url = "http://setof-commerce-legacy-stage.connectly.local:8080"
+  legacy_api_url = "http://setof-commerce-legacy-api-stage.connectly.local:8088"
   # New API (Stage) - ECS Service Discovery DNS
   new_api_url = "http://setof-commerce-web-api-stage.connectly.local:8080"
 }

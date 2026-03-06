@@ -275,7 +275,7 @@ resource "aws_ecs_task_definition" "shadow_traffic" {
 
       environment = [
         { name = "LEGACY_URL", value = "http://${var.project_name}-legacy-api-${var.environment}.connectly.local:8088" },
-        { name = "NEW_URL", value = "http://web-api-${var.environment}.connectly.local:8080" },
+        { name = "NEW_URL", value = "http://${var.project_name}-web-api-${var.environment}.connectly.local:8080" },
         { name = "AWS_REGION", value = var.aws_region },
         { name = "DRY_RUN", value = "false" },
         { name = "DOMAINS", value = "" },

@@ -18,6 +18,10 @@ name: Terraform Apply (Stage)
 
 on:
   workflow_dispatch:  # 수동 트리거 허용
+  push:
+    branches: [stage]
+    paths:
+      - 'terraform/environments/stage/**'
   workflow_call:      # 다른 워크플로우에서 호출 가능
     inputs:
       legacy-api-image-tag:
