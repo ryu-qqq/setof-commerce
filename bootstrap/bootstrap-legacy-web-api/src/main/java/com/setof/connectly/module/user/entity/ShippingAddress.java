@@ -36,7 +36,7 @@ public class ShippingAddress extends BaseEntity {
     private Yn defaultYn;
 
     @Builder
-    public ShippingAddress(long id, long userId, ShippingDetails shippingDetails, Yn defaultYn) {
+    public ShippingAddress(Long id, long userId, ShippingDetails shippingDetails, Yn defaultYn) {
         this.id = id;
         this.userId = userId;
         this.shippingDetails = shippingDetails;
