@@ -1,6 +1,5 @@
 package com.ryuqq.setof.storage.legacy.shippingaddress.adapter;
 
-import com.ryuqq.setof.application.shippingaddress.dto.response.ShippingAddressResult;
 import com.ryuqq.setof.application.shippingaddress.port.out.ShippingAddressQueryPort;
 import com.ryuqq.setof.domain.shippingaddress.aggregate.ShippingAddress;
 import com.ryuqq.setof.domain.shippingaddress.query.ShippingAddressSearchCondition;
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Component;
 /**
  * LegacyShippingAddressQueryAdapter - 레거시 배송지 조회 Adapter.
  *
- * <p>Application Layer의 Port를 구현하는 Adapter입니다.
+ * <p>Application Layer의 Port를 구현하는 Adapter입니다. Domain 객체만 반환합니다.
  *
  * @author ryu-qqq
  * @since 1.1.0
@@ -30,20 +29,6 @@ public class LegacyShippingAddressQueryAdapter implements ShippingAddressQueryPo
             LegacyShippingAddressEntityMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
-    }
-
-    @Override
-    public List<ShippingAddressResult> fetchShippingAddresses(
-            ShippingAddressSearchCondition condition) {
-        List<LegacyShippingAddressEntity> entities = repository.findByCondition(condition);
-        return mapper.toResults(entities);
-    }
-
-    @Override
-    public Optional<ShippingAddressResult> fetchShippingAddress(
-            ShippingAddressSearchCondition condition) {
-        List<LegacyShippingAddressEntity> entities = repository.findByCondition(condition);
-        return entities.stream().findFirst().map(mapper::toResult);
     }
 
     @Override

@@ -1,0 +1,142 @@
+domain: refund-account
+description: "Refund Account API shadow traffic test cases"
+
+# Auth configuration for this suite.
+# strategy: login  - Login to Legacy server, use JWT for both servers
+# strategy: static - Use token from env var
+# strategy: none   - No auth (default)
+auth_config:
+  strategy: login
+  login_endpoint: /api/v1/user/login
+  phone_number: "${SHADOW_TEST_PHONE}"    # env var: test user phone
+  password: "${SHADOW_TEST_PASSWORD}"      # env var: test user password
+
+test_cases:
+  # === Query (조회) - Shadow Traffic 비교 대상 ===
+
+  # 정상 조회: 인증된 사용자의 환불 계좌 조회
+  # 동일 DB 기반이므로 응답 데이터가 완전히 일치해야 함
+  - name: "refund_account_get_authenticated"
+    path: "/api/v1/user/refund-account"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields: []
+
+  # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
+  - name: "refund_account_get_unauthenticated"
+    path: "/api/v1/user/refund-account"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+
+  # === Command (생성/수정/삭제) - Smoke Test only (status_only) ===
+  # Command는 양쪽 서버에 실제 쓰기가 발생하므로 status_only로만 검증
+
+  # POST: 환불 계좌 정상 등록
+  - name: "refund_account_create_valid"
+    path: "/api/v1/user/refund-account"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      bankName: "국민은행"
+      accountNumber: "12345678901234"
+      accountHolderName: "홍길동"
+    compare_mode: status_only
+    ignore_fields: []
+
+  # POST: 필수 필드(bankName) 누락 → 400 Bad Request (Validation 에러)
+  - name: "refund_account_create_missing_bank_name"
+    path: "/api/v1/user/refund-account"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      accountNumber: "12345678901234"
+      accountHolderName: "홍길동"
+    compare_mode: status_only
+    ignore_fields: []
+
+  # POST: accountNumber에 숫자 외 문자 포함 → 400 Bad Request (Validation 에러)
+  - name: "refund_account_create_invalid_account_number"
+    path: "/api/v1/user/refund-account"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      bankName: "신한은행"
+      accountNumber: "123-456-789"
+      accountHolderName: "홍길동"
+    compare_mode: status_only
+    ignore_fields: []
+
+  # POST: 미인증 사용자 접근 → 403 Forbidden
+  - name: "refund_account_create_unauthenticated"
+    path: "/api/v1/user/refund-account"
+    method: POST
+    auth: none
+    body:
+      bankName: "국민은행"
+      accountNumber: "12345678901234"
+      accountHolderName: "홍길동"
+    compare_mode: status_only
+    ignore_fields: []
+
+  # PUT: 환불 계좌 정상 수정 (테스트 환경의 실제 계좌 ID 사용)
+  - name: "refund_account_update_valid"
+    path: "/api/v1/user/refund-account/1"
+    method: PUT
+    auth: NORMAL_GRADE
+    body:
+      bankName: "신한은행"
+      accountNumber: "110123456789"
+      accountHolderName: "홍길동"
+    compare_mode: status_only
+    ignore_fields: []
+
+  # PUT: 존재하지 않는 계좌 수정 시도 → 400 Bad Request (RefundAccountNotFoundException)
+  - name: "refund_account_update_not_found"
+    path: "/api/v1/user/refund-account/999999"
+    method: PUT
+    auth: NORMAL_GRADE
+    body:
+      bankName: "우리은행"
+      accountNumber: "1002123456789"
+      accountHolderName: "홍길동"
+    compare_mode: status_only
+    ignore_fields: []
+
+  # PUT: 미인증 사용자 접근 → 403 Forbidden
+  - name: "refund_account_update_unauthenticated"
+    path: "/api/v1/user/refund-account/1"
+    method: PUT
+    auth: none
+    body:
+      bankName: "신한은행"
+      accountNumber: "110123456789"
+      accountHolderName: "홍길동"
+    compare_mode: status_only
+    ignore_fields: []
+
+  # DELETE: 환불 계좌 정상 삭제 (테스트 환경의 실제 계좌 ID 사용)
+  - name: "refund_account_delete_valid"
+    path: "/api/v1/user/refund-account/1"
+    method: DELETE
+    auth: NORMAL_GRADE
+    compare_mode: status_only
+    ignore_fields: []
+
+  # DELETE: 존재하지 않는 계좌 삭제 시도 → 400 Bad Request (RefundAccountNotFoundException)
+  - name: "refund_account_delete_not_found"
+    path: "/api/v1/user/refund-account/999999"
+    method: DELETE
+    auth: NORMAL_GRADE
+    compare_mode: status_only
+    ignore_fields: []
+
+  # DELETE: 미인증 사용자 접근 → 403 Forbidden
+  - name: "refund_account_delete_unauthenticated"
+    path: "/api/v1/user/refund-account/1"
+    method: DELETE
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []

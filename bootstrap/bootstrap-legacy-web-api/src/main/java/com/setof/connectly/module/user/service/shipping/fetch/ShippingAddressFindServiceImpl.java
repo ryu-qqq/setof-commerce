@@ -28,7 +28,7 @@ public class ShippingAddressFindServiceImpl implements ShippingAddressFindServic
         return fetchShippingInfo().stream()
                 .filter(s -> s.getShippingAddressId() == shippingAddressId)
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(ShippingAddressNotFoundException::new);
     }
 
     @Override

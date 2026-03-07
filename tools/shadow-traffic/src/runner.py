@@ -7,6 +7,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
+import httpx
 import yaml
 
 from auth import AuthConfig, AuthProvider
@@ -122,7 +123,7 @@ async def run_suite(
     # Auth: acquire token if suite has auth_config
     suite_auth_headers = dict(auth_headers) if auth_headers else {}
     auth_config = AuthConfig.from_dict(suite.get("auth_config"))
-    if auth_config.needs_auth():
+    if auth_config.strategy != "none":
         auth_provider = AuthProvider(auth_config)
         token = await auth_provider.acquire_token(http_client, legacy_url)
         if token:
@@ -133,10 +134,20 @@ async def run_suite(
 
     for tc in suite.get("test_cases", []):
         # Pass suite-level auth headers only for test cases that need auth
-        tc_auth = suite_auth_headers if tc.get("auth") and tc["auth"] != "none" else None
-        result, legacy_body, new_body = await run_test_case(
-            http_client, legacy_url, new_url, tc, tc_auth
-        )
+        needs_auth = tc.get("auth") and tc["auth"] != "none"
+        tc_auth = suite_auth_headers if needs_auth else None
+
+        # Use a fresh client for unauthenticated tests to avoid cookie leakage
+        # (httpx shares cookies from login across all requests in the same client)
+        if needs_auth:
+            result, legacy_body, new_body = await run_test_case(
+                http_client, legacy_url, new_url, tc, tc_auth
+            )
+        else:
+            async with httpx.AsyncClient(follow_redirects=False) as clean_client:
+                result, legacy_body, new_body = await run_test_case(
+                    clean_client, legacy_url, new_url, tc, tc_auth
+                )
         log_record = logger.makeRecord(
             logger.name, logging.INFO, "", 0,
             result.summary(), (), None,

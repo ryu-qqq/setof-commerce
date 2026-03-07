@@ -7,12 +7,12 @@ import static org.mockito.BDDMockito.then;
 
 import com.ryuqq.setof.application.shippingaddress.ShippingAddressDomainFixtures;
 import com.ryuqq.setof.application.shippingaddress.ShippingAddressQueryFixtures;
+import com.ryuqq.setof.application.shippingaddress.assembler.ShippingAddressAssembler;
 import com.ryuqq.setof.application.shippingaddress.dto.response.ShippingAddressResult;
 import com.ryuqq.setof.application.shippingaddress.port.out.ShippingAddressQueryPort;
 import com.ryuqq.setof.domain.shippingaddress.aggregate.ShippingAddress;
 import com.ryuqq.setof.domain.shippingaddress.aggregate.ShippingAddressBook;
 import com.ryuqq.setof.domain.shippingaddress.exception.ShippingAddressNotFoundException;
-import com.ryuqq.setof.domain.shippingaddress.query.ShippingAddressSearchCondition;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +33,8 @@ class ShippingAddressReadManagerTest {
     @InjectMocks private ShippingAddressReadManager sut;
 
     @Mock private ShippingAddressQueryPort queryPort;
+
+    @Mock private ShippingAddressAssembler assembler;
 
     @Nested
     @DisplayName("getById() - ID로 배송지 조회")
@@ -173,28 +175,30 @@ class ShippingAddressReadManagerTest {
     }
 
     @Nested
-    @DisplayName("fetchShippingAddresses() - 조건으로 배송지 결과 목록 조회")
+    @DisplayName("fetchShippingAddresses() - userId로 배송지 결과 목록 조회")
     class FetchShippingAddressesTest {
 
         @Test
-        @DisplayName("검색 조건으로 배송지 결과 목록을 조회한다")
+        @DisplayName("userId로 배송지 결과 목록을 조회한다")
         void fetchShippingAddresses_ReturnsResultList() {
             // given
             Long userId = 1L;
-            ShippingAddressSearchCondition condition =
-                    ShippingAddressQueryFixtures.searchConditionByUserId(userId);
+            List<ShippingAddress> domains =
+                    ShippingAddressDomainFixtures.activeShippingAddresses(userId);
             List<ShippingAddressResult> expected =
                     ShippingAddressQueryFixtures.shippingAddressResults();
 
-            given(queryPort.fetchShippingAddresses(condition)).willReturn(expected);
+            given(queryPort.findAllByUserId(userId)).willReturn(domains);
+            given(assembler.toResults(domains)).willReturn(expected);
 
             // when
-            List<ShippingAddressResult> result = sut.fetchShippingAddresses(condition);
+            List<ShippingAddressResult> result = sut.fetchShippingAddresses(userId);
 
             // then
             assertThat(result).hasSize(3);
             assertThat(result).isEqualTo(expected);
-            then(queryPort).should().fetchShippingAddresses(condition);
+            then(queryPort).should().findAllByUserId(userId);
+            then(assembler).should().toResults(domains);
         }
 
         @Test
@@ -202,13 +206,12 @@ class ShippingAddressReadManagerTest {
         void fetchShippingAddresses_NoResults_ReturnsEmptyList() {
             // given
             Long userId = 999L;
-            ShippingAddressSearchCondition condition =
-                    ShippingAddressQueryFixtures.searchConditionByUserId(userId);
 
-            given(queryPort.fetchShippingAddresses(condition)).willReturn(Collections.emptyList());
+            given(queryPort.findAllByUserId(userId)).willReturn(Collections.emptyList());
+            given(assembler.toResults(Collections.emptyList())).willReturn(Collections.emptyList());
 
             // when
-            List<ShippingAddressResult> result = sut.fetchShippingAddresses(condition);
+            List<ShippingAddressResult> result = sut.fetchShippingAddresses(userId);
 
             // then
             assertThat(result).isEmpty();
@@ -216,29 +219,31 @@ class ShippingAddressReadManagerTest {
     }
 
     @Nested
-    @DisplayName("fetchShippingAddress() - 조건으로 단건 배송지 결과 조회")
+    @DisplayName("fetchShippingAddress() - userId와 shippingAddressId로 단건 배송지 결과 조회")
     class FetchShippingAddressTest {
 
         @Test
-        @DisplayName("검색 조건으로 배송지 단건 결과를 조회한다")
+        @DisplayName("userId와 shippingAddressId로 배송지 단건 결과를 조회한다")
         void fetchShippingAddress_ExistingAddress_ReturnsResult() {
             // given
             Long userId = 1L;
             Long shippingAddressId = 100L;
-            ShippingAddressSearchCondition condition =
-                    ShippingAddressQueryFixtures.searchCondition(userId, shippingAddressId);
+            ShippingAddress domain =
+                    ShippingAddressDomainFixtures.activeShippingAddress(shippingAddressId, userId);
             ShippingAddressResult expected =
                     ShippingAddressQueryFixtures.shippingAddressResult(shippingAddressId);
 
-            given(queryPort.fetchShippingAddress(condition)).willReturn(Optional.of(expected));
+            given(queryPort.findById(userId, shippingAddressId)).willReturn(Optional.of(domain));
+            given(assembler.toResult(domain)).willReturn(expected);
 
             // when
-            ShippingAddressResult result = sut.fetchShippingAddress(condition);
+            ShippingAddressResult result = sut.fetchShippingAddress(userId, shippingAddressId);
 
             // then
             assertThat(result).isEqualTo(expected);
             assertThat(result.shippingAddressId()).isEqualTo(shippingAddressId);
-            then(queryPort).should().fetchShippingAddress(condition);
+            then(queryPort).should().findById(userId, shippingAddressId);
+            then(assembler).should().toResult(domain);
         }
 
         @Test
@@ -247,13 +252,11 @@ class ShippingAddressReadManagerTest {
             // given
             Long userId = 1L;
             Long shippingAddressId = 999L;
-            ShippingAddressSearchCondition condition =
-                    ShippingAddressQueryFixtures.searchCondition(userId, shippingAddressId);
 
-            given(queryPort.fetchShippingAddress(condition)).willReturn(Optional.empty());
+            given(queryPort.findById(userId, shippingAddressId)).willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> sut.fetchShippingAddress(condition))
+            assertThatThrownBy(() -> sut.fetchShippingAddress(userId, shippingAddressId))
                     .isInstanceOf(ShippingAddressNotFoundException.class);
         }
     }

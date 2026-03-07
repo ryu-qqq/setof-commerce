@@ -30,7 +30,7 @@ public class LegacyShippingAddressEntity extends LegacyBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "shipping_address_id")
     private Long id;
 
     @Column(name = "user_id")

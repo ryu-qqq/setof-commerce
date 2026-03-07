@@ -1,11 +1,11 @@
 package com.ryuqq.setof.application.shippingaddress.manager;
 
+import com.ryuqq.setof.application.shippingaddress.assembler.ShippingAddressAssembler;
 import com.ryuqq.setof.application.shippingaddress.dto.response.ShippingAddressResult;
 import com.ryuqq.setof.application.shippingaddress.port.out.ShippingAddressQueryPort;
 import com.ryuqq.setof.domain.shippingaddress.aggregate.ShippingAddress;
 import com.ryuqq.setof.domain.shippingaddress.aggregate.ShippingAddressBook;
 import com.ryuqq.setof.domain.shippingaddress.exception.ShippingAddressNotFoundException;
-import com.ryuqq.setof.domain.shippingaddress.query.ShippingAddressSearchCondition;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class ShippingAddressReadManager {
 
     private final ShippingAddressQueryPort queryPort;
+    private final ShippingAddressAssembler assembler;
 
-    public ShippingAddressReadManager(ShippingAddressQueryPort queryPort) {
+    public ShippingAddressReadManager(
+            ShippingAddressQueryPort queryPort, ShippingAddressAssembler assembler) {
         this.queryPort = queryPort;
+        this.assembler = assembler;
     }
 
     public ShippingAddress getById(Long userId, Long shippingAddressId) {
@@ -46,16 +49,17 @@ public class ShippingAddressReadManager {
     }
 
     @Transactional(readOnly = true)
-    public List<ShippingAddressResult> fetchShippingAddresses(
-            ShippingAddressSearchCondition condition) {
-        return queryPort.fetchShippingAddresses(condition);
+    public List<ShippingAddressResult> fetchShippingAddresses(Long userId) {
+        List<ShippingAddress> addresses = queryPort.findAllByUserId(userId);
+        return assembler.toResults(addresses);
     }
 
     @Transactional(readOnly = true)
-    public ShippingAddressResult fetchShippingAddress(ShippingAddressSearchCondition condition) {
-        return queryPort
-                .fetchShippingAddress(condition)
-                .orElseThrow(
-                        () -> new ShippingAddressNotFoundException(condition.shippingAddressId()));
+    public ShippingAddressResult fetchShippingAddress(Long userId, Long shippingAddressId) {
+        ShippingAddress address =
+                queryPort
+                        .findById(userId, shippingAddressId)
+                        .orElseThrow(() -> new ShippingAddressNotFoundException(shippingAddressId));
+        return assembler.toResult(address);
     }
 }

@@ -111,12 +111,13 @@ class AuthProvider:
         logger.info(f"Acquiring JWT token from {url}")
 
         try:
+            payload = {
+                "phoneNumber": self._config.phone_number,
+                "passwordHash": self._config.password,
+            }
             response = await http_client.post(
                 url,
-                json={
-                    "phoneNumber": self._config.phone_number,
-                    "passwordHash": self._config.password,
-                },
+                json=payload,
                 timeout=10.0,
             )
 

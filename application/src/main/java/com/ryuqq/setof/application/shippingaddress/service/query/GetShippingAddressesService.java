@@ -3,7 +3,6 @@ package com.ryuqq.setof.application.shippingaddress.service.query;
 import com.ryuqq.setof.application.shippingaddress.dto.response.ShippingAddressResult;
 import com.ryuqq.setof.application.shippingaddress.manager.ShippingAddressReadManager;
 import com.ryuqq.setof.application.shippingaddress.port.in.query.GetShippingAddressesUseCase;
-import com.ryuqq.setof.domain.shippingaddress.query.ShippingAddressSearchCondition;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +23,6 @@ public class GetShippingAddressesService implements GetShippingAddressesUseCase 
 
     @Override
     public List<ShippingAddressResult> execute(Long userId) {
-        ShippingAddressSearchCondition condition = ShippingAddressSearchCondition.ofUserId(userId);
-        return readManager.fetchShippingAddresses(condition);
+        return readManager.fetchShippingAddresses(userId);
     }
 }

@@ -76,12 +76,11 @@ public class RefundAccount {
     /**
      * 계좌 정보 수정.
      *
-     * @param updateData 수정 데이터
-     * @param occurredAt 변경 시각
+     * @param updateData 수정 데이터 (시간 포함)
      */
-    public void update(RefundAccountUpdateData updateData, Instant occurredAt) {
+    public void update(RefundAccountUpdateData updateData) {
         this.bankInfo = updateData.bankInfo();
-        this.updatedAt = occurredAt;
+        this.updatedAt = updateData.occurredAt();
     }
 
     /**

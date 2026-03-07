@@ -1,6 +1,5 @@
 package com.ryuqq.setof.storage.legacy.shippingaddress.mapper;
 
-import com.ryuqq.setof.application.shippingaddress.dto.response.ShippingAddressResult;
 import com.ryuqq.setof.domain.common.vo.Address;
 import com.ryuqq.setof.domain.common.vo.DeletionStatus;
 import com.ryuqq.setof.domain.common.vo.PhoneNumber;
@@ -15,11 +14,10 @@ import com.ryuqq.setof.storage.legacy.common.Yn;
 import com.ryuqq.setof.storage.legacy.shippingaddress.entity.LegacyShippingAddressEntity;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
- * LegacyShippingAddressEntityMapper - 레거시 배송지 Entity <-> Domain/Result 매퍼.
+ * LegacyShippingAddressEntityMapper - 레거시 배송지 Entity <-> Domain 매퍼.
  *
  * <p>PER-MAP-001: Mapper는 @Component로 등록.
  *
@@ -30,24 +28,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class LegacyShippingAddressEntityMapper {
-
-    public ShippingAddressResult toResult(LegacyShippingAddressEntity entity) {
-        return ShippingAddressResult.of(
-                entity.getId(),
-                entity.getReceiverName(),
-                entity.getShippingAddressName(),
-                entity.getAddressLine1(),
-                entity.getAddressLine2(),
-                entity.getZipCode(),
-                entity.getCountry(),
-                entity.getDeliveryRequest(),
-                entity.getPhoneNumber(),
-                toDefaultYnString(entity.getDefaultYn()));
-    }
-
-    public List<ShippingAddressResult> toResults(List<LegacyShippingAddressEntity> entities) {
-        return entities.stream().map(this::toResult).toList();
-    }
 
     public ShippingAddress toDomain(LegacyShippingAddressEntity entity) {
         return ShippingAddress.reconstitute(
@@ -107,13 +87,6 @@ public class LegacyShippingAddressEntityMapper {
                 domain.isDefault() ? Yn.Y : Yn.N,
                 insertDate,
                 updateDate);
-    }
-
-    private String toDefaultYnString(Yn defaultYn) {
-        if (defaultYn == null) {
-            return Yn.N.name();
-        }
-        return defaultYn.name();
     }
 
     private Country parseCountry(String country) {

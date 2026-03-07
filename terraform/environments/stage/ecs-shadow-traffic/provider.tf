@@ -134,7 +134,7 @@ variable "shadow_test_phone" {
 variable "shadow_test_password" {
   description = "Test user password for authenticated shadow traffic tests"
   type        = string
-  default     = "Test1234!"
+  default     = "Test1234@"
   sensitive   = true
 }
 
