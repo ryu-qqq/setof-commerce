@@ -27,15 +27,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class BrandV1ApiMapper {
 
-    /** V1 API 기본 검색 필드. 브랜드명 검색. 향후 필드 추가 시 코드 변경 최소화. */
-    private static final String DEFAULT_SEARCH_FIELD = "brandName";
-
     /**
      * SearchBrandsV1ApiRequest → BrandDisplaySearchParams 변환.
      *
-     * <p>searchField는 brandName으로 디폴트 설정 (향후 필드 추가 시 Request에 searchField 추가).
-     *
-     * <p>Public API는 displayed=true(노출 대상) 기본 적용.
+     * <p>레거시 호환: searchField=null (displayKoreanName OR displayEnglishName 검색), displayed=null (필터
+     * 없음).
      *
      * @param request 검색 요청 DTO
      * @return BrandDisplaySearchParams
@@ -45,7 +41,7 @@ public class BrandV1ApiMapper {
                 request.searchWord() != null && !request.searchWord().isBlank()
                         ? request.searchWord().trim()
                         : null;
-        return BrandDisplaySearchParams.of(DEFAULT_SEARCH_FIELD, searchWord, true);
+        return BrandDisplaySearchParams.of(null, searchWord, null);
     }
 
     /**

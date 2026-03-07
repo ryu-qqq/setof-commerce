@@ -11,9 +11,14 @@ package com.ryuqq.setof.domain.faq.vo;
  */
 public record FaqContents(String value) {
 
+    private static final int MAX_LENGTH = 1024;
+
     public FaqContents {
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException("FAQ 내용은 필수입니다");
+        }
+        if (value.length() > MAX_LENGTH) {
+            throw new IllegalArgumentException("FAQ 내용은 " + MAX_LENGTH + "자 이하여야 합니다");
         }
     }
 

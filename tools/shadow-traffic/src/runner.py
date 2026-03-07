@@ -9,6 +9,7 @@ from typing import Any
 
 import yaml
 
+from auth import AuthConfig, AuthProvider
 from client import CallResult, call_endpoint
 from diff_engine import CompareMode, DiffResult, compare_responses
 
@@ -112,13 +113,29 @@ async def run_suite(
     legacy_url: str,
     new_url: str,
     auth_headers: dict[str, str] | None = None,
-) -> list[DiffResult]:
+) -> tuple[list[DiffResult], dict, dict]:
     domain = suite["domain"]
     results = []
+    legacy_bodies: dict[str, object] = {}
+    new_bodies: dict[str, object] = {}
+
+    # Auth: acquire token if suite has auth_config
+    suite_auth_headers = dict(auth_headers) if auth_headers else {}
+    auth_config = AuthConfig.from_dict(suite.get("auth_config"))
+    if auth_config.needs_auth():
+        auth_provider = AuthProvider(auth_config)
+        token = await auth_provider.acquire_token(http_client, legacy_url)
+        if token:
+            suite_auth_headers.update(auth_provider.get_headers())
+            logger.info(f"[{domain}] Auth token acquired (strategy={auth_config.strategy})")
+        else:
+            logger.warning(f"[{domain}] Failed to acquire auth token, authenticated tests may fail")
 
     for tc in suite.get("test_cases", []):
+        # Pass suite-level auth headers only for test cases that need auth
+        tc_auth = suite_auth_headers if tc.get("auth") and tc["auth"] != "none" else None
         result, legacy_body, new_body = await run_test_case(
-            http_client, legacy_url, new_url, tc, auth_headers
+            http_client, legacy_url, new_url, tc, tc_auth
         )
         log_record = logger.makeRecord(
             logger.name, logging.INFO, "", 0,
@@ -146,4 +163,8 @@ async def run_suite(
         logger.handle(log_record)
         results.append(result)
 
-    return results
+        if not result.passed:
+            legacy_bodies[result.test_name] = legacy_body
+            new_bodies[result.test_name] = new_body
+
+    return results, legacy_bodies, new_bodies

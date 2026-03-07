@@ -59,8 +59,6 @@ class LegacySellerEntityMapperTest {
             assertThat(domain.descriptionValue()).isEqualTo("테스트 셀러 설명");
             assertThat(domain.isActive()).isTrue(); // 레거시에는 active 컬럼 없음, 기본값 true
             assertThat(domain.deletedAt()).isNull(); // 레거시에는 deletedAt 컬럼 없음
-            assertThat(domain.authTenantId()).isNull(); // 레거시에는 authTenantId 컬럼 없음
-            assertThat(domain.authOrganizationId()).isNull(); // 레거시에는 authOrganizationId 컬럼 없음
         }
 
         @Test

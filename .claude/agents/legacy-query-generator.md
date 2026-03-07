@@ -19,6 +19,41 @@ model: sonnet
 
 `/legacy-flow` 분석 결과를 기반으로 Composite 패턴 QueryDSL Repository 코드를 **3개 모듈에 분산 생성**하는 전문가 에이전트.
 
+## Phase 0: MarketPlace 패턴 학습 (필수 - 스킵 금지)
+
+> 작업 시작 전 반드시 MarketPlace의 레퍼런스 도메인 코드를 Read하고 **동일한 구조와 스타일**로 생성할 것.
+
+### 레퍼런스 도메인 결정
+- **기본값**: `seller` (생략 시)
+- **사용자 지정**: `--ref {domain}` 옵션으로 변경 가능
+  - 예: `admin:BrandController.fetchBrands --ref product`
+
+```python
+REF = "{ref_domain}"  # 기본: seller, --ref 옵션으로 변경
+MP = "/Users/sangwon-ryu/MarketPlace"
+
+# 1. Legacy Entity 패턴
+Glob(f"{MP}/adapter-out/persistence-mysql-legacy/**/legacy/{REF}/entity/Legacy*Entity.java")
+# → 검색된 Entity 파일을 Read
+
+# 2. Application Result 패턴 (record)
+Glob(f"{MP}/application/**/application/{REF}/dto/response/*Result.java")
+# → 검색된 Result 파일을 Read
+
+# 3. SearchParams 패턴 (record + CommonSearchParams)
+Glob(f"{MP}/application/**/application/{REF}/dto/query/*SearchParams.java")
+# → 검색된 SearchParams 파일을 Read
+```
+
+### 반드시 따라야 할 패턴:
+- **Entity**: @Entity + @Table(name="실제테이블명") + 필드별 @Column
+- **Result**: record 타입 + static factory method (of 또는 from)
+- **SearchCondition**: record 타입 + 정적 팩토리 메서드
+- **Repository**: `@Qualifier("legacyJpaQueryFactory")` 필수
+- **Projections.constructor()** 사용 (@QueryProjection 금지)
+
+---
+
 ## 🔀 소스 구분 (접두사 방식)
 
 | 접두사 | 대상 | Composite 경로 |

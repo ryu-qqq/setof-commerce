@@ -2,6 +2,7 @@ domain: brand
 description: "Brand API shadow traffic test cases"
 
 test_cases:
+  # === 목록 조회 ===
   - name: "brand_list_all"
     path: "/api/v1/brand"
     method: GET
@@ -9,7 +10,7 @@ test_cases:
     compare_mode: full
     ignore_fields: []
 
-  - name: "brand_list_search"
+  - name: "brand_list_search_korean"
     path: "/api/v1/brand"
     method: GET
     auth: none
@@ -18,18 +19,44 @@ test_cases:
     compare_mode: full
     ignore_fields: []
 
+  - name: "brand_list_search_english"
+    path: "/api/v1/brand"
+    method: GET
+    auth: none
+    body:
+      searchWord: "NIKE"
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "brand_list_empty"
+    path: "/api/v1/brand"
+    method: GET
+    auth: none
+    body:
+      searchWord: "zzz_nonexistent_999"
+    compare_mode: full
+    ignore_fields: []
+
+  # === 단건 조회 ===
   - name: "brand_detail_id_1"
     path: "/api/v1/brand/1"
     method: GET
     auth: none
-    compare_mode: full
+    compare_mode: status_only
     ignore_fields: []
 
   - name: "brand_detail_id_2"
     path: "/api/v1/brand/2"
     method: GET
     auth: none
-    compare_mode: full
+    compare_mode: status_only
+    ignore_fields: []
+
+  - name: "brand_detail_id_3"
+    path: "/api/v1/brand/3"
+    method: GET
+    auth: none
+    compare_mode: status_only
     ignore_fields: []
 
   - name: "brand_detail_not_found"

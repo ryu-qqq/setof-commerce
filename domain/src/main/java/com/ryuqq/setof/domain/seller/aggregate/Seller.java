@@ -21,8 +21,6 @@ public class Seller {
     private Description description;
     private boolean active;
     private DeletionStatus deletionStatus;
-    private String authTenantId;
-    private String authOrganizationId;
     private final Instant createdAt;
     private Instant updatedAt;
 
@@ -34,8 +32,6 @@ public class Seller {
             Description description,
             boolean active,
             DeletionStatus deletionStatus,
-            String authTenantId,
-            String authOrganizationId,
             Instant createdAt,
             Instant updatedAt) {
         this.id = id;
@@ -45,8 +41,6 @@ public class Seller {
         this.description = description;
         this.active = active;
         this.deletionStatus = deletionStatus != null ? deletionStatus : DeletionStatus.active();
-        this.authTenantId = authTenantId;
-        this.authOrganizationId = authOrganizationId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -65,8 +59,6 @@ public class Seller {
                 description,
                 true,
                 DeletionStatus.active(),
-                null,
-                null,
                 now,
                 now);
     }
@@ -79,8 +71,6 @@ public class Seller {
             Description description,
             boolean active,
             Instant deletedAt,
-            String authTenantId,
-            String authOrganizationId,
             Instant createdAt,
             Instant updatedAt) {
         DeletionStatus status =
@@ -93,8 +83,6 @@ public class Seller {
                 description,
                 active,
                 status,
-                authTenantId,
-                authOrganizationId,
                 createdAt,
                 updatedAt);
     }
@@ -157,26 +145,6 @@ public class Seller {
         if (!this.active) {
             throw new SellerInactiveException();
         }
-    }
-
-    /**
-     * 인증 서버 정보 업데이트.
-     *
-     * <p>인증 서버에서 테넌트/조직 생성 후 반환된 ID를 저장합니다.
-     *
-     * @param authTenantId 인증 서버 테넌트 ID
-     * @param authOrganizationId 인증 서버 조직 ID
-     * @param now 수정 시각
-     */
-    public void updateAuthInfo(String authTenantId, String authOrganizationId, Instant now) {
-        this.authTenantId = authTenantId;
-        this.authOrganizationId = authOrganizationId;
-        this.updatedAt = now;
-    }
-
-    /** 인증 서버 연동 완료 여부. */
-    public boolean hasAuthInfo() {
-        return authTenantId != null && authOrganizationId != null;
     }
 
     // VO Getters
@@ -250,13 +218,5 @@ public class Seller {
      */
     public Instant deletedAt() {
         return deletionStatus.deletedAt();
-    }
-
-    public String authTenantId() {
-        return authTenantId;
-    }
-
-    public String authOrganizationId() {
-        return authOrganizationId;
     }
 }

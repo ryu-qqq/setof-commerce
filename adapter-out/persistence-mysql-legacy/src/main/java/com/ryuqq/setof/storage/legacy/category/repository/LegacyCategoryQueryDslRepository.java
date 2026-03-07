@@ -153,9 +153,7 @@ public class LegacyCategoryQueryDslRepository {
         return queryFactory
                 .selectFrom(legacyCategoryEntity)
                 .where(conditionBuilder.displayedEq(true))
-                .orderBy(
-                        legacyCategoryEntity.categoryDepth.asc(),
-                        legacyCategoryEntity.displayName.asc())
+                .orderBy(legacyCategoryEntity.categoryDepth.asc(), legacyCategoryEntity.id.asc())
                 .fetch();
     }
 

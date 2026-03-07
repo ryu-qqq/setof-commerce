@@ -88,25 +88,13 @@ variable "enable_schedule" {
   default     = true
 }
 
-variable "slack_webhook_url" {
-  description = "Slack webhook URL for diff alerts"
-  type        = string
-  default     = ""
-}
-
-variable "dashboard_url" {
-  description = "Grafana dashboard URL for alert links"
-  type        = string
-  default     = ""
-}
-
 # ========================================
 # CloudWatch Alarm Variables
 # ========================================
 variable "alarm_diff_rate_threshold" {
   description = "DiffRate threshold (%) to trigger alarm"
   type        = number
-  default     = 10
+  default     = 0
 }
 
 variable "alarm_evaluation_periods" {
@@ -130,7 +118,42 @@ variable "alert_email" {
 variable "alarm_domains" {
   description = "List of domains to create alarms for"
   type        = list(string)
-  default     = ["brand", "category", "faq", "seller"]
+  default     = ["brand", "category", "faq", "seller", "shipping-address"]
+}
+
+# ========================================
+# Shadow Traffic Test Credentials
+# ========================================
+variable "shadow_test_phone" {
+  description = "Test user phone number for authenticated shadow traffic tests"
+  type        = string
+  default     = "01036817687"
+  sensitive   = true
+}
+
+variable "shadow_test_password" {
+  description = "Test user password for authenticated shadow traffic tests"
+  type        = string
+  default     = "Test1234!"
+  sensitive   = true
+}
+
+variable "s3_report_bucket" {
+  description = "S3 bucket name for shadow-traffic diff reports"
+  type        = string
+  default     = "fileflow-uploads-stage"
+}
+
+variable "slack_workspace_id" {
+  description = "Slack workspace ID (starts with T) for AWS Chatbot"
+  type        = string
+  default     = "T0A8AT1Q9QQ"
+}
+
+variable "slack_channel_id" {
+  description = "Slack channel ID for shadow-traffic alerts"
+  type        = string
+  default     = "C0AJKNK2HL7"
 }
 
 # ========================================

@@ -66,10 +66,13 @@ public class BrandQueryFactory {
      * @return BrandSearchCriteria
      */
     public BrandSearchCriteria createDisplayCriteria(BrandDisplaySearchParams params) {
-        Boolean displayed = params.displayed() != null ? params.displayed() : true;
-        QueryContext<BrandSortKey> queryContext = QueryContext.defaultOf(BrandSortKey.defaultKey());
+        QueryContext<BrandSortKey> queryContext =
+                QueryContext.of(
+                        BrandSortKey.ID,
+                        SortDirection.ASC,
+                        PageRequest.of(0, PageRequest.UNPAGED_SIZE));
         return BrandSearchCriteria.of(
-                displayed,
+                params.displayed(),
                 BrandSearchField.fromString(params.searchField()),
                 params.searchWord(),
                 queryContext);

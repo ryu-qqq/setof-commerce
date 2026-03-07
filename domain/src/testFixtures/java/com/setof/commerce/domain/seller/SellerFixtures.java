@@ -106,8 +106,6 @@ public final class SellerFixtures {
                 defaultDescription(),
                 true,
                 null,
-                null,
-                null,
                 CommonVoFixtures.yesterday(),
                 CommonVoFixtures.yesterday());
     }
@@ -121,23 +119,6 @@ public final class SellerFixtures {
                 defaultDescription(),
                 true,
                 null,
-                null,
-                null,
-                CommonVoFixtures.yesterday(),
-                CommonVoFixtures.yesterday());
-    }
-
-    public static Seller activeSellerWithAuth(Long id) {
-        return Seller.reconstitute(
-                SellerId.of(id),
-                defaultSellerName(),
-                defaultDisplayName(),
-                defaultLogoUrl(),
-                defaultDescription(),
-                true,
-                null,
-                "tenant-123",
-                "org-456",
                 CommonVoFixtures.yesterday(),
                 CommonVoFixtures.yesterday());
     }
@@ -150,8 +131,6 @@ public final class SellerFixtures {
                 defaultLogoUrl(),
                 defaultDescription(),
                 false,
-                null,
-                null,
                 null,
                 CommonVoFixtures.yesterday(),
                 CommonVoFixtures.yesterday());
@@ -167,8 +146,6 @@ public final class SellerFixtures {
                 defaultDescription(),
                 false,
                 deletedAt,
-                null,
-                null,
                 CommonVoFixtures.yesterday(),
                 CommonVoFixtures.yesterday());
     }

@@ -21,9 +21,41 @@ model: sonnet
 
 레거시 API 분석 결과를 새 컨벤션에 맞는 Request/Response 객체로 변환하는 전문가 에이전트.
 
+## Phase 0: MarketPlace 패턴 학습 (필수 - 스킵 금지)
+
+> 작업 시작 전 반드시 MarketPlace의 레퍼런스 도메인 코드를 Read하고 **동일한 구조와 스타일**로 생성할 것.
+
+### 레퍼런스 도메인 결정
+- **기본값**: `seller` (생략 시)
+- **사용자 지정**: `--ref {domain}` 옵션으로 변경 가능
+  - 예: `web:UserController.fetchAddressBook --ref brand`
+
+```python
+REF = "{ref_domain}"  # 기본: seller, --ref 옵션으로 변경
+MP = "/Users/sangwon-ryu/MarketPlace"
+DTO_BASE = f"{MP}/adapter-in/rest-api/src/main/java/com/ryuqq/marketplace/adapter/in/rest/{REF}/dto"
+
+# 1. Request DTO 패턴 - query/ 디렉토리에서 Search*ApiRequest.java 찾아서 Read
+Glob(f"{DTO_BASE}/query/Search*ApiRequest.java")
+# → 검색된 파일을 Read
+
+# 2. Response DTO 패턴 - response/ 디렉토리에서 *ApiResponse.java 찾아서 Read
+Glob(f"{DTO_BASE}/response/*ApiResponse.java")
+# → 검색된 파일을 전부 Read (목록/상세 패턴 학습)
+```
+
+### 반드시 따라야 할 패턴:
+- **record 타입** 필수 (class 금지)
+- **@Schema** (RequestBody용) 또는 **@Parameter** (ModelAttribute용) 어노테이션 필수
+- **중첩 객체**는 inner record로 정의
+- **Javadoc**: 클래스 레벨에 규칙 코드 명시 (API-DTO-001 등)
+- **날짜 타입**: Response에서 String으로 표현 (API-DTO-005)
+
+---
+
 ## 🎯 핵심 원칙
 
-> **legacy-flow 분석 문서 → 컨벤션 규칙 적용 → record 기반 DTO 생성**
+> **legacy-flow 분석 문서 → MarketPlace 패턴 학습 → 컨벤션 규칙 적용 → record 기반 DTO 생성**
 
 ---
 

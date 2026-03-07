@@ -2,7 +2,16 @@ domain: category
 description: "Category API shadow traffic test cases"
 
 test_cases:
+  # === 트리 조회 ===
   - name: "category_tree_all"
+    path: "/api/v1/category"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  # 동일 엔드포인트 재호출 - Redis 캐시 HIT 경로 재현
+  - name: "category_tree_cached"
     path: "/api/v1/category"
     method: GET
     auth: none

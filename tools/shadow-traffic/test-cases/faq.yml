@@ -11,12 +11,12 @@ test_cases:
     compare_mode: full
     ignore_fields: []
 
-  - name: "faq_list_order_payment"
+  - name: "faq_list_product_seller"
     path: "/api/v1/faq"
     method: GET
     auth: none
     body:
-      faqType: "ORDER_PAYMENT"
+      faqType: "PRODUCT_SELLER"
     compare_mode: full
     ignore_fields: []
 
@@ -29,11 +29,38 @@ test_cases:
     compare_mode: full
     ignore_fields: []
 
+  - name: "faq_list_order_payment"
+    path: "/api/v1/faq"
+    method: GET
+    auth: none
+    body:
+      faqType: "ORDER_PAYMENT"
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "faq_list_cancel_refund"
+    path: "/api/v1/faq"
+    method: GET
+    auth: none
+    body:
+      faqType: "CANCEL_REFUND"
+    compare_mode: full
+    ignore_fields: []
+
   - name: "faq_list_exchange_return"
     path: "/api/v1/faq"
     method: GET
     auth: none
     body:
       faqType: "EXCHANGE_RETURN"
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "faq_list_top"
+    path: "/api/v1/faq"
+    method: GET
+    auth: none
+    body:
+      faqType: "TOP"
     compare_mode: full
     ignore_fields: []

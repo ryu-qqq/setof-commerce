@@ -94,8 +94,6 @@ class SellerTest {
                             SellerFixtures.defaultDescription(),
                             true,
                             null,
-                            null,
-                            null,
                             createdAt,
                             updatedAt);
 
@@ -123,8 +121,6 @@ class SellerTest {
                             SellerFixtures.defaultDescription(),
                             false,
                             deletedAt,
-                            null,
-                            null,
                             CommonVoFixtures.yesterday(),
                             CommonVoFixtures.yesterday());
 

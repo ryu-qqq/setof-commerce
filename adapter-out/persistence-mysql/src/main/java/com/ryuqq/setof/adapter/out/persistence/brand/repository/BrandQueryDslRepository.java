@@ -137,6 +137,7 @@ public class BrandQueryDslRepository {
         boolean isAsc = direction == SortDirection.ASC;
 
         return switch (sortKey) {
+            case ID -> isAsc ? brandJpaEntity.id.asc() : brandJpaEntity.id.desc();
             case CREATED_AT ->
                     isAsc ? brandJpaEntity.createdAt.asc() : brandJpaEntity.createdAt.desc();
             case DISPLAY_ORDER ->

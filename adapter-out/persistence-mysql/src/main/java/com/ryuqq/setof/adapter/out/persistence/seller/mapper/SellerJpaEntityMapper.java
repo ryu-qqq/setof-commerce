@@ -38,8 +38,6 @@ public class SellerJpaEntityMapper {
                 domain.logoUrlValue(),
                 domain.descriptionValue(),
                 domain.isActive(),
-                domain.authTenantId(),
-                domain.authOrganizationId(),
                 domain.createdAt(),
                 domain.updatedAt(),
                 domain.deletedAt());
@@ -60,8 +58,6 @@ public class SellerJpaEntityMapper {
                 entity.getDescription() != null ? Description.of(entity.getDescription()) : null,
                 entity.isActive(),
                 entity.getDeletedAt(),
-                entity.getAuthTenantId(),
-                entity.getAuthOrganizationId(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt());
     }

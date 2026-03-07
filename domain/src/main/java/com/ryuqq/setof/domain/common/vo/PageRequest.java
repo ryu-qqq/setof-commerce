@@ -52,6 +52,9 @@ public record PageRequest(int page, int size) {
     /** 최대 페이지 크기 */
     public static final int MAX_SIZE = 100;
 
+    /** 페이징 없는 전체 조회용 크기 (레거시 호환) */
+    public static final int UNPAGED_SIZE = 10000;
+
     /** Compact Constructor - 유효성 검증 및 정규화 */
     public PageRequest {
         if (page < 0) {
@@ -60,8 +63,8 @@ public record PageRequest(int page, int size) {
         if (size <= 0) {
             size = DEFAULT_SIZE;
         }
-        if (size > MAX_SIZE) {
-            size = MAX_SIZE;
+        if (size > UNPAGED_SIZE) {
+            size = UNPAGED_SIZE;
         }
     }
 

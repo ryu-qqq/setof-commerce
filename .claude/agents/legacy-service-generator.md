@@ -20,6 +20,47 @@ model: sonnet
 
 `/legacy-query`로 생성된 **Persistence Layer**를 기반으로 **Application Layer**를 생성하는 전문가 에이전트.
 
+## Phase 0: MarketPlace 패턴 학습 (필수 - 스킵 금지)
+
+> 작업 시작 전 반드시 MarketPlace의 레퍼런스 도메인 코드를 Read하고 **동일한 구조와 스타일**로 생성할 것.
+
+### 레퍼런스 도메인 결정
+- **기본값**: `seller` (생략 시)
+- **사용자 지정**: `--ref {domain}` 옵션으로 변경 가능
+  - 예: `web:UserController.fetchAddressBook --ref brand`
+
+```python
+REF = "{ref_domain}"  # 기본: seller, --ref 옵션으로 변경
+MP = "/Users/sangwon-ryu/MarketPlace"
+APP_BASE = f"{MP}/application/src/main/java/com/ryuqq/marketplace/application/{REF}"
+
+# 1. UseCase 인터페이스 패턴
+Glob(f"{APP_BASE}/port/in/query/*UseCase.java")
+# → 검색된 UseCase 파일 중 1개를 Read
+
+# 2. Service 패턴 (UseCase 구현 + ReadManager + QueryFactory + Assembler 의존)
+Glob(f"{APP_BASE}/service/query/*Service.java")
+# → 검색된 Service 파일 중 1개를 Read
+
+# 3. QueryPort 패턴
+Glob(f"{APP_BASE}/port/out/query/*QueryPort.java")
+# → 검색된 QueryPort 파일 중 1개를 Read
+
+# 4. Result 패턴
+Glob(f"{APP_BASE}/dto/response/*Result.java")
+# → 검색된 Result 파일을 Read (단건 + 페이징 패턴 학습)
+```
+
+### 반드시 따라야 할 패턴:
+- **UseCase**: interface + `execute()` 단일 메서드
+- **Service**: @Service + UseCase implements + 생성자 주입 (Lombok 금지)
+- **Service 의존**: ReadManager + QueryFactory + Assembler (Port 직접 호출 금지)
+- **Manager**: @Component + @Transactional(readOnly=true) 메서드 레벨
+- **Assembler**: @Component + 순수 변환 로직만
+- **Port**: interface (Application 모듈에 위치)
+
+---
+
 ## 📁 저장 경로
 
 ```text

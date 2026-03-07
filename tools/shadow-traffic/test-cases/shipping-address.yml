@@ -1,0 +1,58 @@
+domain: shipping-address
+description: "Shipping Address API shadow traffic test cases"
+
+# Auth configuration for this suite.
+# strategy: login  - Login to Legacy server, use JWT for both servers
+# strategy: static - Use token from env var
+# strategy: none   - No auth (default)
+auth_config:
+  strategy: login
+  login_endpoint: /api/v1/user/login
+  phone_number: "${SHADOW_TEST_PHONE}"    # env var: test user phone
+  password: "${SHADOW_TEST_PASSWORD}"      # env var: test user password
+
+test_cases:
+  # === 목록 조회 ===
+  - name: "shipping_address_list_authenticated"
+    path: "/api/v1/user/address-book"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields: []
+
+  # === 단건 조회 ===
+  - name: "shipping_address_detail_2217"
+    path: "/api/v1/user/address-book/2217"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "shipping_address_detail_2218"
+    path: "/api/v1/user/address-book/2218"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields: []
+
+  # === 에러 케이스 ===
+  - name: "shipping_address_detail_not_found"
+    path: "/api/v1/user/address-book/999999"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: status_only
+    ignore_fields: []
+
+  - name: "shipping_address_list_unauthenticated"
+    path: "/api/v1/user/address-book"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+
+  - name: "shipping_address_detail_unauthenticated"
+    path: "/api/v1/user/address-book/2217"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []

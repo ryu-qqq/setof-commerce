@@ -55,7 +55,10 @@ public class LegacyBrandConditionBuilder {
             return null;
         }
         if (searchField == null) {
-            return legacyBrandEntity.brandName.containsIgnoreCase(searchWord);
+            return legacyBrandEntity
+                    .displayKoreanName
+                    .containsIgnoreCase(searchWord)
+                    .or(legacyBrandEntity.displayEnglishName.containsIgnoreCase(searchWord));
         }
         return switch (searchField) {
             case BRAND_NAME -> legacyBrandEntity.brandName.containsIgnoreCase(searchWord);

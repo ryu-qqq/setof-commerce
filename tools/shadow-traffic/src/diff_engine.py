@@ -8,12 +8,27 @@ from enum import Enum
 from typing import Any
 
 from deepdiff import DeepDiff
+from deepdiff.operator import BaseOperator
 
 
 class CompareMode(str, Enum):
     FULL = "full"
     STRUCTURE_ONLY = "structure_only"
     STATUS_ONLY = "status_only"
+
+
+class TrimStringOperator(BaseOperator):
+    """문자열 비교 시 앞뒤 공백을 무시합니다."""
+
+    def gives_up_diffing(self, level, diff_instance):
+        if isinstance(level.t1, str) and isinstance(level.t2, str):
+            return level.t1.strip() == level.t2.strip()
+        return False
+
+    def normalize_value_for_hashing(self, parent, obj):
+        if isinstance(obj, str):
+            return obj.strip()
+        return obj
 
 
 DEFAULT_IGNORE_FIELDS = frozenset(
@@ -144,6 +159,7 @@ def compare_responses(
             ignore_order=True,
             ignore_numeric_type_changes=True,
             verbose_level=2,
+            custom_operators=[TrimStringOperator()],
         )
         body_diff = _filter_diff(dict(diff), effective_ignore)
 

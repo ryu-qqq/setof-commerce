@@ -152,7 +152,7 @@ public class CategoryAssembler {
             Category category, List<CategoryDisplayResult> children) {
         return CategoryDisplayResult.of(
                 category.idValue(),
-                category.categoryNameValue(),
+                category.displayNameValue(),
                 category.parentCategoryIdValue(),
                 category.categoryDepthValue(),
                 children);

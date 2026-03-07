@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
  *   <li>displayName 컬럼 없음 → sellerName으로 대체
  *   <li>active 컬럼 없음 → true 기본값
  *   <li>deletedAt 컬럼 없음 → null (항상 활성 상태)
- *   <li>authTenantId/authOrganizationId 없음 → null
  * </ul>
  *
  * @author ryu-qqq
@@ -53,8 +52,6 @@ public class LegacySellerEntityMapper {
                 LogoUrl.of(entity.getSellerLogoUrl()),
                 Description.of(entity.getSellerDescription()),
                 true,
-                null,
-                null,
                 null,
                 createdAt,
                 updatedAt);

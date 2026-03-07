@@ -20,7 +20,7 @@ from pathlib import Path
 import httpx
 
 from metrics import MetricsPublisher
-from notifier import SlackNotifier
+from reporter import S3Reporter
 from runner import load_all_suites, run_suite
 
 class JsonFormatter(logging.Formatter):
@@ -73,14 +73,9 @@ def parse_args() -> argparse.Namespace:
         help="Path to test-cases directory",
     )
     parser.add_argument(
-        "--slack-webhook",
-        default=os.getenv("SLACK_WEBHOOK_URL", ""),
-        help="Slack webhook URL for alerts",
-    )
-    parser.add_argument(
-        "--dashboard-url",
-        default=os.getenv("DASHBOARD_URL", ""),
-        help="Grafana dashboard URL for alert links",
+        "--s3-bucket",
+        default=os.getenv("S3_REPORT_BUCKET", ""),
+        help="S3 bucket for diff reports",
     )
     parser.add_argument(
         "--dry-run",
@@ -92,6 +87,11 @@ def parse_args() -> argparse.Namespace:
         "--region",
         default=os.getenv("AWS_REGION", "ap-northeast-2"),
         help="AWS region for CloudWatch",
+    )
+    parser.add_argument(
+        "--auth-token",
+        default=os.getenv("SHADOW_AUTH_TOKEN", ""),
+        help="Static JWT token for authenticated tests (overrides suite auth_config)",
     )
     return parser.parse_args()
 
@@ -118,9 +118,16 @@ async def main() -> int:
     logger.info(f"New:    {args.new_url}")
 
     metrics = MetricsPublisher(enabled=not args.dry_run, region=args.region)
-    notifier = SlackNotifier(
-        webhook_url=args.slack_webhook if not args.dry_run else None
+    reporter = S3Reporter(
+        bucket=args.s3_bucket if not args.dry_run else None,
+        region=args.region,
     )
+
+    # Global auth headers (from --auth-token CLI arg)
+    global_auth_headers = {}
+    if args.auth_token:
+        global_auth_headers["Authorization"] = f"Bearer {args.auth_token}"
+        logger.info("Using static auth token from CLI/env")
 
     total_passed = 0
     total_failed = 0
@@ -130,11 +137,12 @@ async def main() -> int:
             domain = suite["domain"]
             logger.info(f"--- Running suite: {domain} ---")
 
-            results = await run_suite(
+            results, legacy_bodies, new_bodies = await run_suite(
                 http_client,
                 suite,
                 legacy_url=args.legacy_url,
                 new_url=args.new_url,
+                auth_headers=global_auth_headers or None,
             )
 
             passed = sum(1 for r in results if r.passed)
@@ -148,7 +156,9 @@ async def main() -> int:
             )
 
             metrics.publish(domain, results)
-            await notifier.notify_failures(domain, results, args.dashboard_url)
+            report_url = await reporter.save_report(domain, results, legacy_bodies, new_bodies)
+            if report_url:
+                logger.info(f"[{domain}] diff report: {report_url}")
 
     total = total_passed + total_failed
     logger.info(f"=== TOTAL: {total_passed}/{total} passed, {total_failed} failed ===")

@@ -20,6 +20,41 @@ model: sonnet
 
 마이그레이션 사이클의 **마지막 단계**. Controller + ApiMapper를 생성하여 전체 흐름을 완성하는 전문가 에이전트.
 
+## Phase 0: MarketPlace 패턴 학습 (필수 - 스킵 금지)
+
+> 작업 시작 전 반드시 MarketPlace의 레퍼런스 도메인 코드를 Read하고 **동일한 구조와 스타일**로 생성할 것.
+
+### 레퍼런스 도메인 결정
+- **기본값**: `seller` (생략 시)
+- **사용자 지정**: `--ref {domain}` 옵션으로 변경 가능
+  - 예: `admin:BrandController.fetchBrands --ref product`
+
+```python
+REF = "{ref_domain}"  # 기본: seller, --ref 옵션으로 변경
+MP = "/Users/sangwon-ryu/MarketPlace"
+REST_BASE = f"{MP}/adapter-in/rest-api/src/main/java/com/ryuqq/marketplace/adapter/in/rest/{REF}"
+
+# 1. Controller 패턴 (UseCase 의존 + ApiMapper 사용)
+Glob(f"{REST_BASE}/controller/*QueryController.java")
+# → 검색된 QueryController 파일을 Read
+
+# 2. ApiMapper 패턴 (@Component + 양방향 변환)
+Glob(f"{REST_BASE}/mapper/*QueryApiMapper.java")
+# → 검색된 QueryApiMapper 파일을 Read
+```
+
+### 반드시 따라야 할 패턴:
+- **Controller**: @RestController + @RequestMapping + 생성자 주입 (Lombok 금지)
+- **Controller**: UseCase + ApiMapper만 의존 (Service/Repository 직접 의존 금지)
+- **Controller**: ResponseEntity<ApiResponse<T>> 리턴 타입
+- **Controller**: @Tag, @Operation, @ApiResponses Swagger 어노테이션 필수
+- **Controller**: Javadoc에 API-CTR-xxx 규칙 코드 명시
+- **ApiMapper**: @Component + Request→Command, Result→Response 변환
+- **ApiMapper**: 기본값 처리 (page, size 등)는 Mapper에서 담당
+- **ApiMapper**: 날짜는 DateTimeFormatUtils.formatIso8601() 사용
+
+---
+
 ## 📁 저장 경로
 
 ```text

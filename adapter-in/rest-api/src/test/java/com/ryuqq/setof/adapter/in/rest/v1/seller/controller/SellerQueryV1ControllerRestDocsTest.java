@@ -65,18 +65,17 @@ class SellerQueryV1ControllerRestDocsTest extends RestDocsTestSupport {
             mockMvc.perform(get(SellerV1Endpoints.SELLER_BY_ID, sellerId))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.data.sellerId").value(sellerId))
-                    .andExpect(jsonPath("$.data.sellerName").value("나이키코리아"))
-                    .andExpect(jsonPath("$.data.displayName").value("나이키 공식스토어"))
+                    .andExpect(jsonPath("$.data.sellerName").value("나이키코리아 유한회사"))
                     .andExpect(
                             jsonPath("$.data.logoUrl")
                                     .value("https://cdn.example.com/sellers/nike.png"))
-                    .andExpect(jsonPath("$.data.description").value("나이키 공식 판매처"))
-                    .andExpect(jsonPath("$.data.csInfo.csPhone").value("1588-0000"))
-                    .andExpect(jsonPath("$.data.csInfo.csEmail").value("cs@nike.co.kr"))
-                    .andExpect(
-                            jsonPath("$.data.businessInfo.registrationNumber")
-                                    .value("123-45-67890"))
-                    .andExpect(jsonPath("$.data.businessInfo.companyName").value("나이키코리아 유한회사"))
+                    .andExpect(jsonPath("$.data.sellerDescription").value("나이키 공식 판매처"))
+                    .andExpect(jsonPath("$.data.csPhoneNumber").value("1588-0000"))
+                    .andExpect(jsonPath("$.data.alimTalkPhoneNumber").value("010-1234-5678"))
+                    .andExpect(jsonPath("$.data.registrationNumber").value("123-45-67890"))
+                    .andExpect(jsonPath("$.data.saleReportNumber").value("2024-서울강남-12345"))
+                    .andExpect(jsonPath("$.data.representative").value("홍길동"))
+                    .andExpect(jsonPath("$.data.email").value("cs@nike.co.kr"))
                     .andExpect(jsonPath("$.response.status").value(200))
                     .andDo(
                             document.document(
@@ -89,64 +88,34 @@ class SellerQueryV1ControllerRestDocsTest extends RestDocsTestSupport {
                                                     .description("셀러 ID"),
                                             fieldWithPath("data.sellerName")
                                                     .type(JsonFieldType.STRING)
-                                                    .description("셀러명"),
-                                            fieldWithPath("data.displayName")
-                                                    .type(JsonFieldType.STRING)
-                                                    .description("표시명"),
+                                                    .description("상호명"),
                                             fieldWithPath("data.logoUrl")
                                                     .type(JsonFieldType.STRING)
                                                     .description("로고 URL"),
-                                            fieldWithPath("data.description")
+                                            fieldWithPath("data.sellerDescription")
                                                     .type(JsonFieldType.STRING)
                                                     .description("셀러 설명"),
-                                            fieldWithPath("data.csInfo")
-                                                    .type(JsonFieldType.OBJECT)
-                                                    .description("고객센터 정보")
-                                                    .optional(),
-                                            fieldWithPath("data.csInfo.csPhone")
+                                            fieldWithPath("data.address")
                                                     .type(JsonFieldType.STRING)
-                                                    .description("고객센터 전화번호")
-                                                    .optional(),
-                                            fieldWithPath("data.csInfo.csEmail")
+                                                    .description("사업장 주소"),
+                                            fieldWithPath("data.csPhoneNumber")
                                                     .type(JsonFieldType.STRING)
-                                                    .description("고객센터 이메일")
-                                                    .optional(),
-                                            fieldWithPath("data.csInfo.operatingStartTime")
+                                                    .description("CS 전화번호"),
+                                            fieldWithPath("data.alimTalkPhoneNumber")
                                                     .type(JsonFieldType.STRING)
-                                                    .description("운영 시작 시간")
-                                                    .optional(),
-                                            fieldWithPath("data.csInfo.operatingEndTime")
+                                                    .description("알림톡 전화번호"),
+                                            fieldWithPath("data.registrationNumber")
                                                     .type(JsonFieldType.STRING)
-                                                    .description("운영 종료 시간")
-                                                    .optional(),
-                                            fieldWithPath("data.csInfo.operatingDays")
+                                                    .description("사업자등록번호"),
+                                            fieldWithPath("data.saleReportNumber")
                                                     .type(JsonFieldType.STRING)
-                                                    .description("운영 요일")
-                                                    .optional(),
-                                            fieldWithPath("data.csInfo.kakaoChannelUrl")
+                                                    .description("통신판매업 신고번호"),
+                                            fieldWithPath("data.representative")
                                                     .type(JsonFieldType.STRING)
-                                                    .description("카카오 채널 URL")
-                                                    .optional(),
-                                            fieldWithPath("data.businessInfo")
-                                                    .type(JsonFieldType.OBJECT)
-                                                    .description("사업자 정보")
-                                                    .optional(),
-                                            fieldWithPath("data.businessInfo.registrationNumber")
+                                                    .description("대표자명"),
+                                            fieldWithPath("data.email")
                                                     .type(JsonFieldType.STRING)
-                                                    .description("사업자등록번호")
-                                                    .optional(),
-                                            fieldWithPath("data.businessInfo.companyName")
-                                                    .type(JsonFieldType.STRING)
-                                                    .description("회사명")
-                                                    .optional(),
-                                            fieldWithPath("data.businessInfo.representative")
-                                                    .type(JsonFieldType.STRING)
-                                                    .description("대표자명")
-                                                    .optional(),
-                                            fieldWithPath("data.businessInfo.saleReportNumber")
-                                                    .type(JsonFieldType.STRING)
-                                                    .description("통신판매업 신고번호")
-                                                    .optional(),
+                                                    .description("CS 이메일"),
                                             fieldWithPath("response.status")
                                                     .type(JsonFieldType.NUMBER)
                                                     .description("HTTP 상태 코드"),
@@ -171,11 +140,9 @@ class SellerQueryV1ControllerRestDocsTest extends RestDocsTestSupport {
             mockMvc.perform(get(SellerV1Endpoints.SELLER_BY_ID, sellerId))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.data.sellerId").value(sellerId))
-                    .andExpect(jsonPath("$.data.sellerName").value("나이키코리아"))
-                    .andExpect(jsonPath("$.data.csInfo").doesNotExist())
-                    .andExpect(
-                            jsonPath("$.data.businessInfo.registrationNumber")
-                                    .value("123-45-67890"))
+                    .andExpect(jsonPath("$.data.sellerName").value("나이키코리아 유한회사"))
+                    .andExpect(jsonPath("$.data.csPhoneNumber").value(""))
+                    .andExpect(jsonPath("$.data.registrationNumber").value("123-45-67890"))
                     .andExpect(jsonPath("$.response.status").value(200));
         }
 
@@ -196,9 +163,9 @@ class SellerQueryV1ControllerRestDocsTest extends RestDocsTestSupport {
             mockMvc.perform(get(SellerV1Endpoints.SELLER_BY_ID, sellerId))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.data.sellerId").value(sellerId))
-                    .andExpect(jsonPath("$.data.sellerName").value("나이키코리아"))
-                    .andExpect(jsonPath("$.data.csInfo.csPhone").value("1588-0000"))
-                    .andExpect(jsonPath("$.data.businessInfo").doesNotExist())
+                    .andExpect(jsonPath("$.data.sellerName").value(""))
+                    .andExpect(jsonPath("$.data.csPhoneNumber").value("1588-0000"))
+                    .andExpect(jsonPath("$.data.registrationNumber").value(""))
                     .andExpect(jsonPath("$.response.status").value(200));
         }
 
@@ -219,10 +186,9 @@ class SellerQueryV1ControllerRestDocsTest extends RestDocsTestSupport {
             mockMvc.perform(get(SellerV1Endpoints.SELLER_BY_ID, sellerId))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.data.sellerId").value(sellerId))
-                    .andExpect(jsonPath("$.data.sellerName").value("나이키코리아"))
-                    .andExpect(jsonPath("$.data.displayName").value("나이키 공식스토어"))
-                    .andExpect(jsonPath("$.data.csInfo").doesNotExist())
-                    .andExpect(jsonPath("$.data.businessInfo").doesNotExist())
+                    .andExpect(jsonPath("$.data.sellerName").value(""))
+                    .andExpect(jsonPath("$.data.csPhoneNumber").value(""))
+                    .andExpect(jsonPath("$.data.registrationNumber").value(""))
                     .andExpect(jsonPath("$.response.status").value(200));
         }
     }

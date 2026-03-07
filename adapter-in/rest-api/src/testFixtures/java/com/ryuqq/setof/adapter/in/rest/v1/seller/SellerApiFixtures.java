@@ -1,8 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.v1.seller;
 
 import com.ryuqq.setof.adapter.in.rest.v1.seller.dto.response.SellerV1ApiResponse;
-import com.ryuqq.setof.adapter.in.rest.v1.seller.dto.response.SellerV1ApiResponse.BusinessInfoResponse;
-import com.ryuqq.setof.adapter.in.rest.v1.seller.dto.response.SellerV1ApiResponse.CsInfoResponse;
 import com.ryuqq.setof.application.seller.dto.composite.SellerCompositeResult;
 import com.ryuqq.setof.application.seller.dto.composite.SellerCompositeResult.AddressInfo;
 import com.ryuqq.setof.application.seller.dto.composite.SellerCompositeResult.BusinessInfo;
@@ -22,100 +20,66 @@ public final class SellerApiFixtures {
 
     private SellerApiFixtures() {}
 
-    // ===== SellerV1ApiResponse =====
+    // ===== SellerV1ApiResponse (레거시 flat 구조) =====
 
     public static SellerV1ApiResponse sellerResponse(long sellerId) {
         return new SellerV1ApiResponse(
                 sellerId,
-                "나이키코리아",
-                "나이키 공식스토어",
+                "나이키코리아 유한회사",
                 "https://cdn.example.com/sellers/nike.png",
                 "나이키 공식 판매처",
-                csInfoResponse(),
-                businessInfoResponse());
-    }
-
-    public static SellerV1ApiResponse sellerResponse(
-            long sellerId,
-            String sellerName,
-            String displayName,
-            String logoUrl,
-            String description,
-            CsInfoResponse csInfo,
-            BusinessInfoResponse businessInfo) {
-        return new SellerV1ApiResponse(
-                sellerId, sellerName, displayName, logoUrl, description, csInfo, businessInfo);
+                "서울특별시 강남구 테헤란로 123 4층 06234",
+                "1588-0000",
+                "010-1234-5678",
+                "123-45-67890",
+                "2024-서울강남-12345",
+                "홍길동",
+                "cs@nike.co.kr");
     }
 
     public static SellerV1ApiResponse sellerResponseWithoutCsInfo(long sellerId) {
         return new SellerV1ApiResponse(
                 sellerId,
-                "나이키코리아",
-                "나이키 공식스토어",
+                "나이키코리아 유한회사",
                 "https://cdn.example.com/sellers/nike.png",
                 "나이키 공식 판매처",
-                null,
-                businessInfoResponse());
+                "서울특별시 강남구 테헤란로 123 4층 06234",
+                "",
+                "",
+                "123-45-67890",
+                "2024-서울강남-12345",
+                "홍길동",
+                "");
     }
 
     public static SellerV1ApiResponse sellerResponseWithoutBusinessInfo(long sellerId) {
         return new SellerV1ApiResponse(
                 sellerId,
-                "나이키코리아",
-                "나이키 공식스토어",
+                "",
                 "https://cdn.example.com/sellers/nike.png",
                 "나이키 공식 판매처",
-                csInfoResponse(),
-                null);
+                "",
+                "1588-0000",
+                "010-1234-5678",
+                "",
+                "",
+                "",
+                "cs@nike.co.kr");
     }
 
     public static SellerV1ApiResponse sellerResponseWithNullOptionalFields(long sellerId) {
         return new SellerV1ApiResponse(
                 sellerId,
-                "나이키코리아",
-                "나이키 공식스토어",
+                "",
                 "https://cdn.example.com/sellers/nike.png",
                 "나이키 공식 판매처",
-                null,
-                null);
-    }
-
-    // ===== CsInfoResponse =====
-
-    public static CsInfoResponse csInfoResponse() {
-        return new CsInfoResponse(
-                "1588-0000", "cs@nike.co.kr", "09:00", "18:00", "월~금", "https://pf.kakao.com/nike");
-    }
-
-    public static CsInfoResponse csInfoResponse(
-            String csPhone,
-            String csEmail,
-            String operatingStartTime,
-            String operatingEndTime,
-            String operatingDays,
-            String kakaoChannelUrl) {
-        return new CsInfoResponse(
-                csPhone,
-                csEmail,
-                operatingStartTime,
-                operatingEndTime,
-                operatingDays,
-                kakaoChannelUrl);
-    }
-
-    // ===== BusinessInfoResponse =====
-
-    public static BusinessInfoResponse businessInfoResponse() {
-        return new BusinessInfoResponse("123-45-67890", "나이키코리아 유한회사", "홍길동", "2024-서울강남-12345");
-    }
-
-    public static BusinessInfoResponse businessInfoResponse(
-            String registrationNumber,
-            String companyName,
-            String representative,
-            String saleReportNumber) {
-        return new BusinessInfoResponse(
-                registrationNumber, companyName, representative, saleReportNumber);
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "");
     }
 
     // ===== SellerCompositeResult =====

@@ -87,10 +87,16 @@ local-dev/test-files/
 
 # Terraform files
 .terraform/
+.terraform.lock.hcl
 *.tfstate*
 *.tfstate.backup
 terraform.tfvars
 *.auto.tfvars
+
+# Python
+__pycache__/
+*.pyc
+.venv/
 
 
 # Local config files with secrets
@@ -99,3 +105,9 @@ terraform.tfvars
 
 local-dev/.env.aws.stage
 local-dev/.env.aws.*
+
+# ========================================
+# Claude Code (secrets in skills/commands)
+# ========================================
+.claude/skills/grafana/
+.claude/commands/db.md

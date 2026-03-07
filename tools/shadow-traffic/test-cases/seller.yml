@@ -2,6 +2,7 @@ domain: seller
 description: "Seller API shadow traffic test cases"
 
 test_cases:
+  # === 단건 조회 ===
   - name: "seller_detail_id_1"
     path: "/api/v1/seller/1"
     method: GET
@@ -16,8 +17,30 @@ test_cases:
     compare_mode: full
     ignore_fields: []
 
+  - name: "seller_detail_id_3"
+    path: "/api/v1/seller/3"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  # === 에러 케이스 ===
   - name: "seller_detail_not_found"
     path: "/api/v1/seller/999999"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+
+  - name: "seller_detail_id_zero"
+    path: "/api/v1/seller/0"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+
+  - name: "seller_detail_id_negative"
+    path: "/api/v1/seller/-1"
     method: GET
     auth: none
     compare_mode: status_only

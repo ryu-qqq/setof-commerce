@@ -9,6 +9,9 @@ import com.ryuqq.setof.domain.common.vo.SortKey;
  */
 public enum BrandSortKey implements SortKey {
 
+    /** ID 순 (레거시 호환: PK 자연 순서) */
+    ID("id"),
+
     /** 등록일시 순 (기본값) */
     CREATED_AT("createdAt"),
 

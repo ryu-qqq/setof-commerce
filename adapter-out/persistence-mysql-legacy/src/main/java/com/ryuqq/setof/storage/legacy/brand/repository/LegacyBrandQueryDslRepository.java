@@ -134,6 +134,7 @@ public class LegacyBrandQueryDslRepository {
         boolean isAsc = direction == SortDirection.ASC;
 
         return switch (sortKey) {
+            case ID -> isAsc ? legacyBrandEntity.id.asc() : legacyBrandEntity.id.desc();
             case CREATED_AT ->
                     isAsc
                             ? legacyBrandEntity.insertDate.asc()

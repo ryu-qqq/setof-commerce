@@ -102,9 +102,34 @@ services:
     environment:
       <<: *common-env
       SPRING_PROFILES_ACTIVE: stage
-      SERVER_PORT: 8080
+      SERVER_PORT: 8088
+      # OAuth
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID:-dummy}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET:-dummy}
+      # JWT
+      JWT_SECRET: ${JWT_SECRET:-}
+      # AWS (dummy for local - S3 not used)
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY:-dummy}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY:-dummy}
+      # PortOne (disabled for local)
+      PORTONE_ENABLED: "false"
+      PORTONE_API_KEY: ${PORTONE_API_KEY:-dummy}
+      PORTONE_API_SECRET: ${PORTONE_API_SECRET:-dummy}
+      # Slack (disabled for local)
+      SLACK_TOKEN: ${SLACK_TOKEN:-dummy}
+      # Fileflow
+      SECURITY_SERVICE_TOKEN_SECRET: ${SECURITY_SERVICE_TOKEN_SECRET:-dummy}
+      JAVA_OPTS: >-
+        -Xms512m -Xmx1536m
+        -XX:+UseG1GC
+        -XX:+UseContainerSupport
+        -Djava.security.egd=file:/dev/./urandom
     ports:
-      - "48082:8080"
+      - "48082:8088"
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
     <<: *common-settings
     profiles:
       - legacy-web-api

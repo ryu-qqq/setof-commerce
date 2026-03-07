@@ -43,12 +43,6 @@ public class SellerJpaEntity extends SoftDeletableEntity {
     @Column(name = "is_active", nullable = false)
     private boolean active;
 
-    @Column(name = "auth_tenant_id", length = 100)
-    private String authTenantId;
-
-    @Column(name = "auth_organization_id", length = 100)
-    private String authOrganizationId;
-
     protected SellerJpaEntity() {
         super();
     }
@@ -60,8 +54,6 @@ public class SellerJpaEntity extends SoftDeletableEntity {
             String logoUrl,
             String description,
             boolean active,
-            String authTenantId,
-            String authOrganizationId,
             Instant createdAt,
             Instant updatedAt,
             Instant deletedAt) {
@@ -72,8 +64,6 @@ public class SellerJpaEntity extends SoftDeletableEntity {
         this.logoUrl = logoUrl;
         this.description = description;
         this.active = active;
-        this.authTenantId = authTenantId;
-        this.authOrganizationId = authOrganizationId;
     }
 
     public static SellerJpaEntity create(
@@ -83,8 +73,6 @@ public class SellerJpaEntity extends SoftDeletableEntity {
             String logoUrl,
             String description,
             boolean active,
-            String authTenantId,
-            String authOrganizationId,
             Instant createdAt,
             Instant updatedAt,
             Instant deletedAt) {
@@ -95,8 +83,6 @@ public class SellerJpaEntity extends SoftDeletableEntity {
                 logoUrl,
                 description,
                 active,
-                authTenantId,
-                authOrganizationId,
                 createdAt,
                 updatedAt,
                 deletedAt);
@@ -124,26 +110,5 @@ public class SellerJpaEntity extends SoftDeletableEntity {
 
     public boolean isActive() {
         return active;
-    }
-
-    public String getAuthTenantId() {
-        return authTenantId;
-    }
-
-    public String getAuthOrganizationId() {
-        return authOrganizationId;
-    }
-
-    /**
-     * 인증 정보 업데이트.
-     *
-     * @param authTenantId 인증 테넌트 ID
-     * @param authOrganizationId 인증 조직 ID
-     * @param now 업데이트 시각
-     */
-    public void updateAuthInfo(String authTenantId, String authOrganizationId, Instant now) {
-        this.authTenantId = authTenantId;
-        this.authOrganizationId = authOrganizationId;
-        super.setUpdatedAt(now);
     }
 }
