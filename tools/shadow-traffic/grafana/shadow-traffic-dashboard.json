@@ -91,22 +91,22 @@
           },
           "dimensions": {
             "Domain": [
-              "*"
+              "$domain"
             ]
           },
+          "expression": "",
+          "id": "",
           "matchExact": false,
+          "metricEditorMode": 0,
           "metricName": "DiffRate",
+          "metricQueryType": 0,
           "namespace": "ShadowTraffic",
           "period": "300",
+          "queryMode": "Metrics",
           "refId": "A",
           "region": "ap-northeast-2",
-          "statistic": "Average",
-          "queryMode": "Metrics",
-          "metricQueryType": 0,
-          "metricEditorMode": 0,
-          "id": "",
-          "expression": "",
-          "sqlExpression": ""
+          "sqlExpression": "",
+          "statistic": "Average"
         }
       ],
       "title": "Diff Rate by Domain",
@@ -209,22 +209,22 @@
           },
           "dimensions": {
             "Domain": [
-              "*"
+              "$domain"
             ]
           },
+          "expression": "",
+          "id": "",
           "matchExact": false,
+          "metricEditorMode": 0,
           "metricName": "TestCount",
+          "metricQueryType": 0,
           "namespace": "ShadowTraffic",
           "period": "300",
+          "queryMode": "Metrics",
           "refId": "A",
           "region": "ap-northeast-2",
-          "statistic": "Sum",
-          "queryMode": "Metrics",
-          "metricQueryType": 0,
-          "metricEditorMode": 0,
-          "id": "",
-          "expression": "",
-          "sqlExpression": ""
+          "sqlExpression": "",
+          "statistic": "Sum"
         },
         {
           "alias": "Failed",
@@ -234,22 +234,22 @@
           },
           "dimensions": {
             "Domain": [
-              "*"
+              "$domain"
             ]
           },
+          "expression": "",
+          "id": "",
           "matchExact": false,
+          "metricEditorMode": 0,
           "metricName": "DiffCount",
+          "metricQueryType": 0,
           "namespace": "ShadowTraffic",
           "period": "300",
+          "queryMode": "Metrics",
           "refId": "B",
           "region": "ap-northeast-2",
-          "statistic": "Sum",
-          "queryMode": "Metrics",
-          "metricQueryType": 0,
-          "metricEditorMode": 0,
-          "id": "",
-          "expression": "",
-          "sqlExpression": ""
+          "sqlExpression": "",
+          "statistic": "Sum"
         }
       ],
       "title": "Test Summary (6h)",
@@ -360,22 +360,22 @@
           },
           "dimensions": {
             "Domain": [
-              "*"
+              "$domain"
             ]
           },
+          "expression": "",
+          "id": "",
           "matchExact": false,
+          "metricEditorMode": 0,
           "metricName": "LegacyLatencyP99",
+          "metricQueryType": 0,
           "namespace": "ShadowTraffic",
           "period": "300",
+          "queryMode": "Metrics",
           "refId": "A",
           "region": "ap-northeast-2",
-          "statistic": "Maximum",
-          "queryMode": "Metrics",
-          "metricQueryType": 0,
-          "metricEditorMode": 0,
-          "id": "",
-          "expression": "",
-          "sqlExpression": ""
+          "sqlExpression": "",
+          "statistic": "Maximum"
         },
         {
           "alias": "New P99",
@@ -385,22 +385,22 @@
           },
           "dimensions": {
             "Domain": [
-              "*"
+              "$domain"
             ]
           },
+          "expression": "",
+          "id": "",
           "matchExact": false,
+          "metricEditorMode": 0,
           "metricName": "NewLatencyP99",
+          "metricQueryType": 0,
           "namespace": "ShadowTraffic",
           "period": "300",
+          "queryMode": "Metrics",
           "refId": "B",
           "region": "ap-northeast-2",
-          "statistic": "Maximum",
-          "queryMode": "Metrics",
-          "metricQueryType": 0,
-          "metricEditorMode": 0,
-          "id": "",
-          "expression": "",
-          "sqlExpression": ""
+          "sqlExpression": "",
+          "statistic": "Maximum"
         }
       ],
       "title": "Avg Latency P99",
@@ -462,6 +462,8 @@
             }
           },
           "mappings": [],
+          "max": 100,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -475,9 +477,7 @@
               }
             ]
           },
-          "unit": "percent",
-          "max": 100,
-          "min": 0
+          "unit": "percent"
         },
         "overrides": []
       },
@@ -512,22 +512,22 @@
           },
           "dimensions": {
             "Domain": [
-              "*"
+              "$domain"
             ]
           },
+          "expression": "",
+          "id": "",
           "matchExact": false,
+          "metricEditorMode": 0,
           "metricName": "DiffRate",
+          "metricQueryType": 0,
           "namespace": "ShadowTraffic",
           "period": "300",
+          "queryMode": "Metrics",
           "refId": "A",
           "region": "ap-northeast-2",
-          "statistic": "Average",
-          "queryMode": "Metrics",
-          "metricQueryType": 0,
-          "metricEditorMode": 0,
-          "id": "",
-          "expression": "",
-          "sqlExpression": ""
+          "sqlExpression": "",
+          "statistic": "Average"
         }
       ],
       "title": "Diff Rate Trend",
@@ -651,22 +651,22 @@
           },
           "dimensions": {
             "Domain": [
-              "*"
+              "$domain"
             ]
           },
+          "expression": "",
+          "id": "",
           "matchExact": false,
+          "metricEditorMode": 0,
           "metricName": "TestCount",
+          "metricQueryType": 0,
           "namespace": "ShadowTraffic",
           "period": "300",
+          "queryMode": "Metrics",
           "refId": "A",
           "region": "ap-northeast-2",
-          "statistic": "Sum",
-          "queryMode": "Metrics",
-          "metricQueryType": 0,
-          "metricEditorMode": 0,
-          "id": "",
-          "expression": "",
-          "sqlExpression": ""
+          "sqlExpression": "",
+          "statistic": "Sum"
         },
         {
           "alias": "Failed",
@@ -676,22 +676,22 @@
           },
           "dimensions": {
             "Domain": [
-              "*"
+              "$domain"
             ]
           },
+          "expression": "",
+          "id": "",
           "matchExact": false,
+          "metricEditorMode": 0,
           "metricName": "DiffCount",
+          "metricQueryType": 0,
           "namespace": "ShadowTraffic",
           "period": "300",
+          "queryMode": "Metrics",
           "refId": "B",
           "region": "ap-northeast-2",
-          "statistic": "Sum",
-          "queryMode": "Metrics",
-          "metricQueryType": 0,
-          "metricEditorMode": 0,
-          "id": "",
-          "expression": "",
-          "sqlExpression": ""
+          "sqlExpression": "",
+          "statistic": "Sum"
         }
       ],
       "title": "Test Results",
@@ -839,22 +839,22 @@
           },
           "dimensions": {
             "Domain": [
-              "*"
+              "$domain"
             ]
           },
+          "expression": "",
+          "id": "",
           "matchExact": false,
+          "metricEditorMode": 0,
           "metricName": "LegacyLatencyP99",
+          "metricQueryType": 0,
           "namespace": "ShadowTraffic",
           "period": "300",
+          "queryMode": "Metrics",
           "refId": "A",
           "region": "ap-northeast-2",
-          "statistic": "Maximum",
-          "queryMode": "Metrics",
-          "metricQueryType": 0,
-          "metricEditorMode": 0,
-          "id": "",
-          "expression": "",
-          "sqlExpression": ""
+          "sqlExpression": "",
+          "statistic": "Maximum"
         },
         {
           "alias": "New {{Domain}}",
@@ -864,22 +864,22 @@
           },
           "dimensions": {
             "Domain": [
-              "*"
+              "$domain"
             ]
           },
+          "expression": "",
+          "id": "",
           "matchExact": false,
+          "metricEditorMode": 0,
           "metricName": "NewLatencyP99",
+          "metricQueryType": 0,
           "namespace": "ShadowTraffic",
           "period": "300",
+          "queryMode": "Metrics",
           "refId": "B",
           "region": "ap-northeast-2",
-          "statistic": "Maximum",
-          "queryMode": "Metrics",
-          "metricQueryType": 0,
-          "metricEditorMode": 0,
-          "id": "",
-          "expression": "",
-          "sqlExpression": ""
+          "sqlExpression": "",
+          "statistic": "Maximum"
         }
       ],
       "title": "P99 Latency - Legacy vs New",
@@ -909,6 +909,39 @@
         "regex": "",
         "skipUrlSync": false,
         "type": "datasource"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "cloudwatch",
+          "uid": "$cw_datasource"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "domain",
+        "label": "Domain",
+        "options": [],
+        "query": {
+          "attributeName": "",
+          "dimensionFilters": {},
+          "dimensionKey": "Domain",
+          "metricName": "DiffRate",
+          "namespace": "ShadowTraffic",
+          "queryType": "dimensionValues",
+          "region": "ap-northeast-2",
+          "refId": "domain"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
       }
     ]
   },
@@ -920,5 +953,5 @@
   "timezone": "Asia/Seoul",
   "title": "Shadow Traffic - Legacy vs New API",
   "uid": "shadow-traffic-stage",
-  "version": 1
+  "version": 5
 }
