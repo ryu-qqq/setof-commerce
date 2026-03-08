@@ -607,6 +607,46 @@ test_cases:
     ignore_fields: []
     safe_for_repeat: false
 
+  # 정상 수정: 주문 QNA 답변 수정 (orderQna 타입 + 이미지 diff)
+  - name: "qna_update_reply_order_valid"
+    path: "/api/v1/qna/2/reply/2"
+    method: PUT
+    auth: NORMAL_GRADE
+    body:
+      type: "orderQna"
+      qnaContents:
+        title: "주문 답변 수정합니다"
+        content: "주문 답변 내용을 수정합니다."
+      privateYn: "Y"
+      qnaType: "ORDER"
+      qnaDetailType: "SHIPMENT"
+      sellerId: 1
+      orderId: 1
+      qnaImages:
+        - "https://example.com/reply-image1.jpg"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: false
+
+  # 에러 케이스: CLOSED 상태 답변 수정 시도 → QnaContentsUpdateException
+  - name: "qna_update_reply_closed"
+    path: "/api/v1/qna/3/reply/3"
+    method: PUT
+    auth: NORMAL_GRADE
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "종료된 답변 수정 시도"
+        content: "이미 종료된 답변을 수정하려 합니다."
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "ETC"
+      sellerId: 1
+      productGroupId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
   # 에러 케이스: 존재하지 않는 qnaAnswerId → 404 Not Found (QnaAnswerNotFoundException)
   - name: "qna_update_reply_not_found"
     path: "/api/v1/qna/1/reply/999999999"
