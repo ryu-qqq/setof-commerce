@@ -1,10 +1,10 @@
 package com.ryuqq.setof.storage.legacy.product.entity;
 
+import com.ryuqq.setof.storage.legacy.common.entity.LegacyBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 
 /**
  * LegacyProductDeliveryEntity - 레거시 상품 배송 정보 엔티티.
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "product_delivery")
-public class LegacyProductDeliveryEntity {
+public class LegacyProductDeliveryEntity extends LegacyBaseEntity {
 
     @Id
     @Column(name = "product_group_id")
@@ -37,12 +37,6 @@ public class LegacyProductDeliveryEntity {
 
     @Column(name = "free_delivery_threshold")
     private Integer freeDeliveryThreshold;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     protected LegacyProductDeliveryEntity() {}
 
@@ -64,13 +58,5 @@ public class LegacyProductDeliveryEntity {
 
     public Integer getFreeDeliveryThreshold() {
         return freeDeliveryThreshold;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 }

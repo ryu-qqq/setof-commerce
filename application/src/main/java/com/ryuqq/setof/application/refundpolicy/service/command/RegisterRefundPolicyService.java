@@ -7,7 +7,6 @@ import com.ryuqq.setof.application.refundpolicy.manager.RefundPolicyCommandManag
 import com.ryuqq.setof.application.refundpolicy.port.in.command.RegisterRefundPolicyUseCase;
 import com.ryuqq.setof.domain.refundpolicy.aggregate.RefundPolicy;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * RegisterRefundPolicyService - 환불 정책 등록 Service
@@ -40,7 +39,6 @@ public class RegisterRefundPolicyService implements RegisterRefundPolicyUseCase 
     }
 
     @Override
-    @Transactional
     public Long execute(RegisterRefundPolicyCommand command) {
         RefundPolicy refundPolicy = commandFactory.create(command);
 

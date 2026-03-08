@@ -118,7 +118,7 @@ variable "alert_email" {
 variable "alarm_domains" {
   description = "List of domains to create alarms for"
   type        = list(string)
-  default     = ["brand", "category", "faq", "seller", "shipping-address"]
+  default     = ["brand", "category", "faq", "seller", "shipping-address", "refund-account", "wishlist", "review"]
 }
 
 # ========================================
@@ -127,15 +127,19 @@ variable "alarm_domains" {
 variable "shadow_test_phone" {
   description = "Test user phone number for authenticated shadow traffic tests"
   type        = string
-  default     = "01036817687"
   sensitive   = true
 }
 
 variable "shadow_test_password" {
   description = "Test user password for authenticated shadow traffic tests"
   type        = string
-  default     = "Test1234@"
   sensitive   = true
+}
+
+variable "safe_only" {
+  description = "Skip test cases with safe_for_repeat=false (for scheduled runs)"
+  type        = bool
+  default     = true
 }
 
 variable "s3_report_bucket" {

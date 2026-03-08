@@ -1,7 +1,7 @@
 package com.ryuqq.setof.domain.order.event;
 
 import com.ryuqq.setof.domain.common.event.DomainEvent;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import com.ryuqq.setof.domain.order.id.OrderItemId;
 import java.time.Instant;
 
@@ -15,10 +15,10 @@ import java.time.Instant;
  * @param occurredAt 이벤트 발생 시각
  */
 public record OrderItemPurchaseConfirmedEvent(
-        OrderItemId orderItemId, OrderId orderId, Instant occurredAt) implements DomainEvent {
+        OrderItemId orderItemId, LegacyOrderId orderId, Instant occurredAt) implements DomainEvent {
 
     public static OrderItemPurchaseConfirmedEvent of(
-            OrderItemId orderItemId, OrderId orderId, Instant now) {
+            OrderItemId orderItemId, LegacyOrderId orderId, Instant now) {
         return new OrderItemPurchaseConfirmedEvent(orderItemId, orderId, now);
     }
 

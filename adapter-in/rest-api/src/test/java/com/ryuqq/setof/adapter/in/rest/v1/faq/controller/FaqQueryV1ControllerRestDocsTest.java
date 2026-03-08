@@ -77,9 +77,6 @@ class FaqQueryV1ControllerRestDocsTest extends RestDocsTestSupport {
                                             fieldWithPath("data[]")
                                                     .type(JsonFieldType.ARRAY)
                                                     .description("FAQ 목록"),
-                                            fieldWithPath("data[].faqId")
-                                                    .type(JsonFieldType.NUMBER)
-                                                    .description("FAQ ID"),
                                             fieldWithPath("data[].faqType")
                                                     .type(JsonFieldType.STRING)
                                                     .description("FAQ 유형"),

@@ -7,7 +7,6 @@ import com.ryuqq.setof.application.shippingpolicy.manager.ShippingPolicyCommandM
 import com.ryuqq.setof.application.shippingpolicy.port.in.command.RegisterShippingPolicyUseCase;
 import com.ryuqq.setof.domain.shippingpolicy.aggregate.ShippingPolicy;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * RegisterShippingPolicyService - 배송 정책 등록 Service
@@ -40,7 +39,6 @@ public class RegisterShippingPolicyService implements RegisterShippingPolicyUseC
     }
 
     @Override
-    @Transactional
     public Long execute(RegisterShippingPolicyCommand command) {
         ShippingPolicy shippingPolicy = commandFactory.create(command);
 

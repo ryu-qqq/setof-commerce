@@ -1,7 +1,7 @@
 package com.ryuqq.setof.domain.order.event;
 
 import com.ryuqq.setof.domain.common.event.DomainEvent;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import java.time.Instant;
 
 /**
@@ -12,9 +12,9 @@ import java.time.Instant;
  * @param orderId 주문 ID
  * @param occurredAt 이벤트 발생 시각
  */
-public record OrderFailedEvent(OrderId orderId, Instant occurredAt) implements DomainEvent {
+public record OrderFailedEvent(LegacyOrderId orderId, Instant occurredAt) implements DomainEvent {
 
-    public static OrderFailedEvent of(OrderId orderId, Instant now) {
+    public static OrderFailedEvent of(LegacyOrderId orderId, Instant now) {
         return new OrderFailedEvent(orderId, now);
     }
 

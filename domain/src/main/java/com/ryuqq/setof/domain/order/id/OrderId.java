@@ -1,11 +1,11 @@
 package com.ryuqq.setof.domain.order.id;
 
-/** 주문 ID Value Object. */
-public record OrderId(Long value) {
+/** 주문 ID Value Object (새 스키마). */
+public record OrderId(String value) {
 
-    public static OrderId of(Long value) {
-        if (value == null) {
-            throw new IllegalArgumentException("OrderId 값은 null일 수 없습니다");
+    public static OrderId of(String value) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException("OrderId 값은 null이거나 빈 문자열일 수 없습니다");
         }
         return new OrderId(value);
     }

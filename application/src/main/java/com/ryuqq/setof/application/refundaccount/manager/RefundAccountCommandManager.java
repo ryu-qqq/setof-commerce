@@ -3,6 +3,7 @@ package com.ryuqq.setof.application.refundaccount.manager;
 import com.ryuqq.setof.application.refundaccount.port.out.command.RefundAccountCommandPort;
 import com.ryuqq.setof.domain.refundaccount.aggregate.RefundAccount;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * RefundAccountCommandManager - 환불 계좌 명령 Manager.
@@ -21,6 +22,7 @@ public class RefundAccountCommandManager {
         this.commandPort = commandPort;
     }
 
+    @Transactional
     public Long persist(RefundAccount refundAccount) {
         return commandPort.persist(refundAccount);
     }

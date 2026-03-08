@@ -7,7 +7,6 @@ import com.ryuqq.setof.application.refundaccount.port.in.command.RegisterRefundA
 import com.ryuqq.setof.application.refundaccount.validator.RefundAccountValidator;
 import com.ryuqq.setof.domain.refundaccount.aggregate.RefundAccount;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * RegisterRefundAccountService - 환불 계좌 등록 Service.
@@ -34,7 +33,6 @@ public class RegisterRefundAccountService implements RegisterRefundAccountUseCas
     }
 
     @Override
-    @Transactional
     public Long execute(RegisterRefundAccountCommand command) {
         RefundAccount refundAccount = factory.createNewRefundAccount(command);
         validator.validateAccount(refundAccount);

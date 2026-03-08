@@ -22,6 +22,7 @@ test_cases:
     auth: NORMAL_GRADE
     compare_mode: full
     ignore_fields: []
+    safe_for_repeat: true
 
   # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
   - name: "refund_account_get_unauthenticated"
@@ -30,9 +31,11 @@ test_cases:
     auth: none
     compare_mode: status_only
     ignore_fields: []
+    safe_for_repeat: true
 
   # === Command (생성/수정/삭제) - Smoke Test only (status_only) ===
-  # Command는 양쪽 서버에 실제 쓰기가 발생하므로 status_only로만 검증
+  # Command는 양쪽 서버가 동일 DB를 공유하므로, 정상 케이스는 주기적 실행 시 스킵
+  # safe_for_repeat: false → --safe-only 모드에서 제외됨
 
   # POST: 환불 계좌 정상 등록
   - name: "refund_account_create_valid"
@@ -45,6 +48,7 @@ test_cases:
       accountHolderName: "홍길동"
     compare_mode: status_only
     ignore_fields: []
+    safe_for_repeat: false
 
   # POST: 필수 필드(bankName) 누락 → 400 Bad Request (Validation 에러)
   - name: "refund_account_create_missing_bank_name"
@@ -56,6 +60,7 @@ test_cases:
       accountHolderName: "홍길동"
     compare_mode: status_only
     ignore_fields: []
+    safe_for_repeat: true
 
   # POST: accountNumber에 숫자 외 문자 포함 → 400 Bad Request (Validation 에러)
   - name: "refund_account_create_invalid_account_number"
@@ -68,6 +73,7 @@ test_cases:
       accountHolderName: "홍길동"
     compare_mode: status_only
     ignore_fields: []
+    safe_for_repeat: true
 
   # POST: 미인증 사용자 접근 → 403 Forbidden
   - name: "refund_account_create_unauthenticated"
@@ -80,6 +86,7 @@ test_cases:
       accountHolderName: "홍길동"
     compare_mode: status_only
     ignore_fields: []
+    safe_for_repeat: true
 
   # PUT: 환불 계좌 정상 수정 (테스트 환경의 실제 계좌 ID 사용)
   - name: "refund_account_update_valid"
@@ -92,6 +99,7 @@ test_cases:
       accountHolderName: "홍길동"
     compare_mode: status_only
     ignore_fields: []
+    safe_for_repeat: false
 
   # PUT: 존재하지 않는 계좌 수정 시도 → 400 Bad Request (RefundAccountNotFoundException)
   - name: "refund_account_update_not_found"
@@ -104,6 +112,7 @@ test_cases:
       accountHolderName: "홍길동"
     compare_mode: status_only
     ignore_fields: []
+    safe_for_repeat: true
 
   # PUT: 미인증 사용자 접근 → 403 Forbidden
   - name: "refund_account_update_unauthenticated"
@@ -116,6 +125,7 @@ test_cases:
       accountHolderName: "홍길동"
     compare_mode: status_only
     ignore_fields: []
+    safe_for_repeat: true
 
   # DELETE: 환불 계좌 정상 삭제 (테스트 환경의 실제 계좌 ID 사용)
   - name: "refund_account_delete_valid"
@@ -124,6 +134,7 @@ test_cases:
     auth: NORMAL_GRADE
     compare_mode: status_only
     ignore_fields: []
+    safe_for_repeat: false
 
   # DELETE: 존재하지 않는 계좌 삭제 시도 → 400 Bad Request (RefundAccountNotFoundException)
   - name: "refund_account_delete_not_found"
@@ -132,6 +143,7 @@ test_cases:
     auth: NORMAL_GRADE
     compare_mode: status_only
     ignore_fields: []
+    safe_for_repeat: true
 
   # DELETE: 미인증 사용자 접근 → 403 Forbidden
   - name: "refund_account_delete_unauthenticated"
@@ -140,3 +152,4 @@ test_cases:
     auth: none
     compare_mode: status_only
     ignore_fields: []
+    safe_for_repeat: true

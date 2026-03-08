@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -25,6 +27,7 @@ import java.time.LocalDateTime;
 public class LegacyReviewEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
     private Long id;
 
@@ -54,6 +57,72 @@ public class LegacyReviewEntity {
     private LocalDateTime updateDate;
 
     protected LegacyReviewEntity() {}
+
+    private LegacyReviewEntity(
+            Long id,
+            long productGroupId,
+            long userId,
+            long orderId,
+            double rating,
+            String content,
+            Yn deleteYn,
+            LocalDateTime insertDate,
+            LocalDateTime updateDate) {
+        this.id = id;
+        this.productGroupId = productGroupId;
+        this.userId = userId;
+        this.orderId = orderId;
+        this.rating = rating;
+        this.content = content;
+        this.deleteYn = deleteYn;
+        this.insertDate = insertDate;
+        this.updateDate = updateDate;
+    }
+
+    /** 신규 리뷰 엔티티 생성. */
+    public static LegacyReviewEntity create(
+            long productGroupId,
+            long userId,
+            long orderId,
+            double rating,
+            String content,
+            Yn deleteYn,
+            LocalDateTime insertDate,
+            LocalDateTime updateDate) {
+        return new LegacyReviewEntity(
+                null,
+                productGroupId,
+                userId,
+                orderId,
+                rating,
+                content,
+                deleteYn,
+                insertDate,
+                updateDate);
+    }
+
+    /** 기존 리뷰 엔티티 복원. */
+    public static LegacyReviewEntity reconstitute(
+            Long id,
+            long productGroupId,
+            long userId,
+            long orderId,
+            double rating,
+            String content,
+            Yn deleteYn,
+            LocalDateTime insertDate,
+            LocalDateTime updateDate) {
+        return new LegacyReviewEntity(
+                id,
+                productGroupId,
+                userId,
+                orderId,
+                rating,
+                content,
+                deleteYn,
+                insertDate,
+                updateDate);
+    }
 
     public Long getId() {
         return id;

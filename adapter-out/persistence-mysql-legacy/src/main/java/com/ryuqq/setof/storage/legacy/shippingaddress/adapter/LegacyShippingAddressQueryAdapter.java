@@ -48,7 +48,6 @@ public class LegacyShippingAddressQueryAdapter implements ShippingAddressQueryPo
 
     @Override
     public int countByUserId(Long userId) {
-        ShippingAddressSearchCondition condition = ShippingAddressSearchCondition.ofUserId(userId);
-        return repository.findByCondition(condition).size();
+        return (int) repository.countByUserId(userId);
     }
 }

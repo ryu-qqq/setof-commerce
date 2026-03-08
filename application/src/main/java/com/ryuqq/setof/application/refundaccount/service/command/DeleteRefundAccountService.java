@@ -7,7 +7,6 @@ import com.ryuqq.setof.application.refundaccount.port.in.command.DeleteRefundAcc
 import com.ryuqq.setof.domain.refundaccount.aggregate.RefundAccount;
 import java.time.Instant;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * DeleteRefundAccountService - 환불 계좌 삭제 Service.
@@ -30,7 +29,6 @@ public class DeleteRefundAccountService implements DeleteRefundAccountUseCase {
     }
 
     @Override
-    @Transactional
     public void execute(DeleteRefundAccountCommand command) {
         RefundAccount refundAccount =
                 readManager.getByUserIdAndId(command.userId(), command.refundAccountId());

@@ -1,9 +1,9 @@
 package com.ryuqq.setof.storage.legacy.composite.web.cart.mapper;
 
-import com.ryuqq.setof.application.legacy.cart.dto.response.LegacyCartCountResult;
-import com.ryuqq.setof.application.legacy.cart.dto.response.LegacyCartOptionResult;
-import com.ryuqq.setof.application.legacy.cart.dto.response.LegacyCartPriceResult;
-import com.ryuqq.setof.application.legacy.cart.dto.response.LegacyCartResult;
+import com.ryuqq.setof.application.cart.dto.response.CartCountResult;
+import com.ryuqq.setof.application.cart.dto.response.CartItemResult;
+import com.ryuqq.setof.application.cart.dto.response.CartOptionResult;
+import com.ryuqq.setof.application.cart.dto.response.CartPriceResult;
 import com.ryuqq.setof.storage.legacy.composite.web.cart.dto.LegacyWebCartOptionQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.web.cart.dto.LegacyWebCartQueryDto;
 import java.util.Comparator;
@@ -17,31 +17,21 @@ import org.springframework.stereotype.Component;
  *
  * <p>QueryDto → Application Result 변환을 담당합니다.
  *
- * <p>PER-MAP-001: Mapper는 @Component로 등록.
- *
- * <p>PER-MAP-002: 수동 매핑 구현 (MapStruct 사용 안함).
- *
  * @author ryu-qqq
  * @since 1.1.0
  */
 @Component
 public class LegacyWebCartMapper {
 
-    /**
-     * QueryDto → LegacyCartResult 변환.
-     *
-     * @param dto QueryDto
-     * @return LegacyCartResult
-     */
-    public LegacyCartResult toResult(LegacyWebCartQueryDto dto) {
+    public CartItemResult toResult(LegacyWebCartQueryDto dto) {
         if (dto == null) {
             return null;
         }
 
-        Set<LegacyCartOptionResult> options = toOptionResults(dto.options());
+        Set<CartOptionResult> options = toOptionResults(dto.options());
         String optionValue = buildOptionValue(dto.options());
 
-        return LegacyCartResult.of(
+        return CartItemResult.of(
                 dto.cartId(),
                 dto.brandId(),
                 dto.brandName(),
@@ -60,37 +50,28 @@ public class LegacyWebCartMapper {
                 dto.categoryPath());
     }
 
-    /**
-     * QueryDto 목록 → LegacyCartResult 목록 변환.
-     *
-     * @param dtos QueryDto 목록
-     * @return LegacyCartResult 목록
-     */
-    public List<LegacyCartResult> toResults(List<LegacyWebCartQueryDto> dtos) {
+    public List<CartItemResult> toResults(List<LegacyWebCartQueryDto> dtos) {
         if (dtos == null) {
             return List.of();
         }
         return dtos.stream().map(this::toResult).toList();
     }
 
-    /**
-     * 카운트 결과 생성.
-     *
-     * @param userId 사용자 ID
-     * @param count 장바구니 개수
-     * @return LegacyCartCountResult
-     */
-    public LegacyCartCountResult toCountResult(long userId, long count) {
-        return LegacyCartCountResult.of(userId, count);
+    public CartCountResult toCountResult(long count) {
+        return CartCountResult.of(count);
     }
 
-    /** 가격 정보 변환. */
-    private LegacyCartPriceResult toPriceResult(LegacyWebCartQueryDto dto) {
-        return LegacyCartPriceResult.of(dto.regularPrice(), dto.currentPrice(), dto.salePrice());
+    private CartPriceResult toPriceResult(LegacyWebCartQueryDto dto) {
+        return CartPriceResult.of(
+                dto.regularPrice(),
+                dto.currentPrice(),
+                dto.salePrice(),
+                dto.directDiscountRate(),
+                dto.directDiscountPrice(),
+                dto.discountRate());
     }
 
-    /** 옵션 QueryDto Set → OptionResult Set 변환. */
-    private Set<LegacyCartOptionResult> toOptionResults(Set<LegacyWebCartOptionQueryDto> options) {
+    private Set<CartOptionResult> toOptionResults(Set<LegacyWebCartOptionQueryDto> options) {
         if (options == null) {
             return Set.of();
         }
@@ -98,7 +79,7 @@ public class LegacyWebCartMapper {
                 .filter(opt -> opt.optionGroupId() != null && opt.optionDetailId() != null)
                 .map(
                         opt ->
-                                LegacyCartOptionResult.of(
+                                CartOptionResult.of(
                                         opt.optionGroupId(),
                                         opt.optionDetailId(),
                                         opt.optionName(),

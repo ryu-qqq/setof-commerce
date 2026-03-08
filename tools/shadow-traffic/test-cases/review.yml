@@ -1,0 +1,277 @@
+domain: review
+description: "Review API shadow traffic test cases"
+
+# Auth configuration for this suite.
+# strategy: login  - Login to Legacy server, use JWT for both servers
+# strategy: static - Use token from env var
+# strategy: none   - No auth (default)
+auth_config:
+  strategy: login
+  login_endpoint: /api/v1/user/login
+  phone_number: "${SHADOW_TEST_PHONE}"    # env var: test user phone
+  password: "${SHADOW_TEST_PASSWORD}"      # env var: test user password
+
+test_cases:
+  # === fetchProductGroupReviews - Public 상품 리뷰 목록 ===
+
+  - name: "review_product_group_list_with_data"
+    path: "/api/v1/reviews"
+    method: GET
+    auth: none
+    body:
+      productGroupId: 111444
+    compare_mode: full
+    ignore_fields:
+      - "productGroupImageUrl"
+    safe_for_repeat: true
+
+  - name: "review_product_group_list_another"
+    path: "/api/v1/reviews"
+    method: GET
+    auth: none
+    body:
+      productGroupId: 111406
+    compare_mode: full
+    ignore_fields:
+      - "productGroupImageUrl"
+    safe_for_repeat: true
+
+  - name: "review_product_group_list_order_high_rating"
+    path: "/api/v1/reviews"
+    method: GET
+    auth: none
+    body:
+      productGroupId: 111444
+      orderType: "HIGH_RATING"
+    compare_mode: full
+    ignore_fields:
+      - "productGroupImageUrl"
+    safe_for_repeat: true
+
+  - name: "review_product_group_list_order_recent"
+    path: "/api/v1/reviews"
+    method: GET
+    auth: none
+    body:
+      productGroupId: 111444
+      orderType: "RECENT"
+    compare_mode: full
+    ignore_fields:
+      - "productGroupImageUrl"
+    safe_for_repeat: true
+
+  - name: "review_product_group_list_pagination"
+    path: "/api/v1/reviews"
+    method: GET
+    auth: none
+    body:
+      productGroupId: 111444
+      page: 0
+      size: 10
+    compare_mode: full
+    ignore_fields:
+      - "productGroupImageUrl"
+    safe_for_repeat: true
+
+  - name: "review_product_group_list_empty"
+    path: "/api/v1/reviews"
+    method: GET
+    auth: none
+    body:
+      productGroupId: 999999999
+    compare_mode: full
+    ignore_fields:
+      - "productGroupImageUrl"
+    safe_for_repeat: true
+
+  # === fetchMyReviews - 내가 작성한 리뷰 목록 (인증 필요) ===
+
+  - name: "review_my_written_default"
+    path: "/api/v1/reviews/my-page/written"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields:
+      - "productGroupImageUrl"
+    safe_for_repeat: true
+
+  - name: "review_my_written_size_5"
+    path: "/api/v1/reviews/my-page/written"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 5
+    compare_mode: full
+    ignore_fields:
+      - "productGroupImageUrl"
+    safe_for_repeat: true
+
+  - name: "review_my_written_cursor_paging"
+    path: "/api/v1/reviews/my-page/written"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      lastReviewId: 99999
+      size: 10
+    compare_mode: full
+    ignore_fields:
+      - "productGroupImageUrl"
+    safe_for_repeat: true
+
+  # review_my_written_unauthenticated 제외:
+  # Legacy=401 (Security Filter), New=409 (AuthenticatedUserIdResolver → IllegalStateException)
+  # 두 서버 모두 비인증 요청을 거부하지만 아키텍처 차이로 상태코드가 다름
+
+  # === fetchAvailableReviews - 작성 가능한 리뷰 주문 목록 (인증 필요) ===
+
+  - name: "review_available_default"
+    path: "/api/v1/reviews/my-page/available"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields:
+      - "productGroupImageUrl"
+    safe_for_repeat: true
+
+  - name: "review_available_size_5"
+    path: "/api/v1/reviews/my-page/available"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 5
+    compare_mode: full
+    ignore_fields:
+      - "productGroupImageUrl"
+    safe_for_repeat: true
+
+  - name: "review_available_cursor_paging"
+    path: "/api/v1/reviews/my-page/available"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      lastOrderId: 99999
+      size: 10
+    compare_mode: full
+    ignore_fields:
+      - "productGroupImageUrl"
+    safe_for_repeat: true
+
+  # review_available_unauthenticated 제외:
+  # Legacy=401 (Security Filter), New=409 (AuthenticatedUserIdResolver → IllegalStateException)
+  # 두 서버 모두 비인증 요청을 거부하지만 아키텍처 차이로 상태코드가 다름
+
+  # === doReview - 리뷰 작성 (커맨드, 인증 필요) ===
+  # safe_for_repeat: false - 실제 DB INSERT 발생, 반복 실행 시 중복 리뷰 오류(400) 발생
+  # compare_mode: structure_only - id, insertDate, updateDate 등 생성 시마다 달라지는 필드 제외
+
+  - name: "review_create_valid_without_image"
+    path: "/api/v1/review"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      orderId: 5000
+      productGroupId: 100
+      rating: 4.5
+      content: "배송도 빠르고 품질이 좋았습니다."
+    compare_mode: structure_only
+    ignore_fields:
+      - "id"
+      - "insertDate"
+      - "updateDate"
+      - "insertOperator"
+      - "updateOperator"
+    safe_for_repeat: false
+
+  - name: "review_create_valid_with_image"
+    path: "/api/v1/review"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      orderId: 5001
+      productGroupId: 101
+      rating: 5.0
+      content: "매우 만족합니다."
+      reviewImages:
+        - imageUrl: "https://cdn.example.com/review/image1.jpg"
+          reviewImageType: "MAIN"
+    compare_mode: structure_only
+    ignore_fields:
+      - "id"
+      - "insertDate"
+      - "updateDate"
+      - "insertOperator"
+      - "updateOperator"
+    safe_for_repeat: false
+
+  - name: "review_create_minimal_rating_zero"
+    path: "/api/v1/review"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      orderId: 5002
+      productGroupId: 102
+      rating: 0.0
+    compare_mode: structure_only
+    ignore_fields:
+      - "id"
+      - "insertDate"
+      - "updateDate"
+      - "insertOperator"
+      - "updateOperator"
+    safe_for_repeat: false
+
+  - name: "review_create_invalid_rating_over_5"
+    # @ValidRating: rating > 5 은 유효성 검사 실패 → 400
+    path: "/api/v1/review"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      orderId: 5003
+      productGroupId: 103
+      rating: 5.5
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "review_create_invalid_rating_decimal"
+    # @ValidRating: 소수점 두 자리 이상 불허 → 400
+    path: "/api/v1/review"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      orderId: 5004
+      productGroupId: 104
+      rating: 4.55
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "review_create_duplicate_order"
+    # 동일 orderId로 이미 리뷰 존재 → REVIEW-400
+    # safe_for_repeat: true - 이미 중복 상태이므로 반복 실행해도 항상 400
+    path: "/api/v1/review"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      orderId: 1
+      productGroupId: 1
+      rating: 4.0
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # === deleteReview - 리뷰 삭제 (커맨드, 인증 필요) ===
+  # 신규 아키텍처 미구현: DELETE /api/v1/review/{reviewId} 는 Legacy에만 존재
+  # Legacy=200(삭제된 리뷰 엔티티 반환), New=404 or 405 예상
+  # → known_diff: true, compare_mode: status_only 로 현황 기록
+  # safe_for_repeat: false - 실제 DB UPDATE(delete_yn='Y') 발생, 두 번 삭제 시 동작 다를 수 있음
+
+  - name: "review_delete_not_implemented_in_new"
+    # 신규 아키텍처에 미구현 엔드포인트 - 동작 차이 기록용
+    path: "/api/v1/review/999999"
+    method: DELETE
+    auth: NORMAL_GRADE
+    compare_mode: status_only
+    ignore_fields: []
+    known_diff: true
+    safe_for_repeat: true

@@ -12,7 +12,6 @@ import com.ryuqq.setof.domain.shippingpolicy.aggregate.ShippingPolicy;
 import com.ryuqq.setof.domain.shippingpolicy.aggregate.ShippingPolicyUpdateData;
 import com.ryuqq.setof.domain.shippingpolicy.id.ShippingPolicyId;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * UpdateShippingPolicyService - 배송 정책 수정 Service
@@ -50,7 +49,6 @@ public class UpdateShippingPolicyService implements UpdateShippingPolicyUseCase 
     }
 
     @Override
-    @Transactional
     public void execute(UpdateShippingPolicyCommand command) {
         UpdateContext<ShippingPolicyId, ShippingPolicyUpdateData> context =
                 commandFactory.createUpdateContext(command);

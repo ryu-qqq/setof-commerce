@@ -9,7 +9,6 @@ import com.ryuqq.setof.application.refundaccount.validator.RefundAccountValidato
 import com.ryuqq.setof.domain.refundaccount.aggregate.RefundAccount;
 import com.ryuqq.setof.domain.refundaccount.aggregate.RefundAccountUpdateData;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * UpdateRefundAccountService - 환불 계좌 수정 Service.
@@ -39,7 +38,6 @@ public class UpdateRefundAccountService implements UpdateRefundAccountUseCase {
     }
 
     @Override
-    @Transactional
     public void execute(UpdateRefundAccountCommand command) {
         RefundAccount refundAccount =
                 readManager.getByUserIdAndId(command.userId(), command.refundAccountId());

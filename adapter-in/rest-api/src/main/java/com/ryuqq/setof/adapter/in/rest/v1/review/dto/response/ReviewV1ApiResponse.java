@@ -1,7 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.v1.review.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -27,9 +26,10 @@ public record ReviewV1ApiResponse(
         @Schema(description = "카테고리 ID", example = "100") long categoryId,
         @Schema(description = "카테고리명", example = "의류") String categoryName,
         @Schema(description = "리뷰 이미지 목록") List<ReviewImageResponse> reviewImages,
-        @Schema(description = "리뷰 작성일시", example = "2024-01-15T10:30:00") LocalDateTime insertDate,
-        @Schema(description = "결제일시", example = "2024-01-10T14:20:00") LocalDateTime paymentDate,
-        @Schema(description = "옵션 문자열", example = "Black/L") String option) {
+        @Schema(description = "리뷰 작성일시", example = "2024-01-15 10:30:00") String insertDate,
+        @Schema(description = "결제일시", example = "2024-01-10 14:20:00") String paymentDate,
+        @Schema(description = "옵션 문자열", example = "Black/L") String option,
+        @Schema(description = "리뷰 ID (레거시 호환)", example = "123") long id) {
 
     @Schema(description = "브랜드 정보")
     public record BrandResponse(

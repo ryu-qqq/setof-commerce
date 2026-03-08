@@ -1,12 +1,12 @@
 package com.ryuqq.setof.storage.legacy.product.entity;
 
+import com.ryuqq.setof.storage.legacy.common.entity.LegacyBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 
 /**
  * LegacyProductGroupEntity - 레거시 상품그룹 엔티티.
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "product_group")
-public class LegacyProductGroupEntity {
+public class LegacyProductGroupEntity extends LegacyBaseEntity {
 
     @Id
     @Column(name = "product_group_id")
@@ -49,6 +49,15 @@ public class LegacyProductGroupEntity {
     @Column(name = "sale_price")
     private Integer salePrice;
 
+    @Column(name = "direct_discount_rate")
+    private Integer directDiscountRate;
+
+    @Column(name = "direct_discount_price")
+    private Integer directDiscountPrice;
+
+    @Column(name = "discount_rate")
+    private Integer discountRate;
+
     @Column(name = "option_type")
     @Enumerated(EnumType.STRING)
     private OptionType optionType;
@@ -69,11 +78,9 @@ public class LegacyProductGroupEntity {
     @Enumerated(EnumType.STRING)
     private Yn deleteYn;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    /** Added for productgroup composite support. category.path 대신 product_group.path 컬럼 매핑. */
+    @Column(name = "path")
+    private String path;
 
     protected LegacyProductGroupEntity() {}
 
@@ -109,6 +116,18 @@ public class LegacyProductGroupEntity {
         return salePrice;
     }
 
+    public Integer getDirectDiscountRate() {
+        return directDiscountRate;
+    }
+
+    public Integer getDirectDiscountPrice() {
+        return directDiscountPrice;
+    }
+
+    public Integer getDiscountRate() {
+        return discountRate;
+    }
+
     public OptionType getOptionType() {
         return optionType;
     }
@@ -129,12 +148,8 @@ public class LegacyProductGroupEntity {
         return deleteYn;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public String getPath() {
+        return path;
     }
 
     /** OptionType - 옵션 타입 Enum. */

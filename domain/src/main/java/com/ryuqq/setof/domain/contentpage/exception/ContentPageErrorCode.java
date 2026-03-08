@@ -4,8 +4,7 @@ import com.ryuqq.setof.domain.common.exception.ErrorCode;
 
 /** 콘텐츠 페이지 도메인 에러 코드. */
 public enum ContentPageErrorCode implements ErrorCode {
-    CONTENT_PAGE_NOT_FOUND("CTP-001", 404, "콘텐츠 페이지를 찾을 수 없습니다"),
-    DISPLAY_COMPONENT_NOT_FOUND("CTP-002", 404, "디스플레이 컴포넌트를 찾을 수 없습니다");
+    CONTENT_PAGE_NOT_FOUND("CTP-001", 404, "콘텐츠 페이지를 찾을 수 없습니다");
 
     private final String code;
     private final int httpStatus;

@@ -2,7 +2,7 @@ package com.ryuqq.setof.domain.exchange.event;
 
 import com.ryuqq.setof.domain.common.event.DomainEvent;
 import com.ryuqq.setof.domain.exchange.id.ExchangeId;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import java.time.Instant;
 
 /**
@@ -16,11 +16,17 @@ import java.time.Instant;
  * @param occurredAt 이벤트 발생 시각
  */
 public record ExchangeShippingEvent(
-        ExchangeId exchangeId, OrderId orderId, OrderId linkedOrderId, Instant occurredAt)
+        ExchangeId exchangeId,
+        LegacyOrderId orderId,
+        LegacyOrderId linkedOrderId,
+        Instant occurredAt)
         implements DomainEvent {
 
     public static ExchangeShippingEvent of(
-            ExchangeId exchangeId, OrderId orderId, OrderId linkedOrderId, Instant now) {
+            ExchangeId exchangeId,
+            LegacyOrderId orderId,
+            LegacyOrderId linkedOrderId,
+            Instant now) {
         return new ExchangeShippingEvent(exchangeId, orderId, linkedOrderId, now);
     }
 

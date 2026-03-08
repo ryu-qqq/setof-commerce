@@ -15,11 +15,30 @@ import java.util.List;
 public record ReviewPageV1ApiResponse(
         @Schema(description = "평균 평점", example = "4.5") double averageRating,
         @Schema(description = "리뷰 목록") List<ReviewV1ApiResponse> content,
+        @Schema(description = "페이지 정보") PageableResponse pageable,
+        @Schema(description = "마지막 페이지 여부", example = "false") boolean last,
         @Schema(description = "총 페이지 수", example = "10") int totalPages,
         @Schema(description = "총 리뷰 수", example = "100") long totalElements,
-        @Schema(description = "마지막 페이지 여부", example = "false") boolean last,
         @Schema(description = "첫 페이지 여부", example = "true") boolean first,
         @Schema(description = "현재 페이지 번호 (0부터 시작)", example = "0") int number,
+        @Schema(description = "정렬 정보") SortResponse sort,
         @Schema(description = "페이지 크기", example = "20") int size,
         @Schema(description = "현재 페이지 요소 수", example = "20") int numberOfElements,
-        @Schema(description = "빈 페이지 여부", example = "false") boolean empty) {}
+        @Schema(description = "빈 페이지 여부", example = "false") boolean empty,
+        @Schema(description = "마지막 도메인 ID") Long lastDomainId) {
+
+    @Schema(description = "페이지 정보")
+    public record PageableResponse(
+            @Schema(description = "페이지 번호", example = "0") int pageNumber,
+            @Schema(description = "페이지 크기", example = "20") int pageSize,
+            @Schema(description = "정렬 정보") SortResponse sort,
+            @Schema(description = "오프셋", example = "0") long offset,
+            @Schema(description = "페이징 미사용 여부", example = "false") boolean unpaged,
+            @Schema(description = "페이징 사용 여부", example = "true") boolean paged) {}
+
+    @Schema(description = "정렬 정보")
+    public record SortResponse(
+            @Schema(description = "정렬 미사용 여부", example = "true") boolean unsorted,
+            @Schema(description = "정렬 사용 여부", example = "false") boolean sorted,
+            @Schema(description = "빈 정렬 여부", example = "true") boolean empty) {}
+}

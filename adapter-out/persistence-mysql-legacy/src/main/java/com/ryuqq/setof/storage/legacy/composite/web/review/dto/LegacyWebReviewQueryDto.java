@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
  * @param categoryId 카테고리 ID
  * @param categoryName 카테고리명
  * @param insertDate 작성일시
+ * @param updateDate 수정일시
  * @param paymentDate 결제일시
  * @author ryu-qqq
  * @since 1.1.0
@@ -38,4 +39,5 @@ public record LegacyWebReviewQueryDto(
         long categoryId,
         String categoryName,
         LocalDateTime insertDate,
+        LocalDateTime updateDate,
         LocalDateTime paymentDate) {}

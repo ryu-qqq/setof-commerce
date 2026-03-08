@@ -1,30 +1,30 @@
 package com.ryuqq.setof.domain.wishlist.query;
 
-import com.ryuqq.setof.domain.common.vo.QueryContext;
-import com.ryuqq.setof.domain.member.id.MemberId;
+import com.ryuqq.setof.domain.common.vo.CursorQueryContext;
+import com.ryuqq.setof.domain.member.vo.LegacyMemberId;
 
 /**
- * 찜 목록 오프셋 기반 검색 조건.
+ * 찜 목록 커서 기반 검색 조건.
  *
  * @param memberId 회원 ID (필수)
- * @param queryContext 정렬 + 오프셋 페이징 컨텍스트
+ * @param queryContext 정렬 + 커서 페이징 컨텍스트
  * @author ryu-qqq
  * @since 1.1.0
  */
 public record WishlistSearchCriteria(
-        MemberId memberId, QueryContext<WishlistSortKey> queryContext) {
+        LegacyMemberId memberId, CursorQueryContext<WishlistSortKey, Long> queryContext) {
 
     public WishlistSearchCriteria {
         if (memberId == null) {
             throw new IllegalArgumentException("memberId는 null일 수 없습니다");
         }
         if (queryContext == null) {
-            queryContext = QueryContext.defaultOf(WishlistSortKey.defaultKey());
+            queryContext = CursorQueryContext.defaultOf(WishlistSortKey.defaultKey());
         }
     }
 
     public static WishlistSearchCriteria of(
-            MemberId memberId, QueryContext<WishlistSortKey> queryContext) {
+            LegacyMemberId memberId, CursorQueryContext<WishlistSortKey, Long> queryContext) {
         return new WishlistSearchCriteria(memberId, queryContext);
     }
 
@@ -32,7 +32,15 @@ public record WishlistSearchCriteria(
         return queryContext.size();
     }
 
-    public long offset() {
-        return queryContext.offset();
+    public int fetchSize() {
+        return queryContext.fetchSize();
+    }
+
+    public Long cursor() {
+        return queryContext.cursor();
+    }
+
+    public boolean hasCursor() {
+        return queryContext.hasCursor();
     }
 }

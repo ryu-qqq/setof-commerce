@@ -41,7 +41,7 @@ public class AuthenticatedUserIdResolver implements HandlerMethodArgumentResolve
 
         if (authentication == null || authentication.getPrincipal() == null) {
             if (required) {
-                throw new IllegalStateException("인증 정보가 없습니다.");
+                throw new UnauthenticatedAccessException("인증이 필요합니다. 유효한 토큰을 제공해주세요.");
             }
             return null;
         }
@@ -52,7 +52,7 @@ public class AuthenticatedUserIdResolver implements HandlerMethodArgumentResolve
                 return Long.parseLong(ud.getUsername());
             } catch (NumberFormatException e) {
                 if (required) {
-                    throw new IllegalStateException("유효하지 않은 사용자 인증 정보입니다.");
+                    throw new UnauthenticatedAccessException("유효하지 않은 사용자 인증 정보입니다.");
                 }
                 return null;
             }
@@ -63,14 +63,14 @@ public class AuthenticatedUserIdResolver implements HandlerMethodArgumentResolve
                 return Long.parseLong(name);
             } catch (NumberFormatException e) {
                 if (required) {
-                    throw new IllegalStateException("유효하지 않은 사용자 인증 정보입니다.");
+                    throw new UnauthenticatedAccessException("유효하지 않은 사용자 인증 정보입니다.");
                 }
                 return null;
             }
         }
 
         if (required) {
-            throw new IllegalStateException("인증 정보에서 사용자 ID를 추출할 수 없습니다.");
+            throw new UnauthenticatedAccessException("인증 정보에서 사용자 ID를 추출할 수 없습니다.");
         }
         return null;
     }

@@ -1,13 +1,17 @@
 package com.ryuqq.setof.storage.legacy.composite.web.review.adapter;
 
-import com.ryuqq.setof.application.legacy.review.dto.response.LegacyReviewPageResult;
-import com.ryuqq.setof.application.legacy.review.dto.response.LegacyReviewResult;
-import com.ryuqq.setof.application.legacy.review.dto.response.LegacyReviewSliceResult;
-import com.ryuqq.setof.domain.legacy.review.dto.query.LegacyReviewSearchCondition;
+import com.ryuqq.setof.application.review.port.out.query.ReviewQueryPort;
+import com.ryuqq.setof.domain.review.aggregate.Review;
+import com.ryuqq.setof.domain.review.query.MyReviewSearchCriteria;
+import com.ryuqq.setof.domain.review.query.ProductGroupReviewSearchCriteria;
+import com.ryuqq.setof.domain.review.vo.WrittenReview;
 import com.ryuqq.setof.storage.legacy.composite.web.review.dto.LegacyWebReviewImageQueryDto;
+import com.ryuqq.setof.storage.legacy.composite.web.review.dto.LegacyWebReviewOptionQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.web.review.dto.LegacyWebReviewQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.web.review.mapper.LegacyWebReviewMapper;
 import com.ryuqq.setof.storage.legacy.composite.web.review.repository.LegacyWebReviewCompositeQueryDslRepository;
+import com.ryuqq.setof.storage.legacy.review.mapper.LegacyReviewEntityMapper;
+import com.ryuqq.setof.storage.legacy.review.repository.LegacyReviewQueryDslRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
@@ -15,111 +19,99 @@ import org.springframework.stereotype.Component;
 /**
  * 레거시 Web Review Composite 조회 Adapter.
  *
- * <p>TODO: Application Layer의 LegacyReviewCompositeQueryPort implements 추가
- *
  * @author ryu-qqq
  * @since 1.1.0
  */
 @Component
-public class LegacyWebReviewCompositeQueryAdapter {
+public class LegacyWebReviewCompositeQueryAdapter implements ReviewQueryPort {
 
     private final LegacyWebReviewCompositeQueryDslRepository repository;
+    private final LegacyReviewQueryDslRepository reviewQueryDslRepository;
     private final LegacyWebReviewMapper mapper;
+    private final LegacyReviewEntityMapper entityMapper;
 
     public LegacyWebReviewCompositeQueryAdapter(
-            LegacyWebReviewCompositeQueryDslRepository repository, LegacyWebReviewMapper mapper) {
+            LegacyWebReviewCompositeQueryDslRepository repository,
+            LegacyReviewQueryDslRepository reviewQueryDslRepository,
+            LegacyWebReviewMapper mapper,
+            LegacyReviewEntityMapper entityMapper) {
         this.repository = repository;
+        this.reviewQueryDslRepository = reviewQueryDslRepository;
         this.mapper = mapper;
+        this.entityMapper = entityMapper;
     }
 
-    /**
-     * 상품그룹 리뷰 페이지 조회 (offset 페이징).
-     *
-     * <p>fetchProductGroupReviews 대응.
-     *
-     * @param condition 검색 조건
-     * @return 리뷰 페이지 결과
-     */
-    public LegacyReviewPageResult fetchReviews(LegacyReviewSearchCondition condition) {
-        List<Long> reviewIds = repository.fetchReviewIds(condition);
+    @Override
+    public List<WrittenReview> fetchProductGroupReviews(ProductGroupReviewSearchCriteria criteria) {
+        List<Long> reviewIds =
+                repository.fetchReviewIds(
+                        criteria.productGroupId(),
+                        criteria.sortKey(),
+                        criteria.offset(),
+                        criteria.size());
 
         if (reviewIds.isEmpty()) {
-            return LegacyReviewPageResult.of(
-                    0.0, List.of(), condition.pageNumber(), condition.pageSize(), 0L);
+            return List.of();
         }
 
-        List<LegacyWebReviewQueryDto> reviewDtos = repository.fetchReviewsByIds(reviewIds);
-        List<LegacyWebReviewImageQueryDto> imageDtos =
-                repository.fetchReviewImagesByReviewIds(reviewIds);
-
-        List<LegacyReviewResult> results = mapper.toResults(reviewDtos, imageDtos, List.of());
-
-        long totalElements = repository.countReviews(condition.productGroupId(), null);
-        double averageRating =
-                repository.fetchAverageRating(condition.productGroupId()).orElse(0.0);
-
-        return LegacyReviewPageResult.of(
-                averageRating,
-                results,
-                condition.pageNumber(),
-                condition.pageSize(),
-                totalElements);
+        return fetchWrittenReviews(reviewIds);
     }
 
-    /**
-     * 내 리뷰 슬라이스 조회 (커서 페이징).
-     *
-     * <p>fetchMyReviews 대응.
-     *
-     * @param condition 검색 조건
-     * @return 리뷰 슬라이스 결과
-     */
-    public LegacyReviewSliceResult<LegacyReviewResult> fetchMyReviews(
-            LegacyReviewSearchCondition condition) {
-        List<Long> reviewIds = repository.fetchMyReviewIds(condition);
-
-        if (reviewIds.isEmpty()) {
-            return LegacyReviewSliceResult.of(
-                    List.of(), condition.pageSize(), 0L, result -> result.reviewId());
-        }
-
-        List<Long> pageReviewIds =
-                reviewIds.size() > condition.pageSize()
-                        ? reviewIds.subList(0, condition.pageSize())
-                        : reviewIds;
-
-        List<LegacyWebReviewQueryDto> reviewDtos = repository.fetchReviewsByIds(pageReviewIds);
-        List<LegacyWebReviewImageQueryDto> imageDtos =
-                repository.fetchReviewImagesByReviewIds(pageReviewIds);
-
-        List<LegacyReviewResult> results = mapper.toResults(reviewDtos, imageDtos, List.of());
-
-        long totalElements = repository.countReviews(null, condition.userId());
-        boolean hasNext = reviewIds.size() > condition.pageSize();
-
-        Long lastDomainId = results.isEmpty() ? null : results.get(results.size() - 1).reviewId();
-
-        return new LegacyReviewSliceResult<>(results, hasNext, totalElements, lastDomainId);
+    @Override
+    public long countProductGroupReviews(long productGroupId) {
+        return repository.countReviews(productGroupId, null);
     }
 
-    /**
-     * 평균 평점 조회.
-     *
-     * @param productGroupId 상품그룹 ID
-     * @return 평균 평점 (Optional)
-     */
-    public Optional<Double> fetchAverageRating(Long productGroupId) {
+    @Override
+    public Optional<Double> fetchAverageRating(long productGroupId) {
         return repository.fetchAverageRating(productGroupId);
     }
 
-    /**
-     * 리뷰 개수 조회.
-     *
-     * @param productGroupId 상품그룹 ID (nullable)
-     * @param userId 사용자 ID (nullable)
-     * @return 리뷰 개수
-     */
-    public long countReviews(Long productGroupId, Long userId) {
-        return repository.countReviews(productGroupId, userId);
+    @Override
+    public List<WrittenReview> fetchMyReviews(MyReviewSearchCriteria criteria) {
+        Long userId = resolveUserId(criteria);
+        List<Long> reviewIds =
+                repository.fetchMyReviewIds(userId, criteria.cursor(), criteria.fetchSize());
+
+        if (reviewIds.isEmpty()) {
+            return List.of();
+        }
+
+        return fetchWrittenReviews(reviewIds);
+    }
+
+    @Override
+    public long countMyReviews(MyReviewSearchCriteria criteria) {
+        Long userId = resolveUserId(criteria);
+        return repository.countReviews(null, userId);
+    }
+
+    private List<WrittenReview> fetchWrittenReviews(List<Long> reviewIds) {
+        List<LegacyWebReviewQueryDto> reviewDtos = repository.fetchReviewsByIds(reviewIds);
+        List<LegacyWebReviewImageQueryDto> imageDtos =
+                repository.fetchReviewImagesByReviewIds(reviewIds);
+        List<LegacyWebReviewOptionQueryDto> optionDtos =
+                repository.fetchReviewOptionsByReviewIds(reviewIds);
+        return mapper.toDomainList(reviewDtos, imageDtos, optionDtos);
+    }
+
+    @Override
+    public boolean existsActiveReviewByOrderAndUser(long orderId, long userId) {
+        return reviewQueryDslRepository.existsActiveReviewByOrderAndUser(orderId, userId);
+    }
+
+    @Override
+    public Optional<Review> fetchActiveReview(long reviewId, long userId) {
+        return reviewQueryDslRepository
+                .fetchActiveReview(reviewId, userId)
+                .map(entityMapper::toDomain);
+    }
+
+    private Long resolveUserId(MyReviewSearchCriteria criteria) {
+        if (criteria.legacyMemberIdValue() != null) {
+            return criteria.legacyMemberIdValue();
+        }
+        throw new IllegalStateException(
+                "레거시 어댑터에서는 legacyMemberId가 필수입니다. memberId만으로는 조회할 수 없습니다.");
     }
 }

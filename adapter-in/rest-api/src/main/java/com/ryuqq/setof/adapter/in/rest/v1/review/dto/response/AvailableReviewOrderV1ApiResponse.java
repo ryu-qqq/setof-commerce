@@ -1,7 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.v1.review.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -30,7 +29,7 @@ public record AvailableReviewOrderV1ApiResponse(
         @Schema(description = "판매가", example = "45000") long currentPrice,
         @Schema(description = "주문 금액", example = "90000") long orderAmount,
         @Schema(description = "옵션 목록") List<OptionResponse> options,
-        @Schema(description = "결제일시", example = "2024-01-10T14:20:00") LocalDateTime paymentDate) {
+        @Schema(description = "결제일시", example = "2024-01-10 14:20:00") String paymentDate) {
 
     @Schema(description = "브랜드 정보")
     public record BrandResponse(

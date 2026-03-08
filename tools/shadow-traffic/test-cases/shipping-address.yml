@@ -19,6 +19,7 @@ test_cases:
     auth: NORMAL_GRADE
     compare_mode: full
     ignore_fields: []
+    safe_for_repeat: true
 
   # === 단건 조회 ===
   - name: "shipping_address_detail_2217"
@@ -27,6 +28,7 @@ test_cases:
     auth: NORMAL_GRADE
     compare_mode: full
     ignore_fields: []
+    safe_for_repeat: true
 
   - name: "shipping_address_detail_2218"
     path: "/api/v1/user/address-book/2218"
@@ -34,6 +36,7 @@ test_cases:
     auth: NORMAL_GRADE
     compare_mode: full
     ignore_fields: []
+    safe_for_repeat: true
 
   # === 에러 케이스 ===
   - name: "shipping_address_detail_not_found"
@@ -42,6 +45,7 @@ test_cases:
     auth: NORMAL_GRADE
     compare_mode: status_only
     ignore_fields: []
+    safe_for_repeat: true
 
   - name: "shipping_address_list_unauthenticated"
     path: "/api/v1/user/address-book"
@@ -49,6 +53,7 @@ test_cases:
     auth: none
     compare_mode: status_only
     ignore_fields: []
+    safe_for_repeat: true
 
   - name: "shipping_address_detail_unauthenticated"
     path: "/api/v1/user/address-book/2217"
@@ -56,3 +61,4 @@ test_cases:
     auth: none
     compare_mode: status_only
     ignore_fields: []
+    safe_for_repeat: true

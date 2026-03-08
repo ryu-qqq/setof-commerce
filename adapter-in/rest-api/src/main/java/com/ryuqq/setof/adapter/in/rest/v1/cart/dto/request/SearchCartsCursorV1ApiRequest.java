@@ -16,19 +16,18 @@ import jakarta.validation.constraints.Min;
  *
  * <p>기본값 처리는 Mapper에서 수행합니다. Request DTO에서는 기본값 설정 금지.
  *
- * @param lastCartId 마지막으로 조회한 장바구니 ID (커서 페이징용, 다음 페이지 조회 시 사용)
+ * @param lastDomainId 마지막으로 조회한 도메인 ID (커서 페이징용, 레거시 호환)
  * @param size 조회할 아이템 수 (1~100)
  * @author ryu-qqq
  * @since 1.0.0
- * @see com.setof.connectly.module.cart.dto.CartFilter
  */
 @Schema(description = "장바구니 목록 검색 요청 (커서 페이징)")
 public record SearchCartsCursorV1ApiRequest(
         @Parameter(description = "마지막으로 조회한 장바구니 ID (다음 페이지 조회 시 사용)", example = "1000")
-                @Schema(description = "커서: 마지막 장바구니 ID", nullable = true)
-                Long lastCartId,
+                @Schema(description = "커서: 마지막 도메인 ID (레거시 호환)", nullable = true)
+                Long lastDomainId,
         @Parameter(description = "조회할 아이템 수 (1~100)", example = "20")
-                @Schema(description = "페이지 크기", defaultValue = "20")
+                @Schema(description = "페이지 크기")
                 @Min(value = 1, message = "조회 크기는 1 이상이어야 합니다.")
                 @Max(value = 100, message = "조회 크기는 100 이하여야 합니다.")
                 Integer size) {}

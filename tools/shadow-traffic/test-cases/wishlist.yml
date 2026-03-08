@@ -1,0 +1,104 @@
+domain: wishlist
+description: "UserFavorite (wishlist) API shadow traffic test cases"
+
+auth_config:
+  strategy: login
+  login_endpoint: /api/v1/user/login
+  phone_number: "${SHADOW_TEST_PHONE}"
+  password: "${SHADOW_TEST_PASSWORD}"
+
+test_cases:
+  # === 목록 조회 ===
+  - name: "wishlist_list_default"
+    path: "/api/v1/user/my-favorites"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "wishlist_list_size_5"
+    path: "/api/v1/user/my-favorites"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 5
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "wishlist_list_cursor_paging"
+    path: "/api/v1/user/my-favorites"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      lastDomainId: 100
+      size: 10
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "wishlist_list_cursor_small_id"
+    path: "/api/v1/user/my-favorites"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      lastDomainId: 1
+      size: 5
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # === 찜 생성 ===
+  - name: "wishlist_create_valid"
+    path: "/api/v1/user/my-favorite"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      productGroupId: 1
+    compare_mode: structure_only
+    ignore_fields:
+      - "id"
+      - "createdAt"
+      - "insertDate"
+    safe_for_repeat: false
+
+  - name: "wishlist_create_duplicate"
+    path: "/api/v1/user/my-favorite"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      productGroupId: 1
+    compare_mode: structure_only
+    ignore_fields:
+      - "id"
+      - "createdAt"
+      - "insertDate"
+    safe_for_repeat: false
+
+  - name: "wishlist_create_not_found_product"
+    path: "/api/v1/user/my-favorite"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      productGroupId: 999999999
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # === 찜 삭제 ===
+  - name: "wishlist_delete_valid"
+    path: "/api/v1/user/my-favorite/1"
+    method: DELETE
+    auth: NORMAL_GRADE
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: false
+
+  - name: "wishlist_delete_not_favorited"
+    path: "/api/v1/user/my-favorite/999999999"
+    method: DELETE
+    auth: NORMAL_GRADE
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true

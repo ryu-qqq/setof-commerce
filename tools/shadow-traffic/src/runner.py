@@ -58,6 +58,7 @@ async def run_test_case(
     body = test_case.get("body")
     compare_mode = CompareMode(test_case.get("compare_mode", "full"))
     ignore_fields = set(test_case.get("ignore_fields", []))
+    known_diff = test_case.get("known_diff", False)
 
     headers = {}
     if test_case.get("auth") and test_case["auth"] != "none":
@@ -105,6 +106,7 @@ async def run_test_case(
         new_latency_ms=new_result.latency_ms,
         compare_mode=compare_mode,
         ignore_fields=ignore_fields,
+        known_diff=known_diff,
     ), legacy_result.body, new_result.body
 
 
@@ -114,6 +116,7 @@ async def run_suite(
     legacy_url: str,
     new_url: str,
     auth_headers: dict[str, str] | None = None,
+    safe_only: bool = False,
 ) -> tuple[list[DiffResult], dict, dict]:
     domain = suite["domain"]
     results = []
@@ -132,7 +135,14 @@ async def run_suite(
         else:
             logger.warning(f"[{domain}] Failed to acquire auth token, authenticated tests may fail")
 
-    for tc in suite.get("test_cases", []):
+    all_cases = suite.get("test_cases", [])
+    if safe_only:
+        skipped = [tc["name"] for tc in all_cases if not tc.get("safe_for_repeat", True)]
+        all_cases = [tc for tc in all_cases if tc.get("safe_for_repeat", True)]
+        if skipped:
+            logger.info(f"[{domain}] --safe-only: skipped {len(skipped)} unsafe test(s): {skipped}")
+
+    for tc in all_cases:
         # Pass suite-level auth headers only for test cases that need auth
         needs_auth = tc.get("auth") and tc["auth"] != "none"
         tc_auth = suite_auth_headers if needs_auth else None

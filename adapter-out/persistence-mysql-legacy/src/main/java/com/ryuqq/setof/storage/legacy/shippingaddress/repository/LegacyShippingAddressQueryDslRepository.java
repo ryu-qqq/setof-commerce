@@ -54,4 +54,20 @@ public class LegacyShippingAddressQueryDslRepository {
                         conditionBuilder.idEq(condition.shippingAddressId()))
                 .fetch();
     }
+
+    /**
+     * 사용자별 배송지 개수 조회.
+     *
+     * @param userId 사용자 ID
+     * @return 배송지 개수
+     */
+    public long countByUserId(Long userId) {
+        Long count =
+                queryFactory
+                        .select(legacyShippingAddressEntity.count())
+                        .from(legacyShippingAddressEntity)
+                        .where(conditionBuilder.userIdEq(userId))
+                        .fetchOne();
+        return count != null ? count : 0L;
+    }
 }

@@ -2,7 +2,7 @@ package com.ryuqq.setof.domain.order.aggregate;
 
 import com.ryuqq.setof.domain.common.vo.Money;
 import com.ryuqq.setof.domain.order.exception.InvalidOrderItemStatusTransitionException;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import com.ryuqq.setof.domain.order.id.OrderItemId;
 import com.ryuqq.setof.domain.order.vo.OrderItemQuantity;
 import com.ryuqq.setof.domain.order.vo.OrderItemStatus;
@@ -15,7 +15,7 @@ import java.time.Instant;
 public class OrderItem {
 
     private final OrderItemId id;
-    private final OrderId orderId;
+    private final LegacyOrderId orderId;
     private final SellerId sellerId;
     private final ProductGroupId productGroupId;
     private final ProductId productId;
@@ -27,7 +27,7 @@ public class OrderItem {
 
     private OrderItem(
             OrderItemId id,
-            OrderId orderId,
+            LegacyOrderId orderId,
             SellerId sellerId,
             ProductGroupId productGroupId,
             ProductId productId,
@@ -61,7 +61,7 @@ public class OrderItem {
      * @return 대기 상태의 새 주문 아이템
      */
     public static OrderItem forNew(
-            OrderId orderId,
+            LegacyOrderId orderId,
             SellerId sellerId,
             ProductGroupId productGroupId,
             ProductId productId,
@@ -98,7 +98,7 @@ public class OrderItem {
      */
     public static OrderItem reconstitute(
             OrderItemId id,
-            OrderId orderId,
+            LegacyOrderId orderId,
             SellerId sellerId,
             ProductGroupId productGroupId,
             ProductId productId,
@@ -219,7 +219,7 @@ public class OrderItem {
         return id.value();
     }
 
-    public OrderId orderId() {
+    public LegacyOrderId orderId() {
         return orderId;
     }
 

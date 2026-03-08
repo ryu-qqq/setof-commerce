@@ -1,0 +1,646 @@
+domain: qna
+description: "QnA API shadow traffic test cases"
+
+# Auth configuration for this suite.
+# strategy: login  - Login to Legacy server, use JWT for both servers
+# strategy: static - Use token from env var
+# strategy: none   - No auth (default)
+auth_config:
+  strategy: login
+  login_endpoint: /api/v1/user/login
+  phone_number: "${SHADOW_TEST_PHONE}"    # env var: test user phone
+  password: "${SHADOW_TEST_PASSWORD}"      # env var: test user password
+
+test_cases:
+  # =========================================================
+  # === Query (조회) - Shadow Traffic 비교 대상 ===
+  # 동일 DB 기반이므로 응답 데이터가 완전히 일치해야 함 (compare_mode: full)
+  # =========================================================
+
+  # --- GET /api/v1/qna/product/{productGroupId} ---
+  # 인증 불필요 (공개 API)
+  # productGroupId: @PathVariable, page/size: Pageable query params
+  # 비밀글 처리: privateYn=Y 이면 비로그인 사용자에게 "비밀글 입니다." 마스킹
+  # QnaType.PRODUCT이므로 qnaImages는 항상 빈 목록 []
+
+  # 정상 조회: productGroupId=1, 기본 페이징 (page=0, size=20)
+  - name: "qna_product_list_default"
+    path: "/api/v1/qna/product/1"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 정상 조회: page/size 명시
+  - name: "qna_product_list_with_pagination"
+    path: "/api/v1/qna/product/1"
+    method: GET
+    auth: none
+    body:
+      page: 0
+      size: 10
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 두 번째 페이지 조회 (page=1)
+  - name: "qna_product_list_page_2"
+    path: "/api/v1/qna/product/1"
+    method: GET
+    auth: none
+    body:
+      page: 1
+      size: 10
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 경계값: size=1 (단건 + hasNext 여부 검증)
+  - name: "qna_product_list_size_one"
+    path: "/api/v1/qna/product/1"
+    method: GET
+    auth: none
+    body:
+      page: 0
+      size: 1
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 경계값: 존재하지 않는 productGroupId → 빈 목록 + totalElements=0
+  - name: "qna_product_list_empty"
+    path: "/api/v1/qna/product/999999999"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 정렬 조건 명시 (qnaId,desc)
+  - name: "qna_product_list_sort_desc"
+    path: "/api/v1/qna/product/1"
+    method: GET
+    auth: none
+    body:
+      page: 0
+      size: 10
+      sort: "qnaId,desc"
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 다른 상품그룹 조회 (productGroupId=2)
+  - name: "qna_product_list_product_group_2"
+    path: "/api/v1/qna/product/2"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # --- GET /api/v1/qna/my-page ---
+  # NORMAL_GRADE 인증 필수
+  # qnaType(필수): PRODUCT | ORDER
+  # startDate/endDate(필수): yyyy-MM-dd HH:mm:ss 형식, @ValidDateRange 커스텀 검사
+  # lastDomainId(선택): 커서 기반 페이징
+  # GET body → query params로 변환됨 (client.py: params=body)
+
+  # 내 상품 QNA 목록 - 최근 1년 조회
+  - name: "qna_my_page_product_type"
+    path: "/api/v1/qna/my-page"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      qnaType: "PRODUCT"
+      startDate: "2024-01-01 00:00:00"
+      endDate: "2024-12-31 23:59:59"
+      size: 10
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 내 주문 QNA 목록 - 최근 1년 조회
+  - name: "qna_my_page_order_type"
+    path: "/api/v1/qna/my-page"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      qnaType: "ORDER"
+      startDate: "2024-01-01 00:00:00"
+      endDate: "2024-12-31 23:59:59"
+      size: 10
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 커서 페이징: lastDomainId 지정 (두 번째 페이지 이후)
+  # 실제 테스트 환경의 유효한 qnaId로 교체 필요
+  - name: "qna_my_page_product_cursor_paging"
+    path: "/api/v1/qna/my-page"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      qnaType: "PRODUCT"
+      lastDomainId: 5000
+      startDate: "2024-01-01 00:00:00"
+      endDate: "2024-12-31 23:59:59"
+      size: 10
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 커서 페이징: ORDER 타입 + lastDomainId
+  - name: "qna_my_page_order_cursor_paging"
+    path: "/api/v1/qna/my-page"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      qnaType: "ORDER"
+      lastDomainId: 5000
+      startDate: "2024-01-01 00:00:00"
+      endDate: "2024-12-31 23:59:59"
+      size: 10
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 경계값: 매우 작은 lastDomainId → 빈 결과 (empty: true 예상)
+  - name: "qna_my_page_cursor_empty"
+    path: "/api/v1/qna/my-page"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      qnaType: "PRODUCT"
+      lastDomainId: 1
+      startDate: "2024-01-01 00:00:00"
+      endDate: "2024-12-31 23:59:59"
+      size: 10
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # size=5 소량 페이지 조회
+  - name: "qna_my_page_product_size_5"
+    path: "/api/v1/qna/my-page"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      qnaType: "PRODUCT"
+      startDate: "2024-01-01 00:00:00"
+      endDate: "2024-12-31 23:59:59"
+      size: 5
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
+  - name: "qna_my_page_unauthenticated"
+    path: "/api/v1/qna/my-page"
+    method: GET
+    auth: none
+    body:
+      qnaType: "PRODUCT"
+      startDate: "2024-01-01 00:00:00"
+      endDate: "2024-12-31 23:59:59"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # =========================================================
+  # === Command (생성/수정) - Smoke Test only (status_only / structure_only) ===
+  # Command는 양쪽 서버가 동일 DB를 공유하므로, 정상 케이스는 주기적 실행 시 스킵
+  # safe_for_repeat: false → --safe-only 모드에서 제외됨
+  # =========================================================
+
+  # --- POST /api/v1/qna ---
+  # body: CreateQna (다형성 인터페이스)
+  #   type="productQna" → CreateProductQna (sellerId + productGroupId 필수)
+  #   type="orderQna"   → CreateOrderQna  (sellerId + orderId 필수, qnaImages 선택)
+  # 생성 후 qnaStatus=OPEN, userType=MEMBERS 고정
+
+  # 정상 생성: 상품 QNA (productQna 타입)
+  - name: "qna_create_product_qna_valid"
+    path: "/api/v1/qna"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "사이즈 문의드립니다"
+        content: "L 사이즈 어깨 실측이 어떻게 되나요?"
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "SIZE"
+      sellerId: 1
+      productGroupId: 1
+    compare_mode: structure_only
+    ignore_fields:
+      - "id"
+      - "userId"
+      - "insertDate"
+      - "updateDate"
+    safe_for_repeat: false
+
+  # 정상 생성: 상품 QNA (비공개 설정)
+  - name: "qna_create_product_qna_private"
+    path: "/api/v1/qna"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "비공개 문의"
+        content: "비공개로 문의드립니다."
+      privateYn: "Y"
+      qnaType: "PRODUCT"
+      qnaDetailType: "ETC"
+      sellerId: 1
+      productGroupId: 1
+    compare_mode: structure_only
+    ignore_fields:
+      - "id"
+      - "userId"
+      - "insertDate"
+      - "updateDate"
+    safe_for_repeat: false
+
+  # 정상 생성: 주문 QNA (orderQna 타입, 이미지 없음)
+  - name: "qna_create_order_qna_valid"
+    path: "/api/v1/qna"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      type: "orderQna"
+      qnaContents:
+        title: "배송 관련 문의"
+        content: "주문한 상품이 아직 미배송 상태입니다."
+      privateYn: "Y"
+      qnaType: "ORDER"
+      qnaDetailType: "SHIPMENT"
+      sellerId: 1
+      orderId: 1
+    compare_mode: structure_only
+    ignore_fields:
+      - "id"
+      - "userId"
+      - "insertDate"
+      - "updateDate"
+    safe_for_repeat: false
+
+  # 정상 생성: 주문 QNA + 이미지 포함 (qnaImages 최대 3장, S3 비동기 업로드 분기)
+  - name: "qna_create_order_qna_with_images"
+    path: "/api/v1/qna"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      type: "orderQna"
+      qnaContents:
+        title: "상품 불량 문의"
+        content: "수령한 상품에 스크래치가 있습니다. 사진 첨부합니다."
+      privateYn: "Y"
+      qnaType: "ORDER"
+      qnaDetailType: "ETC"
+      sellerId: 1
+      orderId: 1
+      qnaImages:
+        - "https://example.com/image1.jpg"
+        - "https://example.com/image2.jpg"
+    compare_mode: structure_only
+    ignore_fields:
+      - "id"
+      - "userId"
+      - "insertDate"
+      - "updateDate"
+    safe_for_repeat: false
+
+  # 유효성 검증: sellerId 누락 (@NotNull 위반) → 400 Bad Request
+  - name: "qna_create_missing_seller_id"
+    path: "/api/v1/qna"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "사이즈 문의"
+        content: "L 사이즈 재고 있나요?"
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "SIZE"
+      productGroupId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 유효성 검증: productGroupId=0 (@Min(1) 위반) → 400 Bad Request
+  - name: "qna_create_invalid_product_group_id"
+    path: "/api/v1/qna"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "사이즈 문의"
+        content: "L 사이즈 재고 있나요?"
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "SIZE"
+      sellerId: 1
+      productGroupId: 0
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
+  - name: "qna_create_unauthenticated"
+    path: "/api/v1/qna"
+    method: POST
+    auth: none
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "사이즈 문의"
+        content: "L 사이즈 재고 있나요?"
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "SIZE"
+      sellerId: 1
+      productGroupId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # --- PUT /api/v1/qna/{qnaId} ---
+  # qnaId: 본인 소유 QNA (user_id 일치 여부 검증)
+  # qnaStatus=CLOSED 이면 QnaContentsUpdateException 발생
+  # [버그] qnaContents 실질적으로 업데이트 안됨 (자기 자신 내용을 재세팅하는 버그)
+  # → 레거시와 신규 서버 양쪽 동일한 버그 여부 검증 목적으로 status_only 사용
+
+  # 정상 수정: 실제 테스트 환경의 본인 소유 OPEN 상태 qnaId 사용
+  - name: "qna_update_product_qna_valid"
+    path: "/api/v1/qna/1"
+    method: PUT
+    auth: NORMAL_GRADE
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "사이즈 문의드립니다 (수정)"
+        content: "XL 사이즈 재고가 있나요? (수정)"
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "SIZE"
+      sellerId: 1
+      productGroupId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: false
+
+  # 정상 수정: 주문 QNA 수정 (orderQna 타입 + 이미지 diff 분기)
+  - name: "qna_update_order_qna_valid"
+    path: "/api/v1/qna/2"
+    method: PUT
+    auth: NORMAL_GRADE
+    body:
+      type: "orderQna"
+      qnaContents:
+        title: "배송 문의 (수정)"
+        content: "배송 관련 문의 내용 수정합니다."
+      privateYn: "Y"
+      qnaType: "ORDER"
+      qnaDetailType: "SHIPMENT"
+      sellerId: 1
+      orderId: 1
+      qnaImages:
+        - "https://example.com/updated-image1.jpg"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: false
+
+  # 에러 케이스: CLOSED 상태 QNA 수정 시도 → QnaContentsUpdateException
+  # safe_for_repeat: true (CLOSED QNA는 수정 불가하므로 부작용 없음)
+  - name: "qna_update_closed_qna"
+    path: "/api/v1/qna/3"
+    method: PUT
+    auth: NORMAL_GRADE
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "종료된 문의 수정 시도"
+        content: "이 문의는 이미 종료되었습니다."
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "ETC"
+      sellerId: 1
+      productGroupId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 에러 케이스: 존재하지 않는 qnaId → 404 Not Found (QnaNotFoundException)
+  - name: "qna_update_not_found"
+    path: "/api/v1/qna/999999999"
+    method: PUT
+    auth: NORMAL_GRADE
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "수정 문의"
+        content: "수정 내용입니다."
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "ETC"
+      sellerId: 1
+      productGroupId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
+  - name: "qna_update_unauthenticated"
+    path: "/api/v1/qna/1"
+    method: PUT
+    auth: none
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "수정 문의"
+        content: "수정 내용입니다."
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "ETC"
+      sellerId: 1
+      productGroupId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # --- POST /api/v1/qna/{qnaId}/reply ---
+  # 고객(CUSTOMER) 대화 답변 등록
+  # 사전 조건:
+  #   - qnaStatus != OPEN (즉, QNA가 CLOSED 상태여야 답변 가능)
+  #   - 해당 QNA에 SELLER가 작성한 OPEN 상태 답변이 존재해야 함
+  # 저장 후 셀러 답변(qnaWriterType=SELLER, qnaStatus=OPEN)을 CLOSED로 변경
+
+  # 정상 등록: 실제 테스트 환경의 유효한 qnaId 사용 (CLOSED 상태 + 셀러 OPEN 답변 존재)
+  - name: "qna_create_reply_product_valid"
+    path: "/api/v1/qna/1/reply"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "감사합니다"
+        content: "답변 감사합니다. 문의가 해결되었습니다."
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "SIZE"
+      sellerId: 1
+      productGroupId: 1
+    compare_mode: structure_only
+    ignore_fields:
+      - "id"
+      - "insertDate"
+      - "updateDate"
+    safe_for_repeat: false
+
+  # 정상 등록: 주문 QNA reply (orderQna 타입, 이미지 없음)
+  - name: "qna_create_reply_order_valid"
+    path: "/api/v1/qna/2/reply"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      type: "orderQna"
+      qnaContents:
+        title: "배송 답변 감사합니다"
+        content: "답변 확인했습니다. 감사합니다."
+      privateYn: "Y"
+      qnaType: "ORDER"
+      qnaDetailType: "SHIPMENT"
+      sellerId: 1
+      orderId: 1
+    compare_mode: structure_only
+    ignore_fields:
+      - "id"
+      - "insertDate"
+      - "updateDate"
+    safe_for_repeat: false
+
+  # 에러 케이스: QNA 상태가 OPEN일 때 reply 시도 → QnaReplyException
+  # OPEN 상태 = 셀러 답변이 아직 없는 상태이므로 고객 reply 불가
+  - name: "qna_create_reply_qna_status_open"
+    path: "/api/v1/qna/4/reply"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "답변 시도"
+        content: "아직 답변이 없는 문의에 reply 시도"
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "ETC"
+      sellerId: 1
+      productGroupId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 에러 케이스: 존재하지 않는 qnaId → QnaReplyException (셀러 OPEN 답변 없음)
+  - name: "qna_create_reply_not_found"
+    path: "/api/v1/qna/999999999/reply"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "답변"
+        content: "답변 내용입니다."
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "ETC"
+      sellerId: 1
+      productGroupId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
+  - name: "qna_create_reply_unauthenticated"
+    path: "/api/v1/qna/1/reply"
+    method: POST
+    auth: none
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "답변"
+        content: "답변 내용입니다."
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "ETC"
+      sellerId: 1
+      productGroupId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # --- PUT /api/v1/qna/{qnaId}/reply/{qnaAnswerId} ---
+  # qnaAnswerId: OPEN 상태인 답변만 수정 가능 (CLOSED 이면 QnaContentsUpdateException)
+  # productQna: 제목/내용만 수정 (이미지 미지원)
+  # orderQna: 제목/내용 + 이미지 diff 처리
+
+  # 정상 수정: 실제 테스트 환경의 유효한 OPEN 상태 qnaAnswerId 사용
+  - name: "qna_update_reply_product_valid"
+    path: "/api/v1/qna/1/reply/1"
+    method: PUT
+    auth: NORMAL_GRADE
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "답변 수정합니다"
+        content: "답변 내용을 수정합니다."
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "ETC"
+      sellerId: 1
+      productGroupId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: false
+
+  # 에러 케이스: 존재하지 않는 qnaAnswerId → 404 Not Found (QnaAnswerNotFoundException)
+  - name: "qna_update_reply_not_found"
+    path: "/api/v1/qna/1/reply/999999999"
+    method: PUT
+    auth: NORMAL_GRADE
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "답변 수정"
+        content: "답변 내용을 수정합니다."
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "ETC"
+      sellerId: 1
+      productGroupId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
+  - name: "qna_update_reply_unauthenticated"
+    path: "/api/v1/qna/1/reply/1"
+    method: PUT
+    auth: none
+    body:
+      type: "productQna"
+      qnaContents:
+        title: "답변 수정"
+        content: "답변 내용을 수정합니다."
+      privateYn: "N"
+      qnaType: "PRODUCT"
+      qnaDetailType: "ETC"
+      sellerId: 1
+      productGroupId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true

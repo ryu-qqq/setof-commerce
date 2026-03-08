@@ -2,6 +2,7 @@ package com.ryuqq.setof.domain.wishlist.aggregate;
 
 import com.ryuqq.setof.domain.common.vo.DeletionStatus;
 import com.ryuqq.setof.domain.member.id.MemberId;
+import com.ryuqq.setof.domain.member.vo.LegacyMemberId;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import com.ryuqq.setof.domain.wishlist.id.WishlistItemId;
 import java.time.Instant;
@@ -17,6 +18,7 @@ import java.time.Instant;
 public class WishlistItem {
 
     private final WishlistItemId id;
+    private final LegacyMemberId legacyMemberId;
     private final MemberId memberId;
     private final ProductGroupId productGroupId;
     private DeletionStatus deletionStatus;
@@ -24,21 +26,25 @@ public class WishlistItem {
 
     private WishlistItem(
             WishlistItemId id,
+            LegacyMemberId legacyMemberId,
             MemberId memberId,
             ProductGroupId productGroupId,
             DeletionStatus deletionStatus,
             Instant createdAt) {
         this.id = id;
+        this.legacyMemberId = legacyMemberId;
         this.memberId = memberId;
         this.productGroupId = productGroupId;
         this.deletionStatus = deletionStatus;
         this.createdAt = createdAt;
     }
 
-    public static WishlistItem create(MemberId memberId, ProductGroupId productGroupId) {
+    public static WishlistItem create(
+            LegacyMemberId legacyMemberId, ProductGroupId productGroupId) {
         return new WishlistItem(
                 WishlistItemId.forNew(),
-                memberId,
+                legacyMemberId,
+                null,
                 productGroupId,
                 DeletionStatus.active(),
                 Instant.now());
@@ -46,11 +52,13 @@ public class WishlistItem {
 
     public static WishlistItem reconstitute(
             WishlistItemId id,
+            LegacyMemberId legacyMemberId,
             MemberId memberId,
             ProductGroupId productGroupId,
             DeletionStatus deletionStatus,
             Instant createdAt) {
-        return new WishlistItem(id, memberId, productGroupId, deletionStatus, createdAt);
+        return new WishlistItem(
+                id, legacyMemberId, memberId, productGroupId, deletionStatus, createdAt);
     }
 
     public void delete(Instant occurredAt) {
@@ -65,12 +73,20 @@ public class WishlistItem {
         return id.value();
     }
 
+    public LegacyMemberId legacyMemberId() {
+        return legacyMemberId;
+    }
+
+    public long legacyMemberIdValue() {
+        return legacyMemberId.value();
+    }
+
     public MemberId memberId() {
         return memberId;
     }
 
     public String memberIdValue() {
-        return memberId.value();
+        return memberId != null ? memberId.value() : null;
     }
 
     public ProductGroupId productGroupId() {

@@ -2,7 +2,7 @@ package com.ryuqq.setof.domain.payment.event;
 
 import com.ryuqq.setof.domain.common.event.DomainEvent;
 import com.ryuqq.setof.domain.common.vo.Money;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import com.ryuqq.setof.domain.payment.id.PaymentId;
 import java.time.Instant;
 
@@ -19,7 +19,7 @@ import java.time.Instant;
  */
 public record PaymentRefundedEvent(
         PaymentId paymentId,
-        OrderId orderId,
+        LegacyOrderId orderId,
         Money refundAmount,
         boolean isFullRefund,
         Instant occurredAt)
@@ -27,7 +27,7 @@ public record PaymentRefundedEvent(
 
     public static PaymentRefundedEvent of(
             PaymentId paymentId,
-            OrderId orderId,
+            LegacyOrderId orderId,
             Money refundAmount,
             boolean isFullRefund,
             Instant now) {

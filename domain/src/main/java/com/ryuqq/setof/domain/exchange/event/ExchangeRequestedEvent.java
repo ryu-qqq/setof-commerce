@@ -3,7 +3,7 @@ package com.ryuqq.setof.domain.exchange.event;
 import com.ryuqq.setof.domain.common.event.DomainEvent;
 import com.ryuqq.setof.domain.exchange.id.ExchangeId;
 import com.ryuqq.setof.domain.exchange.vo.ExchangeTarget;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import java.time.Instant;
 
@@ -20,7 +20,7 @@ import java.time.Instant;
  */
 public record ExchangeRequestedEvent(
         ExchangeId exchangeId,
-        OrderId orderId,
+        LegacyOrderId orderId,
         SellerId sellerId,
         ExchangeTarget exchangeTarget,
         Instant occurredAt)
@@ -28,7 +28,7 @@ public record ExchangeRequestedEvent(
 
     public static ExchangeRequestedEvent of(
             ExchangeId exchangeId,
-            OrderId orderId,
+            LegacyOrderId orderId,
             SellerId sellerId,
             ExchangeTarget exchangeTarget,
             Instant now) {

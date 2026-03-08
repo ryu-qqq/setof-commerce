@@ -3,7 +3,7 @@ package com.ryuqq.setof.domain.payment.aggregate;
 import com.ryuqq.setof.domain.common.vo.LegacyUserId;
 import com.ryuqq.setof.domain.common.vo.Money;
 import com.ryuqq.setof.domain.member.id.MemberId;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import com.ryuqq.setof.domain.payment.exception.InvalidPaymentStatusException;
 import com.ryuqq.setof.domain.payment.exception.PaymentErrorCode;
 import com.ryuqq.setof.domain.payment.exception.PaymentException;
@@ -20,7 +20,7 @@ import java.time.Instant;
 public class Payment {
 
     private final PaymentId id;
-    private final OrderId orderId;
+    private final LegacyOrderId orderId;
     private final MemberId memberId;
     private final LegacyUserId legacyUserId;
     private final Money paymentAmount;
@@ -37,7 +37,7 @@ public class Payment {
 
     private Payment(
             PaymentId id,
-            OrderId orderId,
+            LegacyOrderId orderId,
             MemberId memberId,
             LegacyUserId legacyUserId,
             Money paymentAmount,
@@ -82,7 +82,7 @@ public class Payment {
      * @return PROCESSING 상태의 새 결제
      */
     public static Payment forNew(
-            OrderId orderId,
+            LegacyOrderId orderId,
             MemberId memberId,
             LegacyUserId legacyUserId,
             Money paymentAmount,
@@ -130,7 +130,7 @@ public class Payment {
      */
     public static Payment reconstitute(
             PaymentId id,
-            OrderId orderId,
+            LegacyOrderId orderId,
             MemberId memberId,
             LegacyUserId legacyUserId,
             Money paymentAmount,
@@ -262,7 +262,7 @@ public class Payment {
         return id.value();
     }
 
-    public OrderId orderId() {
+    public LegacyOrderId orderId() {
         return orderId;
     }
 

@@ -1,7 +1,7 @@
 package com.ryuqq.setof.domain.refund.event;
 
 import com.ryuqq.setof.domain.common.event.DomainEvent;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import com.ryuqq.setof.domain.refund.id.RefundId;
 import java.time.Instant;
 
@@ -14,10 +14,10 @@ import java.time.Instant;
  * @param orderId 주문 ID
  * @param occurredAt 이벤트 발생 시각
  */
-public record RefundCollectedEvent(RefundId refundId, OrderId orderId, Instant occurredAt)
+public record RefundCollectedEvent(RefundId refundId, LegacyOrderId orderId, Instant occurredAt)
         implements DomainEvent {
 
-    public static RefundCollectedEvent of(RefundId refundId, OrderId orderId, Instant now) {
+    public static RefundCollectedEvent of(RefundId refundId, LegacyOrderId orderId, Instant now) {
         return new RefundCollectedEvent(refundId, orderId, now);
     }
 

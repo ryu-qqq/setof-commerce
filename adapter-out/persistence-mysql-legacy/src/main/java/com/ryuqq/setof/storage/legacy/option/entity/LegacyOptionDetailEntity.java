@@ -1,10 +1,10 @@
 package com.ryuqq.setof.storage.legacy.option.entity;
 
+import com.ryuqq.setof.storage.legacy.common.entity.LegacyBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 
 /**
  * LegacyOptionDetailEntity - 레거시 옵션 상세 엔티티.
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "option_detail")
-public class LegacyOptionDetailEntity {
+public class LegacyOptionDetailEntity extends LegacyBaseEntity {
 
     @Id
     @Column(name = "option_detail_id")
@@ -31,12 +31,6 @@ public class LegacyOptionDetailEntity {
 
     @Column(name = "option_value")
     private String optionValue;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     protected LegacyOptionDetailEntity() {}
 
@@ -50,13 +44,5 @@ public class LegacyOptionDetailEntity {
 
     public String getOptionValue() {
         return optionValue;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 }

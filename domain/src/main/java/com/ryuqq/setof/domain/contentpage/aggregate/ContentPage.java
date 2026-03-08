@@ -8,7 +8,7 @@ import java.time.Instant;
 /**
  * ContentPage - 콘텐츠 페이지 Aggregate Root.
  *
- * <p>GNB 클릭 시 표시되는 전체 페이지(홈, 남성, 기획전 등)의 메타 정보를 관리합니다.
+ * <p>전시 페이지의 메타정보를 관리한다. 컴포넌트 구성은 DisplayComponent에서 contentPageId로 참조한다.
  *
  * <p>DOM-AGG-001: forNew(), reconstitute() 팩터리 메서드.
  *
@@ -26,7 +26,7 @@ public class ContentPage {
     private final ContentPageId id;
     private String title;
     private String memo;
-    private String coverImageUrl;
+    private String imageUrl;
     private DisplayPeriod displayPeriod;
     private boolean active;
     private DeletionStatus deletionStatus;
@@ -37,7 +37,7 @@ public class ContentPage {
             ContentPageId id,
             String title,
             String memo,
-            String coverImageUrl,
+            String imageUrl,
             DisplayPeriod displayPeriod,
             boolean active,
             DeletionStatus deletionStatus,
@@ -46,7 +46,7 @@ public class ContentPage {
         this.id = id;
         this.title = title;
         this.memo = memo;
-        this.coverImageUrl = coverImageUrl;
+        this.imageUrl = imageUrl;
         this.displayPeriod = displayPeriod;
         this.active = active;
         this.deletionStatus = deletionStatus;
@@ -57,9 +57,9 @@ public class ContentPage {
     /**
      * 새 콘텐츠 페이지 생성.
      *
-     * @param title 페이지 제목
+     * @param title 콘텐츠 제목
      * @param memo 메모
-     * @param coverImageUrl 커버 이미지 URL
+     * @param imageUrl 대표 이미지
      * @param displayPeriod 노출 기간
      * @param active 노출 여부
      * @param now 현재 시각 (외부 주입)
@@ -68,7 +68,7 @@ public class ContentPage {
     public static ContentPage forNew(
             String title,
             String memo,
-            String coverImageUrl,
+            String imageUrl,
             DisplayPeriod displayPeriod,
             boolean active,
             Instant now) {
@@ -76,7 +76,7 @@ public class ContentPage {
                 ContentPageId.forNew(),
                 title,
                 memo,
-                coverImageUrl,
+                imageUrl,
                 displayPeriod,
                 active,
                 DeletionStatus.active(),
@@ -93,7 +93,7 @@ public class ContentPage {
             ContentPageId id,
             String title,
             String memo,
-            String coverImageUrl,
+            String imageUrl,
             DisplayPeriod displayPeriod,
             boolean active,
             DeletionStatus deletionStatus,
@@ -103,7 +103,7 @@ public class ContentPage {
                 id,
                 title,
                 memo,
-                coverImageUrl,
+                imageUrl,
                 displayPeriod,
                 active,
                 deletionStatus,
@@ -119,7 +119,7 @@ public class ContentPage {
     public void update(ContentPageUpdateData updateData) {
         this.title = updateData.title();
         this.memo = updateData.memo();
-        this.coverImageUrl = updateData.coverImageUrl();
+        this.imageUrl = updateData.imageUrl();
         this.displayPeriod = updateData.displayPeriod();
         this.active = updateData.active();
         this.updatedAt = updateData.updatedAt();
@@ -173,8 +173,8 @@ public class ContentPage {
         return memo;
     }
 
-    public String coverImageUrl() {
-        return coverImageUrl;
+    public String imageUrl() {
+        return imageUrl;
     }
 
     public DisplayPeriod displayPeriod() {

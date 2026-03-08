@@ -1,5 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.common.controller;
 
+import com.ryuqq.setof.adapter.in.rest.common.auth.UnauthenticatedAccessException;
 import com.ryuqq.setof.adapter.in.rest.common.error.ErrorMapperRegistry;
 import com.ryuqq.setof.domain.common.exception.DomainException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -295,6 +296,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
                 .headers(headers)
                 .body(entity.getBody());
+    }
+
+    // ======= 401 - 인증 실패 =======
+    private static final String AUTH_REQUIRED = "AUTH_REQUIRED";
+
+    @ExceptionHandler(UnauthenticatedAccessException.class)
+    public ResponseEntity<ProblemDetail> handleUnauthenticatedAccess(
+            UnauthenticatedAccessException ex, HttpServletRequest req) {
+        String msg = Optional.ofNullable(ex.getMessage()).orElse("인증이 필요합니다. 유효한 토큰을 제공해주세요.");
+        log.warn("AuthCredentialsNotFound: code={}, message={}", AUTH_REQUIRED, msg);
+        return build(HttpStatus.UNAUTHORIZED, "Unauthorized", msg, AUTH_REQUIRED, req);
     }
 
     // ======= 409 - 상태 충돌 =======

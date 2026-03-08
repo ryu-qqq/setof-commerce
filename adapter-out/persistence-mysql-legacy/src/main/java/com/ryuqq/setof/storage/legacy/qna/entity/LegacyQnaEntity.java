@@ -5,6 +5,8 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -26,6 +28,7 @@ import java.time.LocalDateTime;
 public class LegacyQnaEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "qna_id")
     private Long id;
 
@@ -53,6 +56,16 @@ public class LegacyQnaEntity {
     @Column(name = "user_type")
     private String userType;
 
+    @Column(name = "delete_yn")
+    @Enumerated(EnumType.STRING)
+    private Yn deleteYn;
+
+    @Column(name = "insert_operator")
+    private String insertOperator;
+
+    @Column(name = "update_operator")
+    private String updateOperator;
+
     @Column(name = "insert_date")
     private LocalDateTime insertDate;
 
@@ -60,6 +73,71 @@ public class LegacyQnaEntity {
     private LocalDateTime updateDate;
 
     protected LegacyQnaEntity() {}
+
+    public static LegacyQnaEntity create(
+            LegacyQnaContents qnaContents,
+            Yn privateYn,
+            String qnaStatus,
+            String qnaType,
+            String qnaDetailType,
+            Long userId,
+            Long sellerId,
+            String userType,
+            Yn deleteYn,
+            String insertOperator,
+            String updateOperator,
+            LocalDateTime insertDate,
+            LocalDateTime updateDate) {
+        LegacyQnaEntity entity = new LegacyQnaEntity();
+        entity.qnaContents = qnaContents;
+        entity.privateYn = privateYn;
+        entity.qnaStatus = qnaStatus;
+        entity.qnaType = qnaType;
+        entity.qnaDetailType = qnaDetailType;
+        entity.userId = userId;
+        entity.sellerId = sellerId;
+        entity.userType = userType;
+        entity.deleteYn = deleteYn;
+        entity.insertOperator = insertOperator;
+        entity.updateOperator = updateOperator;
+        entity.insertDate = insertDate;
+        entity.updateDate = updateDate;
+        return entity;
+    }
+
+    public static LegacyQnaEntity reconstitute(
+            Long id,
+            LegacyQnaContents qnaContents,
+            Yn privateYn,
+            String qnaStatus,
+            String qnaType,
+            String qnaDetailType,
+            Long userId,
+            Long sellerId,
+            String userType,
+            Yn deleteYn,
+            String insertOperator,
+            String updateOperator,
+            LocalDateTime insertDate,
+            LocalDateTime updateDate) {
+        LegacyQnaEntity entity =
+                create(
+                        qnaContents,
+                        privateYn,
+                        qnaStatus,
+                        qnaType,
+                        qnaDetailType,
+                        userId,
+                        sellerId,
+                        userType,
+                        deleteYn,
+                        insertOperator,
+                        updateOperator,
+                        insertDate,
+                        updateDate);
+        entity.id = id;
+        return entity;
+    }
 
     public Long getId() {
         return id;
@@ -95,6 +173,18 @@ public class LegacyQnaEntity {
 
     public String getUserType() {
         return userType;
+    }
+
+    public Yn getDeleteYn() {
+        return deleteYn;
+    }
+
+    public String getInsertOperator() {
+        return insertOperator;
+    }
+
+    public String getUpdateOperator() {
+        return updateOperator;
     }
 
     public LocalDateTime getInsertDate() {

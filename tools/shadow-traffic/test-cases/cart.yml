@@ -1,0 +1,319 @@
+domain: cart
+description: "Cart API shadow traffic test cases"
+
+# Auth configuration for this suite.
+# strategy: login  - Login to Legacy server, use JWT for both servers
+# strategy: static - Use token from env var
+# strategy: none   - No auth (default)
+auth_config:
+  strategy: login
+  login_endpoint: /api/v1/user/login
+  phone_number: "${SHADOW_TEST_PHONE}"    # env var: test user phone
+  password: "${SHADOW_TEST_PASSWORD}"      # env var: test user password
+
+test_cases:
+  # =========================================================
+  # === Query (조회) - Shadow Traffic 비교 대상 ===
+  # 동일 DB 기반이므로 응답 데이터가 완전히 일치해야 함 (compare_mode: full)
+  # =========================================================
+
+  # --- GET /api/v1/cart-count ---
+  # 파라미터 없음, SecurityContext의 userId 기반으로 조회
+  # Redis 캐시(cartCount::{userId}) → Cache Miss 시 DB COUNT 쿼리
+
+  # 정상 조회: 인증된 사용자의 장바구니 아이템 개수 조회
+  # userId는 New 서버에서 의도적으로 미노출 (보안 개선)
+  - name: "cart_count_authenticated"
+    path: "/api/v1/cart-count"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields: ["userId"]
+    safe_for_repeat: true
+
+  # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
+  - name: "cart_count_unauthenticated"
+    path: "/api/v1/cart-count"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # --- GET /api/v1/carts (커서 페이징) ---
+  # body 필드가 GET 요청에서 query params로 변환됨 (client.py: params=body)
+  # lastDomainId: 커서 (null이면 첫 페이지), size: 페이지 크기
+  # 정렬: cart.id.desc() 고정 (orderType 필드는 현재 미사용)
+
+  # 첫 페이지 조회: lastDomainId 없이 최신 20개 조회
+  # compare_mode: status_only (임시) - 아이템 레벨 구조 차이 미해결:
+  #   Legacy: id, productStatus={soldOutYn,displayYn}, mileageRate/expectedMileageAmount(탑레벨), categories(계층)
+  #   New: cartId, productStatus=string, mileage(중첩), categories(단순)
+  - name: "cart_list_first_page"
+    path: "/api/v1/carts"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 20
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 첫 페이지 조회: size=5 (소량 페이지, hasNext 검증)
+  - name: "cart_list_first_page_small_size"
+    path: "/api/v1/carts"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 5
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 커서 페이징: 특정 lastDomainId 이후의 항목 조회 (두 번째 페이지 이후)
+  - name: "cart_list_cursor_paging"
+    path: "/api/v1/carts"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      lastDomainId: 1838
+      size: 20
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 경계값: size=1 (최솟값, 단건 조회 + hasNext 여부)
+  - name: "cart_list_size_one"
+    path: "/api/v1/carts"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 경계값: 매우 큰 lastDomainId → 해당 커서 이후 결과 없음 (empty: true 예상)
+  - name: "cart_list_cursor_empty"
+    path: "/api/v1/carts"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      lastDomainId: 1
+      size: 20
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
+  - name: "cart_list_unauthenticated"
+    path: "/api/v1/carts"
+    method: GET
+    auth: none
+    body:
+      size: 20
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # =========================================================
+  # === Command (생성/수정/삭제) - Smoke Test only (status_only) ===
+  # Command는 양쪽 서버가 동일 DB를 공유하므로, 정상 케이스는 주기적 실행 시 스킵
+  # safe_for_repeat: false → --safe-only 모드에서 제외됨
+  # =========================================================
+
+  # --- POST /api/v1/cart ---
+  # body: List<CartDetails> (배열 최상위 구조)
+  # Upsert 패턴: 기존 항목이면 수량 UPDATE, 없으면 INSERT
+  # 처리 완료 후 Redis cartCount 캐시 갱신
+
+  # 정상 추가: 단일 상품 장바구니 추가 (레거시 DB 유효 상품 ID 사용)
+  - name: "cart_add_single_item"
+    path: "/api/v1/cart"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      - productGroupId: 511419
+        productId: 8919245
+        quantity: 1
+        sellerId: 22
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: false
+
+  # 정상 추가: 복수 상품 동시 추가 (INSERT + UPDATE 혼재 시나리오)
+  - name: "cart_add_multiple_items"
+    path: "/api/v1/cart"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      - productGroupId: 511419
+        productId: 8919244
+        quantity: 1
+        sellerId: 22
+      - productGroupId: 517328
+        productId: 8919113
+        quantity: 1
+        sellerId: 22
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: false
+
+  # 유효성 검증: quantity가 @Min(1) 위반 → New=400 Bad Request
+  # known_diff: Legacy는 검증 없이 200 반환 (버그), New는 @Valid로 400 반환 (의도된 개선)
+  - name: "cart_add_invalid_quantity_zero"
+    path: "/api/v1/cart"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      - productGroupId: 1
+        productId: 1
+        quantity: 0
+        sellerId: 1
+    compare_mode: status_only
+    known_diff: true
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 유효성 검증: quantity가 @Max(999) 위반 → New=400 Bad Request
+  # known_diff: Legacy는 검증 없이 200 반환 (버그), New는 @Valid로 400 반환 (의도된 개선)
+  - name: "cart_add_invalid_quantity_overflow"
+    path: "/api/v1/cart"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      - productGroupId: 1
+        productId: 1
+        quantity: 1000
+        sellerId: 1
+    compare_mode: status_only
+    known_diff: true
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
+  - name: "cart_add_unauthenticated"
+    path: "/api/v1/cart"
+    method: POST
+    auth: none
+    body:
+      - productGroupId: 1
+        productId: 1
+        quantity: 1
+        sellerId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # --- PUT /api/v1/cart/{cartId} ---
+  # 수량만 변경 가능 (productGroupId, productId, sellerId는 무시됨)
+  # cartId + userId 복합 조건으로 소유권 검증
+  # Redis 캐시 미갱신 (수량 변경은 개수에 영향 없음)
+
+  # 정상 수정: 실제 테스트 환경의 유효한 cartId 사용 (user_id=3965 소유)
+  - name: "cart_modify_valid"
+    path: "/api/v1/cart/1840"
+    method: PUT
+    auth: NORMAL_GRADE
+    body:
+      productGroupId: 88403
+      productId: 717278
+      quantity: 3
+      sellerId: 22
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: false
+
+  # 에러 케이스: 존재하지 않는 cartId → 404 Not Found (CartNotFoundException, CART-404)
+  - name: "cart_modify_not_found"
+    path: "/api/v1/cart/999999"
+    method: PUT
+    auth: NORMAL_GRADE
+    body:
+      productGroupId: 1
+      productId: 1
+      quantity: 1
+      sellerId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 유효성 검증: quantity가 @Min(1) 위반 → 400 Bad Request
+  - name: "cart_modify_invalid_quantity_zero"
+    path: "/api/v1/cart/1840"
+    method: PUT
+    auth: NORMAL_GRADE
+    body:
+      productGroupId: 88403
+      productId: 717278
+      quantity: 0
+      sellerId: 22
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 유효성 검증: quantity가 @Max(999) 위반 → 400 Bad Request
+  - name: "cart_modify_invalid_quantity_overflow"
+    path: "/api/v1/cart/1840"
+    method: PUT
+    auth: NORMAL_GRADE
+    body:
+      productGroupId: 88403
+      productId: 717278
+      quantity: 1000
+      sellerId: 22
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
+  - name: "cart_modify_unauthenticated"
+    path: "/api/v1/cart/1840"
+    method: PUT
+    auth: none
+    body:
+      productGroupId: 88403
+      productId: 717278
+      quantity: 1
+      sellerId: 22
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # --- DELETE /api/v1/carts?cartId={cartId} ---
+  # @ModelAttribute → query string 방식 (body 필드가 params로 변환됨)
+  # 소프트 딜리트 (delete_yn = 'Y'), 처리 후 Redis cartCount 캐시 갱신
+  # 반환값: 삭제된 cart 개수 (성공=1, 없거나 타인 소유=0)
+
+  # 정상 삭제: 실제 테스트 환경의 유효한 cartId 사용 (user_id=3965 소유)
+  - name: "cart_delete_valid"
+    path: "/api/v1/carts"
+    method: DELETE
+    auth: NORMAL_GRADE
+    body:
+      cartId: 1834
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: false
+
+  # 경계값: 존재하지 않는 cartId → 200 OK + data: 0 (예외 발생 없이 0 반환)
+  - name: "cart_delete_not_found"
+    path: "/api/v1/carts"
+    method: DELETE
+    auth: NORMAL_GRADE
+    body:
+      cartId: 999999
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
+  - name: "cart_delete_unauthenticated"
+    path: "/api/v1/carts"
+    method: DELETE
+    auth: none
+    body:
+      cartId: 1
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true

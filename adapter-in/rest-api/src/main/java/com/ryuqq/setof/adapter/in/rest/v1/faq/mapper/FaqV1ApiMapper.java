@@ -54,6 +54,6 @@ public class FaqV1ApiMapper {
      */
     public FaqV1ApiResponse toResponse(FaqResult result) {
         String faqTypeName = result.faqType() != null ? result.faqType().name() : null;
-        return new FaqV1ApiResponse(result.faqId(), faqTypeName, result.title(), result.contents());
+        return new FaqV1ApiResponse(faqTypeName, result.title(), result.contents());
     }
 }

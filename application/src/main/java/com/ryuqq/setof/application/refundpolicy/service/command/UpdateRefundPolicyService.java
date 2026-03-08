@@ -12,7 +12,6 @@ import com.ryuqq.setof.domain.refundpolicy.aggregate.RefundPolicyUpdateData;
 import com.ryuqq.setof.domain.refundpolicy.id.RefundPolicyId;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * UpdateRefundPolicyService - 환불 정책 수정 Service
@@ -50,7 +49,6 @@ public class UpdateRefundPolicyService implements UpdateRefundPolicyUseCase {
     }
 
     @Override
-    @Transactional
     public void execute(UpdateRefundPolicyCommand command) {
         UpdateContext<RefundPolicyId, RefundPolicyUpdateData> context =
                 commandFactory.createUpdateContext(command);

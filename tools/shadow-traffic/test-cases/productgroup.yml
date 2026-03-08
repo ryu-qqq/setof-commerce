@@ -1,0 +1,301 @@
+domain: productgroup
+description: "ProductGroup API shadow traffic test cases"
+
+test_cases:
+  # === fetchProductGroup: 단건 상세 조회 (/api/v1/product/group/{productGroupId}) ===
+  - name: "productgroup_detail_id_1"
+    path: "/api/v1/product/group/1"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroup_detail_id_2"
+    path: "/api/v1/product/group/2"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroup_detail_id_3"
+    path: "/api/v1/product/group/3"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroup_detail_id_10"
+    path: "/api/v1/product/group/10"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroup_detail_not_found"
+    path: "/api/v1/product/group/999999999"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+
+  - name: "productgroup_detail_id_zero"
+    path: "/api/v1/product/group/0"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+
+  # === fetchProductGroups: 목록 조회 (/api/v1/products/group) ===
+  - name: "productgroups_list_default"
+    path: "/api/v1/products/group"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroups_list_recommend"
+    path: "/api/v1/products/group"
+    method: GET
+    auth: none
+    body:
+      orderType: "RECOMMEND"
+      size: 20
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroups_list_recent"
+    path: "/api/v1/products/group"
+    method: GET
+    auth: none
+    body:
+      orderType: "RECENT"
+      size: 20
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroups_list_low_price"
+    path: "/api/v1/products/group"
+    method: GET
+    auth: none
+    body:
+      orderType: "LOW_PRICE"
+      size: 20
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroups_list_high_price"
+    path: "/api/v1/products/group"
+    method: GET
+    auth: none
+    body:
+      orderType: "HIGH_PRICE"
+      size: 20
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroups_list_high_discount"
+    path: "/api/v1/products/group"
+    method: GET
+    auth: none
+    body:
+      orderType: "HIGH_DISCOUNT"
+      size: 20
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroups_list_high_rating"
+    path: "/api/v1/products/group"
+    method: GET
+    auth: none
+    body:
+      orderType: "HIGH_RATING"
+      size: 20
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroups_list_review"
+    path: "/api/v1/products/group"
+    method: GET
+    auth: none
+    body:
+      orderType: "REVIEW"
+      size: 20
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroups_list_filter_brand"
+    path: "/api/v1/products/group"
+    method: GET
+    auth: none
+    body:
+      brandId: 1
+      orderType: "RECOMMEND"
+      size: 20
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroups_list_filter_seller"
+    path: "/api/v1/products/group"
+    method: GET
+    auth: none
+    body:
+      sellerId: 1
+      orderType: "RECOMMEND"
+      size: 20
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroups_list_filter_category"
+    path: "/api/v1/products/group"
+    method: GET
+    auth: none
+    body:
+      categoryId: 1
+      orderType: "RECOMMEND"
+      size: 20
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroups_list_filter_price_range"
+    path: "/api/v1/products/group"
+    method: GET
+    auth: none
+    body:
+      lowestPrice: 10000
+      highestPrice: 100000
+      orderType: "LOW_PRICE"
+      size: 20
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroups_list_small_size"
+    path: "/api/v1/products/group"
+    method: GET
+    auth: none
+    body:
+      size: 5
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroups_list_no_result_price"
+    path: "/api/v1/products/group"
+    method: GET
+    auth: none
+    body:
+      lowestPrice: 999999999
+      highestPrice: 9999999999
+    compare_mode: full
+    ignore_fields: []
+
+  # === fetchProductGroupLikes: 최근 본 상품 배치 조회 (/api/v1/products/group/recent) ===
+  - name: "productgroup_recent_single"
+    path: "/api/v1/products/group/recent"
+    method: GET
+    auth: none
+    body:
+      productGroupIds: [1]
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroup_recent_multiple"
+    path: "/api/v1/products/group/recent"
+    method: GET
+    auth: none
+    body:
+      productGroupIds: [1, 2, 3]
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroup_recent_order_preserved"
+    path: "/api/v1/products/group/recent"
+    method: GET
+    auth: none
+    body:
+      productGroupIds: [3, 1, 2]
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroup_recent_not_found"
+    path: "/api/v1/products/group/recent"
+    method: GET
+    auth: none
+    body:
+      productGroupIds: [999999999]
+    compare_mode: full
+    ignore_fields: []
+
+  # === fetchProductGroupWithBrand: 브랜드별 상품 목록 (/api/v1/product/group/brand/{brandId}) ===
+  - name: "productgroup_with_brand_id_1"
+    path: "/api/v1/product/group/brand/1"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroup_with_brand_id_2"
+    path: "/api/v1/product/group/brand/2"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroup_with_brand_id_3"
+    path: "/api/v1/product/group/brand/3"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroup_with_brand_custom_size"
+    path: "/api/v1/product/group/brand/1"
+    method: GET
+    auth: none
+    body:
+      size: 10
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroup_with_brand_not_found"
+    path: "/api/v1/product/group/brand/999999999"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  # === fetchProductGroupWithSeller: 셀러별 상품 목록 (/api/v1/product/group/seller/{sellerId}) ===
+  - name: "productgroup_with_seller_id_1"
+    path: "/api/v1/product/group/seller/1"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroup_with_seller_id_2"
+    path: "/api/v1/product/group/seller/2"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroup_with_seller_id_3"
+    path: "/api/v1/product/group/seller/3"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroup_with_seller_custom_size"
+    path: "/api/v1/product/group/seller/1"
+    method: GET
+    auth: none
+    body:
+      size: 10
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "productgroup_with_seller_not_found"
+    path: "/api/v1/product/group/seller/999999999"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []

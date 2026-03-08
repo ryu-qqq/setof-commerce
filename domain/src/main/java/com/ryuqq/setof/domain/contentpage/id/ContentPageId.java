@@ -13,12 +13,6 @@ package com.ryuqq.setof.domain.contentpage.id;
  */
 public record ContentPageId(Long value) {
 
-    /**
-     * 기존 ID로 생성.
-     *
-     * @param value 콘텐츠 페이지 ID
-     * @return ContentPageId
-     */
     public static ContentPageId of(Long value) {
         if (value == null || value <= 0) {
             throw new IllegalArgumentException("ContentPageId must be positive");
@@ -26,20 +20,10 @@ public record ContentPageId(Long value) {
         return new ContentPageId(value);
     }
 
-    /**
-     * 신규 생성용 ID (DB 할당 전).
-     *
-     * @return ContentPageId (value = null)
-     */
     public static ContentPageId forNew() {
         return new ContentPageId(null);
     }
 
-    /**
-     * 아직 영속되지 않은 새 객체 여부.
-     *
-     * @return true if not yet persisted
-     */
     public boolean isNew() {
         return value == null;
     }

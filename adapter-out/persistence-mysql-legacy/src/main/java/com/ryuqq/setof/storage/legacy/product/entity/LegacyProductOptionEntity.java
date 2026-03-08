@@ -1,10 +1,12 @@
 package com.ryuqq.setof.storage.legacy.product.entity;
 
+import com.ryuqq.setof.storage.legacy.common.entity.LegacyBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 
 /**
  * LegacyProductOptionEntity - 레거시 상품 옵션 엔티티.
@@ -20,7 +22,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "product_option")
-public class LegacyProductOptionEntity {
+public class LegacyProductOptionEntity extends LegacyBaseEntity {
 
     @Id
     @Column(name = "product_option_id")
@@ -32,17 +34,24 @@ public class LegacyProductOptionEntity {
     @Column(name = "option_group_id")
     private Long optionGroupId;
 
+    /** Added for productgroup composite support. option_group.option_group_name 조인 컬럼. */
+    @Column(name = "option_group_name")
+    private String optionGroupName;
+
     @Column(name = "option_detail_id")
     private Long optionDetailId;
+
+    /** Added for productgroup composite support. option_detail.option_value 조인 컬럼. */
+    @Column(name = "option_value")
+    private String optionValue;
 
     @Column(name = "additional_price")
     private Long additionalPrice;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    /** Added for productgroup composite support. 옵션 삭제 여부 필터링. */
+    @Column(name = "delete_yn")
+    @Enumerated(EnumType.STRING)
+    private Yn deleteYn;
 
     protected LegacyProductOptionEntity() {}
 
@@ -58,19 +67,29 @@ public class LegacyProductOptionEntity {
         return optionGroupId;
     }
 
+    public String getOptionGroupName() {
+        return optionGroupName;
+    }
+
     public Long getOptionDetailId() {
         return optionDetailId;
+    }
+
+    public String getOptionValue() {
+        return optionValue;
     }
 
     public Long getAdditionalPrice() {
         return additionalPrice;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public Yn getDeleteYn() {
+        return deleteYn;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    /** Yn - Y/N 구분 Enum. */
+    public enum Yn {
+        Y,
+        N
     }
 }

@@ -3,7 +3,7 @@ package com.ryuqq.setof.domain.order.event;
 import com.ryuqq.setof.domain.common.event.DomainEvent;
 import com.ryuqq.setof.domain.common.vo.LegacyUserId;
 import com.ryuqq.setof.domain.member.id.MemberId;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import java.time.Instant;
 
 /**
@@ -17,11 +17,11 @@ import java.time.Instant;
  * @param occurredAt 이벤트 발생 시각
  */
 public record OrderPlacedEvent(
-        OrderId orderId, MemberId memberId, LegacyUserId legacyUserId, Instant occurredAt)
+        LegacyOrderId orderId, MemberId memberId, LegacyUserId legacyUserId, Instant occurredAt)
         implements DomainEvent {
 
     public static OrderPlacedEvent of(
-            OrderId orderId, MemberId memberId, LegacyUserId legacyUserId, Instant now) {
+            LegacyOrderId orderId, MemberId memberId, LegacyUserId legacyUserId, Instant now) {
         return new OrderPlacedEvent(orderId, memberId, legacyUserId, now);
     }
 

@@ -1,12 +1,14 @@
 package com.ryuqq.setof.domain.cart.aggregate;
 
 import com.ryuqq.setof.domain.cart.id.CartItemId;
+import com.ryuqq.setof.domain.cart.vo.CartItemUpdateData;
 import com.ryuqq.setof.domain.cart.vo.CartQuantity;
 import com.ryuqq.setof.domain.common.vo.DeletionStatus;
 import com.ryuqq.setof.domain.common.vo.LegacyUserId;
 import com.ryuqq.setof.domain.member.id.MemberId;
 import com.ryuqq.setof.domain.product.id.ProductId;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
+import com.ryuqq.setof.domain.seller.id.SellerId;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -28,6 +30,7 @@ public class CartItem {
     private final LegacyUserId legacyUserId;
     private final ProductGroupId productGroupId;
     private final ProductId productId;
+    private final SellerId sellerId;
     private CartQuantity quantity;
     private DeletionStatus deletionStatus;
     private final Instant createdAt;
@@ -39,6 +42,7 @@ public class CartItem {
             LegacyUserId legacyUserId,
             ProductGroupId productGroupId,
             ProductId productId,
+            SellerId sellerId,
             CartQuantity quantity,
             DeletionStatus deletionStatus,
             Instant createdAt,
@@ -48,6 +52,7 @@ public class CartItem {
         this.legacyUserId = legacyUserId;
         this.productGroupId = productGroupId;
         this.productId = productId;
+        this.sellerId = sellerId;
         this.quantity = quantity;
         this.deletionStatus = deletionStatus != null ? deletionStatus : DeletionStatus.active();
         this.createdAt = createdAt;
@@ -61,6 +66,7 @@ public class CartItem {
      * @param legacyUserId 레거시 사용자 ID
      * @param productGroupId 상품그룹 ID
      * @param productId 상품(SKU) ID
+     * @param sellerId 판매자 ID
      * @param quantity 수량
      * @param occurredAt 생성 시각
      * @return 새 CartItem
@@ -70,6 +76,7 @@ public class CartItem {
             LegacyUserId legacyUserId,
             ProductGroupId productGroupId,
             ProductId productId,
+            SellerId sellerId,
             CartQuantity quantity,
             Instant occurredAt) {
         return new CartItem(
@@ -78,6 +85,7 @@ public class CartItem {
                 legacyUserId,
                 productGroupId,
                 productId,
+                sellerId,
                 quantity,
                 DeletionStatus.active(),
                 occurredAt,
@@ -95,6 +103,7 @@ public class CartItem {
             LegacyUserId legacyUserId,
             ProductGroupId productGroupId,
             ProductId productId,
+            SellerId sellerId,
             CartQuantity quantity,
             DeletionStatus deletionStatus,
             Instant createdAt,
@@ -105,10 +114,21 @@ public class CartItem {
                 legacyUserId,
                 productGroupId,
                 productId,
+                sellerId,
                 quantity,
                 deletionStatus,
                 createdAt,
                 updatedAt);
+    }
+
+    /**
+     * UpdateData 기반 수정.
+     *
+     * @param updateData 수정 데이터 (수량 + 시간 포함)
+     */
+    public void update(CartItemUpdateData updateData) {
+        this.quantity = updateData.quantity();
+        this.updatedAt = updateData.occurredAt();
     }
 
     /**
@@ -182,6 +202,10 @@ public class CartItem {
         return productId;
     }
 
+    public SellerId sellerId() {
+        return sellerId;
+    }
+
     public CartQuantity quantity() {
         return quantity;
     }
@@ -216,6 +240,10 @@ public class CartItem {
 
     public Long productIdValue() {
         return productId.value();
+    }
+
+    public Long sellerIdValue() {
+        return sellerId != null ? sellerId.value() : null;
     }
 
     public int quantityValue() {

@@ -7,7 +7,7 @@ import com.ryuqq.setof.domain.exchange.vo.AmountAdjustment;
 import com.ryuqq.setof.domain.exchange.vo.ExchangeReason;
 import com.ryuqq.setof.domain.exchange.vo.ExchangeStatus;
 import com.ryuqq.setof.domain.exchange.vo.ExchangeTarget;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import java.time.Instant;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
 public class ExchangeClaim {
 
     private final ExchangeId id;
-    private final OrderId orderId;
+    private final LegacyOrderId orderId;
     private final SellerId sellerId;
     private ExchangeStatus exchangeStatus;
     private final ExchangeReason reason;
@@ -28,13 +28,13 @@ public class ExchangeClaim {
     private final ExchangeTarget exchangeTarget;
     private final AmountAdjustment amountAdjustment;
     private ClaimShipmentId claimShipmentId;
-    private OrderId linkedOrderId;
+    private LegacyOrderId linkedOrderId;
     private final Instant createdAt;
     private Instant updatedAt;
 
     private ExchangeClaim(
             ExchangeId id,
-            OrderId orderId,
+            LegacyOrderId orderId,
             SellerId sellerId,
             ExchangeStatus exchangeStatus,
             ExchangeReason reason,
@@ -42,7 +42,7 @@ public class ExchangeClaim {
             ExchangeTarget exchangeTarget,
             AmountAdjustment amountAdjustment,
             ClaimShipmentId claimShipmentId,
-            OrderId linkedOrderId,
+            LegacyOrderId linkedOrderId,
             Instant createdAt,
             Instant updatedAt) {
         this.id = id;
@@ -72,7 +72,7 @@ public class ExchangeClaim {
      * @return 요청됨 상태의 새 교환 클레임
      */
     public static ExchangeClaim forNew(
-            OrderId orderId,
+            LegacyOrderId orderId,
             SellerId sellerId,
             ExchangeReason reason,
             List<ExchangeItem> exchangeItems,
@@ -113,7 +113,7 @@ public class ExchangeClaim {
      */
     public static ExchangeClaim reconstitute(
             ExchangeId id,
-            OrderId orderId,
+            LegacyOrderId orderId,
             SellerId sellerId,
             ExchangeStatus exchangeStatus,
             ExchangeReason reason,
@@ -121,7 +121,7 @@ public class ExchangeClaim {
             ExchangeTarget exchangeTarget,
             AmountAdjustment amountAdjustment,
             ClaimShipmentId claimShipmentId,
-            OrderId linkedOrderId,
+            LegacyOrderId linkedOrderId,
             Instant createdAt,
             Instant updatedAt) {
         return new ExchangeClaim(
@@ -186,7 +186,7 @@ public class ExchangeClaim {
      * @param linkedOrderId 교환 상품 신규 주문 ID
      * @param now 현재 시간
      */
-    public void startShipping(OrderId linkedOrderId, Instant now) {
+    public void startShipping(LegacyOrderId linkedOrderId, Instant now) {
         transitTo(ExchangeStatus.SHIPPING, now);
         this.linkedOrderId = linkedOrderId;
     }
@@ -304,7 +304,7 @@ public class ExchangeClaim {
         return id.value();
     }
 
-    public OrderId orderId() {
+    public LegacyOrderId orderId() {
         return orderId;
     }
 
@@ -344,7 +344,7 @@ public class ExchangeClaim {
         return claimShipmentId;
     }
 
-    public OrderId linkedOrderId() {
+    public LegacyOrderId linkedOrderId() {
         return linkedOrderId;
     }
 

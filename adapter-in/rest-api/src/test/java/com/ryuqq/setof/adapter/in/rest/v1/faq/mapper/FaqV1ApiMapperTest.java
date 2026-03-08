@@ -80,11 +80,9 @@ class FaqV1ApiMapperTest {
 
             // then
             assertThat(response).hasSize(2);
-            assertThat(response.get(0).faqId()).isEqualTo(1L);
             assertThat(response.get(0).faqType()).isEqualTo("MEMBER_LOGIN");
             assertThat(response.get(0).title()).isEqualTo("회원 가입은 어떻게 하나요?");
             assertThat(response.get(0).contents()).isEqualTo("회원 가입 방법 안내입니다.");
-            assertThat(response.get(1).faqId()).isEqualTo(2L);
             assertThat(response.get(1).faqType()).isEqualTo("SHIPPING");
         }
 
@@ -116,7 +114,6 @@ class FaqV1ApiMapperTest {
             FaqV1ApiResponse response = mapper.toResponse(result);
 
             // then
-            assertThat(response.faqId()).isEqualTo(1L);
             assertThat(response.faqType()).isEqualTo("MEMBER_LOGIN");
             assertThat(response.title()).isEqualTo("회원 가입은 어떻게 하나요?");
             assertThat(response.contents()).isEqualTo("회원 가입 방법 안내입니다.");
@@ -133,7 +130,6 @@ class FaqV1ApiMapperTest {
 
             // then
             assertThat(response.faqType()).isNull();
-            assertThat(response.faqId()).isEqualTo(1L);
             assertThat(response.title()).isEqualTo("제목");
         }
     }

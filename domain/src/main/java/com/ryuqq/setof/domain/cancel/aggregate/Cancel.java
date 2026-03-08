@@ -7,7 +7,7 @@ import com.ryuqq.setof.domain.cancel.vo.CancelRefundInfo;
 import com.ryuqq.setof.domain.cancel.vo.CancelStatus;
 import com.ryuqq.setof.domain.cancel.vo.CancelType;
 import com.ryuqq.setof.domain.common.vo.Money;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import java.time.Instant;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
 public class Cancel {
 
     private final CancelId id;
-    private final OrderId orderId;
+    private final LegacyOrderId orderId;
     private final SellerId sellerId;
     private final CancelType cancelType;
     private CancelStatus cancelStatus;
@@ -33,7 +33,7 @@ public class Cancel {
 
     private Cancel(
             CancelId id,
-            OrderId orderId,
+            LegacyOrderId orderId,
             SellerId sellerId,
             CancelType cancelType,
             CancelStatus cancelStatus,
@@ -72,7 +72,7 @@ public class Cancel {
      * @return 새 취소
      */
     public static Cancel forNew(
-            OrderId orderId,
+            LegacyOrderId orderId,
             SellerId sellerId,
             CancelType cancelType,
             CancelReason reason,
@@ -113,7 +113,7 @@ public class Cancel {
      */
     public static Cancel reconstitute(
             CancelId id,
-            OrderId orderId,
+            LegacyOrderId orderId,
             SellerId sellerId,
             CancelType cancelType,
             CancelStatus cancelStatus,
@@ -237,7 +237,7 @@ public class Cancel {
         return id.value();
     }
 
-    public OrderId orderId() {
+    public LegacyOrderId orderId() {
         return orderId;
     }
 

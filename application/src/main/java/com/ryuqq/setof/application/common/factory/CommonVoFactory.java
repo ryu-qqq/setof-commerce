@@ -1,5 +1,7 @@
 package com.ryuqq.setof.application.common.factory;
 
+import com.ryuqq.setof.domain.common.vo.CursorPageRequest;
+import com.ryuqq.setof.domain.common.vo.CursorQueryContext;
 import com.ryuqq.setof.domain.common.vo.DateRange;
 import com.ryuqq.setof.domain.common.vo.PageRequest;
 import com.ryuqq.setof.domain.common.vo.QueryContext;
@@ -108,5 +110,79 @@ public class CommonVoFactory {
             PageRequest pageRequest,
             boolean includeDeleted) {
         return QueryContext.of(sortKey, sortDirection, pageRequest, includeDeleted);
+    }
+
+    /**
+     * CursorPageRequest 생성 (첫 페이지)
+     *
+     * <p>커서 없이 첫 페이지를 조회할 때 사용합니다.
+     *
+     * @param size 페이지 크기
+     * @param <C> 커서 타입
+     * @return CursorPageRequest (cursor=null)
+     */
+    public <C> CursorPageRequest<C> createCursorPageRequest(int size) {
+        return CursorPageRequest.first(size);
+    }
+
+    /**
+     * CursorPageRequest 생성 (커서 포함)
+     *
+     * <p>이전 페이지의 마지막 커서 값을 기반으로 다음 페이지를 조회할 때 사용합니다.
+     *
+     * @param cursor 커서 값
+     * @param size 페이지 크기
+     * @param <C> 커서 타입
+     * @return CursorPageRequest
+     */
+    public <C> CursorPageRequest<C> createCursorPageRequest(C cursor, int size) {
+        return CursorPageRequest.of(cursor, size);
+    }
+
+    /**
+     * CursorPageRequest 생성 (Long ID 기반 afterId)
+     *
+     * <p>마지막 항목의 Long ID를 커서로 사용하는 페이징 방식입니다. Cart 등 ID 기반 커서 페이징에서 사용합니다.
+     *
+     * @param cursor 마지막 항목의 ID
+     * @param size 페이지 크기
+     * @return CursorPageRequest&lt;Long&gt;
+     */
+    public CursorPageRequest<Long> createCursorPageRequestAfterCursor(Long cursor, int size) {
+        return CursorPageRequest.afterId(cursor, size);
+    }
+
+    /**
+     * CursorQueryContext 생성
+     *
+     * @param sortKey 정렬 키
+     * @param sortDirection 정렬 방향
+     * @param pageRequest 커서 기반 페이징 정보
+     * @param <K> 정렬 키 타입
+     * @param <C> 커서 타입
+     * @return CursorQueryContext
+     */
+    public <K extends SortKey, C> CursorQueryContext<K, C> createCursorQueryContext(
+            K sortKey, SortDirection sortDirection, CursorPageRequest<C> pageRequest) {
+        return CursorQueryContext.of(sortKey, sortDirection, pageRequest);
+    }
+
+    /**
+     * CursorQueryContext 생성 (includeDeleted 포함)
+     *
+     * @param sortKey 정렬 키
+     * @param sortDirection 정렬 방향
+     * @param pageRequest 커서 기반 페이징 정보
+     * @param includeDeleted 삭제된 항목 포함 여부
+     * @param <K> 정렬 키 타입
+     * @param <C> 커서 타입
+     * @return CursorQueryContext
+     */
+    public <K extends SortKey, C> CursorQueryContext<K, C> createCursorQueryContext(
+            K sortKey,
+            SortDirection sortDirection,
+            CursorPageRequest<C> pageRequest,
+            boolean includeDeleted) {
+        return CursorQueryContext.of(sortKey, sortDirection, pageRequest, includeDeleted);
     }
 }

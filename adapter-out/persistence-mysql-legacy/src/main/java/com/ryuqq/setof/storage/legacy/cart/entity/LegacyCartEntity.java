@@ -1,6 +1,7 @@
 package com.ryuqq.setof.storage.legacy.cart.entity;
 
 import com.ryuqq.setof.storage.legacy.common.Yn;
+import com.ryuqq.setof.storage.legacy.common.entity.LegacyBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -25,7 +26,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "cart")
-public class LegacyCartEntity {
+public class LegacyCartEntity extends LegacyBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,12 +52,6 @@ public class LegacyCartEntity {
     @Enumerated(EnumType.STRING)
     private Yn deleteYn;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     protected LegacyCartEntity() {}
 
     private LegacyCartEntity(
@@ -67,8 +62,9 @@ public class LegacyCartEntity {
             Integer quantity,
             Long sellerId,
             Yn deleteYn,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt) {
+            LocalDateTime insertDate,
+            LocalDateTime updateDate) {
+        super(insertDate, updateDate);
         this.id = id;
         this.userId = userId;
         this.productGroupId = productGroupId;
@@ -76,8 +72,6 @@ public class LegacyCartEntity {
         this.quantity = quantity;
         this.sellerId = sellerId;
         this.deleteYn = deleteYn;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public static LegacyCartEntity create(
@@ -88,8 +82,8 @@ public class LegacyCartEntity {
             Integer quantity,
             Long sellerId,
             Yn deleteYn,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt) {
+            LocalDateTime insertDate,
+            LocalDateTime updateDate) {
         return new LegacyCartEntity(
                 id,
                 userId,
@@ -98,8 +92,8 @@ public class LegacyCartEntity {
                 quantity,
                 sellerId,
                 deleteYn,
-                createdAt,
-                updatedAt);
+                insertDate,
+                updateDate);
     }
 
     public Long getId() {
@@ -130,11 +124,28 @@ public class LegacyCartEntity {
         return deleteYn;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    /**
+     * 수량 변경 (JPA Dirty Checking용).
+     *
+     * <p>modifyCart / addToCart Upsert UPDATE 경로에서 사용됩니다. @Transactional 컨텍스트 내에서 호출하면 트랜잭션 커밋 시 자동
+     * UPDATE가 발생합니다.
+     *
+     * @param newQuantity 새 수량
+     */
+    public void updateQuantity(int newQuantity) {
+        this.quantity = newQuantity;
+        this.updateDate(LocalDateTime.now());
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    /**
+     * 소프트 딜리트 상태 변경 (JPA Dirty Checking용).
+     *
+     * <p>deleteCarts 처리에서 사용됩니다. @Transactional 컨텍스트 내에서 호출하면 트랜잭션 커밋 시 자동 UPDATE가 발생합니다.
+     *
+     * @param yn 변경할 Yn 값 (Y: 삭제, N: 활성)
+     */
+    public void updateDeleteYn(Yn yn) {
+        this.deleteYn = yn;
+        this.updateDate(LocalDateTime.now());
     }
 }

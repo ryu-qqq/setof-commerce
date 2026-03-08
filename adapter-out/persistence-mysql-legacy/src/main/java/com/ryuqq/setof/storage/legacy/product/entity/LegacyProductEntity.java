@@ -1,12 +1,12 @@
 package com.ryuqq.setof.storage.legacy.product.entity;
 
+import com.ryuqq.setof.storage.legacy.common.entity.LegacyBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 
 /**
  * LegacyProductEntity - 레거시 상품 엔티티.
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "product")
-public class LegacyProductEntity {
+public class LegacyProductEntity extends LegacyBaseEntity {
 
     @Id
     @Column(name = "product_id")
@@ -42,12 +42,6 @@ public class LegacyProductEntity {
     @Column(name = "delete_yn")
     @Enumerated(EnumType.STRING)
     private Yn deleteYn;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     protected LegacyProductEntity() {}
 
@@ -69,14 +63,6 @@ public class LegacyProductEntity {
 
     public Yn getDeleteYn() {
         return deleteYn;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 
     /**

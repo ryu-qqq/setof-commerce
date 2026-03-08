@@ -29,12 +29,20 @@ async def call_endpoint(
     url = f"{base_url.rstrip('/')}{path}"
     start = time.monotonic()
     try:
+        # Legacy server uses cookie-based auth, New server uses Bearer header.
+        # Send token as both cookie and header so both servers authenticate.
+        cookies = None
+        if headers and "Authorization" in headers:
+            token = headers["Authorization"].removeprefix("Bearer ")
+            cookies = {"token": token}
+
         response = await http_client.request(
             method=method.upper(),
             url=url,
             headers=headers,
+            cookies=cookies,
             json=body if method.upper() in ("POST", "PUT", "PATCH") else None,
-            params=body if method.upper() == "GET" and body else None,
+            params=body if method.upper() in ("GET", "DELETE") and body else None,
             timeout=timeout,
         )
         latency_ms = (time.monotonic() - start) * 1000

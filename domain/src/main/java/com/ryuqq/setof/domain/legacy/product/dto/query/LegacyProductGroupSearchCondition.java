@@ -7,6 +7,8 @@ import java.util.List;
  *
  * <p>상품그룹 목록 조회 시 사용되는 검색 조건입니다.
  *
+ * @param productGroupId 단건 조회용 상품그룹 ID
+ * @param productGroupIds 찜 목록 등 ID 목록 조회용
  * @param lastDomainId 커서 페이징용 마지막 ID
  * @param cursorValue 커서 값 (정렬 기준값)
  * @param lowestPrice 최저가 필터
@@ -22,6 +24,8 @@ import java.util.List;
  * @since 1.1.0
  */
 public record LegacyProductGroupSearchCondition(
+        Long productGroupId,
+        List<Long> productGroupIds,
         Long lastDomainId,
         String cursorValue,
         Long lowestPrice,
@@ -35,6 +39,52 @@ public record LegacyProductGroupSearchCondition(
         int pageSize) {
 
     /**
+     * 단건 상품그룹 조회 조건.
+     *
+     * @param productGroupId 상품그룹 ID
+     * @return LegacyProductGroupSearchCondition
+     */
+    public static LegacyProductGroupSearchCondition ofProductGroupId(Long productGroupId) {
+        return new LegacyProductGroupSearchCondition(
+                productGroupId,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                1);
+    }
+
+    /**
+     * ID 목록(찜 목록 등)으로 상품그룹 조회 조건.
+     *
+     * @param productGroupIds 상품그룹 ID 목록
+     * @return LegacyProductGroupSearchCondition
+     */
+    public static LegacyProductGroupSearchCondition ofProductGroupIds(List<Long> productGroupIds) {
+        return new LegacyProductGroupSearchCondition(
+                null,
+                productGroupIds,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                productGroupIds.size());
+    }
+
+    /**
      * 브랜드별 상품 조회 조건.
      *
      * @param brandId 브랜드 ID
@@ -43,7 +93,19 @@ public record LegacyProductGroupSearchCondition(
      */
     public static LegacyProductGroupSearchCondition ofBrand(Long brandId, int pageSize) {
         return new LegacyProductGroupSearchCondition(
-                null, null, null, null, null, brandId, null, null, null, "RECOMMEND", pageSize);
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                brandId,
+                null,
+                null,
+                null,
+                "RECOMMEND",
+                pageSize);
     }
 
     /**
@@ -55,17 +117,29 @@ public record LegacyProductGroupSearchCondition(
      */
     public static LegacyProductGroupSearchCondition ofSeller(Long sellerId, int pageSize) {
         return new LegacyProductGroupSearchCondition(
-                null, null, null, null, null, null, sellerId, null, null, "RECOMMEND", pageSize);
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                sellerId,
+                null,
+                null,
+                "RECOMMEND",
+                pageSize);
     }
 
     /**
-     * ID 목록으로 조회 조건.
+     * 빈 검색 조건.
      *
      * @return LegacyProductGroupSearchCondition
      */
     public static LegacyProductGroupSearchCondition empty() {
         return new LegacyProductGroupSearchCondition(
-                null, null, null, null, null, null, null, null, null, null, 0);
+                null, null, null, null, null, null, null, null, null, null, null, null, 0);
     }
 
     /**

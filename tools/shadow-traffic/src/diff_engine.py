@@ -57,6 +57,8 @@ class DiffResult:
     error: str | None = None
 
     def summary(self) -> str:
+        if self.passed and not self.status_match:
+            return f"PASS  {self.test_name} [known_diff: legacy={self.legacy_status} new={self.new_status}] (legacy={self.legacy_latency_ms:.0f}ms, new={self.new_latency_ms:.0f}ms)"
         if self.passed:
             return f"PASS  {self.test_name} (legacy={self.legacy_latency_ms:.0f}ms, new={self.new_latency_ms:.0f}ms)"
         parts = [f"FAIL  {self.test_name}"]
@@ -107,6 +109,7 @@ def compare_responses(
     new_latency_ms: float,
     compare_mode: CompareMode = CompareMode.FULL,
     ignore_fields: set[str] | None = None,
+    known_diff: bool = False,
 ) -> DiffResult:
     effective_ignore = set(DEFAULT_IGNORE_FIELDS)
     if ignore_fields:
@@ -117,7 +120,7 @@ def compare_responses(
     if compare_mode == CompareMode.STATUS_ONLY:
         return DiffResult(
             test_name=test_name,
-            passed=status_match,
+            passed=status_match or known_diff,
             status_match=status_match,
             legacy_status=legacy_status,
             new_status=new_status,

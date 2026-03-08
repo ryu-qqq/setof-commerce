@@ -1,12 +1,12 @@
 package com.ryuqq.setof.storage.legacy.product.entity;
 
+import com.ryuqq.setof.storage.legacy.common.entity.LegacyBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 
 /**
  * LegacyProductGroupImageEntity - 레거시 상품그룹 이미지 엔티티.
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "product_group_image")
-public class LegacyProductGroupImageEntity {
+public class LegacyProductGroupImageEntity extends LegacyBaseEntity {
 
     @Id
     @Column(name = "product_group_image_id")
@@ -41,12 +41,6 @@ public class LegacyProductGroupImageEntity {
     @Column(name = "delete_yn")
     @Enumerated(EnumType.STRING)
     private Yn deleteYn;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     protected LegacyProductGroupImageEntity() {}
 
@@ -68,14 +62,6 @@ public class LegacyProductGroupImageEntity {
 
     public Yn getDeleteYn() {
         return deleteYn;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 
     /** ProductGroupImageType - 상품그룹 이미지 타입 Enum. */

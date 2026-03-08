@@ -1,12 +1,12 @@
 package com.ryuqq.setof.storage.legacy.option.entity;
 
+import com.ryuqq.setof.storage.legacy.common.entity.LegacyBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 
 /**
  * LegacyOptionGroupEntity - 레거시 옵션 그룹 엔티티.
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "option_group")
-public class LegacyOptionGroupEntity {
+public class LegacyOptionGroupEntity extends LegacyBaseEntity {
 
     @Id
     @Column(name = "option_group_id")
@@ -32,12 +32,6 @@ public class LegacyOptionGroupEntity {
     @Enumerated(EnumType.STRING)
     private OptionName optionName;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     protected LegacyOptionGroupEntity() {}
 
     public Long getId() {
@@ -46,14 +40,6 @@ public class LegacyOptionGroupEntity {
 
     public OptionName getOptionName() {
         return optionName;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 
     /** OptionName - 옵션명 Enum. */

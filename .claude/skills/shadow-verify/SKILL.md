@@ -114,6 +114,11 @@ if [ ! -d ".venv" ]; then
   .venv/bin/pip install -r requirements.txt
 fi
 
+# 인증 정보: tools/shadow-traffic/.env.local에서 자동 로드
+# .env.local이 없으면 생성:
+# SHADOW_TEST_PHONE=01036817687
+# SHADOW_TEST_PASSWORD=Test1234@Ffgqwer
+
 # 도메인 필터 적용
 DOMAIN_ARGS=""
 if [ -n "$DOMAINS" ]; then
@@ -122,6 +127,7 @@ fi
 
 # Shadow Traffic 실행
 # Legacy: Stage 배포 서버 / New: 로컬 Docker
+# 인증 정보는 .env.local에서 자동으로 읽힘 (env var 미설정 시)
 PYTHONPATH=src .venv/bin/python src/main.py \
   --legacy-url https://stage.set-of.com \
   --new-url http://localhost:48080 \

@@ -2,7 +2,7 @@ package com.ryuqq.setof.domain.cancel.event;
 
 import com.ryuqq.setof.domain.cancel.id.CancelId;
 import com.ryuqq.setof.domain.common.event.DomainEvent;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import java.time.Instant;
 
 /**
@@ -14,10 +14,11 @@ import java.time.Instant;
  * @param orderId 주문 ID
  * @param occurredAt 이벤트 발생 시각
  */
-public record CancelRejectedEvent(CancelId cancelId, OrderId orderId, Instant occurredAt)
+public record CancelRejectedEvent(CancelId cancelId, LegacyOrderId orderId, Instant occurredAt)
         implements DomainEvent {
 
-    public static CancelRejectedEvent of(CancelId cancelId, OrderId orderId, Instant occurredAt) {
+    public static CancelRejectedEvent of(
+            CancelId cancelId, LegacyOrderId orderId, Instant occurredAt) {
         return new CancelRejectedEvent(cancelId, orderId, occurredAt);
     }
 }

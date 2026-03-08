@@ -367,7 +367,8 @@ resource "aws_ecs_task_definition" "shadow_traffic" {
         { name = "AWS_REGION", value = var.aws_region },
         { name = "DRY_RUN", value = "false" },
         { name = "DOMAINS", value = "" },
-        { name = "S3_REPORT_BUCKET", value = local.s3_report_bucket_name }
+        { name = "S3_REPORT_BUCKET", value = local.s3_report_bucket_name },
+        { name = "SAFE_ONLY", value = tostring(var.safe_only) }
       ]
 
       secrets = [

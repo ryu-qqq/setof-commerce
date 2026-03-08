@@ -23,6 +23,24 @@ from metrics import MetricsPublisher
 from reporter import S3Reporter
 from runner import load_all_suites, run_suite
 
+
+def _load_env_local() -> None:
+    """Load .env.local from project root if it exists (local dev only)."""
+    env_file = Path(__file__).parent.parent / ".env.local"
+    if not env_file.exists():
+        return
+    for line in env_file.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        key, _, value = line.partition("=")
+        key, value = key.strip(), value.strip()
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
+_load_env_local()
+
 class JsonFormatter(logging.Formatter):
     """Structured JSON log format for OpenSearch/CloudWatch Insights."""
 
@@ -93,6 +111,12 @@ def parse_args() -> argparse.Namespace:
         default=os.getenv("SHADOW_AUTH_TOKEN", ""),
         help="Static JWT token for authenticated tests (overrides suite auth_config)",
     )
+    parser.add_argument(
+        "--safe-only",
+        action="store_true",
+        default=os.getenv("SAFE_ONLY", "false").lower() == "true",
+        help="Skip test cases with safe_for_repeat=false (for scheduled/periodic runs)",
+    )
     return parser.parse_args()
 
 
@@ -143,6 +167,7 @@ async def main() -> int:
                 legacy_url=args.legacy_url,
                 new_url=args.new_url,
                 auth_headers=global_auth_headers or None,
+                safe_only=args.safe_only,
             )
 
             passed = sum(1 for r in results if r.passed)

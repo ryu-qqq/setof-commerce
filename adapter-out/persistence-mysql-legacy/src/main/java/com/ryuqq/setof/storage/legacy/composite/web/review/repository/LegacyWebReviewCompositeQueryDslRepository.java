@@ -2,19 +2,29 @@ package com.ryuqq.setof.storage.legacy.composite.web.review.repository;
 
 import static com.ryuqq.setof.storage.legacy.brand.entity.QLegacyBrandEntity.legacyBrandEntity;
 import static com.ryuqq.setof.storage.legacy.category.entity.QLegacyCategoryEntity.legacyCategoryEntity;
+import static com.ryuqq.setof.storage.legacy.order.entity.QLegacyOrderEntity.legacyOrderEntity;
+import static com.ryuqq.setof.storage.legacy.order.entity.QLegacyOrderSnapshotOptionDetailEntity.legacyOrderSnapshotOptionDetailEntity;
+import static com.ryuqq.setof.storage.legacy.order.entity.QLegacyOrderSnapshotOptionGroupEntity.legacyOrderSnapshotOptionGroupEntity;
+import static com.ryuqq.setof.storage.legacy.order.entity.QLegacyOrderSnapshotProductOptionEntity.legacyOrderSnapshotProductOptionEntity;
+import static com.ryuqq.setof.storage.legacy.payment.entity.QLegacyPaymentEntity.legacyPaymentEntity;
+import static com.ryuqq.setof.storage.legacy.product.entity.QLegacyProductGroupEntity.legacyProductGroupEntity;
+import static com.ryuqq.setof.storage.legacy.product.entity.QLegacyProductGroupImageEntity.legacyProductGroupImageEntity;
 import static com.ryuqq.setof.storage.legacy.review.entity.QLegacyProductRatingStatsEntity.legacyProductRatingStatsEntity;
 import static com.ryuqq.setof.storage.legacy.review.entity.QLegacyReviewEntity.legacyReviewEntity;
 import static com.ryuqq.setof.storage.legacy.review.entity.QLegacyReviewImageEntity.legacyReviewImageEntity;
+import static com.ryuqq.setof.storage.legacy.user.entity.QLegacyUserEntity.legacyUserEntity;
 
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ryuqq.setof.domain.legacy.review.dto.query.LegacyReviewSearchCondition;
+import com.ryuqq.setof.domain.review.query.ProductGroupReviewSortKey;
 import com.ryuqq.setof.storage.legacy.composite.web.review.condition.LegacyWebReviewCompositeConditionBuilder;
 import com.ryuqq.setof.storage.legacy.composite.web.review.dto.LegacyWebReviewImageQueryDto;
+import com.ryuqq.setof.storage.legacy.composite.web.review.dto.LegacyWebReviewOptionQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.web.review.dto.LegacyWebReviewQueryDto;
+import com.ryuqq.setof.storage.legacy.product.entity.LegacyProductGroupImageEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -56,40 +66,44 @@ public class LegacyWebReviewCompositeQueryDslRepository {
     /**
      * 리뷰 ID 목록 조회 (상품그룹별, offset 페이징).
      *
-     * @param condition 검색 조건
+     * @param productGroupId 상품그룹 ID
+     * @param sortKey 정렬 키
+     * @param offset 오프셋
+     * @param limit 조회 크기
      * @return 리뷰 ID 목록
      */
-    public List<Long> fetchReviewIds(LegacyReviewSearchCondition condition) {
-        List<OrderSpecifier<?>> orders = createOrderSpecifiers(condition);
+    public List<Long> fetchReviewIds(
+            long productGroupId, ProductGroupReviewSortKey sortKey, long offset, int limit) {
+        List<OrderSpecifier<?>> orders = createOrderSpecifiers(sortKey);
 
         return queryFactory
                 .select(legacyReviewEntity.id)
                 .from(legacyReviewEntity)
-                .where(
-                        productGroupIdEqByReview(condition.productGroupId()),
-                        conditionBuilder.notDeleted())
+                .where(productGroupIdEqByReview(productGroupId), conditionBuilder.notDeleted())
                 .orderBy(orders.toArray(new OrderSpecifier[0]))
-                .offset(condition.getOffset())
-                .limit(condition.pageSize())
+                .offset(offset)
+                .limit(limit)
                 .fetch();
     }
 
     /**
      * 내 리뷰 ID 목록 조회 (커서 페이징).
      *
-     * @param condition 검색 조건
+     * @param userId 사용자 ID
+     * @param cursor 커서 (마지막 리뷰 ID)
+     * @param fetchSize 조회 크기 (size + 1)
      * @return 리뷰 ID 목록
      */
-    public List<Long> fetchMyReviewIds(LegacyReviewSearchCondition condition) {
+    public List<Long> fetchMyReviewIds(long userId, Long cursor, int fetchSize) {
         return queryFactory
                 .select(legacyReviewEntity.id)
                 .from(legacyReviewEntity)
                 .where(
-                        conditionBuilder.userIdEq(condition.userId()),
-                        conditionBuilder.reviewIdLt(condition.lastReviewId()),
+                        conditionBuilder.userIdEq(userId),
+                        conditionBuilder.reviewIdLt(cursor),
                         conditionBuilder.notDeleted())
                 .orderBy(legacyReviewEntity.id.desc())
-                .limit(condition.pageSize() + 1)
+                .limit(fetchSize)
                 .fetch();
     }
 
@@ -109,10 +123,26 @@ public class LegacyWebReviewCompositeQueryDslRepository {
         return queryFactory
                 .select(createReviewProjection())
                 .from(legacyReviewEntity)
+                .innerJoin(legacyProductGroupEntity)
+                .on(legacyProductGroupEntity.id.eq(legacyReviewEntity.productGroupId))
                 .innerJoin(legacyBrandEntity)
-                .on(legacyBrandEntity.id.eq(legacyReviewEntity.productGroupId))
+                .on(legacyBrandEntity.id.eq(legacyProductGroupEntity.brandId))
                 .innerJoin(legacyCategoryEntity)
-                .on(legacyCategoryEntity.id.eq(legacyReviewEntity.productGroupId))
+                .on(legacyCategoryEntity.id.eq(legacyProductGroupEntity.categoryId))
+                .innerJoin(legacyProductGroupImageEntity)
+                .on(
+                        legacyProductGroupImageEntity.productGroupId.eq(
+                                legacyProductGroupEntity.id),
+                        legacyProductGroupImageEntity.productGroupImageType.eq(
+                                LegacyProductGroupImageEntity.ProductGroupImageType.MAIN),
+                        legacyProductGroupImageEntity.deleteYn.eq(
+                                LegacyProductGroupImageEntity.Yn.N))
+                .innerJoin(legacyUserEntity)
+                .on(legacyUserEntity.id.eq(legacyReviewEntity.userId))
+                .innerJoin(legacyOrderEntity)
+                .on(legacyOrderEntity.id.eq(legacyReviewEntity.orderId))
+                .innerJoin(legacyPaymentEntity)
+                .on(legacyPaymentEntity.id.eq(legacyOrderEntity.paymentId))
                 .where(conditionBuilder.reviewIdIn(reviewIds), conditionBuilder.notDeleted())
                 .orderBy(legacyReviewEntity.id.desc())
                 .fetch();
@@ -139,6 +169,47 @@ public class LegacyWebReviewCompositeQueryDslRepository {
                                 legacyReviewImageEntity.imageUrl))
                 .from(legacyReviewImageEntity)
                 .where(conditionBuilder.reviewImageReviewIdIn(reviewIds))
+                .fetch();
+    }
+
+    /**
+     * 리뷰 옵션 목록 조회 (리뷰 ID 기반).
+     *
+     * <p>주문 스냅샷 옵션 테이블에서 리뷰의 orderId를 통해 옵션 데이터를 조회합니다.
+     *
+     * @param reviewIds 리뷰 ID 목록
+     * @return 리뷰 옵션 목록
+     */
+    public List<LegacyWebReviewOptionQueryDto> fetchReviewOptionsByReviewIds(List<Long> reviewIds) {
+        if (reviewIds == null || reviewIds.isEmpty()) {
+            return List.of();
+        }
+
+        return queryFactory
+                .select(
+                        Projections.constructor(
+                                LegacyWebReviewOptionQueryDto.class,
+                                legacyReviewEntity.id,
+                                legacyOrderSnapshotOptionGroupEntity.optionGroupId,
+                                legacyOrderSnapshotOptionDetailEntity.optionDetailId,
+                                legacyOrderSnapshotOptionGroupEntity.optionName,
+                                legacyOrderSnapshotOptionDetailEntity.optionValue))
+                .distinct()
+                .from(legacyReviewEntity)
+                .innerJoin(legacyOrderSnapshotProductOptionEntity)
+                .on(legacyOrderSnapshotProductOptionEntity.orderId.eq(legacyReviewEntity.orderId))
+                .innerJoin(legacyOrderSnapshotOptionGroupEntity)
+                .on(
+                        legacyOrderSnapshotOptionGroupEntity.orderId.eq(legacyReviewEntity.orderId),
+                        legacyOrderSnapshotOptionGroupEntity.optionGroupId.eq(
+                                legacyOrderSnapshotProductOptionEntity.optionGroupId))
+                .innerJoin(legacyOrderSnapshotOptionDetailEntity)
+                .on(
+                        legacyOrderSnapshotOptionDetailEntity.orderId.eq(
+                                legacyReviewEntity.orderId),
+                        legacyOrderSnapshotOptionDetailEntity.optionDetailId.eq(
+                                legacyOrderSnapshotProductOptionEntity.optionDetailId))
+                .where(conditionBuilder.reviewIdIn(reviewIds))
                 .fetch();
     }
 
@@ -189,28 +260,29 @@ public class LegacyWebReviewCompositeQueryDslRepository {
                 LegacyWebReviewQueryDto.class,
                 legacyReviewEntity.id,
                 legacyReviewEntity.orderId,
-                legacyReviewEntity.userId.stringValue(),
+                legacyUserEntity.name,
                 legacyReviewEntity.rating,
                 legacyReviewEntity.content,
                 legacyReviewEntity.productGroupId,
-                legacyBrandEntity.brandName,
-                legacyBrandEntity.brandIconImageUrl,
+                legacyProductGroupEntity.productGroupName,
+                legacyProductGroupImageEntity.imageUrl,
                 legacyBrandEntity.id,
                 legacyBrandEntity.brandName,
                 legacyCategoryEntity.id,
                 legacyCategoryEntity.displayName,
                 legacyReviewEntity.insertDate,
-                legacyReviewEntity.insertDate);
+                legacyReviewEntity.updateDate,
+                legacyPaymentEntity.paymentDate);
     }
 
     private BooleanExpression productGroupIdEqByReview(Long productGroupId) {
         return productGroupId != null ? legacyReviewEntity.productGroupId.eq(productGroupId) : null;
     }
 
-    private List<OrderSpecifier<?>> createOrderSpecifiers(LegacyReviewSearchCondition condition) {
+    private List<OrderSpecifier<?>> createOrderSpecifiers(ProductGroupReviewSortKey sortKey) {
         List<OrderSpecifier<?>> orders = new ArrayList<>();
 
-        if (condition.isHighRatingOrder()) {
+        if (sortKey == ProductGroupReviewSortKey.RATING) {
             orders.add(new OrderSpecifier<>(Order.DESC, legacyReviewEntity.rating));
         }
         orders.add(new OrderSpecifier<>(Order.DESC, legacyReviewEntity.id));

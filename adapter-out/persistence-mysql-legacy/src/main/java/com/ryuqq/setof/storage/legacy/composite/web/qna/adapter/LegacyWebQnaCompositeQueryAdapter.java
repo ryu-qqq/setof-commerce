@@ -1,82 +1,58 @@
 package com.ryuqq.setof.storage.legacy.composite.web.qna.adapter;
 
-import com.ryuqq.setof.application.legacy.qna.dto.response.LegacyQnaResult;
-import com.ryuqq.setof.domain.legacy.qna.dto.query.LegacyQnaSearchCondition;
-import com.ryuqq.setof.storage.legacy.composite.web.qna.dto.LegacyWebQnaQueryDto;
-import com.ryuqq.setof.storage.legacy.composite.web.qna.mapper.LegacyWebQnaMapper;
+import com.ryuqq.setof.application.qna.dto.response.MyQnaResult;
+import com.ryuqq.setof.application.qna.port.out.query.QnaMyProductQueryPort;
+import com.ryuqq.setof.domain.common.vo.DateRange;
+import com.ryuqq.setof.domain.qna.query.QnaSearchCriteria;
+import com.ryuqq.setof.storage.legacy.composite.web.qna.dto.LegacyWebMyQnaQueryDto;
+import com.ryuqq.setof.storage.legacy.composite.web.qna.mapper.LegacyWebQnaCompositeMapper;
 import com.ryuqq.setof.storage.legacy.composite.web.qna.repository.LegacyWebQnaCompositeQueryDslRepository;
+import java.time.LocalDate;
 import java.util.List;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 /**
- * LegacyWebQnaCompositeQueryAdapter - 레거시 Web Q&A Composite 조회 Adapter.
+ * LegacyWebQnaCompositeQueryAdapter - PRODUCT 타입 내 Q&A 복합 조회 Adapter.
  *
- * <p>Persistence Layer의 진입점입니다.
- *
- * <p>TODO: Application Layer의 LegacyQnaCompositeQueryPort implements 추가.
- *
- * <p>PER-ADP-001: Adapter는 @Component로 등록.
- *
- * <p>PER-ADP-002: Repository와 Mapper 조합으로 결과 반환.
+ * <p>QnaMyProductQueryPort 구현체입니다. 상품 정보(상품그룹, 브랜드, 이미지) JOIN이 필요한 복합 조회를 처리합니다. Adapter에서
+ * criteria의 primitive 값을 추출하여 Repository에 직접 전달합니다.
  *
  * @author ryu-qqq
  * @since 1.1.0
  */
 @Component
-public class LegacyWebQnaCompositeQueryAdapter {
+public class LegacyWebQnaCompositeQueryAdapter implements QnaMyProductQueryPort {
 
     private final LegacyWebQnaCompositeQueryDslRepository repository;
-    private final LegacyWebQnaMapper mapper;
+    private final LegacyWebQnaCompositeMapper mapper;
 
     public LegacyWebQnaCompositeQueryAdapter(
-            LegacyWebQnaCompositeQueryDslRepository repository, LegacyWebQnaMapper mapper) {
+            LegacyWebQnaCompositeQueryDslRepository repository,
+            LegacyWebQnaCompositeMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
     }
 
-    /**
-     * 상품그룹 Q&A 목록 조회 (fetchProductQnas).
-     *
-     * <p>2단계 조회: ID 목록 -> 상세 조회.
-     *
-     * @param productGroupId 상품그룹 ID
-     * @param pageable 페이징 정보
-     * @return Q&A 목록
-     */
-    public List<LegacyQnaResult> fetchProductQnas(Long productGroupId, Pageable pageable) {
-        List<Long> qnaIds = repository.fetchQnaProductIds(productGroupId, pageable);
-        List<LegacyWebQnaQueryDto> dtos = repository.fetchQnas(qnaIds);
-        return mapper.toResults(dtos);
-    }
+    @Override
+    public List<MyQnaResult> fetchMyProductQnas(QnaSearchCriteria criteria) {
+        DateRange dateRange = criteria.dateRange();
+        LocalDate startDate = dateRange != null ? dateRange.startDate() : null;
+        LocalDate endDate = dateRange != null ? dateRange.endDate() : null;
 
-    /**
-     * 상품그룹 Q&A 개수 조회.
-     *
-     * @param productGroupId 상품그룹 ID
-     * @return Q&A 개수
-     */
-    public long countProductQnas(Long productGroupId) {
-        return repository.countQnasByProductGroupId(productGroupId);
-    }
+        List<Long> qnaIds =
+                repository.fetchMyQnaIds(
+                        criteria.memberIdValue(),
+                        criteria.cursor(),
+                        criteria.qnaTypeValue(),
+                        startDate,
+                        endDate,
+                        criteria.fetchSize());
 
-    /**
-     * 내 Q&A 목록 조회 (fetchMyQnas).
-     *
-     * <p>2단계 조회: ID 목록 -> 상세 조회.
-     *
-     * @param condition 검색 조건
-     * @param pageable 페이징 정보
-     * @return Q&A 목록
-     */
-    public List<LegacyQnaResult> fetchMyQnas(
-            LegacyQnaSearchCondition condition, Pageable pageable) {
-        List<Long> qnaIds = repository.fetchMyQnaIds(condition, pageable);
-        if (condition.isProductQna()) {
-            List<LegacyWebQnaQueryDto> dtos = repository.fetchMyProductQnas(qnaIds);
-            return mapper.toResults(dtos);
+        if (qnaIds.isEmpty()) {
+            return List.of();
         }
-        // TODO: ORDER Q&A는 별도 구현 필요
-        return List.of();
+
+        List<LegacyWebMyQnaQueryDto> dtos = repository.fetchMyProductQnasByIds(qnaIds);
+        return mapper.toMyQnaResults(dtos);
     }
 }

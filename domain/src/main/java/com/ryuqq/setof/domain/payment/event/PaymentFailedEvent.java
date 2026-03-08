@@ -1,7 +1,7 @@
 package com.ryuqq.setof.domain.payment.event;
 
 import com.ryuqq.setof.domain.common.event.DomainEvent;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import com.ryuqq.setof.domain.payment.id.PaymentId;
 import java.time.Instant;
 
@@ -14,10 +14,10 @@ import java.time.Instant;
  * @param orderId 주문 ID
  * @param occurredAt 이벤트 발생 시각
  */
-public record PaymentFailedEvent(PaymentId paymentId, OrderId orderId, Instant occurredAt)
+public record PaymentFailedEvent(PaymentId paymentId, LegacyOrderId orderId, Instant occurredAt)
         implements DomainEvent {
 
-    public static PaymentFailedEvent of(PaymentId paymentId, OrderId orderId, Instant now) {
+    public static PaymentFailedEvent of(PaymentId paymentId, LegacyOrderId orderId, Instant now) {
         return new PaymentFailedEvent(paymentId, orderId, now);
     }
 

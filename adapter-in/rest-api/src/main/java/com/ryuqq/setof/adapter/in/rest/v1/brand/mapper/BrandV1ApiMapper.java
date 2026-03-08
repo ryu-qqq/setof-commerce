@@ -30,8 +30,8 @@ public class BrandV1ApiMapper {
     /**
      * SearchBrandsV1ApiRequest → BrandDisplaySearchParams 변환.
      *
-     * <p>레거시 호환: searchField=null (displayKoreanName OR displayEnglishName 검색), displayed=null (필터
-     * 없음).
+     * <p>레거시 호환: searchField=null (displayKoreanName OR displayEnglishName 검색), displayed=true (전시
+     * 중 브랜드만).
      *
      * @param request 검색 요청 DTO
      * @return BrandDisplaySearchParams
@@ -41,7 +41,7 @@ public class BrandV1ApiMapper {
                 request.searchWord() != null && !request.searchWord().isBlank()
                         ? request.searchWord().trim()
                         : null;
-        return BrandDisplaySearchParams.of(null, searchWord, null);
+        return BrandDisplaySearchParams.of(null, searchWord, true);
     }
 
     /**

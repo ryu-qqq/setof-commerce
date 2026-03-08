@@ -2,7 +2,7 @@ package com.ryuqq.setof.domain.payment.event;
 
 import com.ryuqq.setof.domain.common.event.DomainEvent;
 import com.ryuqq.setof.domain.common.vo.Money;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import com.ryuqq.setof.domain.payment.id.PaymentId;
 import com.ryuqq.setof.domain.payment.vo.PaymentMethodType;
 import java.time.Instant;
@@ -20,7 +20,7 @@ import java.time.Instant;
  */
 public record PaymentCompletedEvent(
         PaymentId paymentId,
-        OrderId orderId,
+        LegacyOrderId orderId,
         Money paymentAmount,
         PaymentMethodType methodType,
         Instant occurredAt)
@@ -28,7 +28,7 @@ public record PaymentCompletedEvent(
 
     public static PaymentCompletedEvent of(
             PaymentId paymentId,
-            OrderId orderId,
+            LegacyOrderId orderId,
             Money paymentAmount,
             PaymentMethodType methodType,
             Instant now) {

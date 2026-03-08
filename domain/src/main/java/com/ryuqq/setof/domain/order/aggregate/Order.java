@@ -3,7 +3,7 @@ package com.ryuqq.setof.domain.order.aggregate;
 import com.ryuqq.setof.domain.common.vo.LegacyUserId;
 import com.ryuqq.setof.domain.member.id.MemberId;
 import com.ryuqq.setof.domain.order.exception.InvalidOrderStatusTransitionException;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import com.ryuqq.setof.domain.order.vo.OrderStatus;
 import java.time.Instant;
 
@@ -22,7 +22,7 @@ import java.time.Instant;
  */
 public class Order {
 
-    private final OrderId id;
+    private final LegacyOrderId id;
     private final MemberId memberId;
     private final LegacyUserId legacyUserId;
     private OrderStatus orderStatus;
@@ -30,7 +30,7 @@ public class Order {
     private Instant updatedAt;
 
     private Order(
-            OrderId id,
+            LegacyOrderId id,
             MemberId memberId,
             LegacyUserId legacyUserId,
             OrderStatus orderStatus,
@@ -53,7 +53,8 @@ public class Order {
      * @return 결제대기 상태의 새 주문
      */
     public static Order forNew(MemberId memberId, LegacyUserId legacyUserId, Instant now) {
-        return new Order(OrderId.forNew(), memberId, legacyUserId, OrderStatus.PENDING, now, now);
+        return new Order(
+                LegacyOrderId.forNew(), memberId, legacyUserId, OrderStatus.PENDING, now, now);
     }
 
     /**
@@ -68,7 +69,7 @@ public class Order {
      * @return 복원된 주문
      */
     public static Order reconstitute(
-            OrderId id,
+            LegacyOrderId id,
             MemberId memberId,
             LegacyUserId legacyUserId,
             OrderStatus orderStatus,
@@ -173,7 +174,7 @@ public class Order {
     }
 
     // VO Getters
-    public OrderId id() {
+    public LegacyOrderId id() {
         return id;
     }
 

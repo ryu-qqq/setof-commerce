@@ -12,7 +12,6 @@ import com.ryuqq.setof.domain.seller.id.SellerId;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * ChangeRefundPolicyStatusService - 환불 정책 활성화 상태 변경 Service
@@ -42,7 +41,6 @@ public class ChangeRefundPolicyStatusService implements ChangeRefundPolicyStatus
     }
 
     @Override
-    @Transactional
     public void execute(ChangeRefundPolicyStatusCommand command) {
         List<StatusChangeContext<RefundPolicyId>> contexts =
                 commandFactory.createStatusChangeContexts(command);

@@ -1,0 +1,11 @@
+domain: gnb
+description: "GNB API shadow traffic test cases"
+
+test_cases:
+  # === 목록 조회 ===
+  - name: "gnb_list_all"
+    path: "/api/v1/content/gnbs"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []

@@ -1,10 +1,12 @@
 package com.ryuqq.setof.storage.legacy.product.entity;
 
+import com.ryuqq.setof.storage.legacy.common.entity.LegacyBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 
 /**
  * LegacyProductStockEntity - 레거시 상품 재고 엔티티.
@@ -20,7 +22,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "product_stock")
-public class LegacyProductStockEntity {
+public class LegacyProductStockEntity extends LegacyBaseEntity {
 
     @Id
     @Column(name = "product_id")
@@ -29,11 +31,10 @@ public class LegacyProductStockEntity {
     @Column(name = "stock_quantity")
     private Integer stockQuantity;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    /** Added for productgroup composite support. 재고 삭제 여부 필터링. */
+    @Column(name = "delete_yn")
+    @Enumerated(EnumType.STRING)
+    private Yn deleteYn;
 
     protected LegacyProductStockEntity() {}
 
@@ -45,11 +46,13 @@ public class LegacyProductStockEntity {
         return stockQuantity;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public Yn getDeleteYn() {
+        return deleteYn;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    /** Yn - Y/N 구분 Enum. */
+    public enum Yn {
+        Y,
+        N
     }
 }

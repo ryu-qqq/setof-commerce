@@ -30,18 +30,16 @@ public final class FaqApiFixtures {
 
     // ===== FaqV1ApiResponse =====
 
-    public static FaqV1ApiResponse faqResponse(long faqId) {
-        return new FaqV1ApiResponse(faqId, "MEMBER_LOGIN", "회원 가입은 어떻게 하나요?", "회원 가입 방법 안내입니다.");
+    public static FaqV1ApiResponse faqResponse() {
+        return new FaqV1ApiResponse("MEMBER_LOGIN", "회원 가입은 어떻게 하나요?", "회원 가입 방법 안내입니다.");
     }
 
-    public static FaqV1ApiResponse faqResponse(
-            long faqId, String faqType, String title, String contents) {
-        return new FaqV1ApiResponse(faqId, faqType, title, contents);
+    public static FaqV1ApiResponse faqResponse(String faqType, String title, String contents) {
+        return new FaqV1ApiResponse(faqType, title, contents);
     }
 
     public static List<FaqV1ApiResponse> faqResponseList() {
-        return List.of(
-                faqResponse(1L), faqResponse(2L, "SHIPPING", "배송 기간은 얼마나 되나요?", "배송 기간 안내입니다."));
+        return List.of(faqResponse(), faqResponse("SHIPPING", "배송 기간은 얼마나 되나요?", "배송 기간 안내입니다."));
     }
 
     // ===== FaqResult =====

@@ -35,4 +35,15 @@ public abstract class LegacyBaseEntity {
     public LocalDateTime getUpdateDate() {
         return updateDate;
     }
+
+    /**
+     * update_date 갱신.
+     *
+     * <p>하위 엔티티의 Dirty Checking 기반 변경 메서드에서 사용합니다.
+     *
+     * @param updateDate 변경 시각
+     */
+    protected void updateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
+    }
 }

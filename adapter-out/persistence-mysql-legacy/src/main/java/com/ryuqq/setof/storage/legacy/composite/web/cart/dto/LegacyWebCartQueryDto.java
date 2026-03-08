@@ -20,6 +20,9 @@ import java.util.Set;
  * @param regularPrice 정가
  * @param currentPrice 판매가
  * @param salePrice 할인가
+ * @param directDiscountRate 직접 할인율
+ * @param directDiscountPrice 직접 할인가
+ * @param discountRate 전체 할인율
  * @param quantity 장바구니 수량
  * @param stockQuantity 재고 수량
  * @param imageUrl 대표 이미지 URL
@@ -42,6 +45,9 @@ public record LegacyWebCartQueryDto(
         int regularPrice,
         int currentPrice,
         int salePrice,
+        int directDiscountRate,
+        int directDiscountPrice,
+        int discountRate,
         int quantity,
         int stockQuantity,
         String imageUrl,

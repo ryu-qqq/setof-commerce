@@ -2,7 +2,7 @@ package com.ryuqq.setof.domain.refund.aggregate;
 
 import com.ryuqq.setof.domain.claim.id.ClaimShipmentId;
 import com.ryuqq.setof.domain.common.vo.Money;
-import com.ryuqq.setof.domain.order.id.OrderId;
+import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import com.ryuqq.setof.domain.refund.exception.InvalidRefundStatusTransitionException;
 import com.ryuqq.setof.domain.refund.exception.RefundOnHoldException;
 import com.ryuqq.setof.domain.refund.id.RefundId;
@@ -30,7 +30,7 @@ import java.util.List;
 public class RefundClaim {
 
     private final RefundId id;
-    private final OrderId orderId;
+    private final LegacyOrderId orderId;
     private final SellerId sellerId;
     private RefundStatus refundStatus;
     private final RefundReason reason;
@@ -44,7 +44,7 @@ public class RefundClaim {
 
     private RefundClaim(
             RefundId id,
-            OrderId orderId,
+            LegacyOrderId orderId,
             SellerId sellerId,
             RefundStatus refundStatus,
             RefundReason reason,
@@ -80,7 +80,7 @@ public class RefundClaim {
      * @return REQUESTED 상태의 새 반품
      */
     public static RefundClaim forNew(
-            OrderId orderId,
+            LegacyOrderId orderId,
             SellerId sellerId,
             RefundReason reason,
             List<RefundItem> refundItems,
@@ -119,7 +119,7 @@ public class RefundClaim {
      */
     public static RefundClaim reconstitute(
             RefundId id,
-            OrderId orderId,
+            LegacyOrderId orderId,
             SellerId sellerId,
             RefundStatus refundStatus,
             RefundReason reason,
@@ -309,7 +309,7 @@ public class RefundClaim {
         return id.value();
     }
 
-    public OrderId orderId() {
+    public LegacyOrderId orderId() {
         return orderId;
     }
 

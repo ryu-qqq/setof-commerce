@@ -1,5 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.v1.common.controller;
 
+import com.ryuqq.setof.adapter.in.rest.common.auth.UnauthenticatedAccessException;
 import com.ryuqq.setof.adapter.in.rest.common.error.ErrorMapperRegistry;
 import com.ryuqq.setof.adapter.in.rest.v1.common.dto.V1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.common.dto.V1ErrorResponse;
@@ -17,6 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -115,6 +118,34 @@ public class V1GlobalExceptionHandler {
         String errorMessage = errors.values().stream().collect(Collectors.joining(" "));
 
         log.warn("V1 ConstraintViolation: path={}, errors={}", req.getRequestURI(), errors);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(
+                        V1ErrorResponse.of(
+                                HttpStatus.BAD_REQUEST,
+                                ex.getClass().getSimpleName(),
+                                errorMessage));
+    }
+
+    // ======= 400 - Method-level @Valid on @RequestBody List (Spring 6.1+) =======
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<V1ErrorResponse> handleHandlerMethodValidation(
+            HandlerMethodValidationException ex, HttpServletRequest req) {
+        String errorMessage =
+                ex.getAllValidationResults().stream()
+                        .flatMap(result -> result.getResolvableErrors().stream())
+                        .map(MessageSourceResolvable::getDefaultMessage)
+                        .filter(msg -> msg != null)
+                        .collect(Collectors.joining(" "));
+
+        if (errorMessage.isBlank()) {
+            errorMessage = "요청 데이터 유효성 검증에 실패했습니다.";
+        }
+
+        log.warn(
+                "V1 HandlerMethodValidation: path={}, message={}",
+                req.getRequestURI(),
+                errorMessage);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(
@@ -243,6 +274,20 @@ public class V1GlobalExceptionHandler {
                                 HttpStatus.METHOD_NOT_ALLOWED,
                                 ex.getClass().getSimpleName(),
                                 message));
+    }
+
+    // ======= 401 - 인증 실패 =======
+    @ExceptionHandler(UnauthenticatedAccessException.class)
+    public ResponseEntity<V1ErrorResponse> handleUnauthenticatedAccess(
+            UnauthenticatedAccessException ex, HttpServletRequest req) {
+        String msg = Optional.ofNullable(ex.getMessage()).orElse("인증이 필요합니다. 유효한 토큰을 제공해주세요.");
+
+        log.warn("V1 UnauthenticatedAccess: path={}, message={}", req.getRequestURI(), msg);
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(
+                        V1ErrorResponse.of(
+                                HttpStatus.UNAUTHORIZED, ex.getClass().getSimpleName(), msg));
     }
 
     // ======= 409 - 상태 충돌 =======
