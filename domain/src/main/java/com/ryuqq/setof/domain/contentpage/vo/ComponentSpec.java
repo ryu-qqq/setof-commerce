@@ -21,25 +21,33 @@ public sealed interface ComponentSpec
                 ComponentSpec.TabSpec {
 
     /** 텍스트 컴포넌트 스펙. */
-    record TextSpec(String content) implements ComponentSpec {}
+    record TextSpec(long textComponentId, String content) implements ComponentSpec {}
 
     /** 타이틀 컴포넌트 스펙. */
-    record TitleSpec(String title1, String title2, String subTitle1, String subTitle2)
+    record TitleSpec(
+            long titleComponentId, String title1, String title2, String subTitle1, String subTitle2)
             implements ComponentSpec {}
 
     /** 이미지 컴포넌트 스펙. */
-    record ImageSpec(ImageType imageType, List<ImageSlide> slides) implements ComponentSpec {}
+    record ImageSpec(long imageComponentId, ImageType imageType, List<ImageSlide> slides)
+            implements ComponentSpec {}
 
     /** 여백 컴포넌트 스펙. */
-    record BlankSpec(double height, boolean showLine) implements ComponentSpec {}
+    record BlankSpec(long blankComponentId, double height, boolean showLine)
+            implements ComponentSpec {}
 
     /** 상품 컴포넌트 스펙. */
     record ProductSpec(
-            int exposedProducts, List<ProductSlot> fixedProducts, List<ProductSlot> autoProducts)
+            long productComponentId,
+            int exposedProducts,
+            List<ProductSlot> fixedProducts,
+            List<ProductSlot> autoProducts)
             implements ComponentSpec {}
 
     /** 브랜드 컴포넌트 스펙. */
     record BrandSpec(
+            long brandComponentId,
+            long categoryId,
             int exposedProducts,
             List<BrandFilter> brandFilters,
             List<ProductSlot> fixedProducts,
@@ -48,6 +56,7 @@ public sealed interface ComponentSpec
 
     /** 카테고리 컴포넌트 스펙. */
     record CategorySpec(
+            long categoryComponentId,
             long categoryId,
             int exposedProducts,
             List<ProductSlot> fixedProducts,
@@ -55,6 +64,11 @@ public sealed interface ComponentSpec
             implements ComponentSpec {}
 
     /** 탭 컴포넌트 스펙. */
-    record TabSpec(boolean sticky, TabMovingType movingType, List<DisplayTab> tabs)
+    record TabSpec(
+            long tabComponentId,
+            int exposedProducts,
+            boolean sticky,
+            TabMovingType movingType,
+            List<DisplayTab> tabs)
             implements ComponentSpec {}
 }

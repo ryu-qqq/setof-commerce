@@ -1,0 +1,7 @@
+# ============================================================
+# SQS Client 공통 설정
+# ============================================================
+sqs:
+  region: ap-northeast-2
+  queues:
+    discount-outbox: ${DISCOUNT_OUTBOX_QUEUE_URL:}

@@ -13,6 +13,7 @@ include 'application'
 include 'adapter-in:rest-api'
 include 'adapter-in:rest-api-admin'
 include 'adapter-in:scheduler'
+include 'adapter-in:sqs-consumer'
 
 // Outbound Adapters (Driven) - {purpose}-{technology}
 include 'adapter-out:persistence-mysql'
@@ -20,6 +21,7 @@ include 'adapter-out:persistence-mysql-legacy'
 include 'adapter-out:persistence-redis'
 
 // Outbound Adapters - External Clients
+include 'adapter-out:client:sqs-client'
 include 'adapter-out:client:security-client'
 include 'adapter-out:client:portone-client'
 include 'adapter-out:client:fileflow-client'
@@ -35,6 +37,7 @@ include 'bootstrap:bootstrap-legacy-web-api'
 include 'bootstrap:bootstrap-legacy-web-api-admin'
 include 'bootstrap:bootstrap-batch'
 include 'bootstrap:bootstrap-scheduler'
+include 'bootstrap:bootstrap-worker'
 
 // ========================================
 // Test Modules
@@ -49,9 +52,11 @@ project(':application').projectDir = file('application')
 project(':adapter-in:rest-api').projectDir = file('adapter-in/rest-api')
 project(':adapter-in:rest-api-admin').projectDir = file('adapter-in/rest-api-admin')
 project(':adapter-in:scheduler').projectDir = file('adapter-in/scheduler')
+project(':adapter-in:sqs-consumer').projectDir = file('adapter-in/sqs-consumer')
 project(':adapter-out:persistence-mysql').projectDir = file('adapter-out/persistence-mysql')
 project(':adapter-out:persistence-mysql-legacy').projectDir = file('adapter-out/persistence-mysql-legacy')
 project(':adapter-out:persistence-redis').projectDir = file('adapter-out/persistence-redis')
+project(':adapter-out:client:sqs-client').projectDir = file('adapter-out/client/sqs-client')
 project(':adapter-out:client:security-client').projectDir = file('adapter-out/client/security-client')
 project(':adapter-out:client:portone-client').projectDir = file('adapter-out/client/portone-client')
 project(':adapter-out:client:fileflow-client').projectDir = file('adapter-out/client/fileflow-client')
@@ -64,5 +69,6 @@ project(':bootstrap:bootstrap-legacy-web-api').projectDir = file('bootstrap/boot
 project(':bootstrap:bootstrap-legacy-web-api-admin').projectDir = file('bootstrap/bootstrap-legacy-web-api-admin')
 project(':bootstrap:bootstrap-batch').projectDir = file('bootstrap/bootstrap-batch')
 project(':bootstrap:bootstrap-scheduler').projectDir = file('bootstrap/bootstrap-scheduler')
+project(':bootstrap:bootstrap-worker').projectDir = file('bootstrap/bootstrap-worker')
 
 project(':integration-test').projectDir = file('integration-test')

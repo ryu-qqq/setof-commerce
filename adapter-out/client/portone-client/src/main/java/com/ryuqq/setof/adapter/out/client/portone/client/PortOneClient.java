@@ -4,6 +4,7 @@ import com.ryuqq.setof.adapter.out.client.portone.config.PortOnePaths;
 import com.ryuqq.setof.adapter.out.client.portone.config.PortOneProperties;
 import com.ryuqq.setof.adapter.out.client.portone.dto.PortOneApiResponse;
 import com.ryuqq.setof.adapter.out.client.portone.dto.PortOneBankHolderResponse;
+import com.ryuqq.setof.adapter.out.client.portone.dto.PortOnePaymentResponse;
 import com.ryuqq.setof.adapter.out.client.portone.support.PortOneApiExecutor;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -98,6 +99,41 @@ public class PortOneClient {
                 "fetchBankHolder",
                 token -> callBankHolderApi(token, bankCode, accountNumber),
                 PortOneBankHolderResponse::empty);
+    }
+
+    /**
+     * 결제 상태 조회
+     *
+     * <p>포트원 V2 API를 통해 결제 상태를 조회합니다.
+     *
+     * @param paymentId PG사 결제 ID
+     * @return 결제 응답, 실패 시 null
+     */
+    public PortOnePaymentResponse fetchPayment(String paymentId) {
+        if (!properties.isEnabled()) {
+            log.warn("PortOne is disabled. Returning null for fetchPayment.");
+            return null;
+        }
+
+        return apiExecutor.executeWithDefault(
+                "fetchPayment", token -> callPaymentApi(token, paymentId), () -> null);
+    }
+
+    private PortOnePaymentResponse callPaymentApi(String token, String paymentId) {
+        PortOnePaymentResponse response =
+                restClient
+                        .get()
+                        .uri(uriBuilder -> uriBuilder.path(PortOnePaths.PAYMENT).build(paymentId))
+                        .header("Authorization", token)
+                        .retrieve()
+                        .body(PortOnePaymentResponse.class);
+
+        if (response == null) {
+            log.warn("Failed to fetch payment. paymentId={}", paymentId);
+            return null;
+        }
+
+        return response;
     }
 
     private PortOneBankHolderResponse callBankHolderApi(

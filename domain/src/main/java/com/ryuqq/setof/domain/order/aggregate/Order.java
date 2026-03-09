@@ -5,7 +5,9 @@ import com.ryuqq.setof.domain.member.id.MemberId;
 import com.ryuqq.setof.domain.order.exception.InvalidOrderStatusTransitionException;
 import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import com.ryuqq.setof.domain.order.vo.OrderStatus;
+import com.ryuqq.setof.domain.order.vo.ReceiverInfo;
 import java.time.Instant;
+import java.util.List;
 
 /**
  * 주문 Aggregate Root.
@@ -18,6 +20,7 @@ import java.time.Instant;
  *   <li>주문은 PENDING 상태로 생성됨 (재고 선점 후, 결제 전)
  *   <li>결제 성공 시 PLACED로 전이, 실패 시 FAILED로 전이
  *   <li>결제 타임아웃 시 EXPIRED로 전이
+ *   <li>Order는 최소 1개 이상의 OrderItem을 포함
  * </ul>
  */
 public class Order {
@@ -25,6 +28,8 @@ public class Order {
     private final LegacyOrderId id;
     private final MemberId memberId;
     private final LegacyUserId legacyUserId;
+    private final ReceiverInfo receiverInfo;
+    private final List<OrderItem> orderItems;
     private OrderStatus orderStatus;
     private final Instant createdAt;
     private Instant updatedAt;
@@ -33,12 +38,16 @@ public class Order {
             LegacyOrderId id,
             MemberId memberId,
             LegacyUserId legacyUserId,
+            ReceiverInfo receiverInfo,
+            List<OrderItem> orderItems,
             OrderStatus orderStatus,
             Instant createdAt,
             Instant updatedAt) {
         this.id = id;
         this.memberId = memberId;
         this.legacyUserId = legacyUserId;
+        this.receiverInfo = receiverInfo;
+        this.orderItems = orderItems;
         this.orderStatus = orderStatus;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -49,12 +58,29 @@ public class Order {
      *
      * @param memberId 회원 ID (nullable, 마이그레이션 중)
      * @param legacyUserId 레거시 사용자 ID
+     * @param receiverInfo 수령인/배송지 정보
+     * @param orderItems 주문 아이템 목록
      * @param now 현재 시간
      * @return 결제대기 상태의 새 주문
      */
-    public static Order forNew(MemberId memberId, LegacyUserId legacyUserId, Instant now) {
+    public static Order forNew(
+            MemberId memberId,
+            LegacyUserId legacyUserId,
+            ReceiverInfo receiverInfo,
+            List<OrderItem> orderItems,
+            Instant now) {
+        if (orderItems == null || orderItems.isEmpty()) {
+            throw new IllegalArgumentException("주문 아이템은 최소 1개 이상이어야 합니다");
+        }
         return new Order(
-                LegacyOrderId.forNew(), memberId, legacyUserId, OrderStatus.PENDING, now, now);
+                LegacyOrderId.forNew(),
+                memberId,
+                legacyUserId,
+                receiverInfo,
+                List.copyOf(orderItems),
+                OrderStatus.PENDING,
+                now,
+                now);
     }
 
     /**
@@ -63,6 +89,8 @@ public class Order {
      * @param id 주문 ID
      * @param memberId 회원 ID (nullable)
      * @param legacyUserId 레거시 사용자 ID
+     * @param receiverInfo 수령인/배송지 정보 (nullable, 레거시 데이터)
+     * @param orderItems 주문 아이템 목록
      * @param orderStatus 주문 상태
      * @param createdAt 생성 시각
      * @param updatedAt 수정 시각
@@ -72,10 +100,20 @@ public class Order {
             LegacyOrderId id,
             MemberId memberId,
             LegacyUserId legacyUserId,
+            ReceiverInfo receiverInfo,
+            List<OrderItem> orderItems,
             OrderStatus orderStatus,
             Instant createdAt,
             Instant updatedAt) {
-        return new Order(id, memberId, legacyUserId, orderStatus, createdAt, updatedAt);
+        return new Order(
+                id,
+                memberId,
+                legacyUserId,
+                receiverInfo,
+                orderItems != null ? List.copyOf(orderItems) : List.of(),
+                orderStatus,
+                createdAt,
+                updatedAt);
     }
 
     public boolean isNew() {
@@ -196,6 +234,19 @@ public class Order {
 
     public long legacyUserIdValue() {
         return legacyUserId.value();
+    }
+
+    public ReceiverInfo receiverInfo() {
+        return receiverInfo;
+    }
+
+    public List<OrderItem> orderItems() {
+        return orderItems;
+    }
+
+    /** 총 주문 금액 (전체 아이템 합산). */
+    public int totalOrderAmount() {
+        return orderItems.stream().mapToInt(OrderItem::orderAmount).sum();
     }
 
     public OrderStatus orderStatus() {

@@ -1,7 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.v1.productgroup.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -26,7 +25,7 @@ import java.util.List;
  * @param detailDescription 상세 설명 이미지 URL
  * @param mileageRate 마일리지 적립률
  * @param expectedMileageAmount 예상 마일리지 금액
- * @param isFavorite 즐겨찾기 여부
+ * @param favorite 즐겨찾기 여부
  * @param eventProductType 이벤트 상품 유형
  * @author ryu-qqq
  * @since 1.0.0
@@ -44,7 +43,7 @@ public record ProductGroupDetailV1ApiResponse(
                 String detailDescription,
         @Schema(description = "마일리지 적립률", example = "0.0") double mileageRate,
         @Schema(description = "예상 마일리지 금액", example = "0.0") double expectedMileageAmount,
-        @Schema(description = "즐겨찾기 여부", example = "false") boolean isFavorite,
+        @Schema(description = "즐겨찾기 여부", example = "false") boolean favorite,
         @Schema(
                         description = "이벤트 상품 유형",
                         example = "NORMAL",
@@ -93,8 +92,8 @@ public record ProductGroupDetailV1ApiResponse(
             @Schema(description = "대표 이미지 URL", example = "https://cdn.example.com/main/123.jpg")
                     String productGroupMainImageUrl,
             @Schema(description = "판매 상태") ProductStatusResponse productStatus,
-            @Schema(description = "등록일", example = "2024-01-01T00:00:00") LocalDateTime insertDate,
-            @Schema(description = "수정일", example = "2024-06-01T00:00:00") LocalDateTime updateDate,
+            @Schema(description = "등록일", example = "2024-01-01 00:00:00") String insertDate,
+            @Schema(description = "수정일", example = "2024-06-01 00:00:00") String updateDate,
             @Schema(description = "평균 평점", example = "4.5") double averageRating,
             @Schema(description = "리뷰 수", example = "120") long reviewCount) {}
 

@@ -1,7 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.v1.productgroup.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
 
 /**
  * ProductGroupThumbnailV1ApiResponse - 상품그룹 썸네일 응답 DTO.
@@ -27,7 +26,7 @@ import java.time.LocalDateTime;
  * @param averageRating 평균 평점 (없으면 0.0)
  * @param reviewCount 리뷰 수 (없으면 0)
  * @param score 추천 스코어 (없으면 0.0)
- * @param isFavorite 즐겨찾기 여부
+ * @param favorite 즐겨찾기 여부
  * @param productStatus 판매 상태
  * @author ryu-qqq
  * @since 1.0.0
@@ -44,11 +43,11 @@ public record ProductGroupThumbnailV1ApiResponse(
                         example = "https://cdn.example.com/images/product/1001_main.jpg")
                 String productImageUrl,
         @Schema(description = "가격 정보") PriceResponse price,
-        @Schema(description = "등록일", example = "2024-01-15T10:30:00") LocalDateTime insertDate,
+        @Schema(description = "등록일", example = "2024-01-15 10:30:00") String insertDate,
         @Schema(description = "평균 평점 (없으면 0.0)", example = "4.5") double averageRating,
         @Schema(description = "리뷰 수 (없으면 0)", example = "128") long reviewCount,
         @Schema(description = "추천 스코어 (없으면 0.0)", example = "0.92") double score,
-        @Schema(description = "즐겨찾기 여부", example = "false") boolean isFavorite,
+        @Schema(description = "즐겨찾기 여부", example = "false") boolean favorite,
         @Schema(description = "판매 상태") ProductStatusResponse productStatus) {
 
     /**

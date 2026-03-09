@@ -1,6 +1,6 @@
-package com.ryuqq.adapter.in.rest.common.dto;
+package com.ryuqq.setof.adapter.in.rest.common.dto;
 
-import com.ryuqq.adapter.in.rest.common.util.DateTimeFormatUtils;
+import com.ryuqq.setof.adapter.in.rest.common.util.DateTimeFormatUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.UUID;
 import org.slf4j.MDC;

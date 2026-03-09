@@ -41,4 +41,27 @@ public record AppliedDiscount(
             double shareRatio) {
         return new AppliedDiscount(discountPolicyId, stackingGroup, amount, shareRatio);
     }
+
+    /**
+     * 할인 내역 목록에 대해 전체 할인 대비 각 항목의 비율을 계산.
+     *
+     * @param discounts 할인 내역 목록
+     * @param totalDiscount 전체 할인 금액
+     * @return 비율이 채워진 할인 내역 목록
+     */
+    public static java.util.List<AppliedDiscount> withShareRatios(
+            java.util.List<AppliedDiscount> discounts, Money totalDiscount) {
+        if (totalDiscount.isZero() || discounts.isEmpty()) {
+            return discounts;
+        }
+        return discounts.stream()
+                .map(
+                        d ->
+                                new AppliedDiscount(
+                                        d.discountPolicyId(),
+                                        d.stackingGroup(),
+                                        d.amount(),
+                                        (double) d.amount().value() / totalDiscount.value()))
+                .toList();
+    }
 }

@@ -1,5 +1,7 @@
 package com.ryuqq.setof.adapter.in.rest.v1.search.mapper;
 
+import static com.ryuqq.setof.adapter.in.rest.common.util.DateTimeFormatUtils.format;
+
 import com.ryuqq.setof.adapter.in.rest.v1.productgroup.dto.response.ProductGroupThumbnailV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.search.dto.request.SearchProductsCursorV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.v1.search.dto.response.SearchSliceV1ApiResponse;
@@ -160,7 +162,7 @@ public class SearchV1ApiMapper {
                 brand,
                 result.productImageUrl(),
                 price,
-                result.insertDate(),
+                format(result.insertDate()),
                 result.averageRating(),
                 result.reviewCount(),
                 result.score(),

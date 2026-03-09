@@ -1,5 +1,7 @@
 package com.ryuqq.setof.adapter.in.rest.v1.productgroup.mapper;
 
+import static com.ryuqq.setof.adapter.in.rest.common.util.DateTimeFormatUtils.format;
+
 import com.ryuqq.setof.adapter.in.rest.v1.productgroup.dto.request.SearchProductGroupsCursorV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.v1.productgroup.dto.response.ProductGroupDetailV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.productgroup.dto.response.ProductGroupSliceV1ApiResponse;
@@ -177,7 +179,7 @@ public class ProductGroupV1ApiMapper {
                 brand,
                 result.productImageUrl(),
                 price,
-                result.insertDate(),
+                format(result.insertDate()),
                 result.averageRating(),
                 result.reviewCount(),
                 result.score(),
@@ -269,8 +271,8 @@ public class ProductGroupV1ApiMapper {
                 refundNotice,
                 null,
                 productStatus,
-                result.insertDate(),
-                result.insertDate(),
+                format(result.insertDate()),
+                format(result.insertDate()),
                 result.averageRating(),
                 result.reviewCount());
     }

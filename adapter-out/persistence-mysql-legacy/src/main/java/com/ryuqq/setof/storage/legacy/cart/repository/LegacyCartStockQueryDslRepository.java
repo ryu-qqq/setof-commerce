@@ -1,6 +1,6 @@
 package com.ryuqq.setof.storage.legacy.cart.repository;
 
-import static com.ryuqq.setof.storage.legacy.product.entity.QLegacyProductStockEntity.legacyProductStockEntity;
+import static com.ryuqq.setof.storage.legacy.productgroup.entity.QLegacyProductStockEntity.legacyProductStockEntity;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Qualifier;

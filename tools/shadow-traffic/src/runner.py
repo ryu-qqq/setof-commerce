@@ -65,11 +65,13 @@ async def run_test_case(
         if auth_headers:
             headers.update(auth_headers)
 
+    tc_timeout = float(test_case.get("timeout", 10.0))
+
     legacy_result: CallResult = await call_endpoint(
-        http_client, legacy_url, method, path, headers=headers, body=body
+        http_client, legacy_url, method, path, headers=headers, body=body, timeout=tc_timeout
     )
     new_result: CallResult = await call_endpoint(
-        http_client, new_url, method, path, headers=headers, body=body
+        http_client, new_url, method, path, headers=headers, body=body, timeout=tc_timeout
     )
 
     if legacy_result.error:

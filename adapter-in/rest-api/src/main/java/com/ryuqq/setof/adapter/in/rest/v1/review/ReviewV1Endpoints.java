@@ -35,4 +35,16 @@ public final class ReviewV1Endpoints {
 
     /** 작성 가능한 리뷰 경로 (GET /api/v1/reviews/my-page/available) */
     public static final String AVAILABLE_REVIEWS = REVIEWS + "/my-page/available";
+
+    /** 리뷰 단건 경로 (POST /api/v1/review) */
+    public static final String REVIEW = BASE_V1 + "/review";
+
+    /** reviewId Path Variable 세그먼트 */
+    public static final String REVIEW_ID = "/{reviewId}";
+
+    /** 리뷰 단건 전체 경로 (DELETE /api/v1/review/{reviewId}) */
+    public static final String REVIEW_BY_ID = REVIEW + REVIEW_ID;
+
+    /** reviewId Path Variable 이름 */
+    public static final String PATH_REVIEW_ID = "reviewId";
 }

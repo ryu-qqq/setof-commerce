@@ -15,6 +15,6 @@ public class BannerGroupNotFoundException extends BannerException {
     }
 
     public BannerGroupNotFoundException(String detail) {
-        super(ERROR_CODE, String.format("배너 그룹을 찾을 수 없습니다: %s", detail));
+        super(ERROR_CODE, String.format("해당 배너가 존재하지 않습니다%s", detail));
     }
 }

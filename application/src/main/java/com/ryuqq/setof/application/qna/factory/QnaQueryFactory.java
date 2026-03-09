@@ -5,7 +5,6 @@ import com.ryuqq.setof.application.qna.dto.query.MyQnaSearchParams;
 import com.ryuqq.setof.application.qna.dto.query.ProductQnaSearchParams;
 import com.ryuqq.setof.domain.common.vo.CursorPageRequest;
 import com.ryuqq.setof.domain.common.vo.CursorQueryContext;
-import com.ryuqq.setof.domain.common.vo.DateRange;
 import com.ryuqq.setof.domain.common.vo.PageRequest;
 import com.ryuqq.setof.domain.common.vo.QueryContext;
 import com.ryuqq.setof.domain.common.vo.SortDirection;
@@ -74,9 +73,7 @@ public class QnaQueryFactory {
 
         QnaType qnaType = QnaType.valueOf(params.qnaType());
 
-        DateRange dateRange =
-                commonVoFactory.createDateRange(params.startDate(), params.endDate());
-
-        return QnaSearchCriteria.ofMyQnas(memberId, qnaType, dateRange, queryContext);
+        return QnaSearchCriteria.ofMyQnas(
+                memberId, qnaType, params.startDate(), params.endDate(), queryContext);
     }
 }

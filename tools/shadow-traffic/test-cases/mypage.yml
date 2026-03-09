@@ -1,0 +1,32 @@
+domain: mypage
+description: "MyPage API shadow traffic test cases"
+
+auth_config:
+  strategy: login
+  login_endpoint: /api/v1/user/login
+  phone_number: "${SHADOW_TEST_PHONE}"
+  password: "${SHADOW_TEST_PASSWORD}"
+
+test_cases:
+  # === fetchMyPage - 마이페이지 정보 조회 ===
+  # GET /api/v1/user/my-page
+  # @PreAuthorize("hasAnyAuthority('NORMAL_GRADE')")
+  # SecurityContext에서 userId 추출, 파라미터 없음
+  # Response: MyPageResponse { name, phoneNumber, email, socialLoginType,
+  #           registrationDate, userGrade, currentMileage, orderCounts[] }
+
+  - name: "mypage_fetch_authenticated"
+    path: "/api/v1/user/my-page"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "mypage_fetch_unauthenticated"
+    path: "/api/v1/user/my-page"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true

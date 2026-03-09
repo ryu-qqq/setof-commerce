@@ -79,7 +79,7 @@ public class QnaQueryV1Controller {
             @Parameter(description = "상품그룹 ID", required = true)
                     @PathVariable(QnaV1Endpoints.PATH_PRODUCT_GROUP_ID)
                     Long productGroupId,
-            @Parameter(hidden = true) @AuthenticatedUserId Long userId,
+            @Parameter(hidden = true) @AuthenticatedUserId(required = false) Long userId,
             @Valid @ModelAttribute SearchProductQnasV1ApiRequest request) {
 
         ProductQnaSearchParams params =

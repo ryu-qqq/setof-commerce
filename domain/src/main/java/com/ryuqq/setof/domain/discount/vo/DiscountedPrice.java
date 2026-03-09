@@ -50,4 +50,30 @@ public record DiscountedPrice(
                 .map(AppliedDiscount::amount)
                 .reduce(Money.zero(), Money::add);
     }
+
+    /**
+     * 현재가 대비 즉시할인 금액 계산.
+     *
+     * @param currentPrice 현재가 (셀러 설정가)
+     * @return 즉시할인 금액 (currentPrice - salePrice)
+     */
+    public Money directDiscountPrice(Money currentPrice) {
+        if (currentPrice == null || currentPrice.isLessThanOrEqual(salePrice)) {
+            return Money.zero();
+        }
+        return Money.of(currentPrice.value() - salePrice.value());
+    }
+
+    /**
+     * 현재가 대비 즉시할인율 계산.
+     *
+     * @param currentPrice 현재가 (셀러 설정가)
+     * @return 즉시할인율 (0~100)
+     */
+    public int directDiscountRate(Money currentPrice) {
+        if (currentPrice == null || currentPrice.isZero()) {
+            return 0;
+        }
+        return directDiscountPrice(currentPrice).value() * 100 / currentPrice.value();
+    }
 }

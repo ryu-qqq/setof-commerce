@@ -1,0 +1,184 @@
+domain: user
+description: "User API shadow traffic test cases"
+
+auth_config:
+  strategy: login
+  login_endpoint: /api/v1/user/login
+  phone_number: "${SHADOW_TEST_PHONE}"
+  password: "${SHADOW_TEST_PASSWORD}"
+
+test_cases:
+  # === fetchUser - 현재 사용자 정보 조회 ===
+  # GET /api/v1/user
+  # @PreAuthorize("hasAnyAuthority('NORMAL_GRADE')")
+  # SecurityContext에서 userId 추출, 파라미터 없음
+
+  - name: "user_fetch_authenticated"
+    path: "/api/v1/user"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "user_fetch_unauthenticated"
+    path: "/api/v1/user"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # === isExistUser - 사용자 존재 여부 확인 ===
+  # GET /api/v1/user/exists
+  # 인증 없음 (공개 API)
+  # @ModelAttribute IsJoinedUser { phoneNumber: @Pattern(010[0-9]{8}) }
+  # GET body → query params 로 변환됨 (client.py)
+
+  - name: "user_exists_joined"
+    path: "/api/v1/user/exists"
+    method: GET
+    auth: none
+    body:
+      phoneNumber: "${SHADOW_TEST_PHONE}"
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "user_exists_not_joined"
+    path: "/api/v1/user/exists"
+    method: GET
+    auth: none
+    body:
+      phoneNumber: "01099999999"
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "user_exists_invalid_phone_format"
+    path: "/api/v1/user/exists"
+    method: GET
+    auth: none
+    body:
+      phoneNumber: "02012345678"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # === login - 사용자 로그인 ===
+  # POST /api/v1/user/login
+  # 인증 없음 (공개 API)
+  # @RequestBody LoginUser { phoneNumber, passwordHash, referer }
+  # 성공 시 data: null, 토큰은 Set-Cookie로 전달
+
+  - name: "user_login_valid"
+    path: "/api/v1/user/login"
+    method: POST
+    auth: none
+    body:
+      phoneNumber: "${SHADOW_TEST_PHONE}"
+      passwordHash: "${SHADOW_TEST_PASSWORD}"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "user_login_invalid_password"
+    path: "/api/v1/user/login"
+    method: POST
+    auth: none
+    body:
+      phoneNumber: "${SHADOW_TEST_PHONE}"
+      passwordHash: "WrongPass1!"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "user_login_not_found_user"
+    path: "/api/v1/user/login"
+    method: POST
+    auth: none
+    body:
+      phoneNumber: "01099999999"
+      passwordHash: "Password1!"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "user_login_invalid_phone_format"
+    path: "/api/v1/user/login"
+    method: POST
+    auth: none
+    body:
+      phoneNumber: "02012345678"
+      passwordHash: "Password1!"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # === resetPassword - 비밀번호 재설정 ===
+  # PATCH /api/v1/user/password
+  # 인증 없음 (공개 API, 레거시 명명 오류: 메서드명 login)
+  # @RequestBody LoginUser { phoneNumber, passwordHash }
+  # safe_for_repeat: false (실제 DB 변경 발생)
+
+  - name: "user_reset_password_not_found"
+    path: "/api/v1/user/password"
+    method: PATCH
+    auth: none
+    body:
+      phoneNumber: "01099999999"
+      passwordHash: "Password1!"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "user_reset_password_invalid_phone"
+    path: "/api/v1/user/password"
+    method: PATCH
+    auth: none
+    body:
+      phoneNumber: "02012345678"
+      passwordHash: "Password1!"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "user_reset_password_invalid_password_format"
+    path: "/api/v1/user/password"
+    method: PATCH
+    auth: none
+    body:
+      phoneNumber: "${SHADOW_TEST_PHONE}"
+      passwordHash: "simple"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # === withdrawal - 회원 탈퇴 ===
+  # POST /api/v1/user/withdrawl (URL 오타 주의: withdrawal → withdrawl)
+  # @PreAuthorize("hasAnyAuthority('NORMAL_GRADE')")
+  # @RequestBody WithdrawalDto { agreementYn: Yn, reason: WithdrawalReason }
+  # WithdrawalReason: DELIVERY | QUALITY | PRODUCT | MEMBERSHIP | SERVICE
+  # safe_for_repeat: false (실제 DB 변경 발생 - 탈퇴 처리)
+
+  - name: "user_withdrawal_agreement_no"
+    path: "/api/v1/user/withdrawl"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      agreementYn: "N"
+      reason: "SERVICE"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "user_withdrawal_unauthenticated"
+    path: "/api/v1/user/withdrawl"
+    method: POST
+    auth: none
+    body:
+      agreementYn: "Y"
+      reason: "SERVICE"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true

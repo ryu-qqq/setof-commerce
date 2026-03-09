@@ -14,16 +14,25 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record SchedulerProperties(Jobs jobs) {
 
     public record Jobs(
-            SellerAuthOutbox sellerAuthOutbox, SellerAdminAuthOutbox sellerAdminAuthOutbox) {}
+            SellerAuthOutbox sellerAuthOutbox,
+            SellerAdminAuthOutbox sellerAdminAuthOutbox,
+            DiscountOutbox discountOutbox) {}
 
     public record SellerAuthOutbox(ProcessPending processPending, RecoverTimeout recoverTimeout) {}
 
     public record SellerAdminAuthOutbox(
             ProcessPending processPending, RecoverTimeout recoverTimeout) {}
 
+    public record DiscountOutbox(PublishPending publishPending, RecoverStuck recoverStuck) {}
+
     public record ProcessPending(
             boolean enabled, String cron, String timezone, int batchSize, int delaySeconds) {}
 
     public record RecoverTimeout(
+            boolean enabled, String cron, String timezone, int batchSize, long timeoutSeconds) {}
+
+    public record PublishPending(boolean enabled, String cron, String timezone, int batchSize) {}
+
+    public record RecoverStuck(
             boolean enabled, String cron, String timezone, int batchSize, long timeoutSeconds) {}
 }

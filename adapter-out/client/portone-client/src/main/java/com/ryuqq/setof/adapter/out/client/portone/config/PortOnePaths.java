@@ -40,10 +40,12 @@ public final class PortOnePaths {
     public static final String VBANK_HOLDER = "/vbanks/holder";
 
     // ========================================
-    // 결제 관련 경로 (향후 확장)
+    // 결제 관련 경로
     // ========================================
 
-    // 결제 조회: /payments/{payment_id}
+    /** 결제 단건 조회 경로 (GET /payments/{paymentId}) */
+    public static final String PAYMENT = "/payments/{paymentId}";
+
     // 결제 취소: /payments/{payment_id}/cancel
     // 빌링키 발급: /billing-keys
 }

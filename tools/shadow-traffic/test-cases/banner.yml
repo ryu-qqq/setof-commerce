@@ -1,0 +1,46 @@
+domain: banner
+description: "Banner API shadow traffic test cases"
+
+test_cases:
+  # === 배너 타입별 조회 ===
+  - name: "banner_category"
+    path: "/api/v1/content/banner?bannerType=CATEGORY"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "banner_my_page"
+    path: "/api/v1/content/banner?bannerType=MY_PAGE"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "banner_cart"
+    path: "/api/v1/content/banner?bannerType=CART"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "banner_product_detail_description"
+    path: "/api/v1/content/banner?bannerType=PRODUCT_DETAIL_DESCRIPTION"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "banner_recommend"
+    path: "/api/v1/content/banner?bannerType=RECOMMEND"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "banner_login"
+    path: "/api/v1/content/banner?bannerType=LOGIN"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []

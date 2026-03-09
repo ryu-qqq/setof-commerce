@@ -25,6 +25,18 @@ scheduler:
         # Stage: 중간 타임아웃
         timeout-seconds: 180
 
+    discount-outbox:
+      publish-pending:
+        enabled: true
+        cron: "* * * * * *"
+        batch-size: 50
+
+      recover-stuck:
+        enabled: true
+        cron: "0 */5 * * * *"
+        batch-size: 50
+        timeout-seconds: 300
+
     seller-admin-auth-outbox:
       process-pending:
         enabled: false

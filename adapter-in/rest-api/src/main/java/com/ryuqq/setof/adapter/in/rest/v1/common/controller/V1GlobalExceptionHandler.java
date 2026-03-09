@@ -319,6 +319,16 @@ public class V1GlobalExceptionHandler {
     // ======= 500 - 나머지 잡기 =======
     @ExceptionHandler(Exception.class)
     public ResponseEntity<V1ErrorResponse> handleGlobal(Exception ex, HttpServletRequest req) {
+        // DataIntegrityViolationException → 400 (중복 키 등 클라이언트 오류)
+        if ("DataIntegrityViolationException".equals(ex.getClass().getSimpleName())) {
+            String msg = ex.getMessage() != null ? ex.getMessage() : "데이터 무결성 위반이 발생했습니다.";
+            log.warn("V1 DataIntegrityViolation: path={}, message={}", req.getRequestURI(), msg);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(
+                            V1ErrorResponse.of(
+                                    HttpStatus.BAD_REQUEST, ex.getClass().getSimpleName(), msg));
+        }
+
         String stackTrace =
                 Arrays.stream(ex.getStackTrace())
                         .limit(10)

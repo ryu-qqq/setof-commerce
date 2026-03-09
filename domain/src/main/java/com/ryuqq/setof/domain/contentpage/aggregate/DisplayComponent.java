@@ -3,11 +3,18 @@ package com.ryuqq.setof.domain.contentpage.aggregate;
 import com.ryuqq.setof.domain.common.vo.DeletionStatus;
 import com.ryuqq.setof.domain.common.vo.DisplayPeriod;
 import com.ryuqq.setof.domain.contentpage.id.DisplayComponentId;
+import com.ryuqq.setof.domain.contentpage.vo.AutoProductCriteria;
+import com.ryuqq.setof.domain.contentpage.vo.BrandFilter;
 import com.ryuqq.setof.domain.contentpage.vo.ComponentSpec;
 import com.ryuqq.setof.domain.contentpage.vo.ComponentType;
 import com.ryuqq.setof.domain.contentpage.vo.DisplayConfig;
+import com.ryuqq.setof.domain.contentpage.vo.DisplayTab;
 import com.ryuqq.setof.domain.contentpage.vo.ViewExtension;
+import com.ryuqq.setof.domain.contentpage.vo.ViewExtensionType;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * DisplayComponent - 디스플레이 컴포넌트 Aggregate Root.
@@ -242,5 +249,116 @@ public class DisplayComponent {
 
     public Instant updatedAt() {
         return updatedAt;
+    }
+
+    private static final Set<ComponentType> PRODUCT_TYPES =
+            Set.of(
+                    ComponentType.PRODUCT,
+                    ComponentType.BRAND,
+                    ComponentType.CATEGORY,
+                    ComponentType.TAB);
+
+    /**
+     * 상품 관련 컴포넌트 여부.
+     *
+     * @return PRODUCT/BRAND/CATEGORY/TAB 타입이면 true
+     */
+    public boolean isProductComponent() {
+        return PRODUCT_TYPES.contains(componentType);
+    }
+
+    /**
+     * 컴포넌트의 pageSize 계산.
+     *
+     * <p>ViewExtension PRODUCT 타입이면 exposedProducts + maxClickCount × productCountPerClick. 그 외에는
+     * exposedProducts. 0이면 제한 없음(MAX_VALUE).
+     *
+     * @return 최대 상품 수
+     */
+    public int resolvePageSize() {
+        int exposed = resolveExposedProducts();
+        if (viewExtension != null
+                && viewExtension.viewExtensionType() == ViewExtensionType.PRODUCT) {
+            return exposed + viewExtension.maxClickCount() * viewExtension.productCountPerClick();
+        }
+        return exposed > 0 ? exposed : Integer.MAX_VALUE;
+    }
+
+    /**
+     * TAB 컴포넌트에서 특정 탭의 pageSize 계산.
+     *
+     * @param tabId 탭 ID
+     * @return 최대 상품 수 (기본 20)
+     */
+    public int resolveTabPageSize(long tabId) {
+        if (componentSpec instanceof ComponentSpec.TabSpec tabSpec) {
+            for (DisplayTab tab : tabSpec.tabs()) {
+                if (tab.tabId() != null && tab.tabId() == tabId) {
+                    int itemCount = tab.fixedProducts().size() + tab.autoProducts().size();
+                    return itemCount > 0 ? itemCount : 20;
+                }
+            }
+        }
+        return 20;
+    }
+
+    /**
+     * AUTO 상품 조회 조건 목록 추출.
+     *
+     * <p>ComponentSpec 타입별로 categoryId/brandIds를 추출하여 AutoProductCriteria를 구성한다. TAB 컴포넌트는 탭별로 개별
+     * 조건을 생성한다.
+     *
+     * @return AUTO 상품 조회 조건 목록 (빈 리스트이면 AUTO 상품 불필요)
+     */
+    public List<AutoProductCriteria> resolveAutoProductCriteria() {
+        if (componentSpec == null) {
+            return List.of();
+        }
+        return switch (componentSpec) {
+            case ComponentSpec.ProductSpec ps -> {
+                int limit = resolvePageSize();
+                yield List.of(AutoProductCriteria.ofComponent(id.value(), 0L, List.of(), limit));
+            }
+            case ComponentSpec.CategorySpec cs -> {
+                int limit = resolvePageSize();
+                yield List.of(
+                        AutoProductCriteria.ofComponent(
+                                id.value(), cs.categoryId(), List.of(), limit));
+            }
+            case ComponentSpec.BrandSpec bs -> {
+                List<Long> brandIds = bs.brandFilters().stream().map(BrandFilter::brandId).toList();
+                int limit = resolvePageSize();
+                yield List.of(
+                        AutoProductCriteria.ofComponent(
+                                id.value(), bs.categoryId(), brandIds, limit));
+            }
+            case ComponentSpec.TabSpec ts -> {
+                List<AutoProductCriteria> criteria = new ArrayList<>();
+                for (DisplayTab tab : ts.tabs()) {
+                    if (tab.tabId() == null) {
+                        continue;
+                    }
+                    int tabLimit = resolveTabPageSize(tab.tabId());
+                    criteria.add(
+                            AutoProductCriteria.ofTab(
+                                    id.value(), tab.tabId(), 0L, List.of(), tabLimit));
+                }
+                yield criteria;
+            }
+            default -> List.of();
+        };
+    }
+
+    private int resolveExposedProducts() {
+        if (componentSpec == null) {
+            return 0;
+        }
+        return switch (componentSpec) {
+            case ComponentSpec.ProductSpec ps -> ps.exposedProducts();
+            case ComponentSpec.BrandSpec bs -> bs.exposedProducts();
+            case ComponentSpec.CategorySpec cs -> cs.exposedProducts();
+            case ComponentSpec.TabSpec ts -> ts.exposedProducts();
+            default -> 0;
+        };
     }
 }

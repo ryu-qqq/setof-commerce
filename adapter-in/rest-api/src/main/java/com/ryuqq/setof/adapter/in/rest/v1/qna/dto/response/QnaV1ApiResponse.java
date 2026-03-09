@@ -1,10 +1,8 @@
 package com.ryuqq.setof.adapter.in.rest.v1.qna.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -91,12 +89,10 @@ public record QnaV1ApiResponse(
             String userName,
 
             @Schema(description = "등록일시", example = "2024-01-15 10:30:00")
-            @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-            LocalDateTime insertDate,
+            String insertDate,
 
             @Schema(description = "수정일시", example = "2024-01-15 10:30:00")
-            @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-            LocalDateTime updateDate
+            String updateDate
 
     ) {}
 
@@ -134,12 +130,10 @@ public record QnaV1ApiResponse(
             List<QnaImageResponse> images,
 
             @Schema(description = "등록일시", example = "2024-01-15 14:00:00")
-            @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-            LocalDateTime insertDate,
+            String insertDate,
 
             @Schema(description = "수정일시", example = "2024-01-15 14:00:00")
-            @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-            LocalDateTime updateDate
+            String updateDate
 
     ) {}
 

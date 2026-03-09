@@ -14,6 +14,7 @@ package com.ryuqq.setof.domain.contentpage.vo;
  * @since 1.1.0
  */
 public record ViewExtension(
+        long viewExtensionId,
         ViewExtensionType viewExtensionType,
         String linkUrl,
         String buttonName,

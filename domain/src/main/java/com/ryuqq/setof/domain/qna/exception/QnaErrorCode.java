@@ -17,7 +17,8 @@ public enum QnaErrorCode implements ErrorCode {
     QNA_ALREADY_CLOSED("QNA-003", 400, "종료된 Q&A에는 작업을 수행할 수 없습니다"),
     QNA_IMAGE_LIMIT_EXCEEDED("QNA-004", 400, "Q&A 이미지 수가 최대 한도를 초과했습니다"),
     QNA_DUPLICATE_PENDING("QNA-005", 409, "동일 대상에 미답변 질문이 존재합니다"),
-    QNA_IMAGE_NOT_ALLOWED("QNA-006", 400, "해당 유형의 Q&A에는 이미지 첨부가 불가합니다");
+    QNA_IMAGE_NOT_ALLOWED("QNA-006", 400, "해당 유형의 Q&A에는 이미지 첨부가 불가합니다"),
+    QNA_ANSWER_NOT_FOUND("QNA-007", 404, "Q&A 답변을 찾을 수 없습니다");
 
     private final String code;
     private final int httpStatus;

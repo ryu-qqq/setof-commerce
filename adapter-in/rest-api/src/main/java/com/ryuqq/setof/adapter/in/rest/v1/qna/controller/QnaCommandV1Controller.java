@@ -207,7 +207,8 @@ public class QnaCommandV1Controller {
                     Long qnaAnswerId,
             @Valid @RequestBody UpdateQnaReplyV1ApiRequest request) {
 
-        ModifyQnaAnswerCommand command = mapper.toModifyAnswerCommand(qnaId, request);
+        ModifyQnaAnswerCommand command =
+                mapper.toModifyAnswerCommand(qnaId, qnaAnswerId, request);
         modifyQnaAnswerUseCase.execute(command);
 
         return ResponseEntity.ok(V1ApiResponse.success(null));

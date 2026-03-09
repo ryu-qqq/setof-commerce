@@ -569,6 +569,166 @@ class DiscountVoTest {
     }
 
     @Nested
+    @DisplayName("DiscountedPrice 신규 메서드 테스트")
+    class DiscountedPriceNewMethodsTest {
+
+        @Test
+        @DisplayName("directDiscountPrice()는 currentPrice - salePrice 금액을 반환한다")
+        void directDiscountPriceReturnsGap() {
+            var result = DiscountedPrice.of(Money.of(8000), 20, java.util.List.of());
+
+            Money directDiscount = result.directDiscountPrice(Money.of(10000));
+
+            assertThat(directDiscount).isEqualTo(Money.of(2000));
+        }
+
+        @Test
+        @DisplayName("directDiscountPrice()는 currentPrice <= salePrice이면 0을 반환한다")
+        void directDiscountPriceReturnsZeroWhenCurrentPriceNotHigher() {
+            var result = DiscountedPrice.of(Money.of(10000), 0, java.util.List.of());
+
+            assertThat(result.directDiscountPrice(Money.of(10000))).isEqualTo(Money.zero());
+            assertThat(result.directDiscountPrice(Money.of(9000))).isEqualTo(Money.zero());
+        }
+
+        @Test
+        @DisplayName("directDiscountPrice()는 currentPrice가 null이면 0을 반환한다")
+        void directDiscountPriceReturnsZeroForNullCurrentPrice() {
+            var result = DiscountedPrice.of(Money.of(8000), 20, java.util.List.of());
+
+            assertThat(result.directDiscountPrice(null)).isEqualTo(Money.zero());
+        }
+
+        @Test
+        @DisplayName("directDiscountRate()는 currentPrice 대비 즉시할인율을 반환한다")
+        void directDiscountRateReturnsRateBasedOnCurrentPrice() {
+            // salePrice=8000, currentPrice=10000 → 2000/10000 = 20%
+            var result = DiscountedPrice.of(Money.of(8000), 0, java.util.List.of());
+
+            int rate = result.directDiscountRate(Money.of(10000));
+
+            assertThat(rate).isEqualTo(20);
+        }
+
+        @Test
+        @DisplayName("directDiscountRate()는 currentPrice가 0이면 0을 반환한다")
+        void directDiscountRateReturnsZeroForZeroCurrentPrice() {
+            var result = DiscountedPrice.of(Money.of(8000), 20, java.util.List.of());
+
+            assertThat(result.directDiscountRate(Money.zero())).isZero();
+        }
+
+        @Test
+        @DisplayName("directDiscountRate()는 currentPrice가 null이면 0을 반환한다")
+        void directDiscountRateReturnsZeroForNullCurrentPrice() {
+            var result = DiscountedPrice.of(Money.of(8000), 20, java.util.List.of());
+
+            assertThat(result.directDiscountRate(null)).isZero();
+        }
+
+        @Test
+        @DisplayName("directDiscountRate()는 할인이 없으면 0을 반환한다")
+        void directDiscountRateReturnsZeroWhenNoDiscount() {
+            var result = DiscountedPrice.of(Money.of(10000), 0, java.util.List.of());
+
+            assertThat(result.directDiscountRate(Money.of(10000))).isZero();
+        }
+    }
+
+    @Nested
+    @DisplayName("AppliedDiscount.withShareRatios() 테스트")
+    class WithShareRatiosTest {
+
+        @Test
+        @DisplayName("withShareRatios()는 전체 할인 대비 각 항목의 비율을 계산한다")
+        void withShareRatiosCalculatesEachRatio() {
+            var discounts =
+                    java.util.List.of(
+                            AppliedDiscount.of(
+                                    DiscountPolicyId.of(1L),
+                                    StackingGroup.SELLER_INSTANT,
+                                    Money.of(3000),
+                                    0.0),
+                            AppliedDiscount.of(
+                                    DiscountPolicyId.of(2L),
+                                    StackingGroup.PLATFORM_INSTANT,
+                                    Money.of(7000),
+                                    0.0));
+            Money totalDiscount = Money.of(10000);
+
+            var result = AppliedDiscount.withShareRatios(discounts, totalDiscount);
+
+            assertThat(result).hasSize(2);
+            assertThat(result.get(0).shareRatio()).isEqualTo(0.3);
+            assertThat(result.get(1).shareRatio()).isEqualTo(0.7);
+        }
+
+        @Test
+        @DisplayName("withShareRatios()는 동일 금액이면 각 비율이 0.5이다")
+        void withShareRatiosCalculatesEqualRatios() {
+            var discounts =
+                    java.util.List.of(
+                            AppliedDiscount.of(
+                                    DiscountPolicyId.of(1L),
+                                    StackingGroup.SELLER_INSTANT,
+                                    Money.of(5000),
+                                    0.0),
+                            AppliedDiscount.of(
+                                    DiscountPolicyId.of(2L),
+                                    StackingGroup.PLATFORM_INSTANT,
+                                    Money.of(5000),
+                                    0.0));
+            Money totalDiscount = Money.of(10000);
+
+            var result = AppliedDiscount.withShareRatios(discounts, totalDiscount);
+
+            assertThat(result.get(0).shareRatio()).isEqualTo(0.5);
+            assertThat(result.get(1).shareRatio()).isEqualTo(0.5);
+        }
+
+        @Test
+        @DisplayName("withShareRatios()는 totalDiscount가 0이면 원본 리스트를 반환한다")
+        void withShareRatiosReturnsSameListWhenTotalDiscountIsZero() {
+            var discounts =
+                    java.util.List.of(
+                            AppliedDiscount.of(
+                                    DiscountPolicyId.of(1L),
+                                    StackingGroup.SELLER_INSTANT,
+                                    Money.of(0),
+                                    0.0));
+
+            var result = AppliedDiscount.withShareRatios(discounts, Money.zero());
+
+            assertThat(result).isSameAs(discounts);
+        }
+
+        @Test
+        @DisplayName("withShareRatios()는 빈 리스트이면 원본 빈 리스트를 반환한다")
+        void withShareRatiosReturnsEmptyListWhenDiscountsIsEmpty() {
+            var result = AppliedDiscount.withShareRatios(java.util.List.of(), Money.of(10000));
+
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        @DisplayName("withShareRatios()는 단일 항목이면 shareRatio가 1.0이다")
+        void withShareRatiosReturnsSingleItemWithRatioOne() {
+            var discounts =
+                    java.util.List.of(
+                            AppliedDiscount.of(
+                                    DiscountPolicyId.of(1L),
+                                    StackingGroup.COUPON,
+                                    Money.of(5000),
+                                    0.0));
+            Money totalDiscount = Money.of(5000);
+
+            var result = AppliedDiscount.withShareRatios(discounts, totalDiscount);
+
+            assertThat(result.get(0).shareRatio()).isEqualTo(1.0);
+        }
+    }
+
+    @Nested
     @DisplayName("StackingGroup 테스트")
     class StackingGroupTest {
 

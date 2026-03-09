@@ -1,8 +1,7 @@
 package com.ryuqq.setof.adapter.in.rest.v1.content.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -27,22 +26,26 @@ public record ContentV1ApiResponse(
     @Schema(description = "전시 기간")
     public record DisplayPeriodResponse(
             @Schema(description = "전시 시작일", example = "2026-01-01 00:00:00")
-                    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                    LocalDateTime displayStartDate,
+                    String displayStartDate,
             @Schema(description = "전시 종료일", example = "2026-12-31 23:59:59")
-                    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                    LocalDateTime displayEndDate) {}
+                    String displayEndDate) {}
 
     /**
      * ComponentDetailV1ApiResponse - 컴포넌트 상세 응답 DTO.
      *
-     * <p>컴포넌트 타입에 따라 동적 구조를 가짐.
+     * <p>레거시 호환: flat 상위 필드 + 타입별 중첩 component 객체.
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(description = "컴포넌트 상세")
     public record ComponentDetailV1ApiResponse(
-            @Schema(description = "컴포넌트 ID", example = "1") long componentId,
-            @Schema(description = "컴포넌트 이름", example = "메인 배너") String componentName,
-            @Schema(description = "컴포넌트 타입", example = "PRODUCT") String componentType,
-            @Schema(description = "전시 순서", example = "1") int displayOrder,
-            @Schema(description = "컴포넌트 데이터 (타입별 상이)") Object data) {}
+            @Schema(description = "컴포넌트 ID") long componentId,
+            @Schema(description = "컴포넌트 이름") String componentName,
+            @Schema(description = "컴포넌트 타입") String componentType,
+            @Schema(description = "리스트 타입") String listType,
+            @Schema(description = "정렬 타입") String orderType,
+            @Schema(description = "뱃지 타입") String badgeType,
+            @Schema(description = "필터 여부") String filterYn,
+            @Schema(description = "전시 여부") String displayYn,
+            @Schema(description = "컴포넌트 데이터 (타입별 상이)") Object component,
+            @Schema(description = "뷰 확장 상세") Object viewExtensionDetails) {}
 }

@@ -1,7 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.v1.qna.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
 
 /**
  * CreateQnaReplyV1ApiResponse - Q&A 답변 등록/수정 응답 DTO.
@@ -45,5 +44,5 @@ public record CreateQnaReplyV1ApiResponse(
                 String answerStatus,
         @Schema(description = "답변 제목", example = "문의 답변드립니다") String title,
         @Schema(description = "답변 내용", example = "해당 상품은 S, M, L 사이즈 모두 재고 있습니다.") String content,
-        @Schema(description = "등록일시", example = "2024-01-01T00:00:00") LocalDateTime insertDate,
-        @Schema(description = "수정일시", example = "2024-01-01T00:00:00") LocalDateTime updateDate) {}
+        @Schema(description = "등록일시", example = "2024-01-01 00:00:00") String insertDate,
+        @Schema(description = "수정일시", example = "2024-01-01 00:00:00") String updateDate) {}

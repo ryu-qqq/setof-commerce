@@ -16,6 +16,6 @@ public class ContentPageNotFoundException extends ContentPageException {
     }
 
     public ContentPageNotFoundException(String detail) {
-        super(ERROR_CODE, String.format("콘텐츠 페이지를 찾을 수 없습니다: %s", detail));
+        super(ERROR_CODE, String.format("해당 컨텐츠가 존재하지 않습니다%s", detail));
     }
 }

@@ -1,5 +1,7 @@
 package com.ryuqq.setof.adapter.in.rest.v1.qna.mapper;
 
+import static com.ryuqq.setof.adapter.in.rest.common.util.DateTimeFormatUtils.format;
+
 import com.ryuqq.setof.adapter.in.rest.v1.qna.dto.request.CreateQnaReplyV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.v1.qna.dto.request.CreateQnaV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.v1.qna.dto.request.SearchMyQnasCursorV1ApiRequest;
@@ -43,7 +45,7 @@ import org.springframework.stereotype.Component;
 public class QnaV1ApiMapper {
 
     private static final int DEFAULT_PAGE = 0;
-    private static final int DEFAULT_SIZE = 10;
+    private static final int DEFAULT_SIZE = 20;
 
     // ─────────────────────────────────────────────
     // Query 변환
@@ -82,7 +84,7 @@ public class QnaV1ApiMapper {
         return MyQnaSearchParams.of(
                 userId,
                 request.qnaType(),
-                request.lastQnaId(),
+                request.lastDomainId(),
                 request.startDate(),
                 request.endDate(),
                 size);
@@ -98,7 +100,7 @@ public class QnaV1ApiMapper {
         List<QnaV1ApiResponse> content =
                 result.content().stream().map(this::toQnaResponse).toList();
 
-        return new QnaPageV1ApiResponse(
+        return QnaPageV1ApiResponse.of(
                 content,
                 result.pageMeta().page(),
                 result.pageMeta().size(),
@@ -121,7 +123,7 @@ public class QnaV1ApiMapper {
                         ? null
                         : result.content().get(result.content().size() - 1).qnaId();
 
-        return new QnaSliceV1ApiResponse(
+        return QnaSliceV1ApiResponse.of(
                 content,
                 result.sliceMeta().size(),
                 result.sliceMeta().hasNext(),
@@ -141,8 +143,8 @@ public class QnaV1ApiMapper {
                 List.of(),
                 null,
                 r.userName(),
-                r.insertDate(),
-                r.updateDate());
+                format(r.insertDate()),
+                format(r.updateDate()));
 
         Set<QnaV1ApiResponse.QnaAnswerResponse> answers = toAnswerResponseSet(r.answers());
 
@@ -180,8 +182,8 @@ public class QnaV1ApiMapper {
                 List.of(),
                 target,
                 r.userName(),
-                r.insertDate(),
-                r.updateDate());
+                format(r.insertDate()),
+                format(r.updateDate()));
 
         Set<QnaV1ApiResponse.QnaAnswerResponse> answers = toAnswerResponseSet(r.answers());
 
@@ -206,8 +208,8 @@ public class QnaV1ApiMapper {
                 a.title(),
                 a.content(),
                 List.of(),
-                a.insertDate(),
-                a.updateDate());
+                format(a.insertDate()),
+                format(a.updateDate()));
     }
 
     // ─────────────────────────────────────────────
@@ -224,13 +226,6 @@ public class QnaV1ApiMapper {
      * @return RegisterQnaCommand
      */
     public RegisterQnaCommand toRegisterCommand(Long userId, CreateQnaV1ApiRequest request) {
-        List<String> imageUrls =
-                request.images() != null
-                        ? request.images().stream()
-                                .map(CreateQnaV1ApiRequest.QnaImageRequest::imageUrl)
-                                .toList()
-                        : List.of();
-
         return RegisterQnaCommand.of(
                 userId,
                 request.sellerId(),
@@ -240,8 +235,8 @@ public class QnaV1ApiMapper {
                 request.orderId(),
                 request.title(),
                 request.content(),
-                request.secret(),
-                imageUrls);
+                request.isSecret(),
+                request.imageUrls());
     }
 
     /**
@@ -253,20 +248,13 @@ public class QnaV1ApiMapper {
      * @return ModifyQnaCommand
      */
     public ModifyQnaCommand toModifyCommand(Long qnaId, Long userId, UpdateQnaV1ApiRequest request) {
-        List<String> imageUrls =
-                request.images() != null
-                        ? request.images().stream()
-                                .map(UpdateQnaV1ApiRequest.QnaImageRequest::imageUrl)
-                                .toList()
-                        : List.of();
-
         return ModifyQnaCommand.of(
                 qnaId,
                 userId,
                 request.title(),
                 request.content(),
-                request.secret(),
-                imageUrls);
+                request.isSecret(),
+                request.imageUrls());
     }
 
     /**
@@ -289,8 +277,8 @@ public class QnaV1ApiMapper {
      * @return ModifyQnaAnswerCommand
      */
     public ModifyQnaAnswerCommand toModifyAnswerCommand(
-            Long qnaId, UpdateQnaReplyV1ApiRequest request) {
-        return ModifyQnaAnswerCommand.of(qnaId, request.sellerId(), request.content());
+            Long qnaId, Long qnaAnswerId, UpdateQnaReplyV1ApiRequest request) {
+        return ModifyQnaAnswerCommand.of(qnaId, qnaAnswerId, request.sellerId(), request.content());
     }
 
     /**
@@ -309,7 +297,7 @@ public class QnaV1ApiMapper {
                 request.qnaDetailType(),
                 request.title(),
                 request.content(),
-                request.secret(),
+                request.isSecret(),
                 "OPEN",
                 request.sellerId(),
                 null,

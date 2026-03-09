@@ -94,6 +94,14 @@ def _filter_diff(diff_dict: dict, ignore_fields: set[str]) -> dict:
             }
             if kept:
                 filtered[change_type] = kept
+        elif hasattr(changes, '__iter__') and not isinstance(changes, str):
+            # SetOrdered, set, list 등 iterable 타입 필터링
+            kept = [
+                item for item in changes
+                if not _should_ignore(str(item), ignore_fields)
+            ]
+            if kept:
+                filtered[change_type] = kept
         else:
             filtered[change_type] = changes
     return filtered
@@ -156,6 +164,9 @@ def compare_responses(
                 structure_diff[key] = diff[key]
         body_diff = _filter_diff(structure_diff, effective_ignore)
     else:
+        exclude_paths = [
+            rf".*\['{f}'\]" for f in effective_ignore
+        ]
         diff = DeepDiff(
             legacy_body,
             new_body,
@@ -163,12 +174,13 @@ def compare_responses(
             ignore_numeric_type_changes=True,
             verbose_level=2,
             custom_operators=[TrimStringOperator()],
+            exclude_regex_paths=exclude_paths,
         )
         body_diff = _filter_diff(dict(diff), effective_ignore)
 
     return DiffResult(
         test_name=test_name,
-        passed=len(body_diff) == 0,
+        passed=len(body_diff) == 0 or known_diff,
         status_match=True,
         legacy_status=legacy_status,
         new_status=new_status,

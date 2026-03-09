@@ -14,6 +14,7 @@ import com.ryuqq.setof.domain.payment.vo.PaymentMethodType;
 import com.ryuqq.setof.domain.payment.vo.PaymentStatus;
 import com.ryuqq.setof.domain.payment.vo.PgTransactionInfo;
 import com.ryuqq.setof.domain.payment.vo.UsedMileage;
+import com.ryuqq.setof.domain.payment.vo.VBankInfo;
 import java.time.Instant;
 
 /** 결제 Aggregate Root. */
@@ -29,6 +30,7 @@ public class Payment {
     private PgTransactionInfo pgInfo;
     private final BuyerInfo buyerInfo;
     private CardPaymentInfo cardInfo;
+    private VBankInfo vBankInfo;
     private final UsedMileage usedMileage;
     private Instant paidAt;
     private Instant cancelledAt;
@@ -46,6 +48,7 @@ public class Payment {
             PgTransactionInfo pgInfo,
             BuyerInfo buyerInfo,
             CardPaymentInfo cardInfo,
+            VBankInfo vBankInfo,
             UsedMileage usedMileage,
             Instant paidAt,
             Instant cancelledAt,
@@ -61,6 +64,7 @@ public class Payment {
         this.pgInfo = pgInfo;
         this.buyerInfo = buyerInfo;
         this.cardInfo = cardInfo;
+        this.vBankInfo = vBankInfo;
         this.usedMileage = usedMileage;
         this.paidAt = paidAt;
         this.cancelledAt = cancelledAt;
@@ -101,6 +105,7 @@ public class Payment {
                 null,
                 buyerInfo,
                 null,
+                null,
                 usedMileage,
                 null,
                 null,
@@ -121,6 +126,7 @@ public class Payment {
      * @param pgInfo PG 트랜잭션 정보 (nullable)
      * @param buyerInfo 구매자 정보
      * @param cardInfo 카드 결제 정보 (nullable)
+     * @param vBankInfo 가상계좌 정보 (nullable)
      * @param usedMileage 사용 마일리지
      * @param paidAt 결제 완료 시각 (nullable)
      * @param cancelledAt 취소 시각 (nullable)
@@ -139,6 +145,7 @@ public class Payment {
             PgTransactionInfo pgInfo,
             BuyerInfo buyerInfo,
             CardPaymentInfo cardInfo,
+            VBankInfo vBankInfo,
             UsedMileage usedMileage,
             Instant paidAt,
             Instant cancelledAt,
@@ -155,6 +162,7 @@ public class Payment {
                 pgInfo,
                 buyerInfo,
                 cardInfo,
+                vBankInfo,
                 usedMileage,
                 paidAt,
                 cancelledAt,
@@ -171,12 +179,15 @@ public class Payment {
      *
      * @param pgInfo PG 트랜잭션 정보
      * @param cardInfo 카드 결제 정보 (nullable)
+     * @param vBankInfo 가상계좌 정보 (nullable)
      * @param now 현재 시간
      */
-    public void complete(PgTransactionInfo pgInfo, CardPaymentInfo cardInfo, Instant now) {
+    public void complete(
+            PgTransactionInfo pgInfo, CardPaymentInfo cardInfo, VBankInfo vBankInfo, Instant now) {
         transitTo(PaymentStatus.COMPLETED, now);
         this.pgInfo = pgInfo;
         this.cardInfo = cardInfo;
+        this.vBankInfo = vBankInfo;
         this.paidAt = now;
     }
 
@@ -312,6 +323,10 @@ public class Payment {
 
     public CardPaymentInfo cardInfo() {
         return cardInfo;
+    }
+
+    public VBankInfo vBankInfo() {
+        return vBankInfo;
     }
 
     public UsedMileage usedMileage() {

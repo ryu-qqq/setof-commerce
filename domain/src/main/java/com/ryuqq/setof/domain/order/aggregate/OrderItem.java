@@ -1,17 +1,22 @@
 package com.ryuqq.setof.domain.order.aggregate;
 
-import com.ryuqq.setof.domain.common.vo.Money;
 import com.ryuqq.setof.domain.order.exception.InvalidOrderItemStatusTransitionException;
 import com.ryuqq.setof.domain.order.id.LegacyOrderId;
 import com.ryuqq.setof.domain.order.id.OrderItemId;
+import com.ryuqq.setof.domain.order.vo.OrderItemPrice;
 import com.ryuqq.setof.domain.order.vo.OrderItemQuantity;
 import com.ryuqq.setof.domain.order.vo.OrderItemStatus;
+import com.ryuqq.setof.domain.order.vo.OrderProductSnapshot;
 import com.ryuqq.setof.domain.product.id.ProductId;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import java.time.Instant;
 
-/** 주문 아이템 Aggregate Root. */
+/**
+ * 주문 아이템 Aggregate Root.
+ *
+ * <p>가격 정보는 {@link OrderItemPrice}로, 주문 시점 상품 정보는 {@link OrderProductSnapshot}으로 관리합니다.
+ */
 public class OrderItem {
 
     private final OrderItemId id;
@@ -20,7 +25,8 @@ public class OrderItem {
     private final ProductGroupId productGroupId;
     private final ProductId productId;
     private final OrderItemQuantity quantity;
-    private final Money itemAmount;
+    private final OrderItemPrice price;
+    private final OrderProductSnapshot snapshot;
     private OrderItemStatus status;
     private final Instant createdAt;
     private Instant updatedAt;
@@ -32,7 +38,8 @@ public class OrderItem {
             ProductGroupId productGroupId,
             ProductId productId,
             OrderItemQuantity quantity,
-            Money itemAmount,
+            OrderItemPrice price,
+            OrderProductSnapshot snapshot,
             OrderItemStatus status,
             Instant createdAt,
             Instant updatedAt) {
@@ -42,7 +49,8 @@ public class OrderItem {
         this.productGroupId = productGroupId;
         this.productId = productId;
         this.quantity = quantity;
-        this.itemAmount = itemAmount;
+        this.price = price;
+        this.snapshot = snapshot;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -56,7 +64,8 @@ public class OrderItem {
      * @param productGroupId 상품 그룹 ID
      * @param productId 상품 ID
      * @param quantity 주문 수량
-     * @param itemAmount 아이템 금액
+     * @param price 가격 분해 정보
+     * @param snapshot 주문 시점 상품 스냅샷
      * @param now 현재 시간
      * @return 대기 상태의 새 주문 아이템
      */
@@ -66,7 +75,8 @@ public class OrderItem {
             ProductGroupId productGroupId,
             ProductId productId,
             OrderItemQuantity quantity,
-            Money itemAmount,
+            OrderItemPrice price,
+            OrderProductSnapshot snapshot,
             Instant now) {
         return new OrderItem(
                 OrderItemId.forNew(),
@@ -75,7 +85,8 @@ public class OrderItem {
                 productGroupId,
                 productId,
                 quantity,
-                itemAmount,
+                price,
+                snapshot,
                 OrderItemStatus.PENDING,
                 now,
                 now);
@@ -90,7 +101,8 @@ public class OrderItem {
      * @param productGroupId 상품 그룹 ID
      * @param productId 상품 ID
      * @param quantity 주문 수량
-     * @param itemAmount 아이템 금액
+     * @param price 가격 분해 정보
+     * @param snapshot 주문 시점 상품 스냅샷
      * @param status 아이템 상태
      * @param createdAt 생성 시각
      * @param updatedAt 수정 시각
@@ -103,7 +115,8 @@ public class OrderItem {
             ProductGroupId productGroupId,
             ProductId productId,
             OrderItemQuantity quantity,
-            Money itemAmount,
+            OrderItemPrice price,
+            OrderProductSnapshot snapshot,
             OrderItemStatus status,
             Instant createdAt,
             Instant updatedAt) {
@@ -114,7 +127,8 @@ public class OrderItem {
                 productGroupId,
                 productId,
                 quantity,
-                itemAmount,
+                price,
+                snapshot,
                 status,
                 createdAt,
                 updatedAt);
@@ -259,12 +273,16 @@ public class OrderItem {
         return quantity.value();
     }
 
-    public Money itemAmount() {
-        return itemAmount;
+    public OrderItemPrice price() {
+        return price;
     }
 
-    public int itemAmountValue() {
-        return itemAmount.value();
+    public int orderAmount() {
+        return price.orderAmount();
+    }
+
+    public OrderProductSnapshot snapshot() {
+        return snapshot;
     }
 
     public OrderItemStatus status() {

@@ -1,4 +1,4 @@
-package com.ryuqq.adapter.in.rest.common.util;
+package com.ryuqq.setof.adapter.in.rest.common.util;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

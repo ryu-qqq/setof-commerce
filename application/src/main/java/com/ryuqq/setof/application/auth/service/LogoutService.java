@@ -1,31 +1,29 @@
 package com.ryuqq.setof.application.auth.service;
 
 import com.ryuqq.setof.application.auth.dto.command.LogoutCommand;
-import com.ryuqq.setof.application.auth.manager.AuthManager;
+import com.ryuqq.setof.application.auth.manager.TokenCommandFacade;
 import com.ryuqq.setof.application.auth.port.in.LogoutUseCase;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
 
 /**
  * 로그아웃 서비스.
  *
- * <p>LogoutUseCase를 구현하며, AuthManager를 통해 로그아웃을 수행합니다.
+ * <p>LogoutUseCase를 구현하며, TokenManager를 통해 Refresh Token 캐시를 삭제합니다.
  *
  * @author ryu-qqq
- * @since 1.0.0
+ * @since 1.2.0
  */
 @Service
-@ConditionalOnBean(AuthManager.class)
 public class LogoutService implements LogoutUseCase {
 
-    private final AuthManager authManager;
+    private final TokenCommandFacade tokenCommandFacade;
 
-    public LogoutService(AuthManager authManager) {
-        this.authManager = authManager;
+    public LogoutService(TokenCommandFacade tokenCommandFacade) {
+        this.tokenCommandFacade = tokenCommandFacade;
     }
 
     @Override
     public void execute(LogoutCommand command) {
-        authManager.logout(command.userId());
+        tokenCommandFacade.revokeRefreshToken(command.userId());
     }
 }

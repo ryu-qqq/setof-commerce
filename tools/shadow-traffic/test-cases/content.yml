@@ -1,0 +1,263 @@
+domain: content
+description: "Content Page API shadow traffic test cases"
+
+test_cases:
+  # =============================================
+  # 전시 중인 콘텐츠 ID 목록
+  # =============================================
+  - name: "content_on_display"
+    path: "/api/v1/content/on-display"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  # =============================================
+  # 콘텐츠 메타데이터 조회 (컴포넌트 미포함)
+  # =============================================
+  - name: "content_meta_id_13"
+    path: "/api/v1/content/meta/13"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "content_meta_id_14"
+    path: "/api/v1/content/meta/14"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "content_meta_id_92"
+    path: "/api/v1/content/meta/92"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "content_meta_id_101"
+    path: "/api/v1/content/meta/101"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  - name: "content_meta_not_found"
+    path: "/api/v1/content/meta/999999"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []
+
+  # =============================================
+  # 콘텐츠 상세 조회 - 비제품 컴포넌트 (TITLE, BLANK, TEXT, IMAGE)
+  # bypass=Y: 만료 컨텐츠도 조회 가능
+  # =============================================
+  - name: "content_detail_non_product_123"
+    path: "/api/v1/content/123?bypass=Y"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields:
+      - "memo"
+      - "productGroupThumbnails"
+      - "favorite"
+
+  # =============================================
+  # 콘텐츠 상세 조회 - PRODUCT 컴포넌트 포함
+  # productGroupThumbnails는 AUTO 상품 쿼리 차이로 별도 검증 예정
+  # =============================================
+
+  # content_id=13: CATEGORY 컴포넌트 포함 (전시 중)
+  - name: "content_detail_product_13"
+    path: "/api/v1/content/13"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields:
+      - "memo"
+      - "favorite"
+      - "productGroupThumbnails"
+
+  # content_id=100: 만료 컨텐츠 → bypass=Y (heavy content → timeout 30s)
+  # known_diff: 레거시 대비 추가 컴포넌트 노출 + imageComponentLinks 빈 항목 차이
+  - name: "content_detail_product_heavy_100"
+    path: "/api/v1/content/100?bypass=Y"
+    method: GET
+    auth: none
+    compare_mode: full
+    timeout: 30
+    known_diff: true
+    ignore_fields:
+      - "memo"
+      - "favorite"
+      - "productGroupThumbnails"
+      - "imageComponentLinks"
+
+  # content_id=98: 만료 컨텐츠 → bypass=Y
+  - name: "content_detail_product_98"
+    path: "/api/v1/content/98?bypass=Y"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields:
+      - "memo"
+      - "favorite"
+      - "productGroupThumbnails"
+
+  # content_id=42: 만료 컨텐츠 → bypass=Y
+  - name: "content_detail_product_42"
+    path: "/api/v1/content/42?bypass=Y"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields:
+      - "memo"
+      - "favorite"
+      - "productGroupThumbnails"
+      - "imageComponentLinks"
+
+  # =============================================
+  # 콘텐츠 상세 조회 - TAB 컴포넌트 포함
+  # =============================================
+
+  # content_id=96: 만료 컨텐츠 → bypass=Y
+  - name: "content_detail_tab_96"
+    path: "/api/v1/content/96?bypass=Y"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields:
+      - "memo"
+      - "favorite"
+      - "productGroupThumbnails"
+
+  # content_id=115: 만료 컨텐츠 → bypass=Y (heavy content → timeout 30s)
+  # known_diff: TAB 컴포넌트 brandList/tabDetails 레거시 고유 로직 차이
+  - name: "content_detail_mixed_115"
+    path: "/api/v1/content/115?bypass=Y"
+    method: GET
+    auth: none
+    compare_mode: full
+    timeout: 30
+    known_diff: true
+    ignore_fields:
+      - "memo"
+      - "favorite"
+      - "productGroupThumbnails"
+      - "brandList"
+      - "pageSize"
+
+  # content_id=117: 만료 컨텐츠 → bypass=Y
+  - name: "content_detail_tab_heavy_117"
+    path: "/api/v1/content/117?bypass=Y"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields:
+      - "memo"
+      - "favorite"
+      - "productGroupThumbnails"
+
+  # content_id=99: 만료 컨텐츠 → bypass=Y
+  # known_diff: componentId=932(BLANK) 레거시에서 미노출 (레거시 고유 필터 로직)
+  - name: "content_detail_tab_99"
+    path: "/api/v1/content/99?bypass=Y"
+    method: GET
+    auth: none
+    compare_mode: full
+    known_diff: true
+    ignore_fields:
+      - "memo"
+      - "favorite"
+      - "productGroupThumbnails"
+
+  # content_id=123: TAB 컴포넌트 + bypass=Y
+  - name: "content_detail_tab_123_bypass"
+    path: "/api/v1/content/123?bypass=Y"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields:
+      - "memo"
+      - "favorite"
+      - "productGroupThumbnails"
+
+  # =============================================
+  # bypass 파라미터 검증
+  # =============================================
+
+  # bypass=Y: 전시 기간 체크 우회
+  - name: "content_detail_bypass_yes"
+    path: "/api/v1/content/13?bypass=Y"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields:
+      - "memo"
+      - "favorite"
+      - "productGroupThumbnails"
+
+  # bypass=N: 전시 기간 체크 적용 (기본값)
+  - name: "content_detail_bypass_no"
+    path: "/api/v1/content/13?bypass=N"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields:
+      - "memo"
+      - "favorite"
+      - "productGroupThumbnails"
+
+  # =============================================
+  # viewExtension 검증 (만료 → bypass=Y)
+  # =============================================
+
+  # content_id=109: 만료 컨텐츠 → bypass=Y
+  - name: "content_detail_product_109"
+    path: "/api/v1/content/109?bypass=Y"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields:
+      - "memo"
+      - "favorite"
+      - "productGroupThumbnails"
+
+  # content_id=110: 만료 컨텐츠 → bypass=Y
+  - name: "content_detail_product_110"
+    path: "/api/v1/content/110?bypass=Y"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields:
+      - "memo"
+      - "favorite"
+      - "productGroupThumbnails"
+
+  # content_id=71: 만료 컨텐츠 → bypass=Y
+  # known_diff: BRAND brandList/pageSize 레거시 고유 로직 차이
+  - name: "content_detail_tab_71"
+    path: "/api/v1/content/71?bypass=Y"
+    method: GET
+    auth: none
+    compare_mode: full
+    timeout: 20
+    known_diff: true
+    ignore_fields:
+      - "memo"
+      - "favorite"
+      - "productGroupThumbnails"
+      - "brandList"
+      - "pageSize"
+
+  # =============================================
+  # 에러 케이스
+  # =============================================
+  - name: "content_detail_not_found"
+    path: "/api/v1/content/999999"
+    method: GET
+    auth: none
+    compare_mode: full
+    ignore_fields: []

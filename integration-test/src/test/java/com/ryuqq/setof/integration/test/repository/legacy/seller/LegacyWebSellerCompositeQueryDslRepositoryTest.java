@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ryuqq.setof.integration.test.common.base.RepositoryTestBase;
 import com.ryuqq.setof.integration.test.common.tag.TestTags;
-import com.ryuqq.setof.storage.legacy.composite.web.seller.dto.LegacyWebSellerQueryDto;
-import com.ryuqq.setof.storage.legacy.composite.web.seller.repository.LegacyWebSellerCompositeQueryDslRepository;
+import com.ryuqq.setof.storage.legacy.composite.seller.dto.LegacyWebSellerQueryDto;
+import com.ryuqq.setof.storage.legacy.composite.seller.repository.LegacyWebSellerCompositeQueryDslRepository;
 import com.ryuqq.setof.storage.legacy.seller.LegacySellerBusinessInfoEntityFixtures;
 import com.ryuqq.setof.storage.legacy.seller.LegacySellerEntityFixtures;
 import com.ryuqq.setof.storage.legacy.seller.entity.LegacySellerBusinessInfoEntity;

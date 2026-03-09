@@ -10,6 +10,7 @@ import com.ryuqq.setof.domain.common.vo.LegacyUserId;
 import com.ryuqq.setof.domain.member.id.MemberId;
 import com.ryuqq.setof.domain.product.id.ProductId;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
+import com.ryuqq.setof.domain.seller.id.SellerId;
 import java.time.Instant;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public final class CartDomainFixtures {
     private static final Instant FIXED_NOW = Instant.parse("2024-01-01T00:00:00Z");
     private static final String MEMBER_ID = "01900000-0000-7000-8000-000000000001";
     private static final Long USER_ID = 100L;
+    private static final Long SELLER_ID = 5L;
 
     private CartDomainFixtures() {}
 
@@ -37,6 +39,7 @@ public final class CartDomainFixtures {
                 LegacyUserId.of(USER_ID),
                 ProductGroupId.of(10L),
                 ProductId.of(20L),
+                SellerId.of(SELLER_ID),
                 CartQuantity.of(2),
                 FIXED_NOW);
     }
@@ -47,6 +50,7 @@ public final class CartDomainFixtures {
                 LegacyUserId.of(USER_ID),
                 ProductGroupId.of(productGroupId),
                 ProductId.of(productId),
+                SellerId.of(SELLER_ID),
                 CartQuantity.of(quantity),
                 FIXED_NOW);
     }
@@ -60,6 +64,7 @@ public final class CartDomainFixtures {
                 LegacyUserId.of(USER_ID),
                 ProductGroupId.of(10L),
                 ProductId.of(20L),
+                SellerId.of(SELLER_ID),
                 CartQuantity.of(2),
                 DeletionStatus.active(),
                 FIXED_NOW,
@@ -73,6 +78,7 @@ public final class CartDomainFixtures {
                 LegacyUserId.of(USER_ID),
                 ProductGroupId.of(10L),
                 ProductId.of(20L + cartItemId),
+                SellerId.of(SELLER_ID),
                 CartQuantity.of(2),
                 DeletionStatus.active(),
                 FIXED_NOW,
@@ -86,6 +92,7 @@ public final class CartDomainFixtures {
                 LegacyUserId.of(USER_ID),
                 ProductGroupId.of(10L),
                 ProductId.of(productId),
+                SellerId.of(SELLER_ID),
                 CartQuantity.of(2),
                 DeletionStatus.active(),
                 FIXED_NOW,

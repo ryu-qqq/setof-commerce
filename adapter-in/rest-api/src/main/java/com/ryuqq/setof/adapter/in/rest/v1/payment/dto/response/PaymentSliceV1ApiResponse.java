@@ -12,12 +12,15 @@ import java.util.List;
  *
  * <p>커서 기반 무한 스크롤 페이징을 위한 슬라이스 응답 래퍼입니다.
  *
- * @param content 결제 목록
+ * @param content 결제 개요 목록
  * @param hasNext 다음 페이지 존재 여부
+ * @param lastPaymentId 마지막 결제 ID (커서, 다음 페이지 조회 시 사용)
  * @author ryu-qqq
- * @since 1.0.0
+ * @since 1.1.0
  */
 @Schema(description = "결제 목록 슬라이스 응답 (커서 페이징)")
 public record PaymentSliceV1ApiResponse(
-        @Schema(description = "결제 목록") List<PaymentV1ApiResponse> content,
-        @Schema(description = "다음 페이지 존재 여부", example = "true") boolean hasNext) {}
+        @Schema(description = "결제 개요 목록") List<PaymentOverviewV1ApiResponse> content,
+        @Schema(description = "다음 페이지 존재 여부", example = "true") boolean hasNext,
+        @Schema(description = "마지막 결제 ID (커서)", nullable = true, example = "1000")
+                Long lastPaymentId) {}

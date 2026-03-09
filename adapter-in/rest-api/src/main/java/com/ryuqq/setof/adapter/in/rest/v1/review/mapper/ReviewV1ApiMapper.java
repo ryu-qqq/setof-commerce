@@ -1,15 +1,20 @@
 package com.ryuqq.setof.adapter.in.rest.v1.review.mapper;
 
-import static com.ryuqq.adapter.in.rest.common.util.DateTimeFormatUtils.format;
+import static com.ryuqq.setof.adapter.in.rest.common.util.DateTimeFormatUtils.format;
 
+import com.ryuqq.setof.adapter.in.rest.v1.review.dto.request.RegisterReviewV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.v1.review.dto.request.SearchAvailableReviewsCursorV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.v1.review.dto.request.SearchMyReviewsCursorV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.v1.review.dto.request.SearchReviewsV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.v1.review.dto.response.AvailableReviewOrderV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.review.dto.response.AvailableReviewSliceV1ApiResponse;
+import com.ryuqq.setof.adapter.in.rest.v1.review.dto.response.DeleteReviewV1ApiResponse;
+import com.ryuqq.setof.adapter.in.rest.v1.review.dto.response.RegisterReviewV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.review.dto.response.ReviewPageV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.review.dto.response.ReviewSliceV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.review.dto.response.ReviewV1ApiResponse;
+import com.ryuqq.setof.application.review.dto.command.DeleteReviewCommand;
+import com.ryuqq.setof.application.review.dto.command.RegisterReviewCommand;
 import com.ryuqq.setof.application.review.dto.query.AvailableReviewSearchParams;
 import com.ryuqq.setof.application.review.dto.query.MyReviewSearchParams;
 import com.ryuqq.setof.application.review.dto.query.ProductGroupReviewSearchParams;
@@ -18,6 +23,7 @@ import com.ryuqq.setof.application.review.dto.response.AvailableReviewSliceResul
 import com.ryuqq.setof.application.review.dto.response.ReviewPageResult;
 import com.ryuqq.setof.application.review.dto.response.ReviewResult;
 import com.ryuqq.setof.application.review.dto.response.ReviewSliceResult;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +41,88 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ReviewV1ApiMapper {
+
+    // ─────────────────────────────────────────────
+    // Command 변환
+    // ─────────────────────────────────────────────
+
+    /**
+     * RegisterReviewV1ApiRequest → RegisterReviewCommand 변환.
+     *
+     * @param userId 인증된 사용자 ID
+     * @param request 리뷰 등록 요청 DTO
+     * @return RegisterReviewCommand
+     */
+    public RegisterReviewCommand toRegisterCommand(
+            Long userId, RegisterReviewV1ApiRequest request) {
+        List<String> imageUrls =
+                request.reviewImages() != null
+                        ? request.reviewImages().stream()
+                                .map(RegisterReviewV1ApiRequest.ReviewImageRequest::imageUrl)
+                                .toList()
+                        : Collections.emptyList();
+
+        return new RegisterReviewCommand(
+                userId,
+                request.orderId(),
+                request.productGroupId(),
+                request.rating(),
+                request.content(),
+                imageUrls);
+    }
+
+    /**
+     * 리뷰 삭제 커맨드 생성.
+     *
+     * @param reviewId 리뷰 ID
+     * @param userId 인증된 사용자 ID
+     * @return DeleteReviewCommand
+     */
+    public DeleteReviewCommand toDeleteCommand(Long reviewId, Long userId) {
+        return new DeleteReviewCommand(reviewId, userId);
+    }
+
+    /**
+     * 리뷰 등록 응답 생성 (레거시 호환).
+     *
+     * @param reviewId 등록된 리뷰 ID
+     * @param userId 사용자 ID
+     * @param request 등록 요청 DTO
+     * @return RegisterReviewV1ApiResponse
+     */
+    public RegisterReviewV1ApiResponse toRegisterResponse(
+            Long reviewId, Long userId, RegisterReviewV1ApiRequest request) {
+        String now = format(java.time.Instant.now());
+        String userIdStr = String.valueOf(userId);
+        return new RegisterReviewV1ApiResponse(
+                reviewId,
+                request.productGroupId(),
+                userId,
+                request.orderId(),
+                request.rating(),
+                request.content(),
+                "N",
+                now,
+                now,
+                userIdStr,
+                userIdStr);
+    }
+
+    /**
+     * 리뷰 삭제 응답 생성 (레거시 호환).
+     *
+     * @param reviewId 삭제된 리뷰 ID
+     * @param userId 사용자 ID
+     * @return DeleteReviewV1ApiResponse
+     */
+    public DeleteReviewV1ApiResponse toDeleteResponse(long reviewId, long userId) {
+        String now = format(java.time.Instant.now());
+        return new DeleteReviewV1ApiResponse(reviewId, 0, userId, 0, 0, null, "Y", now, now);
+    }
+
+    // ─────────────────────────────────────────────
+    // Query 변환
+    // ─────────────────────────────────────────────
 
     /**
      * 상품그룹 리뷰 검색 요청 → SearchParams 변환.
