@@ -47,12 +47,26 @@
           "metricName": "DiffRate",
           "dimensions": {
             "Domain": [
+              "banner",
               "brand",
+              "cart",
               "category",
+              "content",
               "faq",
+              "gnb",
+              "mileage",
+              "mypage",
+              "order",
+              "payment",
+              "productgroup",
+              "qna",
               "refund-account",
+              "review",
+              "search",
               "seller",
-              "shipping-address"
+              "shipping-address",
+              "user",
+              "wishlist"
             ]
           },
           "region": "ap-northeast-2",
@@ -131,7 +145,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 66
       },
       "targets": [
         {
@@ -144,12 +158,26 @@
           "metricName": "DiffRate",
           "dimensions": {
             "Domain": [
+              "banner",
               "brand",
+              "cart",
               "category",
+              "content",
               "faq",
+              "gnb",
+              "mileage",
+              "mypage",
+              "order",
+              "payment",
+              "productgroup",
+              "qna",
               "refund-account",
+              "review",
+              "search",
               "seller",
-              "shipping-address"
+              "shipping-address",
+              "user",
+              "wishlist"
             ]
           },
           "region": "ap-northeast-2",
@@ -217,7 +245,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 30
+        "y": 55
       },
       "collapsed": false
     },
@@ -234,7 +262,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 31
+        "y": 56
       },
       "targets": [
         {
@@ -247,12 +275,26 @@
           "metricName": "DiffRate",
           "dimensions": {
             "Domain": [
+              "banner",
               "brand",
+              "cart",
               "category",
+              "content",
               "faq",
+              "gnb",
+              "mileage",
+              "mypage",
+              "order",
+              "payment",
+              "productgroup",
+              "qna",
               "refund-account",
+              "review",
+              "search",
               "seller",
-              "shipping-address"
+              "shipping-address",
+              "user",
+              "wishlist"
             ]
           },
           "region": "ap-northeast-2",
@@ -349,7 +391,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 47
+        "y": 72
       },
       "collapsed": false
     },
@@ -366,7 +408,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 48
+        "y": 73
       },
       "targets": [
         {
@@ -541,7 +583,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 48
+        "y": 73
       },
       "targets": [
         {
@@ -716,7 +758,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 56
+        "y": 81
       },
       "targets": [
         {
@@ -891,7 +933,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 56
+        "y": 81
       },
       "targets": [
         {
@@ -1066,7 +1108,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 64
+        "y": 89
       },
       "targets": [
         {
@@ -1241,7 +1283,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 64
+        "y": 89
       },
       "targets": [
         {
@@ -2137,7 +2179,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 44
       },
       "collapsed": false
     },
@@ -2154,7 +2196,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 45
       },
       "targets": [
         {
@@ -2167,12 +2209,26 @@
           "metricName": "DiffCount",
           "dimensions": {
             "Domain": [
+              "banner",
               "brand",
+              "cart",
               "category",
+              "content",
               "faq",
+              "gnb",
+              "mileage",
+              "mypage",
+              "order",
+              "payment",
+              "productgroup",
+              "qna",
               "refund-account",
+              "review",
+              "search",
               "seller",
-              "shipping-address"
+              "shipping-address",
+              "user",
+              "wishlist"
             ]
           },
           "region": "ap-northeast-2",
@@ -2253,6 +2309,4122 @@
           "sort": "desc"
         }
       }
+    },
+    {
+      "id": 37,
+      "title": "banner",
+      "description": "banner 총 테스트 수 / 실패 수",
+      "type": "stat",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 0,
+        "y": 19
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "TestCount",
+          "dimensions": {
+            "Domain": [
+              "banner"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Total",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "DiffCount",
+          "dimensions": {
+            "Domain": [
+              "banner"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Failed",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 38,
+      "title": "cart",
+      "description": "cart 총 테스트 수 / 실패 수",
+      "type": "stat",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 8,
+        "y": 19
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "TestCount",
+          "dimensions": {
+            "Domain": [
+              "cart"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Total",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "DiffCount",
+          "dimensions": {
+            "Domain": [
+              "cart"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Failed",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 39,
+      "title": "content",
+      "description": "content 총 테스트 수 / 실패 수",
+      "type": "stat",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 16,
+        "y": 19
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "TestCount",
+          "dimensions": {
+            "Domain": [
+              "content"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Total",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "DiffCount",
+          "dimensions": {
+            "Domain": [
+              "content"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Failed",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 40,
+      "title": "gnb",
+      "description": "gnb 총 테스트 수 / 실패 수",
+      "type": "stat",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 0,
+        "y": 24
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "TestCount",
+          "dimensions": {
+            "Domain": [
+              "gnb"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Total",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "DiffCount",
+          "dimensions": {
+            "Domain": [
+              "gnb"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Failed",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 41,
+      "title": "mileage",
+      "description": "mileage 총 테스트 수 / 실패 수",
+      "type": "stat",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 8,
+        "y": 24
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "TestCount",
+          "dimensions": {
+            "Domain": [
+              "mileage"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Total",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "DiffCount",
+          "dimensions": {
+            "Domain": [
+              "mileage"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Failed",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 42,
+      "title": "mypage",
+      "description": "mypage 총 테스트 수 / 실패 수",
+      "type": "stat",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 16,
+        "y": 24
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "TestCount",
+          "dimensions": {
+            "Domain": [
+              "mypage"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Total",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "DiffCount",
+          "dimensions": {
+            "Domain": [
+              "mypage"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Failed",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 43,
+      "title": "order",
+      "description": "order 총 테스트 수 / 실패 수",
+      "type": "stat",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 0,
+        "y": 29
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "TestCount",
+          "dimensions": {
+            "Domain": [
+              "order"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Total",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "DiffCount",
+          "dimensions": {
+            "Domain": [
+              "order"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Failed",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 44,
+      "title": "payment",
+      "description": "payment 총 테스트 수 / 실패 수",
+      "type": "stat",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 8,
+        "y": 29
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "TestCount",
+          "dimensions": {
+            "Domain": [
+              "payment"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Total",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "DiffCount",
+          "dimensions": {
+            "Domain": [
+              "payment"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Failed",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 45,
+      "title": "productgroup",
+      "description": "productgroup 총 테스트 수 / 실패 수",
+      "type": "stat",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 16,
+        "y": 29
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "TestCount",
+          "dimensions": {
+            "Domain": [
+              "productgroup"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Total",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "DiffCount",
+          "dimensions": {
+            "Domain": [
+              "productgroup"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Failed",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 46,
+      "title": "qna",
+      "description": "qna 총 테스트 수 / 실패 수",
+      "type": "stat",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 0,
+        "y": 34
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "TestCount",
+          "dimensions": {
+            "Domain": [
+              "qna"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Total",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "DiffCount",
+          "dimensions": {
+            "Domain": [
+              "qna"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Failed",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 47,
+      "title": "review",
+      "description": "review 총 테스트 수 / 실패 수",
+      "type": "stat",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 8,
+        "y": 34
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "TestCount",
+          "dimensions": {
+            "Domain": [
+              "review"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Total",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "DiffCount",
+          "dimensions": {
+            "Domain": [
+              "review"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Failed",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 48,
+      "title": "search",
+      "description": "search 총 테스트 수 / 실패 수",
+      "type": "stat",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 16,
+        "y": 34
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "TestCount",
+          "dimensions": {
+            "Domain": [
+              "search"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Total",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "DiffCount",
+          "dimensions": {
+            "Domain": [
+              "search"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Failed",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 49,
+      "title": "user",
+      "description": "user 총 테스트 수 / 실패 수",
+      "type": "stat",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 0,
+        "y": 39
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "TestCount",
+          "dimensions": {
+            "Domain": [
+              "user"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Total",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "DiffCount",
+          "dimensions": {
+            "Domain": [
+              "user"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Failed",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 50,
+      "title": "wishlist",
+      "description": "wishlist 총 테스트 수 / 실패 수",
+      "type": "stat",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 8,
+        "y": 39
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "TestCount",
+          "dimensions": {
+            "Domain": [
+              "wishlist"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Total",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "DiffCount",
+          "dimensions": {
+            "Domain": [
+              "wishlist"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Sum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Failed",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Failed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 106,
+      "title": "P99 Latency - banner",
+      "description": "banner Legacy(orange dashed) vs New(blue solid) P99",
+      "type": "timeseries",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 97
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "LegacyLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "banner"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Legacy",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "NewLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "banner"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "New",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "gradientMode": "none",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false
+          },
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Legacy"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "New"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 107,
+      "title": "P99 Latency - cart",
+      "description": "cart Legacy(orange dashed) vs New(blue solid) P99",
+      "type": "timeseries",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 97
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "LegacyLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "cart"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Legacy",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "NewLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "cart"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "New",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "gradientMode": "none",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false
+          },
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Legacy"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "New"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 108,
+      "title": "P99 Latency - content",
+      "description": "content Legacy(orange dashed) vs New(blue solid) P99",
+      "type": "timeseries",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 105
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "LegacyLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "content"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Legacy",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "NewLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "content"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "New",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "gradientMode": "none",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false
+          },
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Legacy"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "New"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 109,
+      "title": "P99 Latency - gnb",
+      "description": "gnb Legacy(orange dashed) vs New(blue solid) P99",
+      "type": "timeseries",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 105
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "LegacyLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "gnb"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Legacy",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "NewLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "gnb"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "New",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "gradientMode": "none",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false
+          },
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Legacy"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "New"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 110,
+      "title": "P99 Latency - mileage",
+      "description": "mileage Legacy(orange dashed) vs New(blue solid) P99",
+      "type": "timeseries",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 113
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "LegacyLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "mileage"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Legacy",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "NewLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "mileage"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "New",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "gradientMode": "none",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false
+          },
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Legacy"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "New"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 111,
+      "title": "P99 Latency - mypage",
+      "description": "mypage Legacy(orange dashed) vs New(blue solid) P99",
+      "type": "timeseries",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 113
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "LegacyLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "mypage"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Legacy",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "NewLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "mypage"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "New",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "gradientMode": "none",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false
+          },
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Legacy"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "New"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 112,
+      "title": "P99 Latency - order",
+      "description": "order Legacy(orange dashed) vs New(blue solid) P99",
+      "type": "timeseries",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 121
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "LegacyLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "order"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Legacy",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "NewLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "order"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "New",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "gradientMode": "none",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false
+          },
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Legacy"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "New"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 113,
+      "title": "P99 Latency - payment",
+      "description": "payment Legacy(orange dashed) vs New(blue solid) P99",
+      "type": "timeseries",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 121
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "LegacyLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "payment"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Legacy",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "NewLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "payment"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "New",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "gradientMode": "none",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false
+          },
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Legacy"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "New"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 114,
+      "title": "P99 Latency - productgroup",
+      "description": "productgroup Legacy(orange dashed) vs New(blue solid) P99",
+      "type": "timeseries",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 129
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "LegacyLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "productgroup"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Legacy",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "NewLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "productgroup"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "New",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "gradientMode": "none",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false
+          },
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Legacy"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "New"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 115,
+      "title": "P99 Latency - qna",
+      "description": "qna Legacy(orange dashed) vs New(blue solid) P99",
+      "type": "timeseries",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 129
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "LegacyLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "qna"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Legacy",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "NewLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "qna"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "New",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "gradientMode": "none",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false
+          },
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Legacy"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "New"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 116,
+      "title": "P99 Latency - review",
+      "description": "review Legacy(orange dashed) vs New(blue solid) P99",
+      "type": "timeseries",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 137
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "LegacyLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "review"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Legacy",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "NewLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "review"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "New",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "gradientMode": "none",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false
+          },
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Legacy"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "New"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 117,
+      "title": "P99 Latency - search",
+      "description": "search Legacy(orange dashed) vs New(blue solid) P99",
+      "type": "timeseries",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 137
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "LegacyLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "search"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Legacy",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "NewLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "search"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "New",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "gradientMode": "none",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false
+          },
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Legacy"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "New"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 118,
+      "title": "P99 Latency - user",
+      "description": "user Legacy(orange dashed) vs New(blue solid) P99",
+      "type": "timeseries",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 145
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "LegacyLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "user"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Legacy",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "NewLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "user"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "New",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "gradientMode": "none",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false
+          },
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Legacy"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "New"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 119,
+      "title": "P99 Latency - wishlist",
+      "description": "wishlist Legacy(orange dashed) vs New(blue solid) P99",
+      "type": "timeseries",
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "df4r4id6rd8n4c"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 145
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "LegacyLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "wishlist"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "Legacy",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "df4r4id6rd8n4c"
+          },
+          "namespace": "ShadowTraffic",
+          "metricName": "NewLatencyP99",
+          "dimensions": {
+            "Domain": [
+              "wishlist"
+            ]
+          },
+          "region": "ap-northeast-2",
+          "period": "300",
+          "statistic": "Maximum",
+          "matchExact": true,
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 0,
+          "alias": "New",
+          "expression": "",
+          "id": "",
+          "sqlExpression": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 5,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "gradientMode": "none",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            },
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false
+          },
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Legacy"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    10
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "New"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
     }
   ],
   "refresh": "1m",
@@ -2306,8 +6478,18 @@
           },
           {
             "selected": false,
+            "text": "banner",
+            "value": "banner"
+          },
+          {
+            "selected": false,
             "text": "brand",
             "value": "brand"
+          },
+          {
+            "selected": false,
+            "text": "cart",
+            "value": "cart"
           },
           {
             "selected": false,
@@ -2316,13 +6498,63 @@
           },
           {
             "selected": false,
+            "text": "content",
+            "value": "content"
+          },
+          {
+            "selected": false,
             "text": "faq",
             "value": "faq"
           },
           {
             "selected": false,
+            "text": "gnb",
+            "value": "gnb"
+          },
+          {
+            "selected": false,
+            "text": "mileage",
+            "value": "mileage"
+          },
+          {
+            "selected": false,
+            "text": "mypage",
+            "value": "mypage"
+          },
+          {
+            "selected": false,
+            "text": "order",
+            "value": "order"
+          },
+          {
+            "selected": false,
+            "text": "payment",
+            "value": "payment"
+          },
+          {
+            "selected": false,
+            "text": "productgroup",
+            "value": "productgroup"
+          },
+          {
+            "selected": false,
+            "text": "qna",
+            "value": "qna"
+          },
+          {
+            "selected": false,
             "text": "refund-account",
             "value": "refund-account"
+          },
+          {
+            "selected": false,
+            "text": "review",
+            "value": "review"
+          },
+          {
+            "selected": false,
+            "text": "search",
+            "value": "search"
           },
           {
             "selected": false,
@@ -2333,9 +6565,19 @@
             "selected": false,
             "text": "shipping-address",
             "value": "shipping-address"
+          },
+          {
+            "selected": false,
+            "text": "user",
+            "value": "user"
+          },
+          {
+            "selected": false,
+            "text": "wishlist",
+            "value": "wishlist"
           }
         ],
-        "query": "brand,category,faq,refund-account,seller,shipping-address",
+        "query": "banner,brand,cart,category,content,faq,gnb,mileage,mypage,order,payment,productgroup,qna,refund-account,review,search,seller,shipping-address,user,wishlist",
         "refresh": 0,
         "skipUrlSync": false,
         "sort": 1,
@@ -2351,6 +6593,6 @@
   "timezone": "Asia/Seoul",
   "title": "Shadow Traffic - Legacy vs New API",
   "uid": "shadow-traffic-stage",
-  "version": 13,
+  "version": 14,
   "weekStart": ""
 }

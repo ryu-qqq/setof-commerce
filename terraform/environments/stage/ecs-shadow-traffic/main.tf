@@ -521,9 +521,9 @@ resource "aws_cloudwatch_metric_alarm" "diff_rate" {
   alarm_name        = "${var.project_name}-shadow-traffic-${each.value}-diff-rate-${var.environment}"
   alarm_description = <<-EOT
 Shadow traffic diff detected for domain: ${each.value}
-📋 Logs Insights (diff detail):
+[Logs Insights - diff detail]
 https://${var.aws_region}.console.aws.amazon.com/cloudwatch/home?region=${var.aws_region}#logsV2:logs-insights$3FqueryDetail$3D~(end~0~start~-3600~timeType~'RELATIVE~unit~'seconds~editorString~'fields*20*40timestamp*2c*20domain*2c*20test_name*2c*20diff_detail*0a*7c*20filter*20event*20*3d*20*22test_result*22*20and*20passed*20*3d*200*20and*20domain*20*3d*20*22${each.value}*22*0a*7c*20sort*20*40timestamp*20desc*0a*7c*20limit*2020~source~(~'${replace(module.shadow_traffic_logs.log_group_name, "/", "*2f")}))
-📄 Full report: https://stage-cdn.set-of.com/public/traffic/{date}/${each.value}/{time}.json
+[Full report] https://stage-cdn.set-of.com/public/traffic/{date}/${each.value}/{time}.json
 EOT
 
   namespace   = "ShadowTraffic"
