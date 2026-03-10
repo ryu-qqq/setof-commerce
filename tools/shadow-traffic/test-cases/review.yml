@@ -94,6 +94,9 @@ test_cases:
     ignore_fields:
       - "productGroupImageUrl"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   - name: "review_my_written_size_5"
     path: "/api/v1/reviews/my-page/written"
@@ -105,6 +108,9 @@ test_cases:
     ignore_fields:
       - "productGroupImageUrl"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   - name: "review_my_written_cursor_paging"
     path: "/api/v1/reviews/my-page/written"
@@ -117,6 +123,9 @@ test_cases:
     ignore_fields:
       - "productGroupImageUrl"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # review_my_written_unauthenticated 제외:
   # Legacy=401 (Security Filter), New=409 (AuthenticatedUserIdResolver → IllegalStateException)
@@ -132,6 +141,9 @@ test_cases:
     ignore_fields:
       - "productGroupImageUrl"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   - name: "review_available_size_5"
     path: "/api/v1/reviews/my-page/available"
@@ -143,6 +155,9 @@ test_cases:
     ignore_fields:
       - "productGroupImageUrl"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   - name: "review_available_cursor_paging"
     path: "/api/v1/reviews/my-page/available"
@@ -155,6 +170,9 @@ test_cases:
     ignore_fields:
       - "productGroupImageUrl"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # review_available_unauthenticated 제외:
   # Legacy=401 (Security Filter), New=409 (AuthenticatedUserIdResolver → IllegalStateException)

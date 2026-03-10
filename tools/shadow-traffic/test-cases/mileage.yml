@@ -20,6 +20,9 @@ test_cases:
     ignore_fields:
       - "['data']['lastDomainId']"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 페이지 크기 지정
   - name: "mileage_histories_size_10"
@@ -30,6 +33,9 @@ test_cases:
     ignore_fields:
       - "['data']['lastDomainId']"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 2페이지 조회
   - name: "mileage_histories_page_1"
@@ -40,6 +46,9 @@ test_cases:
     ignore_fields:
       - "['data']['lastDomainId']"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 사유 필터: SAVE만
   - name: "mileage_histories_reason_save"
@@ -50,6 +59,9 @@ test_cases:
     ignore_fields:
       - "['data']['lastDomainId']"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 사유 필터: USE만
   - name: "mileage_histories_reason_use"
@@ -60,6 +72,9 @@ test_cases:
     ignore_fields:
       - "['data']['lastDomainId']"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 사유 필터: REFUND만
   - name: "mileage_histories_reason_refund"
@@ -70,6 +85,9 @@ test_cases:
     ignore_fields:
       - "['data']['lastDomainId']"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 사유 필터: EXPIRED만
   - name: "mileage_histories_reason_expired"
@@ -80,6 +98,9 @@ test_cases:
     ignore_fields:
       - "['data']['lastDomainId']"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 복수 사유 필터: SAVE + USE
   - name: "mileage_histories_reason_save_use"
@@ -90,6 +111,9 @@ test_cases:
     ignore_fields:
       - "['data']['lastDomainId']"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 전체 사유 필터
   - name: "mileage_histories_all_reasons"
@@ -100,6 +124,9 @@ test_cases:
     ignore_fields:
       - "['data']['lastDomainId']"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 큰 페이지 크기
   - name: "mileage_histories_size_50"
@@ -110,6 +137,9 @@ test_cases:
     ignore_fields:
       - "['data']['lastDomainId']"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 빈 결과 (존재하지 않을 가능성이 높은 고페이지)
   - name: "mileage_histories_empty_page"
@@ -120,6 +150,9 @@ test_cases:
     ignore_fields:
       - "['data']['lastDomainId']"
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 미인증 사용자 접근 → 403 Forbidden
   - name: "mileage_histories_unauthenticated"

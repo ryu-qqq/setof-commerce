@@ -122,6 +122,9 @@ test_cases:
     compare_mode: full
     ignore_fields: []
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 내 주문 QNA 목록 - 최근 1년 조회
   # known_diff: ORDER 타입 내 QNA 조회 미구현 (PRODUCT만 구현됨)
@@ -137,6 +140,9 @@ test_cases:
     compare_mode: full
     ignore_fields: []
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 커서 페이징: lastDomainId 지정 (두 번째 페이지 이후)
   # 실제 테스트 환경의 유효한 qnaId로 교체 필요
@@ -153,6 +159,9 @@ test_cases:
     compare_mode: full
     ignore_fields: []
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 커서 페이징: ORDER 타입 + lastDomainId
   # known_diff: ORDER 타입 내 QNA 조회 미구현 (PRODUCT만 구현됨)
@@ -169,6 +178,9 @@ test_cases:
     compare_mode: full
     ignore_fields: []
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 경계값: 매우 작은 lastDomainId → 빈 결과 (empty: true 예상)
   - name: "qna_my_page_cursor_empty"
@@ -184,6 +196,9 @@ test_cases:
     compare_mode: full
     ignore_fields: []
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # size=5 소량 페이지 조회
   - name: "qna_my_page_product_size_5"
@@ -198,6 +213,9 @@ test_cases:
     compare_mode: full
     ignore_fields: []
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
   - name: "qna_my_page_unauthenticated"

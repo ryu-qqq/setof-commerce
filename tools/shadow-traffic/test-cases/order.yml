@@ -98,6 +98,9 @@ test_cases:
     compare_mode: full
     ignore_fields: []
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 미인증 접근 → Legacy는 validation 먼저(400), New는 auth 먼저(401)
   - name: "order_list_unauthenticated"

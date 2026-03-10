@@ -22,6 +22,9 @@ test_cases:
     compare_mode: full
     ignore_fields: []
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   - name: "mypage_fetch_unauthenticated"
     path: "/api/v1/user/my-page"

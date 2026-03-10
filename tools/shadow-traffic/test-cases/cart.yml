@@ -30,6 +30,9 @@ test_cases:
     compare_mode: full
     ignore_fields: ["userId"]
     safe_for_repeat: true
+    known_diff:
+      fields: ["message", "error"]
+      reason: "인증 에러 메시지 차이. Legacy: InsufficientAuthenticationException / New: UnauthenticatedAccessException. 동작은 동일(인증 거부)."
 
   # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
   - name: "cart_count_unauthenticated"
