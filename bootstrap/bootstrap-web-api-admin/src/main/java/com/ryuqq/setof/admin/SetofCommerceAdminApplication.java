@@ -3,6 +3,8 @@ package com.ryuqq.setof.admin;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
@@ -13,24 +15,27 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  * <p>Bootstrap 모듈별로 필요한 Adapter만 스캔하도록 명시적으로 패키지를 지정합니다. 이를 통해 불필요한 빈 생성을 방지하고 애플리케이션 시작 시간을
  * 최적화합니다.
  *
+ * <p>Admin은 API Key 인증 방식을 사용하므로 JWT 관련 auth 패키지를 스캔에서 제외합니다.
+ *
  * <p>현재 web-api-admin 부트스트랩에서 스캔하는 모듈:
  *
  * <ul>
  *   <li>config - 공통 설정 (Clock)
  *   <li>domain - 도메인 레이어 (Aggregate, VO, Event)
- *   <li>application - 애플리케이션 레이어 (UseCase, Service)
+ *   <li>application - 애플리케이션 레이어 (UseCase, Service) - auth 패키지 제외
  *   <li>adapter-in:rest-api-admin - Admin REST API 어댑터 (Controller, DTO)
  *   <li>adapter-out:persistence-mysql - MySQL 영속성 어댑터 (Entity, Repository)
  *   <li>adapter-out:persistence-redis - Redis 영속성 어댑터 (Cache)
- *   <li>adapter-out:security - Security 어댑터 (JWT, Password Encoder)
+ *   <li>adapter-out:security - Security 어댑터 (Password Encoder)
  *   <li>adapter-out:client - 외부 API 클라이언트 어댑터 (AuthHub)
  * </ul>
  *
  * @author ryuqq
  * @since 1.0.0
  */
-@SpringBootApplication(
-        scanBasePackages = {
+@SpringBootApplication
+@ComponentScan(
+        basePackages = {
             "com.ryuqq.setof.admin.config",
             "com.ryuqq.setof.domain",
             "com.ryuqq.setof.application",
@@ -39,7 +44,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
             "com.ryuqq.setof.adapter.out.security",
             "com.ryuqq.setof.adapter.out.client",
             "com.ryuqq.setof.storage.legacy"
-        })
+        },
+        excludeFilters = @ComponentScan.Filter(
+            type = FilterType.REGEX,
+            pattern = "com\\.ryuqq\\.setof\\.application\\.auth\\..*"
+        ))
 @EnableJpaRepositories(basePackages = "com.ryuqq.setof.adapter.out.persistence")
 @EntityScan(basePackages = "com.ryuqq.setof.adapter.out.persistence")
 public class SetofCommerceAdminApplication {
