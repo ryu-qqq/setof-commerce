@@ -294,19 +294,11 @@ resource "aws_lb_listener" "http" {
 }
 
 # ========================================
-# Route53 DNS Record
+# Route53 DNS Record - REMOVED
 # ========================================
-resource "aws_route53_record" "legacy_api" {
-  zone_id = local.route53_zone_id
-  name    = local.fqdn
-  type    = "A"
-
-  alias {
-    name                   = aws_lb.legacy_api.dns_name
-    zone_id                = aws_lb.legacy_api.zone_id
-    evaluate_target_health = true
-  }
-}
+# stage.set-of.com DNS is managed by Infrastructure repo's cloudfront-routing module.
+# This resource was removed to prevent Route53 record conflict on every deploy.
+# See: Infrastructure repo → cloudfront-routing for the authoritative DNS config.
 
 # ========================================
 # IAM Roles (using Infrastructure module)

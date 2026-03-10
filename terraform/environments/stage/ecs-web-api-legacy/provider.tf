@@ -158,7 +158,7 @@ locals {
   public_subnets  = split(",", data.aws_ssm_parameter.public_subnets.value)
   certificate_arn = data.aws_ssm_parameter.certificate_arn.value
   route53_zone_id = data.aws_ssm_parameter.route53_zone_id.value
-  fqdn            = "stage.set-of.com" # Stage server domain
+  # fqdn removed: stage.set-of.com DNS is managed by Infrastructure repo's cloudfront-routing module
 
   # Stage RDS Configuration
   rds_credentials = jsondecode(data.aws_secretsmanager_secret_version.rds.secret_string)

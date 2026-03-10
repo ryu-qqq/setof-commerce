@@ -79,7 +79,7 @@ variable "web_api_desired_count" {
 variable "image_tag" {
   description = "Docker image tag to deploy"
   type        = string
-  default     = "web-api-stage-1-initial"
+  default     = "web-api-stage-16-ab7f6a1"
 
   validation {
     condition     = can(regex("^web-api-stage-[0-9]+-[a-zA-Z0-9]+$", var.image_tag))
