@@ -27,6 +27,7 @@ include 'adapter-out:client:portone-client'
 include 'adapter-out:client:fileflow-client'
 include 'adapter-out:client:smart-delivery-client'
 include 'adapter-out:client:id-client'
+include 'adapter-out:client:nhn-client'
 
 // ========================================
 // Bootstrap Modules (Runnable Applications)
@@ -62,6 +63,7 @@ project(':adapter-out:client:portone-client').projectDir = file('adapter-out/cli
 project(':adapter-out:client:fileflow-client').projectDir = file('adapter-out/client/fileflow-client')
 project(':adapter-out:client:smart-delivery-client').projectDir = file('adapter-out/client/smart-delivery-client')
 project(':adapter-out:client:id-client').projectDir = file('adapter-out/client/id-client')
+project(':adapter-out:client:nhn-client').projectDir = file('adapter-out/client/nhn-client')
 
 project(':bootstrap:bootstrap-web-api').projectDir = file('bootstrap/bootstrap-web-api')
 project(':bootstrap:bootstrap-web-api-admin').projectDir = file('bootstrap/bootstrap-web-api-admin')

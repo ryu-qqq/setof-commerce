@@ -6,9 +6,12 @@ import com.ryuqq.setof.application.payment.dto.response.PaymentSliceResult;
 import com.ryuqq.setof.application.payment.factory.PaymentQueryFactory;
 import com.ryuqq.setof.application.payment.internal.PaymentReadFacade;
 import com.ryuqq.setof.application.payment.port.in.query.GetPaymentsUseCase;
+import com.ryuqq.setof.domain.order.vo.OrderDetail;
 import com.ryuqq.setof.domain.payment.query.PaymentSearchCriteria;
 import com.ryuqq.setof.domain.payment.vo.PaymentOverview;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,6 +20,8 @@ import org.springframework.stereotype.Service;
  * <p>APP-SVC-001: Service는 @Service 어노테이션.
  *
  * <p>APP-SVC-003: 1 UseCase = 1 Service.
+ *
+ * <p>레거시 호환을 위해 orderProducts도 함께 조회하여 CustomSlice 형태로 반환합니다.
  *
  * @author ryu-qqq
  * @since 1.1.0
@@ -50,6 +55,18 @@ public class GetPaymentsService implements GetPaymentsUseCase {
 
         List<PaymentOverview> overviews = paymentReadFacade.fetchPaymentOverviews(pagePaymentIds);
 
-        return paymentAssembler.toSliceResult(overviews, criteria, paymentIds);
+        Set<Long> allOrderIds = new LinkedHashSet<>();
+        for (PaymentOverview overview : overviews) {
+            if (overview.orderIds() != null) {
+                allOrderIds.addAll(overview.orderIds());
+            }
+        }
+
+        List<OrderDetail> orderDetails = paymentReadFacade.fetchOrderDetails(allOrderIds);
+
+        long totalElements = paymentReadFacade.countPayments(criteria);
+
+        return paymentAssembler.toSliceResult(
+                overviews, orderDetails, criteria, paymentIds, totalElements);
     }
 }

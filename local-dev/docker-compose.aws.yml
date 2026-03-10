@@ -63,6 +63,10 @@ services:
       KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET:-}
       # JWT
       JWT_SECRET: ${JWT_SECRET:-}
+      # FileFlow (dummy for local)
+      FILEFLOW_BASE_URL: ${FILEFLOW_BASE_URL:-http://localhost:9999}
+      FILEFLOW_BUCKET: ${FILEFLOW_BUCKET:-dummy-bucket}
+      FILEFLOW_SERVICE_TOKEN: ${FILEFLOW_SERVICE_TOKEN:-dummy-token}
     ports:
       - "48080:8080"
     <<: *common-settings

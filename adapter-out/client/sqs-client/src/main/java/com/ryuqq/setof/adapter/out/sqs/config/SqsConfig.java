@@ -15,11 +15,11 @@ import software.amazon.awssdk.services.sqs.SqsClient;
  *
  * <p>SqsClient 빈을 생성합니다.
  *
- * <p>sqs.queues.discount-outbox 설정이 있을 때만 활성화됩니다.
+ * <p>sqs.region 설정이 있을 때 활성화됩니다. 개별 어댑터는 각자의 ConditionalOnProperty로 큐별 활성화를 제어합니다.
  */
 @Configuration
 @EnableConfigurationProperties(SqsClientProperties.class)
-@ConditionalOnProperty(prefix = "sqs.queues", name = "discount-outbox")
+@ConditionalOnProperty(prefix = "sqs", name = "region")
 public class SqsConfig {
 
     @Bean

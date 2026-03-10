@@ -1,6 +1,7 @@
 package com.ryuqq.setof.application.member.dto.query;
 
 import com.ryuqq.setof.application.order.dto.response.OrderStatusCountResult;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -27,4 +28,5 @@ public record MyPageResult(
         String gradeName,
         double currentMileage,
         String socialLoginType,
+        Instant registrationDate,
         List<OrderStatusCountResult> orderCounts) {}

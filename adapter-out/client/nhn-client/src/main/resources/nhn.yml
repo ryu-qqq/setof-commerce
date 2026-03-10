@@ -1,0 +1,11 @@
+# ============================================================
+# NHN Cloud AlimTalk Client 공통 설정
+# ============================================================
+# app-key가 비어있으면 NhnClientConfig가 비활성화됩니다.
+# ============================================================
+nhn:
+  alimtalk:
+    app-key: ${NHN_ALIMTALK_APP_KEY:}
+    secret-key: ${NHN_ALIMTALK_SECRET_KEY:}
+    sender-key: ${NHN_ALIMTALK_SENDER_KEY:}
+    base-url: https://api-alimtalk.cloud.toast.com

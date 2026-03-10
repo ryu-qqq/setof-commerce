@@ -18,6 +18,9 @@ import java.util.Set;
  * @param paymentAgencyId PG사 거래 ID
  * @param cardName 카드사명
  * @param cardNumber 카드번호
+ * @param userId 사용자 ID
+ * @param siteName 사이트명 (레거시 호환)
+ * @param paymentMethodId 결제수단 ID (paymentMethodEnum 변환용)
  * @param orderIds 해당 결제에 묶인 주문 ID 목록 (GROUP BY 결과)
  * @param vBankName 가상계좌 은행명 (nullable)
  * @param vBankNumber 가상계좌 번호 (nullable)
@@ -37,6 +40,9 @@ public record PaymentOverview(
         String paymentAgencyId,
         String cardName,
         String cardNumber,
+        long userId,
+        String siteName,
+        long paymentMethodId,
         Set<Long> orderIds,
         String vBankName,
         String vBankNumber,
@@ -54,6 +60,9 @@ public record PaymentOverview(
             String paymentAgencyId,
             String cardName,
             String cardNumber,
+            long userId,
+            String siteName,
+            long paymentMethodId,
             Set<Long> orderIds,
             String vBankName,
             String vBankNumber,
@@ -70,6 +79,9 @@ public record PaymentOverview(
                 paymentAgencyId,
                 cardName,
                 cardNumber,
+                userId,
+                siteName,
+                paymentMethodId,
                 orderIds,
                 vBankName,
                 vBankNumber,

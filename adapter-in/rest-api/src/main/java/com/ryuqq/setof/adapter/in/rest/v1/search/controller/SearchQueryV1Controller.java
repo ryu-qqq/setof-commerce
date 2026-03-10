@@ -80,7 +80,8 @@ public class SearchQueryV1Controller {
 
         ProductGroupSearchParams params = mapper.toSearchParams(request);
         ProductGroupSliceResult result = searchProductGroupsUseCase.execute(params);
-        SearchSliceV1ApiResponse response = mapper.toSliceResponse(result);
+        boolean isFirstPage = request.lastDomainId() == null;
+        SearchSliceV1ApiResponse response = mapper.toSliceResponse(result, isFirstPage);
 
         return ResponseEntity.ok(V1ApiResponse.success(response));
     }

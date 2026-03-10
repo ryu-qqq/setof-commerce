@@ -25,6 +25,14 @@ scheduler:
         # Prod: 안전한 타임아웃
         timeout-seconds: 300
 
+    shipment-delivery:
+      track:
+        enabled: false
+        # Prod: 30분마다
+        cron: "0 */30 * * * *"
+        # Prod: 큰 배치
+        batch-size: 100
+
     seller-admin-auth-outbox:
       process-pending:
         enabled: false

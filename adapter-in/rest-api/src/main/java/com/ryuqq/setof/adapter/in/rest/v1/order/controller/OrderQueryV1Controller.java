@@ -144,7 +144,9 @@ public class OrderQueryV1Controller {
             @ParameterObject @Valid SearchOrdersCursorV1ApiRequest request) {
         OrderSearchParams params = mapper.toSearchParams(userId, request);
         OrderSliceResult result = getOrdersUseCase.execute(params);
-        OrderSliceV1ApiResponse response = mapper.toOrderSliceResponse(result);
+        int size = (request.size() != null) ? request.size() : 20;
+        OrderSliceV1ApiResponse response =
+                mapper.toOrderSliceResponse(result, request.lastOrderId(), size);
         return ResponseEntity.ok(V1ApiResponse.success(response));
     }
 }

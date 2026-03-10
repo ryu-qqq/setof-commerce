@@ -48,6 +48,7 @@ public class SqsClientProperties {
     public static class Queues {
 
         private String discountOutbox;
+        private String notificationOutbox;
 
         public String getDiscountOutbox() {
             return discountOutbox;
@@ -55,6 +56,14 @@ public class SqsClientProperties {
 
         public void setDiscountOutbox(String discountOutbox) {
             this.discountOutbox = discountOutbox;
+        }
+
+        public String getNotificationOutbox() {
+            return notificationOutbox;
+        }
+
+        public void setNotificationOutbox(String notificationOutbox) {
+            this.notificationOutbox = notificationOutbox;
         }
     }
 }

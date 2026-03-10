@@ -1,0 +1,131 @@
+domain: mileage
+description: "Mileage History API shadow traffic test cases"
+
+# Auth configuration for this suite.
+auth_config:
+  strategy: login
+  login_endpoint: /api/v1/user/login
+  phone_number: "${SHADOW_TEST_PHONE}"
+  password: "${SHADOW_TEST_PASSWORD}"
+
+test_cases:
+  # === Query (조회) - Shadow Traffic 비교 대상 ===
+
+  # 기본 조회: 인증된 사용자의 마일리지 이력 (기본 파라미터)
+  - name: "mileage_histories_default"
+    path: "/api/v1/mileage/my-page/mileage-histories"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields:
+      - "['data']['lastDomainId']"
+    safe_for_repeat: true
+
+  # 페이지 크기 지정
+  - name: "mileage_histories_size_10"
+    path: "/api/v1/mileage/my-page/mileage-histories?size=10"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields:
+      - "['data']['lastDomainId']"
+    safe_for_repeat: true
+
+  # 2페이지 조회
+  - name: "mileage_histories_page_1"
+    path: "/api/v1/mileage/my-page/mileage-histories?page=1&size=10"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields:
+      - "['data']['lastDomainId']"
+    safe_for_repeat: true
+
+  # 사유 필터: SAVE만
+  - name: "mileage_histories_reason_save"
+    path: "/api/v1/mileage/my-page/mileage-histories?reasons=SAVE&size=10"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields:
+      - "['data']['lastDomainId']"
+    safe_for_repeat: true
+
+  # 사유 필터: USE만
+  - name: "mileage_histories_reason_use"
+    path: "/api/v1/mileage/my-page/mileage-histories?reasons=USE&size=10"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields:
+      - "['data']['lastDomainId']"
+    safe_for_repeat: true
+
+  # 사유 필터: REFUND만
+  - name: "mileage_histories_reason_refund"
+    path: "/api/v1/mileage/my-page/mileage-histories?reasons=REFUND&size=10"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields:
+      - "['data']['lastDomainId']"
+    safe_for_repeat: true
+
+  # 사유 필터: EXPIRED만
+  - name: "mileage_histories_reason_expired"
+    path: "/api/v1/mileage/my-page/mileage-histories?reasons=EXPIRED&size=10"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields:
+      - "['data']['lastDomainId']"
+    safe_for_repeat: true
+
+  # 복수 사유 필터: SAVE + USE
+  - name: "mileage_histories_reason_save_use"
+    path: "/api/v1/mileage/my-page/mileage-histories?reasons=SAVE&reasons=USE&size=10"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields:
+      - "['data']['lastDomainId']"
+    safe_for_repeat: true
+
+  # 전체 사유 필터
+  - name: "mileage_histories_all_reasons"
+    path: "/api/v1/mileage/my-page/mileage-histories?reasons=SAVE&reasons=USE&reasons=REFUND&reasons=EXPIRED&size=10"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields:
+      - "['data']['lastDomainId']"
+    safe_for_repeat: true
+
+  # 큰 페이지 크기
+  - name: "mileage_histories_size_50"
+    path: "/api/v1/mileage/my-page/mileage-histories?size=50"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields:
+      - "['data']['lastDomainId']"
+    safe_for_repeat: true
+
+  # 빈 결과 (존재하지 않을 가능성이 높은 고페이지)
+  - name: "mileage_histories_empty_page"
+    path: "/api/v1/mileage/my-page/mileage-histories?page=9999&size=10"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields:
+      - "['data']['lastDomainId']"
+    safe_for_repeat: true
+
+  # 미인증 사용자 접근 → 403 Forbidden
+  - name: "mileage_histories_unauthenticated"
+    path: "/api/v1/mileage/my-page/mileage-histories"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true

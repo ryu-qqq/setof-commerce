@@ -290,6 +290,24 @@ public class V1GlobalExceptionHandler {
                                 HttpStatus.UNAUTHORIZED, ex.getClass().getSimpleName(), msg));
     }
 
+    // ======= 401 - Spring Security 인가 실패 (@PreAuthorize) =======
+    @ExceptionHandler(org.springframework.security.authorization.AuthorizationDeniedException.class)
+    public ResponseEntity<V1ErrorResponse> handleAuthorizationDenied(
+            org.springframework.security.authorization.AuthorizationDeniedException ex,
+            HttpServletRequest req) {
+        log.warn(
+                "V1 AuthorizationDenied: path={}, message={}",
+                req.getRequestURI(),
+                ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(
+                        V1ErrorResponse.of(
+                                HttpStatus.UNAUTHORIZED,
+                                ex.getClass().getSimpleName(),
+                                "인증이 필요합니다. 유효한 토큰을 제공해주세요."));
+    }
+
     // ======= 409 - 상태 충돌 =======
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<V1ErrorResponse> handleIllegalState(

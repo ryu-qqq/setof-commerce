@@ -311,20 +311,27 @@ public class LegacyUserEntity extends LegacyBaseEntity {
         return socialLoginType == SocialLoginType.EMAIL;
     }
 
-    /** SocialLoginType - 소셜 로그인 타입. */
+    /** SocialLoginType - 소셜 로그인 타입. DB 실제 값: none, kakao, naver, google, apple. */
     public enum SocialLoginType {
         KAKAO,
         NAVER,
         GOOGLE,
         APPLE,
-        EMAIL
+        EMAIL,
+        none,
+        kakao,
+        naver,
+        google,
+        apple
     }
 
-    /** Gender - 성별. */
+    /** Gender - 성별. DB 실제 값: M, W, N. */
     public enum Gender {
         MALE,
         FEMALE,
         OTHER,
-        N
+        N,
+        M,
+        W
     }
 }

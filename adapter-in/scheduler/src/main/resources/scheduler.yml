@@ -58,6 +58,17 @@ scheduler:
         # 타임아웃 기준 (PUBLISHED 상태에서 N초 경과 시 PENDING으로 복구)
         timeout-seconds: 300
 
+    # ShipmentDelivery 배송 추적 스케줄러
+    shipment-delivery:
+      # 배송 추적
+      track:
+        enabled: false
+        # Cron: 30분마다
+        cron: "0 */30 * * * *"
+        timezone: Asia/Seoul
+        # 배치 크기
+        batch-size: 100
+
     # SellerAdminAuthOutbox 처리 스케줄러
     seller-admin-auth-outbox:
       # PENDING 처리

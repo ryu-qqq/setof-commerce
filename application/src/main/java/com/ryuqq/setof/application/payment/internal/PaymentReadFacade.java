@@ -76,6 +76,17 @@ public class PaymentReadFacade {
     }
 
     /**
+     * 검색 조건으로 결제 건수 조회 (totalElements 계산용).
+     *
+     * @param criteria 결제 검색 조건
+     * @return 결제 건수
+     */
+    @Transactional(readOnly = true)
+    public long countPayments(PaymentSearchCriteria criteria) {
+        return paymentCompositeReadManager.countPayments(criteria);
+    }
+
+    /**
      * 주문 ID 목록으로 주문 상세 Composite 조회.
      *
      * <p>결제 상세에서 orderIds를 추출한 뒤, 해당 주문들의 상품/배송/환불 정보를 조회합니다.

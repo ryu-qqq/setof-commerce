@@ -5,6 +5,7 @@ import static com.ryuqq.setof.adapter.in.rest.common.util.DateTimeFormatUtils.fo
 import com.ryuqq.setof.adapter.in.rest.v1.productgroup.dto.response.ProductGroupThumbnailV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.search.dto.request.SearchProductsCursorV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.v1.search.dto.response.SearchSliceV1ApiResponse;
+import com.ryuqq.setof.adapter.in.rest.v1.search.dto.response.SearchSliceV1ApiResponse.SortResponse;
 import com.ryuqq.setof.application.common.dto.query.CommonCursorParams;
 import com.ryuqq.setof.application.productgroup.dto.query.ProductGroupSearchParams;
 import com.ryuqq.setof.application.productgroup.dto.response.ProductGroupSliceResult;
@@ -93,14 +94,14 @@ public class SearchV1ApiMapper {
      * @param result 검색 결과 + 페이징 메타
      * @return SearchSliceV1ApiResponse
      */
-    public SearchSliceV1ApiResponse toSliceResponse(ProductGroupSliceResult result) {
+    public SearchSliceV1ApiResponse toSliceResponse(
+            ProductGroupSliceResult result, boolean isFirstPage) {
         List<ProductGroupThumbnailV1ApiResponse> content =
                 result.content().stream().map(this::toThumbnailResponse).toList();
 
         SliceMeta sliceMeta = result.sliceMeta();
         boolean isEmpty = content.isEmpty();
         int numberOfElements = content.size();
-        boolean isFirst = !sliceMeta.hasNext() && !sliceMeta.hasCursor();
 
         Long lastDomainId = null;
         String cursorValue = null;
@@ -120,7 +121,9 @@ public class SearchV1ApiMapper {
         return new SearchSliceV1ApiResponse(
                 content,
                 !sliceMeta.hasNext(),
-                isFirst,
+                isFirstPage,
+                0,
+                SortResponse.defaultSort(),
                 sliceMeta.size(),
                 numberOfElements,
                 isEmpty,

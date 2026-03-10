@@ -17,6 +17,8 @@ spring:
       - optional:classpath:persistence-${spring.profiles.active:local}.yml
       - optional:classpath:persistence-legacy.yml
       - optional:classpath:persistence-legacy-${spring.profiles.active:local}.yml
+      - classpath:nhn.yml
+      - optional:classpath:nhn-${spring.profiles.active:local}.yml
 
 # ========================================
 # AWS SQS Listener
@@ -26,6 +28,8 @@ aws:
     listener:
       discount-outbox-queue-url: ${DISCOUNT_OUTBOX_QUEUE_URL:}
       discount-outbox-listener-enabled: true
+      notification-outbox-queue-url: ${NOTIFICATION_OUTBOX_QUEUE_URL:}
+      notification-outbox-listener-enabled: true
 
 # ========================================
 # Spring Cloud AWS

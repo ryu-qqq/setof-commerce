@@ -9,6 +9,7 @@ test_cases:
     auth: none
     compare_mode: full
     ignore_fields: []
+    known_diff: "데이터 타이밍 차이로 레거시에 일부 브랜드 추가/삭제 가능 - 무시 가능"
 
   - name: "brand_list_search_korean"
     path: "/api/v1/brand"

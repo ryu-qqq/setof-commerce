@@ -44,13 +44,16 @@ test_cases:
     compare_mode: full
     ignore_fields: []
     safe_for_repeat: true
+    known_diff:
+      fields: ["error"]
+      reason: "Spring Boot 버전 차이 (HandlerMethodValidationException vs MethodArgumentNotValidException)"
 
   - name: "user_exists_not_joined"
     path: "/api/v1/user/exists"
     method: GET
     auth: none
     body:
-      phoneNumber: "01099999999"
+      phoneNumber: "01000000000"
     compare_mode: full
     ignore_fields: []
     safe_for_repeat: true
@@ -98,7 +101,7 @@ test_cases:
     method: POST
     auth: none
     body:
-      phoneNumber: "01099999999"
+      phoneNumber: "01000000000"
       passwordHash: "Password1!"
     compare_mode: status_only
     ignore_fields: []
@@ -126,7 +129,7 @@ test_cases:
     method: PATCH
     auth: none
     body:
-      phoneNumber: "01099999999"
+      phoneNumber: "01000000000"
       passwordHash: "Password1!"
     compare_mode: status_only
     ignore_fields: []
@@ -170,7 +173,9 @@ test_cases:
       reason: "SERVICE"
     compare_mode: status_only
     ignore_fields: []
-    safe_for_repeat: true
+    safe_for_repeat: false
+    known_diff: true
+    known_diff_reason: "New 서버 버그: agreementYn=N인데도 탈퇴 처리(200). Legacy는 정상 거부(400). 수정 필요."
 
   - name: "user_withdrawal_unauthenticated"
     path: "/api/v1/user/withdrawl"

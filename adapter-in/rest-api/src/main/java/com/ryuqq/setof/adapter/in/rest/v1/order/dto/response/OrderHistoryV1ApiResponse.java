@@ -1,7 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.v1.order.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
 
 /**
  * OrderHistoryV1ApiResponse - 주문 상태 변경 이력 응답 DTO.
@@ -59,4 +58,4 @@ public record OrderHistoryV1ApiResponse(
                 String orderStatus,
         @Schema(description = "송장 번호", example = "1234567890", nullable = true) String invoiceNo,
         @Schema(description = "배송 회사명", example = "CJ대한통운") String shipmentCompanyCode,
-        @Schema(description = "변경 일시", example = "2024-01-15T14:30:00") LocalDateTime updateDate) {}
+        @Schema(description = "변경 일시", example = "2024-01-15 14:30:00") String updateDate) {}

@@ -66,6 +66,40 @@ public class LegacyOrderEntity {
 
     protected LegacyOrderEntity() {}
 
+    /**
+     * 주문 레코드 생성용 팩토리 메서드.
+     *
+     * @param paymentId 결제 ID
+     * @param productId 상품 ID
+     * @param sellerId 판매자 ID
+     * @param userId 사용자 ID
+     * @param orderAmount 주문 금액
+     * @param quantity 주문 수량
+     * @param orderStatus 주문 상태
+     * @return 새 주문 엔티티
+     */
+    public static LegacyOrderEntity create(
+            long paymentId,
+            long productId,
+            long sellerId,
+            long userId,
+            long orderAmount,
+            int quantity,
+            LegacyOrderStatus orderStatus) {
+        LegacyOrderEntity entity = new LegacyOrderEntity();
+        entity.paymentId = paymentId;
+        entity.productId = productId;
+        entity.sellerId = sellerId;
+        entity.userId = userId;
+        entity.orderAmount = orderAmount;
+        entity.quantity = quantity;
+        entity.orderStatus = orderStatus;
+        entity.reviewYn = Yn.N;
+        entity.insertDate = java.time.LocalDateTime.now();
+        entity.updateDate = java.time.LocalDateTime.now();
+        return entity;
+    }
+
     public Long getId() {
         return id;
     }
@@ -112,6 +146,16 @@ public class LegacyOrderEntity {
 
     public LocalDateTime getUpdateDate() {
         return updateDate;
+    }
+
+    /**
+     * 주문 상태를 변경합니다.
+     *
+     * @param orderStatus 새 주문 상태
+     */
+    public void updateOrderStatus(LegacyOrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+        this.updateDate = LocalDateTime.now();
     }
 
     /** 리뷰 작성 여부 Enum. */

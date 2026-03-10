@@ -87,6 +87,41 @@ public class LegacyPaymentBillEntity {
 
     protected LegacyPaymentBillEntity() {}
 
+    /**
+     * 결제 청구서 레코드 생성용 팩토리 메서드.
+     *
+     * @param paymentId 결제 ID
+     * @param userId 사용자 ID
+     * @param paymentAmount 결제 금액
+     * @param paymentUniqueId PG 결제용 고유 ID
+     * @return 새 청구서 엔티티
+     */
+    public static LegacyPaymentBillEntity create(
+            long paymentId,
+            long userId,
+            long paymentAmount,
+            long usedMileageAmount,
+            String paymentUniqueId) {
+        LegacyPaymentBillEntity entity = new LegacyPaymentBillEntity();
+        entity.id = paymentId;
+        entity.paymentId = paymentId;
+        entity.userId = userId;
+        entity.paymentAmount = paymentAmount;
+        entity.paymentUniqueId = paymentUniqueId;
+        entity.usedMileageAmount = usedMileageAmount;
+        entity.paymentMethodId = 0L;
+        entity.paymentChannel = "PC";
+        entity.buyerName = "";
+        entity.buyerEmail = "";
+        entity.buyerPhoneNumber = "";
+        entity.deleteYn = "N";
+        entity.insertOperator = "SYSTEM";
+        entity.updateOperator = "SYSTEM";
+        entity.insertDate = java.time.LocalDateTime.now();
+        entity.updateDate = java.time.LocalDateTime.now();
+        return entity;
+    }
+
     public Long getId() {
         return id;
     }

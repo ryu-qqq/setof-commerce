@@ -27,4 +27,7 @@ public final class OrderV1Endpoints {
 
     /** 주문 목록 조회 (GET /api/v1/orders) */
     public static final String ORDERS = BASE_V1 + "/orders";
+
+    /** 주문 상태 변경 (PUT /api/v1/order) */
+    public static final String ORDER = BASE_V1 + "/order";
 }

@@ -2,7 +2,7 @@ package com.ryuqq.setof.application.shippingaddress.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -88,7 +88,7 @@ class ShippingAddressRegistrationCoordinatorTest {
 
             // then
             assertThat(result).isEqualTo(expectedId);
-            then(commandManager).should().persistAll(any(List.class));
+            then(commandManager).should().persistAll(anyList());
             then(commandManager).should().persist(newDefaultAddress);
         }
 

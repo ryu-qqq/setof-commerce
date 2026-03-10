@@ -150,6 +150,9 @@ public class PaymentQueryV1Controller {
             @AuthenticatedUserId Long userId,
             @Parameter(description = "결제 ID", example = "12345") @PathVariable long paymentId) {
         PaymentDetailResult result = getPaymentDetailUseCase.execute(paymentId, userId);
+        if (result == null) {
+            return ResponseEntity.ok(V1ApiResponse.success(null));
+        }
         PaymentDetailV1ApiResponse response = paymentMapper.toPaymentDetailResponse(result);
         return ResponseEntity.ok(V1ApiResponse.success(response));
     }

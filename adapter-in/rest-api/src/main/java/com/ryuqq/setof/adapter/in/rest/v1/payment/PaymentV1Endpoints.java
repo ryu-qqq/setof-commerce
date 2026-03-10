@@ -27,4 +27,10 @@ public final class PaymentV1Endpoints {
 
     /** 결제 단건 상세 조회 (GET /api/v1/payment/{paymentId}) */
     public static final String PAYMENT_DETAIL = BASE_V1 + "/payment/{paymentId}";
+
+    /** 결제 요청 - 직접 구매 (POST /api/v1/payment) */
+    public static final String PAYMENT = BASE_V1 + "/payment";
+
+    /** 결제 요청 - 장바구니 구매 (POST /api/v1/payment/cart) */
+    public static final String PAYMENT_CART = BASE_V1 + "/payment/cart";
 }

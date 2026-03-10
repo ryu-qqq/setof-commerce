@@ -67,6 +67,7 @@ spring:
       - classpath:persistence-legacy.yml
       - classpath:redis.yml
       - classpath:portone.yml
+      - classpath:fileflow.yml
 
   # ===============================================
   # MessageSource (i18n)

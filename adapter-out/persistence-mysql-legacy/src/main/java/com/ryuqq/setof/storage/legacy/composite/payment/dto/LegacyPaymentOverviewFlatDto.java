@@ -43,6 +43,11 @@ public record LegacyPaymentOverviewFlatDto(
         String paymentAgencyId,
         String cardName,
         String cardNumber,
+        // payment (추가 필드)
+        long userId,
+        String siteName,
+        // payment_bill (결제 수단 ID → paymentMethodEnum 변환용)
+        long paymentMethodId,
         // orders
         long orderId,
         String orderStatus,

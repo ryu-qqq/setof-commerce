@@ -45,4 +45,15 @@ public class PaymentCompositeReadManager {
     public List<PaymentOverview> fetchPaymentOverviews(List<Long> paymentIds) {
         return paymentCompositeQueryPort.fetchPaymentOverviews(paymentIds);
     }
+
+    /**
+     * 검색 조건으로 결제 건수 조회 (totalElements 계산용).
+     *
+     * @param criteria 결제 검색 조건
+     * @return 결제 건수
+     */
+    @Transactional(readOnly = true)
+    public long countPayments(PaymentSearchCriteria criteria) {
+        return paymentCompositeQueryPort.countPayments(criteria);
+    }
 }

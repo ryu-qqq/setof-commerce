@@ -7,7 +7,10 @@ public enum PaymentErrorCode implements ErrorCode {
     PAYMENT_NOT_FOUND("PMT-001", 404, "결제 정보를 찾을 수 없습니다"),
     INVALID_PAYMENT_STATUS("PMT-002", 400, "유효하지 않은 결제 상태 전이입니다"),
     PAYMENT_AMOUNT_MISMATCH("PMT-003", 400, "결제 금액이 일치하지 않습니다"),
-    REFUND_AMOUNT_EXCEEDS_PAYMENT("PMT-004", 400, "환불 금액이 결제 금액을 초과합니다");
+    REFUND_AMOUNT_EXCEEDS_PAYMENT("PMT-004", 400, "환불 금액이 결제 금액을 초과합니다"),
+    PRODUCT_PRICE_MISMATCH("PMT-005", 400, "상품 가격이 일치하지 않습니다"),
+    INVALID_MILEAGE_UNIT("PMT-006", 400, "적립금은 100원 단위로 사용할 수 있습니다"),
+    INSUFFICIENT_CASH_WITH_MILEAGE("PMT-007", 400, "적립금을 사용하려면 결제 금액이 최소 10,000원 이상이어야 합니다");
 
     private final String code;
     private final int httpStatus;

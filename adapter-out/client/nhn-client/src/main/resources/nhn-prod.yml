@@ -1,0 +1,9 @@
+# ============================================================
+# NHN Cloud AlimTalk Client 프로덕션 환경 설정
+# ============================================================
+nhn:
+  alimtalk:
+    app-key: ${NHN_ALIMTALK_APP_KEY:}
+    secret-key: ${NHN_ALIMTALK_SECRET_KEY:}
+    sender-key: ${NHN_ALIMTALK_SENDER_KEY:}
+    base-url: https://api-alimtalk.cloud.toast.com

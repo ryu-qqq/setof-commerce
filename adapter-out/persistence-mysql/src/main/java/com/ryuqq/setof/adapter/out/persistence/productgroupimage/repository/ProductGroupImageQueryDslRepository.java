@@ -1,0 +1,60 @@
+package com.ryuqq.setof.adapter.out.persistence.productgroupimage.repository;
+
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.ryuqq.setof.adapter.out.persistence.productgroupimage.entity.ProductGroupImageJpaEntity;
+import com.ryuqq.setof.adapter.out.persistence.productgroupimage.entity.QProductGroupImageJpaEntity;
+import java.util.List;
+import org.springframework.stereotype.Repository;
+
+/**
+ * ProductGroupImageQueryDslRepository - 상품그룹 이미지 QueryDSL Repository.
+ *
+ * <p>PER-ADP-004: QueryAdapter는 QueryDslRepository만 사용.
+ *
+ * @author ryu-qqq
+ * @since 1.1.0
+ */
+@Repository
+public class ProductGroupImageQueryDslRepository {
+
+    private static final QProductGroupImageJpaEntity productGroupImage =
+            QProductGroupImageJpaEntity.productGroupImageJpaEntity;
+
+    private final JPAQueryFactory queryFactory;
+
+    public ProductGroupImageQueryDslRepository(JPAQueryFactory queryFactory) {
+        this.queryFactory = queryFactory;
+    }
+
+    /**
+     * 단일 상품그룹 ID로 이미지 목록 조회.
+     *
+     * @param productGroupId 상품그룹 ID
+     * @return 활성 이미지 목록 (sortOrder 오름차순)
+     */
+    public List<ProductGroupImageJpaEntity> findByProductGroupId(Long productGroupId) {
+        return queryFactory
+                .selectFrom(productGroupImage)
+                .where(
+                        productGroupImage.productGroupId.eq(productGroupId),
+                        productGroupImage.deleted.isFalse())
+                .orderBy(productGroupImage.sortOrder.asc())
+                .fetch();
+    }
+
+    /**
+     * 복수 상품그룹 ID로 이미지 목록 조회.
+     *
+     * @param productGroupIds 상품그룹 ID 목록
+     * @return 활성 이미지 목록 (sortOrder 오름차순)
+     */
+    public List<ProductGroupImageJpaEntity> findByProductGroupIds(List<Long> productGroupIds) {
+        return queryFactory
+                .selectFrom(productGroupImage)
+                .where(
+                        productGroupImage.productGroupId.in(productGroupIds),
+                        productGroupImage.deleted.isFalse())
+                .orderBy(productGroupImage.sortOrder.asc())
+                .fetch();
+    }
+}

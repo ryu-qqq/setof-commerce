@@ -10,6 +10,9 @@ package com.ryuqq.setof.application.member.dto.query;
  * @param gradeName 등급 이름
  * @param currentMileage 현재 마일리지
  * @param socialLoginType 소셜 로그인 타입
+ * @param socialPkId 소셜 PK ID
+ * @param joinedDate 가입일
+ * @param deleteYn 삭제 여부
  * @author ryu-qqq
  * @since 1.2.0
  */
@@ -20,4 +23,7 @@ public record UserResult(
         String email,
         String gradeName,
         double currentMileage,
-        String socialLoginType) {}
+        String socialLoginType,
+        String socialPkId,
+        String joinedDate,
+        String deleteYn) {}

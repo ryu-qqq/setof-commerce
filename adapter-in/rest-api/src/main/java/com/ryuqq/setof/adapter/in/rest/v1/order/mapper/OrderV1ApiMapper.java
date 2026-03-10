@@ -1,9 +1,14 @@
 package com.ryuqq.setof.adapter.in.rest.v1.order.mapper;
 
+import static com.ryuqq.setof.adapter.in.rest.common.util.DateTimeFormatUtils.format;
+
 import com.ryuqq.setof.adapter.in.rest.v1.order.dto.request.SearchOrdersCursorV1ApiRequest;
+import com.ryuqq.setof.adapter.in.rest.v1.order.dto.request.UpdateOrderV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.v1.order.dto.response.OrderCountV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.order.dto.response.OrderHistoryV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.order.dto.response.OrderSliceV1ApiResponse;
+import com.ryuqq.setof.adapter.in.rest.v1.order.dto.response.OrderSliceV1ApiResponse.PageableResponse;
+import com.ryuqq.setof.adapter.in.rest.v1.order.dto.response.OrderSliceV1ApiResponse.SortResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.order.dto.response.OrderV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.order.dto.response.OrderV1ApiResponse.BrandResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.order.dto.response.OrderV1ApiResponse.BuyerInfoResponse;
@@ -13,11 +18,14 @@ import com.ryuqq.setof.adapter.in.rest.v1.order.dto.response.OrderV1ApiResponse.
 import com.ryuqq.setof.adapter.in.rest.v1.order.dto.response.OrderV1ApiResponse.ReceiverInfoResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.order.dto.response.OrderV1ApiResponse.RefundNoticeResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.order.dto.response.OrderV1ApiResponse.ShipmentInfoResponse;
+import com.ryuqq.setof.adapter.in.rest.v1.order.dto.response.UpdateOrderV1ApiResponse;
+import com.ryuqq.setof.application.order.dto.command.UpdateLegacyOrderStatusCommand;
 import com.ryuqq.setof.application.order.dto.query.OrderSearchParams;
 import com.ryuqq.setof.application.order.dto.response.OrderDetailResult;
 import com.ryuqq.setof.application.order.dto.response.OrderHistoryResult;
 import com.ryuqq.setof.application.order.dto.response.OrderSliceResult;
 import com.ryuqq.setof.application.order.dto.response.OrderStatusCountResult;
+import com.ryuqq.setof.application.order.dto.response.UpdateOrderResult;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -94,7 +102,7 @@ public class OrderV1ApiMapper {
                 result.orderStatus(),
                 result.invoiceNo(),
                 result.shipmentCompanyCode(),
-                result.updateDate());
+                format(result.updateDate()));
     }
 
     /**
@@ -109,17 +117,42 @@ public class OrderV1ApiMapper {
     }
 
     /**
-     * OrderSliceResult → OrderSliceV1ApiResponse 변환.
+     * OrderSliceResult → OrderSliceV1ApiResponse 변환 (레거시 CustomSlice 호환).
      *
      * @param result 주문 슬라이스 결과
+     * @param requestCursor 요청 시 전달된 커서 (first 판단용, null이면 첫 페이지)
+     * @param requestSize 요청 시 전달된 페이지 크기
      * @return OrderSliceV1ApiResponse
      */
-    public OrderSliceV1ApiResponse toOrderSliceResponse(OrderSliceResult result) {
+    public OrderSliceV1ApiResponse toOrderSliceResponse(
+            OrderSliceResult result, Long requestCursor, int requestSize) {
         List<OrderV1ApiResponse> content =
                 result.content().stream().map(this::toOrderResponse).toList();
         List<OrderCountV1ApiResponse> counts =
                 result.orderCounts().stream().map(this::toOrderCountResponse).toList();
-        return new OrderSliceV1ApiResponse(content, result.hasNext(), result.lastOrderId(), counts);
+
+        boolean hasNext = result.hasNext();
+        boolean isFirst = requestCursor == null;
+
+        Long lastDomainId = hasNext ? result.lastOrderId() : null;
+        String cursorValue = lastDomainId != null ? lastDomainId.toString() : null;
+
+        SortResponse sort = SortResponse.defaultUnsorted();
+        PageableResponse pageable = new PageableResponse(0, requestSize, sort, 0L, false, true);
+
+        return new OrderSliceV1ApiResponse(
+                content,
+                !hasNext,
+                isFirst,
+                0,
+                sort,
+                requestSize,
+                content.size(),
+                content.isEmpty(),
+                lastDomainId,
+                cursorValue,
+                counts,
+                pageable);
     }
 
     private OrderV1ApiResponse toOrderResponse(OrderDetailResult result) {
@@ -137,8 +170,8 @@ public class OrderV1ApiMapper {
                 r.paymentAgencyId(),
                 r.paymentStatus(),
                 r.paymentMethod(),
-                r.paymentDate(),
-                r.canceledDate(),
+                format(r.paymentDate()),
+                format(r.canceledDate()),
                 r.paymentAmount(),
                 r.usedMileageAmount(),
                 r.cardName(),
@@ -179,7 +212,7 @@ public class OrderV1ApiMapper {
                         r.shipmentInfo().deliveryStatus(),
                         r.shipmentInfo().companyCode(),
                         r.shipmentInfo().invoiceNo(),
-                        r.shipmentInfo().insertDate());
+                        format(r.shipmentInfo().insertDate()));
 
         return new OrderProductResponse(
                 r.orderId(),
@@ -218,5 +251,41 @@ public class OrderV1ApiMapper {
                 r.country(),
                 r.deliveryRequest(),
                 r.phoneNumber());
+    }
+
+    /**
+     * UpdateOrderV1ApiRequest → UpdateLegacyOrderStatusCommand 변환.
+     *
+     * <p>orderId가 null인 경우 (ORDER_FAILED 등) 0L로 처리합니다.
+     *
+     * @param userId 인증된 사용자 ID
+     * @param request 주문 상태 변경 요청
+     * @return UpdateLegacyOrderStatusCommand
+     */
+    public UpdateLegacyOrderStatusCommand toUpdateCommand(
+            Long userId, UpdateOrderV1ApiRequest request) {
+        long orderId = request.orderId() != null ? request.orderId() : 0L;
+        return new UpdateLegacyOrderStatusCommand(
+                orderId,
+                userId,
+                request.orderStatus(),
+                request.changeReason(),
+                request.changeDetailReason());
+    }
+
+    /**
+     * UpdateOrderResult → UpdateOrderV1ApiResponse 변환.
+     *
+     * @param result 주문 상태 변경 결과
+     * @return UpdateOrderV1ApiResponse
+     */
+    public UpdateOrderV1ApiResponse toUpdateOrderResponse(UpdateOrderResult result) {
+        return new UpdateOrderV1ApiResponse(
+                result.orderId(),
+                result.userId(),
+                result.toBeOrderStatus(),
+                result.asIsOrderStatus(),
+                result.changeReason(),
+                result.changeDetailReason());
     }
 }

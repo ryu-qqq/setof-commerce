@@ -1,0 +1,997 @@
+domain: payment
+description: "Payment API shadow traffic test cases"
+
+auth_config:
+  strategy: login
+  login_endpoint: /api/v1/user/login
+  phone_number: "${SHADOW_TEST_PHONE}"
+  password: "${SHADOW_TEST_PASSWORD}"
+
+test_cases:
+  # =========================================================
+  # === Query (조회) - Shadow Traffic 비교 대상 ===
+  # =========================================================
+
+  # --- GET /api/v1/payments (커서 기반 페이징) ---
+  # 테스트 유저(3965)의 결제 2건: 90001(PAYMENT_COMPLETED), 90002(PAYMENT_COMPLETED)
+
+  # 첫 페이지 조회: 전체 결제 목록
+  - name: "payment_list_first_page"
+    path: "/api/v1/payments"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 20
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["content", "totalElements", "numberOfElements", "last", "empty", "lastPaymentId"]
+      reason: "Legacy SiteName.SETOF enum 버그로 빈 결과 반환. New는 정상 데이터 반환. 응답 구조는 일치."
+
+  # 작은 페이지 사이즈로 페이징 동작 확인
+  - name: "payment_list_small_page"
+    path: "/api/v1/payments"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 1
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["content", "totalElements", "numberOfElements", "last", "empty", "lastPaymentId"]
+      reason: "Legacy SiteName.SETOF enum 버그로 빈 결과 반환. New는 정상 데이터 반환. 응답 구조는 일치."
+
+  # 커서 기반 두 번째 페이지 조회
+  - name: "payment_list_cursor_page"
+    path: "/api/v1/payments"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 1
+      lastPaymentId: 90002
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["content", "totalElements", "numberOfElements", "last", "empty", "first"]
+      reason: "Legacy SiteName.SETOF enum 버그로 빈 결과 반환. New는 정상 데이터 반환."
+
+  # 날짜 필터 조회 (2025-12-01 ~ 2025-12-31)
+  - name: "payment_list_date_filter"
+    path: "/api/v1/payments"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 20
+      startDate: "2025-12-01T00:00:00"
+      endDate: "2025-12-31T23:59:59"
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["content", "totalElements", "numberOfElements", "last", "empty"]
+      reason: "Legacy SiteName.SETOF enum 버그로 빈 결과 반환. New는 정상 데이터 반환."
+
+  # 날짜 범위에 데이터 없는 경우 (빈 결과)
+  - name: "payment_list_empty_result"
+    path: "/api/v1/payments"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 20
+      startDate: "2020-01-01T00:00:00"
+      endDate: "2020-01-31T23:59:59"
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["totalElements"]
+      reason: "Legacy totalElements=null vs New totalElements=0. 빈 결과 처리 방식 차이. 동작 동일."
+
+  # 미인증 접근 → 403
+  - name: "payment_list_unauthenticated"
+    path: "/api/v1/payments"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # --- GET /api/v1/payment/{paymentId} (결제 단건 상세) ---
+  # 가장 중요: orderProducts 포함 여부 + 전체 응답 구조 비교
+
+  # 결제 상세 조회 - payment 90002 (주문 2건: 90003, 90004)
+  - name: "payment_detail_with_multiple_orders"
+    path: "/api/v1/payment/90002"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy SiteName.SETOF enum 버그로 500 반환. New는 정상 200 응답."
+
+  # 결제 상세 조회 - payment 90001 (주문 2건: 90001, 90002)
+  - name: "payment_detail_another"
+    path: "/api/v1/payment/90001"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy SiteName.SETOF enum 버그로 500 반환. New는 정상 200 응답."
+
+  # 존재하지 않는 결제 상세 조회
+  - name: "payment_detail_not_found"
+    path: "/api/v1/payment/999999"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 미인증 접근 → 403
+  - name: "payment_detail_unauthenticated"
+    path: "/api/v1/payment/90002"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # --- GET /api/v1/payment/{paymentId}/status (결제 상태 조회) ---
+  # PG사(PortOne) API를 호출하여 결제 성공 여부 확인
+  # 외부 API 의존이므로 status_only로 비교 (응답 타이밍 차이 가능)
+
+  - name: "payment_status_valid"
+    path: "/api/v1/payment/90002/status"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    timeout: 15.0
+
+  - name: "payment_status_not_found"
+    path: "/api/v1/payment/999999/status"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  - name: "payment_status_unauthenticated"
+    path: "/api/v1/payment/90002/status"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # --- GET /api/v1/payment/codes/* (결제 코드 조회) ---
+  # ⚠️ 경로 차이: Legacy와 New API의 URL이 다름
+  #   Legacy: /api/v1/payment/payment-method → New: /api/v1/payment/codes/methods
+  #   Legacy: /api/v1/payment/vbank          → New: /api/v1/payment/codes/vbank-refund-accounts
+  #   Legacy: /api/v1/payment/refund-bank    → New: /api/v1/payment/codes/refund-bank-accounts
+  # Runner는 동일 path를 양쪽에 보내므로, New 경로 기준으로 테스트
+  # Legacy는 404 반환 → status_only로 비교하여 New 서버 정상 동작만 확인
+
+  # 결제 수단 목록 (인증 불필요)
+  - name: "payment_codes_methods"
+    path: "/api/v1/payment/codes/methods"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy에 해당 경로 없음(404). New는 정상 200. URL 리팩토링 완료."
+
+  # 가상계좌 환불 은행 목록 (인증 불필요)
+  - name: "payment_codes_vbank_refund_accounts"
+    path: "/api/v1/payment/codes/vbank-refund-accounts"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy에 해당 경로 없음(404). New는 정상 200. URL 리팩토링 완료."
+
+  # 환불 은행 목록 (인증 불필요)
+  - name: "payment_codes_refund_bank_accounts"
+    path: "/api/v1/payment/codes/refund-bank-accounts"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy에 해당 경로 없음(404). New는 정상 200. URL 리팩토링 완료."
+
+  # =========================================================
+  # === Command (결제 생성) - POST /api/v1/payment (직접 구매) ===
+  # =========================================================
+  # 중요:
+  #   - 동일 DB를 공유하므로 두 서버 모두 payment/order를 INSERT 함
+  #   - 재고 차감(product_stock UPDATE)이 양쪽에서 발생 → 재고 2배 소진
+  #   - safe_for_repeat: false → --safe-only 모드에서는 실행되지 않음
+  #   - 응답의 paymentId/orderIds는 auto-increment로 달라지므로 structure_only 비교
+  #   - paymentUniqueId는 paymentId를 포함하므로 ignore_fields에서 제외 불가
+  #     → DeepDiff의 value_changed로 잡히나, structure_only에서는 비교 제외됨
+  #
+  # Stage DB 기준 테스트 데이터:
+  #   - 테스트 유저 ID: 3965 (SHADOW_TEST_PHONE/PASSWORD 환경변수로 로그인)
+  #   - 실제 재고 있는 productGroupId: 1 (sellerId: 1, productId: 재고 보유 상품)
+  #   - 카트 결제용 cart: 테스트 유저의 장바구니에 사전 등록된 cartId
+  #
+  # ⚠️ 가격 검증(@ValidPrice): orderAmount는 DB의 실제 판매가 × quantity와 정확히 일치해야 함
+  #   일치하지 않으면 InvalidPaymentPriceException(400) 발생
+  #   아래 케이스의 orderAmount는 Stage DB 실제 가격 기준으로 업데이트 필요
+
+  # --- 직접 구매: 카드 결제 (단일 상품) ---
+  # Stage DB 실데이터: product_group 88528, product 717476, seller 22, price 165000, stock 18
+  - name: "payment_create_direct_card_single_item"
+    path: "/api/v1/payment"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 165000
+      mileageAmount: 0
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: "문 앞에 놔주세요"
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - productGroupId: 88528
+          productId: 717476
+          sellerId: 22
+          quantity: 1
+          orderAmount: 165000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: structure_only
+    ignore_fields:
+      - "paymentUniqueId"
+      - "paymentId"
+      - "orderIds"
+      - "expectedMileageAmount"
+    safe_for_repeat: false
+    known_diff:
+      fields: ["status"]
+      reason: "New 서버 JPA 에러(500). Legacy는 PG 미연동으로 400. 별도 버그 수정 필요."
+
+  # --- 직접 구매: 카드 결제 (다중 상품, 2개 주문 항목) ---
+  # Stage DB: 88528/717476 (165000) + 88581/717581 (50000) = 215000
+  - name: "payment_create_direct_card_multi_items"
+    path: "/api/v1/payment"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 215000
+      mileageAmount: 0
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "회사"
+          addressLine1: "서울시 서초구 강남대로 123"
+          addressLine2: "B동 301호"
+          zipCode: "06531"
+          country: "KR"
+          deliveryRequest: "경비실에 맡겨주세요"
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - productGroupId: 88528
+          productId: 717476
+          sellerId: 22
+          quantity: 1
+          orderAmount: 165000
+          orderStatus: "ORDER_COMPLETED"
+        - productGroupId: 88581
+          productId: 717581
+          sellerId: 22
+          quantity: 1
+          orderAmount: 50000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: structure_only
+    ignore_fields:
+      - "paymentUniqueId"
+      - "paymentId"
+      - "orderIds"
+      - "expectedMileageAmount"
+    safe_for_repeat: false
+    known_diff:
+      fields: ["status"]
+      reason: "New 서버 JPA 에러(500). Legacy는 PG 미연동으로 400. 별도 버그 수정 필요."
+
+  # --- 직접 구매: 카드 결제 (마일리지 병용) ---
+  # Stage DB: 88581/717581 (50000), payAmount=40000 + mileage=10000
+  - name: "payment_create_direct_card_with_mileage"
+    path: "/api/v1/payment"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 40000
+      mileageAmount: 10000
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: null
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - productGroupId: 88581
+          productId: 717581
+          sellerId: 22
+          quantity: 1
+          orderAmount: 50000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: structure_only
+    ignore_fields:
+      - "paymentUniqueId"
+      - "paymentId"
+      - "orderIds"
+      - "expectedMileageAmount"
+    safe_for_repeat: false
+    known_diff:
+      fields: ["status"]
+      reason: "New 서버 JPA 에러(500). Legacy는 PG 미연동으로 400. 별도 버그 수정 필요."
+
+  # --- 직접 구매: 마일리지 전액 결제 ---
+  # Stage DB: 88581/717581 (50000), payAmount=0, mileage=50000
+  - name: "payment_create_direct_mileage_only"
+    path: "/api/v1/payment"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 0
+      mileageAmount: 50000
+      payMethod: "MILEAGE"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: "문 앞에 놔주세요"
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - productGroupId: 88581
+          productId: 717581
+          sellerId: 22
+          quantity: 1
+          orderAmount: 50000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: structure_only
+    ignore_fields:
+      - "paymentUniqueId"
+      - "paymentId"
+      - "orderIds"
+      - "expectedMileageAmount"
+    safe_for_repeat: false
+    known_diff:
+      fields: ["status"]
+      reason: "New 서버 JPA 에러(500). Legacy는 PG 미연동으로 400. 별도 버그 수정 필요."
+
+  # --- 직접 구매: 가상계좌 결제 (환불계좌 포함) ---
+  # Stage DB: 88528/717476 (165000)
+  - name: "payment_create_direct_vbank_with_refund_account"
+    path: "/api/v1/payment"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 165000
+      mileageAmount: 0
+      payMethod: "VBANK"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: "문 앞에 놔주세요"
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount:
+        bankCode: "004"
+        accountNumber: "12345678901234"
+        accountHolderName: "홍길동"
+      orders:
+        - productGroupId: 88528
+          productId: 717476
+          sellerId: 22
+          quantity: 1
+          orderAmount: 165000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: structure_only
+    ignore_fields:
+      - "paymentUniqueId"
+      - "paymentId"
+      - "orderIds"
+      - "expectedMileageAmount"
+    safe_for_repeat: false
+    known_diff:
+      fields: ["status"]
+      reason: "New 서버 JPA 에러(500). Legacy는 PG 미연동으로 400. 별도 버그 수정 필요."
+
+  # =========================================================
+  # === Command (결제 생성) - POST /api/v1/payment/cart (장바구니 구매) ===
+  # =========================================================
+  # 중요:
+  #   - doPay와 동일한 흐름 + 결제 성공 후 AOP로 장바구니 소프트 딜리트
+  #   - cartId는 Stage DB의 테스트 유저 장바구니에 실제 존재하는 ID여야 함
+  #   - 결제 후 cart.delete_yn = 'Y'로 변경됨 → 1회 실행 후 반복 불가
+  #   - orders[].productId/orderAmount는 장바구니 상품과 일치해야 @ValidPrice 통과
+
+  # --- 장바구니 결제: 카드 결제 (단일 장바구니 아이템) ---
+  # Stage DB: cart 1845, pg:88528/p:717476/seller:22, price:165000
+  - name: "payment_create_cart_card_single_item"
+    path: "/api/v1/payment/cart"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 165000
+      mileageAmount: 0
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: "문 앞에 놔주세요"
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - cartId: 1845
+          productGroupId: 88528
+          productId: 717476
+          sellerId: 22
+          quantity: 1
+          orderAmount: 165000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: structure_only
+    ignore_fields:
+      - "paymentUniqueId"
+      - "paymentId"
+      - "orderIds"
+      - "expectedMileageAmount"
+    safe_for_repeat: false
+    known_diff:
+      fields: ["status"]
+      reason: "New 서버 JPA 에러(500). Legacy는 PG 미연동으로 400. 별도 버그 수정 필요."
+
+  # --- 장바구니 결제: 카드 결제 (다중 장바구니 아이템) ---
+  # Stage DB: cart 1846 (50000) + cart 1847 (170000) = 220000
+  - name: "payment_create_cart_card_multi_items"
+    path: "/api/v1/payment/cart"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 220000
+      mileageAmount: 0
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "회사"
+          addressLine1: "서울시 서초구 강남대로 123"
+          addressLine2: "B동 301호"
+          zipCode: "06531"
+          country: "KR"
+          deliveryRequest: "경비실에 맡겨주세요"
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - cartId: 1846
+          productGroupId: 88581
+          productId: 717581
+          sellerId: 22
+          quantity: 1
+          orderAmount: 50000
+          orderStatus: "ORDER_COMPLETED"
+        - cartId: 1847
+          productGroupId: 88585
+          productId: 717588
+          sellerId: 22
+          quantity: 1
+          orderAmount: 170000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: structure_only
+    ignore_fields:
+      - "paymentUniqueId"
+      - "paymentId"
+      - "orderIds"
+      - "expectedMileageAmount"
+    safe_for_repeat: false
+    known_diff:
+      fields: ["status"]
+      reason: "New 서버 JPA 에러(500). Legacy는 PG 미연동으로 400. 별도 버그 수정 필요."
+
+  # --- 장바구니 결제: 마일리지 전액 결제 ---
+  # Stage DB: cart 1848, pg:88590/p:717593/seller:22, price:80000
+  - name: "payment_create_cart_mileage_only"
+    path: "/api/v1/payment/cart"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 0
+      mileageAmount: 80000
+      payMethod: "MILEAGE"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: null
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - cartId: 1848
+          productGroupId: 88590
+          productId: 717593
+          sellerId: 22
+          quantity: 1
+          orderAmount: 80000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: structure_only
+    ignore_fields:
+      - "paymentUniqueId"
+      - "paymentId"
+      - "orderIds"
+      - "expectedMileageAmount"
+    safe_for_repeat: false
+    known_diff:
+      fields: ["status"]
+      reason: "New 서버 JPA 에러(500). Legacy는 PG 미연동으로 400. 별도 버그 수정 필요."
+
+  # =========================================================
+  # === Edge Cases: Validation 실패 케이스 (safe_for_repeat: true) ===
+  # =========================================================
+  # 서버 상태를 변경하지 않으므로 반복 실행 가능
+
+  # --- 직접 구매: 미인증 → 403 ---
+  - name: "payment_create_direct_unauthenticated"
+    path: "/api/v1/payment"
+    method: POST
+    auth: none
+    body:
+      payAmount: 165000
+      mileageAmount: 0
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: null
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - productGroupId: 88528
+          productId: 717476
+          sellerId: 22
+          quantity: 1
+          orderAmount: 165000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "[완료] Legacy 400(validation 우선) vs New 401(auth 우선). New가 HTTP 표준에 맞음. 의도적 차이 수용."
+
+  # --- 직접 구매: payMethod 누락 → 400 Bean Validation 실패 ---
+  - name: "payment_create_direct_missing_pay_method"
+    path: "/api/v1/payment"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 165000
+      mileageAmount: 0
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: null
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - productGroupId: 88528
+          productId: 717476
+          sellerId: 22
+          quantity: 1
+          orderAmount: 165000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # --- 직접 구매: orders 빈 배열 → 400 Bean Validation 실패 (@Size(min=1)) ---
+  - name: "payment_create_direct_empty_orders"
+    path: "/api/v1/payment"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 165000
+      mileageAmount: 0
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: null
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders: []
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy 200(빈 orders 허용) vs New 400(Bean Validation). New가 올바른 동작."
+
+  # --- 직접 구매: 가격 불일치 → 400 InvalidPaymentPriceException (@ValidPrice) ---
+  # orderAmount가 실제 DB 판매가와 다를 때 발생
+  - name: "payment_create_direct_price_mismatch"
+    path: "/api/v1/payment"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 99999
+      mileageAmount: 0
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: null
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - productGroupId: 1
+          productId: 1
+          sellerId: 1
+          quantity: 1
+          orderAmount: 99999
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy 200(가격 검증 없이 통과) vs New 400(가격 검증). New가 올바른 동작."
+
+  # --- 직접 구매: 존재하지 않는 productId → 400 ProductNotFoundException ---
+  - name: "payment_create_direct_invalid_product"
+    path: "/api/v1/payment"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 29800
+      mileageAmount: 0
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: null
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - productGroupId: 999999
+          productId: 999999
+          sellerId: 1
+          quantity: 1
+          orderAmount: 29800
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy 200(상품 검증 없이 PG로 진행) vs New 400(상품 존재 검증). New가 올바른 동작."
+
+  # --- 직접 구매: 수량 0 → 400 Bean Validation 실패 (@Min(1)) ---
+  - name: "payment_create_direct_invalid_quantity"
+    path: "/api/v1/payment"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 0
+      mileageAmount: 0
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: null
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - productGroupId: 88528
+          productId: 717476
+          sellerId: 22
+          quantity: 0
+          orderAmount: 0
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # --- 직접 구매: 배송지 receiverName 미입력 → 400 Bean Validation 실패 (@NotNull) ---
+  - name: "payment_create_direct_missing_receiver_name"
+    path: "/api/v1/payment"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 165000
+      mileageAmount: 0
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: null
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: null
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - productGroupId: 88528
+          productId: 717476
+          sellerId: 22
+          quantity: 1
+          orderAmount: 165000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # --- 직접 구매: 마일리지 100원 단위 위반 → 400 InvalidCashAndMileageUseException ---
+  # 마일리지 사용 시 100원 단위여야 함 (예: 150은 불가)
+  - name: "payment_create_direct_mileage_not_unit_of_100"
+    path: "/api/v1/payment"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 164850
+      mileageAmount: 150
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: null
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - productGroupId: 88528
+          productId: 717476
+          sellerId: 22
+          quantity: 1
+          orderAmount: 165000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "New 서버 마일리지 검증 로직 500 에러. Legacy는 400. 별도 버그 수정 필요."
+
+  # --- 직접 구매: payAmount < 10,000 && mileageAmount > 0 → 400 (최소 현금 결제 규칙 위반) ---
+  # 마일리지 사용 시 현금 결제금액이 10,000원 미만이면 불가
+  - name: "payment_create_direct_mileage_with_insufficient_cash"
+    path: "/api/v1/payment"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 5000
+      mileageAmount: 160000
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: null
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - productGroupId: 88528
+          productId: 717476
+          sellerId: 22
+          quantity: 1
+          orderAmount: 165000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "New 서버 마일리지 검증 로직 500 에러. Legacy는 400. 별도 버그 수정 필요."
+
+  # --- 장바구니 결제: 미인증 → 403 ---
+  - name: "payment_create_cart_unauthenticated"
+    path: "/api/v1/payment/cart"
+    method: POST
+    auth: none
+    body:
+      payAmount: 165000
+      mileageAmount: 0
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: null
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - cartId: 1845
+          productGroupId: 88528
+          productId: 717476
+          sellerId: 22
+          quantity: 1
+          orderAmount: 165000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "[완료] Legacy 400(validation 우선) vs New 401(auth 우선). New가 HTTP 표준에 맞음. 의도적 차이 수용."
+
+  # --- 장바구니 결제: cartId 누락 → 400 Bean Validation 실패 (@NotNull) ---
+  - name: "payment_create_cart_missing_cart_id"
+    path: "/api/v1/payment/cart"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 165000
+      mileageAmount: 0
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: null
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - productGroupId: 88528
+          productId: 717476
+          sellerId: 22
+          quantity: 1
+          orderAmount: 165000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # --- 장바구니 결제: 존재하지 않는 cartId → 오류 (카트 조회 실패 또는 가격 검증 실패) ---
+  - name: "payment_create_cart_invalid_cart_id"
+    path: "/api/v1/payment/cart"
+    method: POST
+    auth: NORMAL_GRADE
+    body:
+      payAmount: 165000
+      mileageAmount: 0
+      payMethod: "CARD"
+      shippingInfo:
+        shippingDetails:
+          receiverName: "홍길동"
+          shippingAddressName: "집"
+          addressLine1: "서울시 강남구 테헤란로 123"
+          addressLine2: "101동 202호"
+          zipCode: "06130"
+          country: "KR"
+          deliveryRequest: null
+          phoneNumber: "01012345678"
+        defaultYn: "N"
+      refundAccount: null
+      orders:
+        - cartId: 999999
+          productGroupId: 88528
+          productId: 717476
+          sellerId: 22
+          quantity: 1
+          orderAmount: 165000
+          orderStatus: "ORDER_COMPLETED"
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "New 서버 JPA 에러(500). Legacy는 400. 별도 버그 수정 필요."

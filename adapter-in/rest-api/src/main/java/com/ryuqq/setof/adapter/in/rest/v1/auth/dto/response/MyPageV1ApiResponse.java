@@ -19,6 +19,7 @@ public record MyPageV1ApiResponse(
         @Schema(description = "전화번호") String phoneNumber,
         @Schema(description = "이메일") String email,
         @Schema(description = "소셜 로그인 타입") String socialLoginType,
+        @Schema(description = "가입일시") String registrationDate,
         @Schema(description = "등급") String userGrade,
         @Schema(description = "현재 마일리지") double currentMileage,
         @Schema(description = "주문 상태별 건수") List<OrderCountResponse> orderCounts) {

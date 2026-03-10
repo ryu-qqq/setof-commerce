@@ -2,6 +2,8 @@ package com.ryuqq.setof.storage.legacy.composite.mileage.mapper;
 
 import com.ryuqq.setof.application.legacy.mileage.dto.response.LegacyMileageHistoryResult;
 import com.ryuqq.setof.application.legacy.mileage.dto.response.LegacyUserMileageResult;
+import com.ryuqq.setof.application.mileage.dto.response.MileageHistoryItemResult;
+import com.ryuqq.setof.application.mileage.dto.response.MileageSummaryResult;
 import com.ryuqq.setof.storage.legacy.composite.mileage.dto.LegacyWebMileageHistoryQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.mileage.dto.LegacyWebUserMileageQueryDto;
 import java.time.LocalDateTime;
@@ -18,6 +20,69 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class LegacyWebMileageMapper {
+
+    // ========== 신규 Port 대응 메서드 ==========
+
+    /**
+     * MileageHistory QueryDto → MileageHistoryItemResult 변환 (신규 Port용).
+     *
+     * @param dto 마일리지 이력 QueryDto
+     * @return MileageHistoryItemResult
+     */
+    public MileageHistoryItemResult toHistoryItemResult(LegacyWebMileageHistoryQueryDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        return new MileageHistoryItemResult(
+                dto.mileageHistoryId(),
+                dto.mileageId(),
+                dto.title(),
+                dto.paymentId(),
+                dto.orderId(),
+                dto.changeAmount(),
+                dto.reason(),
+                dto.insertDate(),
+                dto.expirationDate());
+    }
+
+    /**
+     * MileageHistory QueryDto 목록 → MileageHistoryItemResult 목록 변환 (신규 Port용).
+     *
+     * @param dtos 마일리지 이력 QueryDto 목록
+     * @return MileageHistoryItemResult 목록
+     */
+    public List<MileageHistoryItemResult> toHistoryItemResults(
+            List<LegacyWebMileageHistoryQueryDto> dtos) {
+        if (dtos == null || dtos.isEmpty()) {
+            return List.of();
+        }
+        return dtos.stream().map(this::toHistoryItemResult).toList();
+    }
+
+    /**
+     * UserMileage QueryDto 목록 → MileageSummaryResult 변환 (신규 Port용).
+     *
+     * <p>만료 예정 마일리지 계산 포함.
+     *
+     * @param userId 사용자 ID
+     * @param dtos 사용자 마일리지 QueryDto 목록
+     * @return MileageSummaryResult
+     */
+    public MileageSummaryResult toSummaryResult(
+            long userId, List<LegacyWebUserMileageQueryDto> dtos) {
+        if (dtos == null || dtos.isEmpty()) {
+            return MileageSummaryResult.empty(userId);
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        double expiringMileageAmount = calculateExpiringMileage(dtos, now);
+        double currentMileageAmount = calculateCurrentMileage(dtos);
+        double availableMileage = Math.max(currentMileageAmount - expiringMileageAmount, 0.0);
+
+        return MileageSummaryResult.of(userId, availableMileage, 0.0, expiringMileageAmount);
+    }
+
+    // ========== 레거시 메서드 ==========
 
     /**
      * MileageHistory QueryDto → Result 변환.

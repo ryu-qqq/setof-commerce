@@ -33,29 +33,68 @@ public class LegacyPaymentEntity {
     @Column(name = "payment_id")
     private Long id;
 
-    @Column(name = "user_id")
+    @Column(name = "USER_ID")
     private long userId;
 
-    @Column(name = "payment_status")
+    @Column(name = "PAYMENT_AMOUNT")
+    private long paymentAmount;
+
+    @Column(name = "PAYMENT_STATUS")
     @Enumerated(EnumType.STRING)
     private LegacyPaymentStatus paymentStatus;
 
-    @Column(name = "site_name")
+    @Column(name = "SITE_NAME")
     private String siteName;
 
-    @Column(name = "payment_date")
+    @Column(name = "PAYMENT_DATE")
     private LocalDateTime paymentDate;
 
-    @Column(name = "canceled_date")
+    @Column(name = "CANCELED_DATE")
     private LocalDateTime canceledDate;
 
-    @Column(name = "insert_date")
+    @Column(name = "INSERT_DATE")
     private LocalDateTime insertDate;
 
-    @Column(name = "update_date")
+    @Column(name = "UPDATE_DATE")
     private LocalDateTime updateDate;
 
+    @Column(name = "delete_yn")
+    private String deleteYn;
+
+    @Column(name = "INSERT_OPERATOR")
+    private String insertOperator;
+
+    @Column(name = "UPDATE_OPERATOR")
+    private String updateOperator;
+
     protected LegacyPaymentEntity() {}
+
+    /**
+     * 결제 레코드 생성용 팩토리 메서드.
+     *
+     * @param userId 사용자 ID
+     * @param paymentStatus 결제 상태
+     * @param siteName 사이트명
+     * @return 새 결제 엔티티
+     */
+    public static LegacyPaymentEntity create(
+            long userId, long paymentAmount, LegacyPaymentStatus paymentStatus, String siteName) {
+        LegacyPaymentEntity entity = new LegacyPaymentEntity();
+        entity.userId = userId;
+        entity.paymentAmount = paymentAmount;
+        entity.paymentStatus = paymentStatus;
+        entity.siteName = siteName;
+        entity.insertDate = java.time.LocalDateTime.now();
+        entity.updateDate = java.time.LocalDateTime.now();
+        entity.deleteYn = "N";
+        entity.insertOperator = "SYSTEM";
+        entity.updateOperator = "SYSTEM";
+        return entity;
+    }
+
+    public long getPaymentAmount() {
+        return paymentAmount;
+    }
 
     public Long getId() {
         return id;

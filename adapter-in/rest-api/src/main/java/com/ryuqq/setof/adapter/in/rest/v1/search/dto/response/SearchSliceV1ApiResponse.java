@@ -20,6 +20,8 @@ import java.util.List;
  * @param content 검색 결과 상품 썸네일 목록
  * @param last 마지막 페이지 여부
  * @param first 첫 번째 페이지 여부
+ * @param number 페이지 번호 (커서 기반에서는 항상 0)
+ * @param sort 정렬 정보
  * @param size 요청 페이지 크기
  * @param numberOfElements 현재 페이지 실제 개수
  * @param empty 비어있는지 여부
@@ -35,6 +37,8 @@ public record SearchSliceV1ApiResponse(
         @Schema(description = "검색 결과 상품 썸네일 목록") List<ProductGroupThumbnailV1ApiResponse> content,
         @Schema(description = "마지막 페이지 여부", example = "false") boolean last,
         @Schema(description = "첫 번째 페이지 여부", example = "true") boolean first,
+        @Schema(description = "페이지 번호 (커서 기반에서는 항상 0)", example = "0") int number,
+        @Schema(description = "정렬 정보") SortResponse sort,
         @Schema(description = "요청 페이지 크기", example = "20") int size,
         @Schema(description = "현재 페이지 실제 개수", example = "20") int numberOfElements,
         @Schema(description = "비어있는지 여부", example = "false") boolean empty,
@@ -48,4 +52,24 @@ public record SearchSliceV1ApiResponse(
                         example = "87.5",
                         nullable = true)
                 String cursorValue,
-        @Schema(description = "검색 조건 기준 전체 상품 수", example = "243") long totalElements) {}
+        @Schema(description = "검색 조건 기준 전체 상품 수", example = "243") long totalElements) {
+
+    /**
+     * SortResponse - 정렬 정보 응답.
+     *
+     * @param unsorted 미정렬 여부
+     * @param sorted 정렬 여부
+     * @param empty 정렬 조건 비어있는지 여부
+     */
+    @Schema(description = "정렬 정보")
+    public record SortResponse(
+            @Schema(description = "미정렬 여부", example = "true") boolean unsorted,
+            @Schema(description = "정렬 여부", example = "false") boolean sorted,
+            @Schema(description = "정렬 조건 비어있는지 여부", example = "true") boolean empty) {
+
+        /** 커서 기반 페이징에서 사용하는 기본 정렬 응답 (항상 unsorted). */
+        public static SortResponse defaultSort() {
+            return new SortResponse(true, false, true);
+        }
+    }
+}

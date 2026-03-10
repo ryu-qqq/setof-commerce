@@ -1,0 +1,181 @@
+domain: order
+description: "Order API shadow traffic test cases"
+
+auth_config:
+  strategy: login
+  login_endpoint: /api/v1/user/login
+  phone_number: "${SHADOW_TEST_PHONE}"
+  password: "${SHADOW_TEST_PASSWORD}"
+
+test_cases:
+  # =========================================================
+  # === Query (조회) - Shadow Traffic 비교 대상 ===
+  # =========================================================
+
+  # --- GET /api/v1/orders (커서 기반 페이징) ---
+  # 테스트 유저(3965)의 주문 4건: 90001~90004
+  # ⚠️ Legacy는 startDate/endDate 필수 (없으면 400)
+  #    New는 optional → 비교 시 반드시 날짜 포함
+
+  # 첫 페이지 조회: 전체 주문 목록 (최근 3개월)
+  - name: "order_list_first_page"
+    path: "/api/v1/orders"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 20
+      startDate: "2025-10-01T00:00:00"
+      endDate: "2025-12-31T23:59:59"
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+    timeout: 15.0
+    known_diff:
+      fields: ["content", "numberOfElements", "empty"]
+      reason: "Legacy SiteName.SETOF enum 버그로 빈 결과 반환. New는 정상 데이터 반환. 구조 일치 확인 완료."
+
+  # 작은 페이지 사이즈로 페이징 동작 확인
+  - name: "order_list_small_page"
+    path: "/api/v1/orders"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 2
+      startDate: "2025-10-01T00:00:00"
+      endDate: "2025-12-31T23:59:59"
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+    timeout: 15.0
+    known_diff:
+      fields: ["content", "numberOfElements", "empty", "last", "lastDomainId", "cursorValue"]
+      reason: "Legacy SiteName.SETOF enum 버그로 빈 결과 반환. New는 정상 데이터 반환."
+
+  # 커서 기반 두 번째 페이지 조회
+  - name: "order_list_cursor_page"
+    path: "/api/v1/orders"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 2
+      lastOrderId: 90003
+      startDate: "2025-10-01T00:00:00"
+      endDate: "2025-12-31T23:59:59"
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+    timeout: 15.0
+    known_diff:
+      fields: ["content", "numberOfElements", "empty", "first"]
+      reason: "Legacy SiteName.SETOF enum 버그로 빈 결과 반환. New는 정상 데이터 반환."
+
+  # 날짜 필터 조회 (2025-12-01 ~ 2025-12-31)
+  - name: "order_list_date_filter"
+    path: "/api/v1/orders"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 20
+      startDate: "2025-12-01T00:00:00"
+      endDate: "2025-12-31T23:59:59"
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+    timeout: 15.0
+    known_diff:
+      fields: ["content", "numberOfElements", "empty"]
+      reason: "Legacy SiteName.SETOF enum 버그로 빈 결과 반환. New는 정상 데이터 반환."
+
+  # 날짜 범위에 데이터 없는 경우 (빈 결과) → 구조 일치 확인 완료
+  - name: "order_list_empty_result"
+    path: "/api/v1/orders"
+    method: GET
+    auth: NORMAL_GRADE
+    body:
+      size: 20
+      startDate: "2020-01-01T00:00:00"
+      endDate: "2020-01-31T23:59:59"
+    compare_mode: full
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 미인증 접근 → Legacy는 validation 먼저(400), New는 auth 먼저(401)
+  - name: "order_list_unauthenticated"
+    path: "/api/v1/orders"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "[완료] Legacy 400(validation 우선) vs New 401(auth 우선). New가 HTTP 표준에 맞음. 의도적 차이 수용."
+
+  # --- GET /api/v1/order/status-counts ---
+  # Legacy에는 이 엔드포인트가 없거나 다른 파라미터 필요
+
+  # 정상 조회 - Legacy에 해당 API 없음
+  - name: "order_status_counts"
+    path: "/api/v1/order/status-counts"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy에 해당 엔드포인트 없음(401). New는 정상 동작(400, orderStatuses 파라미터 필요)."
+
+  # 미인증 접근
+  - name: "order_status_counts_unauthenticated"
+    path: "/api/v1/order/status-counts"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # --- GET /api/v1/order/history/{orderId} ---
+  # Legacy에 ORDER_PLACED enum이 없어서 500 발생 (Legacy 버그)
+
+  # 실제 주문 이력 조회 (테스트 유저 주문)
+  - name: "order_history_valid"
+    path: "/api/v1/order/history/90001"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy ORDER_PLACED enum 미지원으로 500 발생. New는 정상 200."
+
+  # 다른 주문의 이력 조회
+  - name: "order_history_another_order"
+    path: "/api/v1/order/history/90003"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy ORDER_PLACED enum 미지원으로 500 발생. New는 정상 200."
+
+  # 존재하지 않는 주문 이력 조회
+  - name: "order_history_not_found"
+    path: "/api/v1/order/history/999999"
+    method: GET
+    auth: NORMAL_GRADE
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true
+
+  # 미인증 접근
+  - name: "order_history_unauthenticated"
+    path: "/api/v1/order/history/90001"
+    method: GET
+    auth: none
+    compare_mode: status_only
+    ignore_fields: []
+    safe_for_repeat: true

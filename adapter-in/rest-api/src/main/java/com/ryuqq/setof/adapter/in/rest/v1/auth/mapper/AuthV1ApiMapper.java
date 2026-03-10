@@ -1,5 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.v1.auth.mapper;
 
+import com.ryuqq.setof.adapter.in.rest.common.util.DateTimeFormatUtils;
 import com.ryuqq.setof.adapter.in.rest.v1.auth.dto.request.JoinV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.v1.auth.dto.request.LoginV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.v1.auth.dto.request.ResetPasswordV1ApiRequest;
@@ -74,19 +75,29 @@ public class AuthV1ApiMapper {
         }
         return new IsExistUserV1ApiResponse(
                 true,
-                new IsExistUserV1ApiResponse.JoinedUserResponse(result.name(), result.userId()));
+                new IsExistUserV1ApiResponse.JoinedUserResponse(
+                        result.name(),
+                        result.userId(),
+                        result.socialLoginType(),
+                        result.phoneNumber(),
+                        result.socialPkId(),
+                        result.currentMileage(),
+                        result.joinedDate(),
+                        result.deleteYn()));
     }
 
     public UserV1ApiResponse toUserResponse(UserResult result) {
         return new UserV1ApiResponse(
                 true,
                 new UserV1ApiResponse.UserDetailResponse(
-                        result.userId(),
-                        result.phoneNumber(),
                         result.name(),
-                        result.gradeName(),
+                        result.userId(),
+                        result.socialLoginType(),
+                        result.phoneNumber(),
+                        result.socialPkId(),
                         result.currentMileage(),
-                        result.socialLoginType()));
+                        result.joinedDate(),
+                        result.deleteYn()));
     }
 
     public MyPageV1ApiResponse toMyPageResponse(MyPageResult result) {
@@ -95,6 +106,7 @@ public class AuthV1ApiMapper {
                 result.phoneNumber(),
                 result.email(),
                 result.socialLoginType(),
+                DateTimeFormatUtils.format(result.registrationDate()),
                 result.gradeName(),
                 result.currentMileage(),
                 result.orderCounts().stream()

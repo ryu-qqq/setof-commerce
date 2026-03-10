@@ -33,6 +33,7 @@ public class Order {
     private OrderStatus orderStatus;
     private final Instant createdAt;
     private Instant updatedAt;
+    private long paymentId;
 
     private Order(
             LegacyOrderId id,
@@ -259,5 +260,21 @@ public class Order {
 
     public Instant updatedAt() {
         return updatedAt;
+    }
+
+    /**
+     * 결제 ID를 할당합니다. 결제 영속화 후 호출됩니다.
+     *
+     * @param paymentId 결제 ID
+     */
+    public void assignPaymentId(long paymentId) {
+        if (paymentId <= 0) {
+            throw new IllegalArgumentException("paymentId must be positive");
+        }
+        this.paymentId = paymentId;
+    }
+
+    public long paymentId() {
+        return paymentId;
     }
 }

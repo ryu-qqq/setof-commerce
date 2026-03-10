@@ -2,6 +2,8 @@ package com.ryuqq.setof.storage.legacy.payment.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -22,6 +24,7 @@ import jakarta.persistence.Table;
 public class LegacyPaymentSnapshotShippingAddressEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_snapshot_shipping_address_id")
     private Long id;
 
@@ -53,6 +56,29 @@ public class LegacyPaymentSnapshotShippingAddressEntity {
     private String deliveryRequest;
 
     protected LegacyPaymentSnapshotShippingAddressEntity() {}
+
+    public static LegacyPaymentSnapshotShippingAddressEntity create(
+            long paymentId,
+            String receiverName,
+            String addressLine1,
+            String addressLine2,
+            String phoneNumber,
+            String zipCode,
+            String country,
+            String deliveryRequest) {
+        LegacyPaymentSnapshotShippingAddressEntity entity =
+                new LegacyPaymentSnapshotShippingAddressEntity();
+        entity.paymentId = paymentId;
+        entity.receiverName = receiverName;
+        entity.shippingAddressName = receiverName;
+        entity.addressLine1 = addressLine1;
+        entity.addressLine2 = addressLine2;
+        entity.phoneNumber = phoneNumber;
+        entity.zipCode = zipCode;
+        entity.country = country;
+        entity.deliveryRequest = deliveryRequest;
+        return entity;
+    }
 
     public Long getId() {
         return id;

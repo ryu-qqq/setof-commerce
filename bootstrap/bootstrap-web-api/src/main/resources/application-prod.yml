@@ -30,6 +30,8 @@ spring:
       - classpath:redis.yml
       - classpath:redis-prod.yml
       - classpath:portone.yml
+      - classpath:fileflow.yml
+      - classpath:fileflow-prod.yml
 
 # ===============================================
 # Sentry Configuration (Production Only)

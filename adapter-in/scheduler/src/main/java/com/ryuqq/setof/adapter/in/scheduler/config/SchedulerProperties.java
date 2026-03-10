@@ -16,7 +16,8 @@ public record SchedulerProperties(Jobs jobs) {
     public record Jobs(
             SellerAuthOutbox sellerAuthOutbox,
             SellerAdminAuthOutbox sellerAdminAuthOutbox,
-            DiscountOutbox discountOutbox) {}
+            DiscountOutbox discountOutbox,
+            ShipmentDelivery shipmentDelivery) {}
 
     public record SellerAuthOutbox(ProcessPending processPending, RecoverTimeout recoverTimeout) {}
 
@@ -35,4 +36,8 @@ public record SchedulerProperties(Jobs jobs) {
 
     public record RecoverStuck(
             boolean enabled, String cron, String timezone, int batchSize, long timeoutSeconds) {}
+
+    public record ShipmentDelivery(Track track) {}
+
+    public record Track(boolean enabled, String cron, String timezone, int batchSize) {}
 }

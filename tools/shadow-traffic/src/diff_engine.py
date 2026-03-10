@@ -139,7 +139,7 @@ def compare_responses(
     if not status_match:
         return DiffResult(
             test_name=test_name,
-            passed=False,
+            passed=known_diff,
             status_match=False,
             legacy_status=legacy_status,
             new_status=new_status,

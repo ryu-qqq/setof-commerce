@@ -1,7 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.v1.order.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
@@ -53,9 +52,8 @@ public record OrderV1ApiResponse(
             @Schema(description = "PG사 주문번호", example = "PG_ORDER_123") String paymentAgencyId,
             @Schema(description = "결제 상태", example = "PAYMENT_COMPLETED") String paymentStatus,
             @Schema(description = "결제 수단", example = "신용카드") String paymentMethod,
-            @Schema(description = "결제 일시", example = "2024-01-15T14:30:00")
-                    LocalDateTime paymentDate,
-            @Schema(description = "취소 일시", nullable = true) LocalDateTime canceledDate,
+            @Schema(description = "결제 일시", example = "2024-01-15 14:30:00") String paymentDate,
+            @Schema(description = "취소 일시", nullable = true) String canceledDate,
             @Schema(description = "결제 금액", example = "50000") long paymentAmount,
             @Schema(description = "사용 마일리지", example = "1000.0") double usedMileageAmount,
             @Schema(description = "카드명", example = "삼성카드") String cardName,
@@ -168,8 +166,7 @@ public record OrderV1ApiResponse(
             @Schema(description = "배송사 코드", example = "CJ_LOGISTICS") String companyCode,
             @Schema(description = "송장 번호", example = "1234567890", nullable = true)
                     String invoiceNo,
-            @Schema(description = "등록 일시", example = "2024-01-15T15:00:00")
-                    LocalDateTime insertDate) {}
+            @Schema(description = "등록 일시", example = "2024-01-15 15:00:00") String insertDate) {}
 
     /**
      * BuyerInfoResponse - 구매자 정보 응답.

@@ -1,7 +1,6 @@
 package com.ryuqq.setof.adapter.in.rest.v1.payment.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
@@ -60,9 +59,8 @@ public record PaymentV1ApiResponse(
                             })
                     String paymentStatus,
             @Schema(description = "결제 수단", example = "신용카드") String paymentMethod,
-            @Schema(description = "결제 일시", example = "2024-01-15T10:30:00")
-                    LocalDateTime paymentDate,
-            @Schema(description = "취소 일시", nullable = true) LocalDateTime canceledDate,
+            @Schema(description = "결제 일시", example = "2024-01-15 10:30:00") String paymentDate,
+            @Schema(description = "취소 일시", nullable = true) String canceledDate,
             @Schema(description = "결제 금액", example = "50000") long paymentAmount,
             @Schema(description = "사용 마일리지", example = "1000.0") double usedMileageAmount,
             @Schema(description = "카드명", example = "신한카드") String cardName,
@@ -83,8 +81,7 @@ public record PaymentV1ApiResponse(
             @Schema(description = "은행명", example = "KB국민은행") String bankName,
             @Schema(description = "계좌번호", example = "123-456-789012") String accountNumber,
             @Schema(description = "입금 금액", example = "50000") long paymentAmount,
-            @Schema(description = "입금 기한", example = "2024-01-18T23:59:59")
-                    LocalDateTime vBankDueDate) {}
+            @Schema(description = "입금 기한", example = "2024-01-18 23:59:59") String vBankDueDate) {}
 
     /**
      * OrderProductResponse - 주문 상품 정보 응답.

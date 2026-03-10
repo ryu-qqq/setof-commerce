@@ -50,6 +50,24 @@ public class LegacyProductStockEntity extends LegacyBaseEntity {
         return deleteYn;
     }
 
+    /**
+     * 재고를 차감합니다.
+     *
+     * @param quantity 차감 수량
+     */
+    public void deduct(int quantity) {
+        this.stockQuantity = this.stockQuantity - quantity;
+    }
+
+    /**
+     * 재고를 복원합니다.
+     *
+     * @param quantity 복원 수량
+     */
+    public void restore(int quantity) {
+        this.stockQuantity = this.stockQuantity + quantity;
+    }
+
     /** Yn - Y/N 구분 Enum. */
     public enum Yn {
         Y,

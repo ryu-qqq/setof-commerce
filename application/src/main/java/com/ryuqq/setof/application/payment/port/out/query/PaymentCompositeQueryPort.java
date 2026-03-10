@@ -29,4 +29,12 @@ public interface PaymentCompositeQueryPort {
      * @return 결제 개요 목록 (도메인 VO)
      */
     List<PaymentOverview> fetchPaymentOverviews(List<Long> paymentIds);
+
+    /**
+     * 검색 조건으로 결제 건수 조회 (totalElements 계산용).
+     *
+     * @param criteria 결제 검색 조건
+     * @return 결제 건수
+     */
+    long countPayments(PaymentSearchCriteria criteria);
 }

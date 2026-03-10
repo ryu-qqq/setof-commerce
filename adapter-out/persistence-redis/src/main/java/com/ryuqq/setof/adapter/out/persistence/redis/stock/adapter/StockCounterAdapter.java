@@ -134,7 +134,7 @@ public class StockCounterAdapter implements StockCounterPort {
     public int increment(Long productStockId, int quantity) {
         String key = buildKey(productStockId);
         Long result = redisTemplate.execute(incrementScript, List.of(key), quantity);
-        return result != null ? result.intValue() : NOT_FOUND;
+        return result.intValue();
     }
 
     /** {@inheritDoc} */

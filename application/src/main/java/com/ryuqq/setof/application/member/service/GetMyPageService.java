@@ -40,6 +40,7 @@ public class GetMyPageService implements GetMyPageUseCase {
                 profile.gradeName(),
                 profile.currentMileage(),
                 profile.socialLoginType(),
+                member.createdAt(),
                 orderCounts);
     }
 }

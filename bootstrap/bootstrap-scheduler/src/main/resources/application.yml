@@ -23,6 +23,8 @@ spring:
       - optional:classpath:scheduler-${spring.profiles.active:local}.yml
       - optional:classpath:sqs.yml
       - optional:classpath:sqs-${spring.profiles.active:local}.yml
+      - optional:classpath:smart-delivery.yml
+      - optional:classpath:smart-delivery-${spring.profiles.active:local}.yml
 
 # ========================================
 # Management & Actuator

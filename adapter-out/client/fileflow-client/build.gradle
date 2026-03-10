@@ -2,8 +2,8 @@
 // Adapter-Out: FileFlow Client
 // ========================================
 // Outbound adapter for file storage via FileFlow API
-// Implements FileStoragePort from application layer
-// Technology: FileFlow SDK (Sync/Async HTTP Client)
+// Implements UploadSessionPort + FileAssetPort from application layer
+// Technology: FileFlow SDK v1.2.0 (Spring Boot Starter)
 // NO Lombok allowed
 // ========================================
 
@@ -23,19 +23,18 @@ dependencies {
     api project(':application')
     api project(':domain')
 
-    // FileFlow SDK (v1.0.0)
-    implementation 'com.github.ryu-qqq.fileflow:fileflow-sdk-core:v1.0.0'
+    // FileFlow SDK v1.2.0 (Spring Boot Starter - auto-configures API beans)
+    implementation 'com.github.ryu-qqq.FileFlow:fileflow-sdk-spring-boot-starter:v1.2.0'
 
     // ========================================
-    // Spring Boot Web
+    // Spring Boot
     // ========================================
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-
-    // ========================================
-    // Spring Boot (for @Component, @ConfigurationProperties)
-    // ========================================
+    implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-autoconfigure'
     annotationProcessor libs.spring.boot.configuration.processor
+
+    // JSON Processing
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
     // ========================================
     // Test Dependencies

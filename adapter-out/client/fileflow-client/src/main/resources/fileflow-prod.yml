@@ -1,0 +1,8 @@
+# ============================================================
+# FileFlow Client 프로덕션 환경 설정
+# ============================================================
+fileflow:
+  base-url: ${FILEFLOW_BASE_URL:http://fileflow.connectly.local:8082}
+  cdn-domain: ${FILEFLOW_CDN_DOMAIN:cdn.set-of.com}
+  bucket: ${FILEFLOW_BUCKET:fileflow-uploads}
+  service-token: ${FILEFLOW_SERVICE_TOKEN:}

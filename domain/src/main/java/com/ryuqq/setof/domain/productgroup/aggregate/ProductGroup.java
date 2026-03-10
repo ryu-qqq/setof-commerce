@@ -89,8 +89,37 @@ public class ProductGroup {
             Money currentPrice,
             Money salePrice,
             Instant now) {
+        return forNew(
+                null,
+                sellerId,
+                brandId,
+                categoryId,
+                shippingPolicyId,
+                refundPolicyId,
+                productGroupName,
+                optionType,
+                regularPrice,
+                currentPrice,
+                salePrice,
+                now);
+    }
+
+    /** 신규 상품 그룹 생성 (지정 ID). 마이그레이션 시 레거시 DB와 ID를 동기화할 때 사용. */
+    public static ProductGroup forNew(
+            Long productGroupId,
+            SellerId sellerId,
+            BrandId brandId,
+            CategoryId categoryId,
+            ShippingPolicyId shippingPolicyId,
+            RefundPolicyId refundPolicyId,
+            ProductGroupName productGroupName,
+            OptionType optionType,
+            Money regularPrice,
+            Money currentPrice,
+            Money salePrice,
+            Instant now) {
         return new ProductGroup(
-                ProductGroupId.forNew(),
+                ProductGroupId.ofNullable(productGroupId),
                 sellerId,
                 brandId,
                 categoryId,

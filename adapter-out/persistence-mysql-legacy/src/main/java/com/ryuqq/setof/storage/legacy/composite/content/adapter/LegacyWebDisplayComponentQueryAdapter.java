@@ -22,7 +22,9 @@ import com.ryuqq.setof.storage.legacy.composite.content.dto.LegacyWebTitleCompon
 import com.ryuqq.setof.storage.legacy.composite.content.dto.LegacyWebViewExtensionQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.content.mapper.LegacyWebContentMapper;
 import com.ryuqq.setof.storage.legacy.composite.content.repository.LegacyWebContentCompositeQueryDslRepository;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -54,7 +56,7 @@ public class LegacyWebDisplayComponentQueryAdapter implements DisplayComponentQu
         LegacyContentSearchCondition condition =
                 LegacyContentSearchCondition.of(criteria.contentPageId(), criteria.bypass());
         List<LegacyWebComponentQueryDto> components =
-                repository.fetchComponentsByContentId(condition);
+                deduplicateByDisplayOrder(repository.fetchComponentsByContentId(condition));
 
         List<Long> viewExtensionIds =
                 components.stream()
@@ -297,6 +299,21 @@ public class LegacyWebDisplayComponentQueryAdapter implements DisplayComponentQu
                     dto.componentId(),
                     mapper.toTabSpec(dto, tabList, slotsByTab, Map.of(), exposed));
         }
+    }
+
+    /**
+     * 동일 (displayOrder, componentType) 중복 시 첫 번째 컴포넌트만 선택.
+     *
+     * <p>레거시 호환: 같은 위치에 동일 타입 컴포넌트가 중복 등록된 경우(삭제 누락) 먼저 등록된(componentId가 작은) 것만 유지합니다.
+     */
+    private List<LegacyWebComponentQueryDto> deduplicateByDisplayOrder(
+            List<LegacyWebComponentQueryDto> components) {
+        Map<String, LegacyWebComponentQueryDto> deduped = new LinkedHashMap<>();
+        for (LegacyWebComponentQueryDto dto : components) {
+            String key = dto.displayOrder() + ":" + dto.componentType();
+            deduped.putIfAbsent(key, dto);
+        }
+        return new ArrayList<>(deduped.values());
     }
 
     private Map<Long, List<ProductSlot>> toProductSlotsByComponent(

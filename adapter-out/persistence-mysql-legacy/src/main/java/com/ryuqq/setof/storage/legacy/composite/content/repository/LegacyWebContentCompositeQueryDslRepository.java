@@ -144,7 +144,7 @@ public class LegacyWebContentCompositeQueryDslRepository {
                 .where(
                         conditionBuilder.componentContentIdEq(condition.contentId()),
                         conditionBuilder.onDisplayComponent(condition.bypass()))
-                .orderBy(legacyComponentEntity.displayOrder.asc())
+                .orderBy(legacyComponentEntity.displayOrder.asc(), legacyComponentEntity.id.asc())
                 .fetch();
     }
 

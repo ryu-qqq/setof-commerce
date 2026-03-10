@@ -14,6 +14,10 @@ public record ProductGroupId(Long value) {
         return new ProductGroupId(null);
     }
 
+    public static ProductGroupId ofNullable(Long value) {
+        return value != null ? new ProductGroupId(value) : forNew();
+    }
+
     public boolean isNew() {
         return value == null;
     }

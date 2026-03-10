@@ -110,6 +110,11 @@ public class LegacyPaymentCompositeQueryDslRepository {
                                 legacyPaymentBillEntity.paymentAgencyId.coalesce(""),
                                 legacyPaymentBillEntity.cardName.coalesce(""),
                                 legacyPaymentBillEntity.cardNumber.coalesce(""),
+                                // payment (추가 필드)
+                                legacyPaymentEntity.userId,
+                                legacyPaymentEntity.siteName.coalesce(""),
+                                // payment_bill (결제 수단 ID)
+                                legacyPaymentBillEntity.paymentMethodId,
                                 // orders
                                 legacyOrderEntity.id,
                                 legacyOrderEntity.orderStatus.stringValue(),
@@ -130,5 +135,39 @@ public class LegacyPaymentCompositeQueryDslRepository {
                 .where(conditionBuilder.paymentIdIn(paymentIds))
                 .orderBy(legacyPaymentEntity.id.desc())
                 .fetch();
+    }
+
+    /**
+     * 검색 조건으로 결제 건수 조회 (totalElements 계산용).
+     *
+     * <p>fetchPaymentIds와 동일한 WHERE 조건을 사용하되 COUNT DISTINCT로 조회합니다.
+     *
+     * @param criteria 결제 검색 조건
+     * @return 결제 건수
+     */
+    public long countPayments(PaymentSearchCriteria criteria) {
+        DateRange dateRange = criteria.dateRange();
+        LocalDateTime startDateTime =
+                dateRange != null && dateRange.startDate() != null
+                        ? dateRange.startDate().atStartOfDay()
+                        : null;
+        LocalDateTime endDateTime =
+                dateRange != null && dateRange.endDate() != null
+                        ? dateRange.endDate().plusDays(1).atStartOfDay().minusNanos(1)
+                        : null;
+
+        Long count =
+                queryFactory
+                        .select(legacyPaymentEntity.id.countDistinct())
+                        .from(legacyPaymentEntity)
+                        .innerJoin(legacyOrderEntity)
+                        .on(legacyOrderEntity.paymentId.eq(legacyPaymentEntity.id))
+                        .where(
+                                conditionBuilder.userIdEq(criteria.userId()),
+                                conditionBuilder.insertDateBetween(startDateTime, endDateTime),
+                                conditionBuilder.paymentStatusNotFailed(),
+                                conditionBuilder.orderStatusIn(criteria.orderStatuses()))
+                        .fetchOne();
+        return count != null ? count : 0L;
     }
 }

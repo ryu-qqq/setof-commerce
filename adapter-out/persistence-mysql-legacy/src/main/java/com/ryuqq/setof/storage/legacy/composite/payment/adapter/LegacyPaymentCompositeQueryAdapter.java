@@ -59,4 +59,15 @@ public class LegacyPaymentCompositeQueryAdapter implements PaymentCompositeQuery
         List<LegacyPaymentOverviewFlatDto> dtos = repository.fetchPaymentOverviews(paymentIds);
         return mapper.toOverviews(dtos);
     }
+
+    /**
+     * 검색 조건으로 결제 건수 조회 (totalElements 계산용).
+     *
+     * @param criteria 결제 검색 조건
+     * @return 결제 건수
+     */
+    @Override
+    public long countPayments(PaymentSearchCriteria criteria) {
+        return repository.countPayments(criteria);
+    }
 }

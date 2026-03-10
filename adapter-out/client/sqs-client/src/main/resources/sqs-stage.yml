@@ -5,3 +5,4 @@ sqs:
   region: ap-northeast-2
   queues:
     discount-outbox: ${DISCOUNT_OUTBOX_QUEUE_URL:}
+    notification-outbox: ${NOTIFICATION_OUTBOX_QUEUE_URL:}

@@ -28,6 +28,12 @@ public class SqsListenerProperties {
     /** Discount Outbox 리스너 활성화 여부 */
     private boolean discountOutboxListenerEnabled = true;
 
+    /** Notification Outbox 큐 URL */
+    private String notificationOutboxQueueUrl;
+
+    /** Notification Outbox 리스너 활성화 여부 */
+    private boolean notificationOutboxListenerEnabled = true;
+
     public String getDiscountOutboxQueueUrl() {
         return discountOutboxQueueUrl;
     }
@@ -42,5 +48,21 @@ public class SqsListenerProperties {
 
     public void setDiscountOutboxListenerEnabled(boolean discountOutboxListenerEnabled) {
         this.discountOutboxListenerEnabled = discountOutboxListenerEnabled;
+    }
+
+    public String getNotificationOutboxQueueUrl() {
+        return notificationOutboxQueueUrl;
+    }
+
+    public void setNotificationOutboxQueueUrl(String notificationOutboxQueueUrl) {
+        this.notificationOutboxQueueUrl = notificationOutboxQueueUrl;
+    }
+
+    public boolean isNotificationOutboxListenerEnabled() {
+        return notificationOutboxListenerEnabled;
+    }
+
+    public void setNotificationOutboxListenerEnabled(boolean notificationOutboxListenerEnabled) {
+        this.notificationOutboxListenerEnabled = notificationOutboxListenerEnabled;
     }
 }

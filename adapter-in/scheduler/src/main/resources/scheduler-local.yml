@@ -25,6 +25,14 @@ scheduler:
         # 로컬: 짧은 타임아웃
         timeout-seconds: 60
 
+    shipment-delivery:
+      track:
+        enabled: false
+        # 로컬: 5분마다 (빠른 테스트)
+        cron: "0 */5 * * * *"
+        # 로컬: 작은 배치
+        batch-size: 10
+
     seller-admin-auth-outbox:
       process-pending:
         enabled: false

@@ -145,10 +145,12 @@ public class LegacyMemberEntityMapper {
         }
     }
 
+    private static final ZoneId LEGACY_DB_ZONE = ZoneId.of("Asia/Seoul");
+
     private Instant toInstant(LocalDateTime localDateTime) {
         if (localDateTime == null) {
             return Instant.now();
         }
-        return localDateTime.atZone(ZoneId.systemDefault()).toInstant();
+        return localDateTime.atZone(LEGACY_DB_ZONE).toInstant();
     }
 }

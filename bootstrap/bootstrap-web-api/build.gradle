@@ -35,6 +35,7 @@ dependencies {
     implementation project(':adapter-out:persistence-redis')
     implementation project(':adapter-out:client:security-client')
     implementation project(':adapter-out:client:portone-client')
+    implementation project(':adapter-out:client:fileflow-client')
 
     // ========================================
     // Spring Boot Starters

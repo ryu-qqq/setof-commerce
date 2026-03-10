@@ -1,0 +1,8 @@
+# ============================================================
+# FileFlow Client 스테이징 환경 설정
+# ============================================================
+fileflow:
+  base-url: ${FILEFLOW_BASE_URL:http://fileflow-web-api-stage.connectly.local:8080}
+  cdn-domain: ${FILEFLOW_CDN_DOMAIN:stage-cdn.set-of.com}
+  bucket: ${FILEFLOW_BUCKET:fileflow-uploads-stage}
+  service-token: ${FILEFLOW_SERVICE_TOKEN:}
