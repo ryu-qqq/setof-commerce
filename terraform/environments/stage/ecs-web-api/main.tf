@@ -187,7 +187,7 @@ module "web_api_task_execution_role" {
   ]
 
   enable_secrets_manager_policy = true
-  secrets_manager_secret_arns   = [data.aws_secretsmanager_secret.rds.arn]
+  secrets_manager_secret_arns   = [data.aws_secretsmanager_secret.rds.arn, data.aws_secretsmanager_secret.legacy.arn]
 
   custom_inline_policies = {
     ssm-access = {
@@ -367,18 +367,23 @@ module "ecs_service" {
 
   # Container Environment Variables
   container_environment = [
-    { name = "SPRING_PROFILES_ACTIVE", value = "stage" },  # application-stage.yml 사용
+    { name = "SPRING_PROFILES_ACTIVE", value = "stage" },
     { name = "DB_HOST", value = local.rds_host },
     { name = "DB_PORT", value = local.rds_port },
     { name = "DB_NAME", value = local.rds_dbname },
     { name = "DB_USERNAME", value = local.rds_username },
     { name = "REDIS_HOST", value = local.redis_host },
-    { name = "REDIS_PORT", value = tostring(local.redis_port) }
+    { name = "REDIS_PORT", value = tostring(local.redis_port) },
+    { name = "KAKAO_CLIENT_ID", value = "9fed0e8284cf39c688885c67c247cc89" },
+    { name = "FILEFLOW_SERVICE_TOKEN", value = data.aws_ssm_parameter.service_token_secret.value }
   ]
 
   # Container Secrets
   container_secrets = [
-    { name = "DB_PASSWORD", valueFrom = "${data.aws_secretsmanager_secret.rds.arn}:password::" }
+    { name = "DB_PASSWORD", valueFrom = "${data.aws_secretsmanager_secret.rds.arn}:password::" },
+    { name = "KAKAO_CLIENT_SECRET", valueFrom = "${data.aws_secretsmanager_secret.legacy.arn}:kakao_client_secret::" },
+    { name = "JWT_SECRET", valueFrom = "${data.aws_secretsmanager_secret.legacy.arn}:jwt_secret::" },
+    { name = "PORTONE_API_SECRET", valueFrom = "${data.aws_secretsmanager_secret.legacy.arn}:portone_api_secret::" }
   ]
 
   # Health Check

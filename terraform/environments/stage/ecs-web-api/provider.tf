@@ -110,6 +110,20 @@ data "aws_secretsmanager_secret_version" "rds" {
 }
 
 # ========================================
+# Legacy Credentials (Kakao, JWT, PortOne 등)
+# ========================================
+data "aws_secretsmanager_secret" "legacy" {
+  name = "setof-commerce/legacy/credentials"
+}
+
+# ========================================
+# FileFlow Service Token (SSM)
+# ========================================
+data "aws_ssm_parameter" "service_token_secret" {
+  name = "/shared/security/service-token-secret"
+}
+
+# ========================================
 # Monitoring Configuration (AMP)
 # ========================================
 data "aws_ssm_parameter" "amp_workspace_arn" {
