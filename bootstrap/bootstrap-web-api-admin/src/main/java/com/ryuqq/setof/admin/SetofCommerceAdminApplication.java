@@ -16,6 +16,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  * 최적화합니다.
  *
  * <p>Admin은 API Key 인증 방식을 사용하므로 JWT 관련 auth 패키지를 스캔에서 제외합니다.
+ * 또한 스케줄러 전용인 할인 아웃박스 SQS 발행 서비스(PublishDiscountOutboxService)도 제외합니다.
  *
  * <p>현재 web-api-admin 부트스트랩에서 스캔하는 모듈:
  *
@@ -45,10 +46,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
             "com.ryuqq.setof.adapter.out.client",
             "com.ryuqq.setof.storage.legacy"
         },
-        excludeFilters = @ComponentScan.Filter(
-            type = FilterType.REGEX,
-            pattern = "com\\.ryuqq\\.setof\\.application\\.auth\\..*"
-        ))
+        excludeFilters = {
+                @ComponentScan.Filter(
+                        type = FilterType.REGEX,
+                        pattern = "com\\.ryuqq\\.setof\\.application\\.auth\\..*"),
+                @ComponentScan.Filter(
+                        type = FilterType.REGEX,
+                        pattern = "com\\.ryuqq\\.setof\\.application\\.discount\\.service\\.command\\.PublishDiscountOutbox.*")})
 @EnableJpaRepositories(basePackages = "com.ryuqq.setof.adapter.out.persistence")
 @EntityScan(basePackages = "com.ryuqq.setof.adapter.out.persistence")
 public class SetofCommerceAdminApplication {
