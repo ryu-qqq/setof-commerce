@@ -54,7 +54,7 @@
     <!-- Production Profile (prod, staging)          -->
     <!-- JSON structured logging for CloudWatch/ELK  -->
     <!-- ============================================ -->
-    <springProfile name="prod,staging">
+    <springProfile name="prod,stage,staging">
         <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
                 <!-- ================================ -->
