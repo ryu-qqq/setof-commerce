@@ -3,6 +3,7 @@ package com.ryuqq.setof.application.faq.assembler;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ryuqq.setof.application.faq.dto.response.FaqResult;
+import com.ryuqq.setof.domain.common.vo.DeletionStatus;
 import com.ryuqq.setof.domain.faq.aggregate.Faq;
 import com.ryuqq.setof.domain.faq.id.FaqId;
 import com.ryuqq.setof.domain.faq.vo.FaqContents;
@@ -31,6 +32,7 @@ class FaqAssemblerTest {
                 FaqContents.of("로그인 관련 내용입니다."),
                 FaqDisplayOrder.of(1),
                 null,
+                DeletionStatus.active(),
                 Instant.now(),
                 Instant.now());
     }
@@ -43,6 +45,7 @@ class FaqAssemblerTest {
                 FaqContents.of("상단 고정 FAQ 내용입니다."),
                 FaqDisplayOrder.of(1),
                 1,
+                DeletionStatus.active(),
                 Instant.now(),
                 Instant.now());
     }

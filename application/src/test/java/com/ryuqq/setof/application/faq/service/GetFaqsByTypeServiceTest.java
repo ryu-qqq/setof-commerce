@@ -9,6 +9,7 @@ import com.ryuqq.setof.application.faq.dto.query.FaqSearchParams;
 import com.ryuqq.setof.application.faq.dto.response.FaqResult;
 import com.ryuqq.setof.application.faq.factory.FaqQueryFactory;
 import com.ryuqq.setof.application.faq.manager.FaqReadManager;
+import com.ryuqq.setof.domain.common.vo.DeletionStatus;
 import com.ryuqq.setof.domain.faq.aggregate.Faq;
 import com.ryuqq.setof.domain.faq.id.FaqId;
 import com.ryuqq.setof.domain.faq.query.FaqSearchCriteria;
@@ -47,6 +48,7 @@ class GetFaqsByTypeServiceTest {
                 FaqContents.of("로그인 관련 내용입니다."),
                 FaqDisplayOrder.of(1),
                 null,
+                DeletionStatus.active(),
                 Instant.now(),
                 Instant.now());
     }
@@ -59,6 +61,7 @@ class GetFaqsByTypeServiceTest {
                 FaqContents.of("상단 고정 FAQ 내용입니다."),
                 FaqDisplayOrder.of(1),
                 1,
+                DeletionStatus.active(),
                 Instant.now(),
                 Instant.now());
     }

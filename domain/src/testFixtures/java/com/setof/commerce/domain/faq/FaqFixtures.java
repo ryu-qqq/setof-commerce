@@ -1,6 +1,7 @@
 package com.ryuqq.setof.domain.faq;
 
 import com.ryuqq.setof.domain.common.CommonVoFixtures;
+import com.ryuqq.setof.domain.common.vo.DeletionStatus;
 import com.ryuqq.setof.domain.faq.aggregate.Faq;
 import com.ryuqq.setof.domain.faq.id.FaqId;
 import com.ryuqq.setof.domain.faq.query.FaqSearchCriteria;
@@ -76,6 +77,7 @@ public final class FaqFixtures {
                 defaultFaqContents(),
                 defaultFaqDisplayOrder(),
                 null,
+                DeletionStatus.active(),
                 CommonVoFixtures.yesterday(),
                 CommonVoFixtures.yesterday());
     }
@@ -89,6 +91,7 @@ public final class FaqFixtures {
                 defaultFaqContents(),
                 defaultFaqDisplayOrder(),
                 null,
+                DeletionStatus.active(),
                 CommonVoFixtures.yesterday(),
                 CommonVoFixtures.yesterday());
     }
@@ -102,6 +105,7 @@ public final class FaqFixtures {
                 FaqContents.of("상단 고정 FAQ 내용입니다."),
                 FaqDisplayOrder.defaultOrder(),
                 DEFAULT_TOP_DISPLAY_ORDER,
+                DeletionStatus.active(),
                 CommonVoFixtures.yesterday(),
                 CommonVoFixtures.yesterday());
     }
@@ -115,6 +119,7 @@ public final class FaqFixtures {
                 FaqContents.of("신용카드, 계좌이체, 간편결제를 지원합니다."),
                 FaqDisplayOrder.of(2),
                 null,
+                DeletionStatus.active(),
                 CommonVoFixtures.yesterday(),
                 CommonVoFixtures.yesterday());
     }

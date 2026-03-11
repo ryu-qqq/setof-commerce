@@ -1,8 +1,5 @@
 package com.ryuqq.setof.adapter.out.persistence.composite.seller.adapter;
 
-import com.ryuqq.setof.adapter.out.persistence.composite.seller.dto.RefundPolicyDto;
-import com.ryuqq.setof.adapter.out.persistence.composite.seller.dto.SellerPolicyCompositeDto;
-import com.ryuqq.setof.adapter.out.persistence.composite.seller.dto.ShippingPolicyDto;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.mapper.SellerCompositeMapper;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.repository.SellerCompositeQueryDslRepository;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.repository.SellerPolicyCompositeQueryDslRepository;
@@ -46,54 +43,9 @@ public class SellerCompositionQueryAdapter implements SellerCompositionQueryPort
 
     @Override
     public Optional<SellerPolicyCompositeResult> findPolicyCompositeById(Long sellerId) {
-        return policyCompositeRepository.findBySellerId(sellerId).map(this::toResult);
-    }
-
-    private SellerPolicyCompositeResult toResult(SellerPolicyCompositeDto dto) {
-        return new SellerPolicyCompositeResult(
-                dto.sellerId(),
-                dto.shippingPolicies().stream().map(this::toShippingPolicyInfo).toList(),
-                dto.refundPolicies().stream().map(this::toRefundPolicyInfo).toList());
-    }
-
-    private SellerPolicyCompositeResult.ShippingPolicyInfo toShippingPolicyInfo(
-            ShippingPolicyDto dto) {
-        return new SellerPolicyCompositeResult.ShippingPolicyInfo(
-                dto.id(),
-                dto.sellerId(),
-                dto.policyName(),
-                dto.defaultPolicy(),
-                dto.active(),
-                dto.shippingFeeType(),
-                dto.baseFee(),
-                dto.freeThreshold(),
-                dto.jejuExtraFee(),
-                dto.islandExtraFee(),
-                dto.returnFee(),
-                dto.exchangeFee(),
-                dto.leadTimeMinDays(),
-                dto.leadTimeMaxDays(),
-                dto.leadTimeCutoffTime(),
-                dto.createdAt(),
-                dto.updatedAt());
-    }
-
-    private SellerPolicyCompositeResult.RefundPolicyInfo toRefundPolicyInfo(RefundPolicyDto dto) {
-        return new SellerPolicyCompositeResult.RefundPolicyInfo(
-                dto.id(),
-                dto.sellerId(),
-                dto.policyName(),
-                dto.defaultPolicy(),
-                dto.active(),
-                dto.returnPeriodDays(),
-                dto.exchangePeriodDays(),
-                dto.nonReturnableConditions(),
-                dto.partialRefundEnabled(),
-                dto.inspectionRequired(),
-                dto.inspectionPeriodDays(),
-                dto.additionalInfo(),
-                dto.createdAt(),
-                dto.updatedAt());
+        return policyCompositeRepository
+                .findBySellerId(sellerId)
+                .map(compositeMapper::toPolicyResult);
     }
 
     @Override

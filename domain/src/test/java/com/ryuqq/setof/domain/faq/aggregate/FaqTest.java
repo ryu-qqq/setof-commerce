@@ -3,6 +3,7 @@ package com.ryuqq.setof.domain.faq.aggregate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ryuqq.setof.domain.common.CommonVoFixtures;
+import com.ryuqq.setof.domain.common.vo.DeletionStatus;
 import com.ryuqq.setof.domain.faq.FaqFixtures;
 import com.ryuqq.setof.domain.faq.id.FaqId;
 import com.ryuqq.setof.domain.faq.vo.FaqContents;
@@ -40,6 +41,7 @@ class FaqTest {
                             contents,
                             displayOrder,
                             null,
+                            DeletionStatus.active(),
                             CommonVoFixtures.yesterday(),
                             CommonVoFixtures.yesterday());
 
@@ -69,6 +71,7 @@ class FaqTest {
                             FaqContents.of("상단 고정 FAQ 내용입니다."),
                             FaqDisplayOrder.defaultOrder(),
                             1,
+                            DeletionStatus.active(),
                             CommonVoFixtures.yesterday(),
                             CommonVoFixtures.yesterday());
 
@@ -107,6 +110,7 @@ class FaqTest {
                             FaqFixtures.defaultFaqContents(),
                             FaqFixtures.defaultFaqDisplayOrder(),
                             null,
+                            DeletionStatus.active(),
                             CommonVoFixtures.now(),
                             CommonVoFixtures.now());
 
@@ -161,6 +165,7 @@ class FaqTest {
                             FaqFixtures.defaultFaqContents(),
                             FaqFixtures.defaultFaqDisplayOrder(),
                             null,
+                            DeletionStatus.active(),
                             CommonVoFixtures.yesterday(),
                             CommonVoFixtures.yesterday());
 

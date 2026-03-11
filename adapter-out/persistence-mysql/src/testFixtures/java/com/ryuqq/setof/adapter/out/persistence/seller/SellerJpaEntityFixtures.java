@@ -18,8 +18,6 @@ public final class SellerJpaEntityFixtures {
     public static final String DEFAULT_DISPLAY_NAME = "테스트 셀러 스토어";
     public static final String DEFAULT_LOGO_URL = "https://example.com/logo.png";
     public static final String DEFAULT_DESCRIPTION = "테스트 셀러 설명입니다.";
-    public static final String DEFAULT_AUTH_TENANT_ID = "tenant-123";
-    public static final String DEFAULT_AUTH_ORGANIZATION_ID = "org-456";
 
     // ===== Entity Fixtures =====
 
@@ -33,8 +31,6 @@ public final class SellerJpaEntityFixtures {
                 DEFAULT_LOGO_URL,
                 DEFAULT_DESCRIPTION,
                 true,
-                null,
-                null,
                 now,
                 now,
                 null);
@@ -50,25 +46,6 @@ public final class SellerJpaEntityFixtures {
                 DEFAULT_LOGO_URL,
                 DEFAULT_DESCRIPTION,
                 true,
-                null,
-                null,
-                now,
-                now,
-                null);
-    }
-
-    /** 인증 정보가 있는 활성 상태 셀러 Entity 생성. */
-    public static SellerJpaEntity activeEntityWithAuth() {
-        Instant now = Instant.now();
-        return SellerJpaEntity.create(
-                DEFAULT_ID,
-                DEFAULT_SELLER_NAME,
-                DEFAULT_DISPLAY_NAME,
-                DEFAULT_LOGO_URL,
-                DEFAULT_DESCRIPTION,
-                true,
-                DEFAULT_AUTH_TENANT_ID,
-                DEFAULT_AUTH_ORGANIZATION_ID,
                 now,
                 now,
                 null);
@@ -84,8 +61,6 @@ public final class SellerJpaEntityFixtures {
                 DEFAULT_LOGO_URL,
                 DEFAULT_DESCRIPTION,
                 true,
-                null,
-                null,
                 now,
                 now,
                 null);
@@ -101,8 +76,6 @@ public final class SellerJpaEntityFixtures {
                 DEFAULT_LOGO_URL,
                 DEFAULT_DESCRIPTION,
                 false,
-                null,
-                null,
                 now,
                 now,
                 null);
@@ -118,8 +91,6 @@ public final class SellerJpaEntityFixtures {
                 DEFAULT_LOGO_URL,
                 DEFAULT_DESCRIPTION,
                 false,
-                null,
-                null,
                 now,
                 now,
                 now);
@@ -135,8 +106,6 @@ public final class SellerJpaEntityFixtures {
                 DEFAULT_LOGO_URL,
                 DEFAULT_DESCRIPTION,
                 true,
-                null,
-                null,
                 now,
                 now,
                 null);
@@ -152,8 +121,6 @@ public final class SellerJpaEntityFixtures {
                 null,
                 DEFAULT_DESCRIPTION,
                 true,
-                null,
-                null,
                 now,
                 now,
                 null);
@@ -169,8 +136,6 @@ public final class SellerJpaEntityFixtures {
                 DEFAULT_LOGO_URL,
                 null,
                 true,
-                null,
-                null,
                 now,
                 now,
                 null);
@@ -186,8 +151,6 @@ public final class SellerJpaEntityFixtures {
                 null,
                 DEFAULT_DESCRIPTION,
                 true,
-                null,
-                null,
                 now,
                 now,
                 null);
@@ -203,8 +166,6 @@ public final class SellerJpaEntityFixtures {
                 DEFAULT_LOGO_URL,
                 null,
                 true,
-                null,
-                null,
                 now,
                 now,
                 null);
@@ -220,8 +181,6 @@ public final class SellerJpaEntityFixtures {
                 DEFAULT_LOGO_URL,
                 DEFAULT_DESCRIPTION,
                 false,
-                null,
-                null,
                 now,
                 now,
                 null);
@@ -237,8 +196,6 @@ public final class SellerJpaEntityFixtures {
                 DEFAULT_LOGO_URL,
                 DEFAULT_DESCRIPTION,
                 false,
-                null,
-                null,
                 now,
                 now,
                 now);
@@ -254,8 +211,6 @@ public final class SellerJpaEntityFixtures {
                 DEFAULT_LOGO_URL,
                 DEFAULT_DESCRIPTION,
                 false,
-                null,
-                null,
                 now,
                 now,
                 null);
@@ -271,8 +226,6 @@ public final class SellerJpaEntityFixtures {
                 DEFAULT_LOGO_URL,
                 DEFAULT_DESCRIPTION,
                 false,
-                null,
-                null,
                 now,
                 now,
                 now);

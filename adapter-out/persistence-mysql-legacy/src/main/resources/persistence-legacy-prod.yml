@@ -3,7 +3,8 @@
 # ============================================================
 # 활성화: spring.profiles.active=prod
 #
-# 운영에서 레거시 엔티티/리포지토리를 활성화합니다.
+# 레거시 DB(luxurydb) 접근을 위한 별도 DataSource 설정.
+# 같은 RDS 인스턴스의 다른 스키마를 사용합니다.
 # @since 1.1.0
 # ============================================================
 
@@ -28,3 +29,28 @@ persistence:
       enabled: false
     wishlist:
       enabled: false
+
+datasource:
+  legacy:
+    hikari:
+      jdbc-url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${LEGACY_DB_NAME:luxurydb}?useSSL=true&requireSSL=true&serverTimezone=Asia/Seoul
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}
+      maximum-pool-size: 20
+      minimum-idle: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
+      pool-name: HikariPool-Legacy-Prod
+      connection-init-sql: SELECT 1
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+        rewriteBatchedStatements: true
+        cacheResultSetMetadata: true
+        cacheServerConfiguration: true
+        elideSetAutoCommits: true
+        maintainTimeStats: false

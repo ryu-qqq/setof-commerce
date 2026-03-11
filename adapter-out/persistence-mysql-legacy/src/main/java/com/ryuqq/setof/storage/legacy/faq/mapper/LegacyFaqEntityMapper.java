@@ -1,5 +1,6 @@
 package com.ryuqq.setof.storage.legacy.faq.mapper;
 
+import com.ryuqq.setof.domain.common.vo.DeletionStatus;
 import com.ryuqq.setof.domain.faq.aggregate.Faq;
 import com.ryuqq.setof.domain.faq.id.FaqId;
 import com.ryuqq.setof.domain.faq.vo.FaqContents;
@@ -48,6 +49,7 @@ public class LegacyFaqEntityMapper {
                 FaqContents.of(entity.getContents()),
                 FaqDisplayOrder.of(displayOrder),
                 entity.getTopDisplayOrder(),
+                DeletionStatus.active(),
                 createdAt,
                 updatedAt);
     }

@@ -1,5 +1,6 @@
 package com.ryuqq.setof.domain.faq.aggregate;
 
+import com.ryuqq.setof.domain.common.vo.DeletionStatus;
 import com.ryuqq.setof.domain.faq.id.FaqId;
 import com.ryuqq.setof.domain.faq.vo.FaqContents;
 import com.ryuqq.setof.domain.faq.vo.FaqDisplayOrder;
@@ -44,6 +45,7 @@ public class Faq {
     private final FaqContents contents;
     private final FaqDisplayOrder displayOrder;
     private final Integer topDisplayOrder;
+    private final DeletionStatus deletionStatus;
     private final Instant createdAt;
     private final Instant updatedAt;
 
@@ -54,6 +56,7 @@ public class Faq {
             FaqContents contents,
             FaqDisplayOrder displayOrder,
             Integer topDisplayOrder,
+            DeletionStatus deletionStatus,
             Instant createdAt,
             Instant updatedAt) {
         this.id = id;
@@ -62,6 +65,7 @@ public class Faq {
         this.contents = contents;
         this.displayOrder = displayOrder;
         this.topDisplayOrder = topDisplayOrder;
+        this.deletionStatus = deletionStatus;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -77,6 +81,7 @@ public class Faq {
      * @param contents FAQ 내용
      * @param displayOrder 표시 순서
      * @param topDisplayOrder 상단 고정 순서 (null이면 일반 FAQ)
+     * @param deletionStatus 삭제 상태
      * @param createdAt 생성일시
      * @param updatedAt 수정일시
      * @return 복원된 Faq 인스턴스
@@ -88,10 +93,19 @@ public class Faq {
             FaqContents contents,
             FaqDisplayOrder displayOrder,
             Integer topDisplayOrder,
+            DeletionStatus deletionStatus,
             Instant createdAt,
             Instant updatedAt) {
         return new Faq(
-                id, faqType, title, contents, displayOrder, topDisplayOrder, createdAt, updatedAt);
+                id,
+                faqType,
+                title,
+                contents,
+                displayOrder,
+                topDisplayOrder,
+                deletionStatus,
+                createdAt,
+                updatedAt);
     }
 
     // ========== Query Methods ==========
@@ -151,6 +165,14 @@ public class Faq {
 
     public Integer topDisplayOrder() {
         return topDisplayOrder;
+    }
+
+    public DeletionStatus deletionStatus() {
+        return deletionStatus;
+    }
+
+    public boolean isDeleted() {
+        return deletionStatus.isDeleted();
     }
 
     public Instant createdAt() {
