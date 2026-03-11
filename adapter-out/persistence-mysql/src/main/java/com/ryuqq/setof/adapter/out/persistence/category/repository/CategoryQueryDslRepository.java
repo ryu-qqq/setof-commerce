@@ -22,6 +22,7 @@ import com.ryuqq.setof.domain.category.query.CategorySortKey;
 import com.ryuqq.setof.domain.common.vo.QueryContext;
 import com.ryuqq.setof.domain.common.vo.SortDirection;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
@@ -42,15 +43,13 @@ import org.springframework.stereotype.Repository;
 public class CategoryQueryDslRepository {
 
     private final JPAQueryFactory queryFactory;
-    private final EntityManager entityManager;
     private final CategoryConditionBuilder conditionBuilder;
 
+    @PersistenceContext private EntityManager entityManager;
+
     public CategoryQueryDslRepository(
-            JPAQueryFactory queryFactory,
-            EntityManager entityManager,
-            CategoryConditionBuilder conditionBuilder) {
+            JPAQueryFactory queryFactory, CategoryConditionBuilder conditionBuilder) {
         this.queryFactory = queryFactory;
-        this.entityManager = entityManager;
         this.conditionBuilder = conditionBuilder;
     }
 
