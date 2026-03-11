@@ -4,30 +4,33 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * JPA 및 QueryDSL 설정
  *
+ * <p>@EnableJpaRepositories, @EntityScan은 각 Bootstrap 모듈에서 선언합니다.
+ * 이 Config는 QueryDSL, ObjectMapper 등 공통 빈만 등록합니다.
+ *
  * @author Development Team
  * @since 1.0.0
  */
 @Configuration
-@EntityScan(basePackages = "com.ryuqq.adapter.out.persistence")
-@EnableJpaRepositories(basePackages = "com.ryuqq.adapter.out.persistence")
 @EnableJpaAuditing
 @EnableTransactionManagement
 public class JpaConfig {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Bean
     @Primary
-    public JPAQueryFactory jpaQueryFactory(EntityManager entityManager) {
+    public JPAQueryFactory jpaQueryFactory() {
         return new JPAQueryFactory(entityManager);
     }
 
