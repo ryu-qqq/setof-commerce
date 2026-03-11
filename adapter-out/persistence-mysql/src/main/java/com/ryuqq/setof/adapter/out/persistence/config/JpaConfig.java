@@ -12,10 +12,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * JPA 및 QueryDSL 설정
+ * JPA 및 QueryDSL 설정.
+ *
+ * <p>QueryDSL, ObjectMapper 등 공통 빈을 등록합니다. DataSource, EntityManagerFactory, TransactionManager는
+ * PrimaryDataSourceConfig에서 관리합니다.
  *
  * <p>@EnableJpaRepositories, @EntityScan은 각 Bootstrap 모듈에서 선언합니다.
- * 이 Config는 QueryDSL, ObjectMapper 등 공통 빈만 등록합니다.
  *
  * @author Development Team
  * @since 1.0.0
@@ -25,7 +27,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class JpaConfig {
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "primary")
     private EntityManager entityManager;
 
     @Bean

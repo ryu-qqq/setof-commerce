@@ -22,8 +22,10 @@ import com.ryuqq.setof.storage.legacy.category.dto.LegacyCategoryTreeDto;
 import com.ryuqq.setof.storage.legacy.category.entity.LegacyCategoryEntity;
 import com.ryuqq.setof.storage.legacy.category.entity.QLegacyCategoryEntity;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -44,15 +46,15 @@ import org.springframework.stereotype.Repository;
 public class LegacyCategoryQueryDslRepository {
 
     private final JPAQueryFactory queryFactory;
-    private final EntityManager entityManager;
     private final LegacyCategoryConditionBuilder conditionBuilder;
 
+    @PersistenceContext(unitName = "legacy")
+    private EntityManager entityManager;
+
     public LegacyCategoryQueryDslRepository(
-            JPAQueryFactory queryFactory,
-            EntityManager entityManager,
+            @Qualifier("legacyJpaQueryFactory") JPAQueryFactory queryFactory,
             LegacyCategoryConditionBuilder conditionBuilder) {
         this.queryFactory = queryFactory;
-        this.entityManager = entityManager;
         this.conditionBuilder = conditionBuilder;
     }
 
