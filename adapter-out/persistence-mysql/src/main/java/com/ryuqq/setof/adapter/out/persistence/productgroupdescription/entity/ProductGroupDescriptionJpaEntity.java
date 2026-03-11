@@ -1,6 +1,6 @@
 package com.ryuqq.setof.adapter.out.persistence.productgroupdescription.entity;
 
-import com.ryuqq.setof.adapter.out.persistence.common.entity.BaseAuditEntity;
+import com.ryuqq.setof.adapter.out.persistence.common.entity.SoftDeletableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,20 +25,19 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "product_group_descriptions")
-public class ProductGroupDescriptionJpaEntity extends BaseAuditEntity {
+public class ProductGroupDescriptionJpaEntity extends SoftDeletableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_group_description_id")
     private Long id;
 
     @Column(name = "product_group_id", nullable = false)
     private Long productGroupId;
 
-    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "cdn_path", length = 500)
+    @Column(name = "cdn_path", length = 1000)
     private String cdnPath;
 
     protected ProductGroupDescriptionJpaEntity() {
@@ -51,8 +50,9 @@ public class ProductGroupDescriptionJpaEntity extends BaseAuditEntity {
             String content,
             String cdnPath,
             Instant createdAt,
-            Instant updatedAt) {
-        super(createdAt, updatedAt);
+            Instant updatedAt,
+            Instant deletedAt) {
+        super(createdAt, updatedAt, deletedAt);
         this.id = id;
         this.productGroupId = productGroupId;
         this.content = content;
@@ -65,9 +65,10 @@ public class ProductGroupDescriptionJpaEntity extends BaseAuditEntity {
             String content,
             String cdnPath,
             Instant createdAt,
-            Instant updatedAt) {
+            Instant updatedAt,
+            Instant deletedAt) {
         return new ProductGroupDescriptionJpaEntity(
-                id, productGroupId, content, cdnPath, createdAt, updatedAt);
+                id, productGroupId, content, cdnPath, createdAt, updatedAt, deletedAt);
     }
 
     public Long getId() {

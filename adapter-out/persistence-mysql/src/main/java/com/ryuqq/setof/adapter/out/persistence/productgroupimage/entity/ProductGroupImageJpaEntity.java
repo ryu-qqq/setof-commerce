@@ -1,5 +1,6 @@
 package com.ryuqq.setof.adapter.out.persistence.productgroupimage.entity;
 
+import com.ryuqq.setof.adapter.out.persistence.common.entity.SoftDeletableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,7 +25,7 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "product_group_images")
-public class ProductGroupImageJpaEntity {
+public class ProductGroupImageJpaEntity extends SoftDeletableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,50 +34,54 @@ public class ProductGroupImageJpaEntity {
     @Column(name = "product_group_id", nullable = false)
     private Long productGroupId;
 
-    @Column(name = "image_url", nullable = false, length = 500)
-    private String imageUrl;
-
     @Column(name = "image_type", nullable = false, length = 50)
     private String imageType;
 
-    @Column(name = "sort_order")
+    @Column(name = "image_url", nullable = false, length = 1000)
+    private String imageUrl;
+
+    @Column(name = "sort_order", nullable = false)
     private int sortOrder;
 
-    @Column(name = "deleted", nullable = false)
-    private boolean deleted;
-
-    @Column(name = "deleted_at")
-    private Instant deletedAt;
-
-    protected ProductGroupImageJpaEntity() {}
+    protected ProductGroupImageJpaEntity() {
+        super();
+    }
 
     private ProductGroupImageJpaEntity(
             Long id,
             Long productGroupId,
-            String imageUrl,
             String imageType,
+            String imageUrl,
             int sortOrder,
-            boolean deleted,
+            Instant createdAt,
+            Instant updatedAt,
             Instant deletedAt) {
+        super(createdAt, updatedAt, deletedAt);
         this.id = id;
         this.productGroupId = productGroupId;
-        this.imageUrl = imageUrl;
         this.imageType = imageType;
+        this.imageUrl = imageUrl;
         this.sortOrder = sortOrder;
-        this.deleted = deleted;
-        this.deletedAt = deletedAt;
     }
 
     public static ProductGroupImageJpaEntity create(
             Long id,
             Long productGroupId,
-            String imageUrl,
             String imageType,
+            String imageUrl,
             int sortOrder,
-            boolean deleted,
+            Instant createdAt,
+            Instant updatedAt,
             Instant deletedAt) {
         return new ProductGroupImageJpaEntity(
-                id, productGroupId, imageUrl, imageType, sortOrder, deleted, deletedAt);
+                id,
+                productGroupId,
+                imageType,
+                imageUrl,
+                sortOrder,
+                createdAt,
+                updatedAt,
+                deletedAt);
     }
 
     public Long getId() {
@@ -87,23 +92,15 @@ public class ProductGroupImageJpaEntity {
         return productGroupId;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
     public String getImageType() {
         return imageType;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
     public int getSortOrder() {
         return sortOrder;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public Instant getDeletedAt() {
-        return deletedAt;
     }
 }

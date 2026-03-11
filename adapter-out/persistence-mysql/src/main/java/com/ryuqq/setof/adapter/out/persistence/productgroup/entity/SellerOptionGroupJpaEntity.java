@@ -23,7 +23,7 @@ import java.time.Instant;
  * @since 1.0.0
  */
 @Entity
-@Table(name = "seller_option_group")
+@Table(name = "seller_option_groups")
 public class SellerOptionGroupJpaEntity {
 
     @Id
@@ -36,12 +36,6 @@ public class SellerOptionGroupJpaEntity {
     @Column(name = "option_group_name", nullable = false, length = 100)
     private String optionGroupName;
 
-    @Column(name = "canonical_option_group_id")
-    private Long canonicalOptionGroupId;
-
-    @Column(name = "input_type", nullable = false, length = 50)
-    private String inputType;
-
     @Column(name = "sort_order", nullable = false)
     private int sortOrder;
 
@@ -51,45 +45,51 @@ public class SellerOptionGroupJpaEntity {
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
     protected SellerOptionGroupJpaEntity() {}
 
     private SellerOptionGroupJpaEntity(
             Long id,
             Long productGroupId,
             String optionGroupName,
-            Long canonicalOptionGroupId,
-            String inputType,
             int sortOrder,
             boolean deleted,
-            Instant deletedAt) {
+            Instant deletedAt,
+            Instant createdAt,
+            Instant updatedAt) {
         this.id = id;
         this.productGroupId = productGroupId;
         this.optionGroupName = optionGroupName;
-        this.canonicalOptionGroupId = canonicalOptionGroupId;
-        this.inputType = inputType;
         this.sortOrder = sortOrder;
         this.deleted = deleted;
         this.deletedAt = deletedAt;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public static SellerOptionGroupJpaEntity create(
             Long id,
             Long productGroupId,
             String optionGroupName,
-            Long canonicalOptionGroupId,
-            String inputType,
             int sortOrder,
             boolean deleted,
-            Instant deletedAt) {
+            Instant deletedAt,
+            Instant createdAt,
+            Instant updatedAt) {
         return new SellerOptionGroupJpaEntity(
                 id,
                 productGroupId,
                 optionGroupName,
-                canonicalOptionGroupId,
-                inputType,
                 sortOrder,
                 deleted,
-                deletedAt);
+                deletedAt,
+                createdAt,
+                updatedAt);
     }
 
     public Long getId() {
@@ -104,14 +104,6 @@ public class SellerOptionGroupJpaEntity {
         return optionGroupName;
     }
 
-    public Long getCanonicalOptionGroupId() {
-        return canonicalOptionGroupId;
-    }
-
-    public String getInputType() {
-        return inputType;
-    }
-
     public int getSortOrder() {
         return sortOrder;
     }
@@ -122,5 +114,13 @@ public class SellerOptionGroupJpaEntity {
 
     public Instant getDeletedAt() {
         return deletedAt;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 }

@@ -1,11 +1,13 @@
 package com.ryuqq.setof.adapter.out.persistence.productnotice.entity;
 
+import com.ryuqq.setof.adapter.out.persistence.common.entity.SoftDeletableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.Instant;
 
 /**
  * ProductNoticeEntryJpaEntity - 상품고시 항목 JPA 엔티티.
@@ -20,7 +22,7 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "product_notice_entries")
-public class ProductNoticeEntryJpaEntity {
+public class ProductNoticeEntryJpaEntity extends SoftDeletableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,30 +31,31 @@ public class ProductNoticeEntryJpaEntity {
     @Column(name = "product_notice_id", nullable = false)
     private Long productNoticeId;
 
-    @Column(name = "notice_field_id", nullable = false)
-    private Long noticeFieldId;
-
     @Column(name = "field_name", nullable = false, length = 100)
     private String fieldName;
 
-    @Column(name = "field_value", length = 500)
+    @Column(name = "field_value", nullable = false, length = 500)
     private String fieldValue;
 
     @Column(name = "sort_order", nullable = false)
     private int sortOrder;
 
-    protected ProductNoticeEntryJpaEntity() {}
+    protected ProductNoticeEntryJpaEntity() {
+        super();
+    }
 
     private ProductNoticeEntryJpaEntity(
             Long id,
             Long productNoticeId,
-            Long noticeFieldId,
             String fieldName,
             String fieldValue,
-            int sortOrder) {
+            int sortOrder,
+            Instant createdAt,
+            Instant updatedAt,
+            Instant deletedAt) {
+        super(createdAt, updatedAt, deletedAt);
         this.id = id;
         this.productNoticeId = productNoticeId;
-        this.noticeFieldId = noticeFieldId;
         this.fieldName = fieldName;
         this.fieldValue = fieldValue;
         this.sortOrder = sortOrder;
@@ -61,12 +64,21 @@ public class ProductNoticeEntryJpaEntity {
     public static ProductNoticeEntryJpaEntity create(
             Long id,
             Long productNoticeId,
-            Long noticeFieldId,
             String fieldName,
             String fieldValue,
-            int sortOrder) {
+            int sortOrder,
+            Instant createdAt,
+            Instant updatedAt,
+            Instant deletedAt) {
         return new ProductNoticeEntryJpaEntity(
-                id, productNoticeId, noticeFieldId, fieldName, fieldValue, sortOrder);
+                id,
+                productNoticeId,
+                fieldName,
+                fieldValue,
+                sortOrder,
+                createdAt,
+                updatedAt,
+                deletedAt);
     }
 
     public Long getId() {
@@ -75,10 +87,6 @@ public class ProductNoticeEntryJpaEntity {
 
     public Long getProductNoticeId() {
         return productNoticeId;
-    }
-
-    public Long getNoticeFieldId() {
-        return noticeFieldId;
     }
 
     public String getFieldName() {

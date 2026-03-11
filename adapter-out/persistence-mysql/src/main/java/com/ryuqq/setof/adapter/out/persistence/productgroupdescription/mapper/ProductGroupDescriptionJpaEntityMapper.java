@@ -41,7 +41,8 @@ public class ProductGroupDescriptionJpaEntityMapper {
                 domain.contentValue(),
                 domain.cdnPath(),
                 domain.createdAt(),
-                domain.updatedAt());
+                domain.updatedAt(),
+                null);
     }
 
     /**

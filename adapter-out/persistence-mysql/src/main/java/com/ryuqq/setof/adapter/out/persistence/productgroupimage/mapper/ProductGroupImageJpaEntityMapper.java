@@ -5,6 +5,7 @@ import com.ryuqq.setof.domain.productgroup.vo.ImageType;
 import com.ryuqq.setof.domain.productgroup.vo.ImageUrl;
 import com.ryuqq.setof.domain.productgroupimage.aggregate.ProductGroupImage;
 import com.ryuqq.setof.domain.productgroupimage.id.ProductGroupImageId;
+import java.time.Instant;
 import org.springframework.stereotype.Component;
 
 /**
@@ -34,13 +35,15 @@ public class ProductGroupImageJpaEntityMapper {
      * @return ProductGroupImageJpaEntity
      */
     public ProductGroupImageJpaEntity toEntity(ProductGroupImage image, Long productGroupId) {
+        Instant now = Instant.now();
         return ProductGroupImageJpaEntity.create(
                 image.idValue(),
                 productGroupId,
-                image.imageUrlValue(),
                 image.imageType().name(),
+                image.imageUrlValue(),
                 image.sortOrder(),
-                image.isDeleted(),
+                now,
+                now,
                 image.deletedAt());
     }
 

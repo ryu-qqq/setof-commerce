@@ -9,6 +9,7 @@ import com.ryuqq.setof.domain.productnotice.id.NoticeFieldId;
 import com.ryuqq.setof.domain.productnotice.id.ProductNoticeEntryId;
 import com.ryuqq.setof.domain.productnotice.id.ProductNoticeId;
 import com.ryuqq.setof.domain.productnotice.vo.NoticeFieldValue;
+import java.time.Instant;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -48,13 +49,16 @@ public class ProductNoticeJpaEntityMapper {
      * @return ProductNoticeEntryJpaEntity
      */
     public ProductNoticeEntryJpaEntity toEntryEntity(ProductNoticeEntry entry) {
+        Instant now = Instant.now();
         return ProductNoticeEntryJpaEntity.create(
                 entry.idValue(),
                 entry.productNoticeIdValue(),
-                entry.noticeFieldIdValue(),
                 entry.fieldName(),
                 entry.fieldValueText(),
-                entry.sortOrder());
+                entry.sortOrder(),
+                now,
+                now,
+                null);
     }
 
     /**
@@ -85,7 +89,7 @@ public class ProductNoticeJpaEntityMapper {
         return ProductNoticeEntry.reconstitute(
                 ProductNoticeEntryId.of(entryEntity.getId()),
                 ProductNoticeId.of(entryEntity.getProductNoticeId()),
-                NoticeFieldId.of(entryEntity.getNoticeFieldId()),
+                NoticeFieldId.of(0L),
                 NoticeFieldValue.of(entryEntity.getFieldName(), entryEntity.getFieldValue()),
                 entryEntity.getSortOrder());
     }

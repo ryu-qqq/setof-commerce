@@ -26,6 +26,7 @@ import com.ryuqq.setof.domain.productgroupimage.id.ProductGroupImageId;
 import com.ryuqq.setof.domain.refundpolicy.id.RefundPolicyId;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import com.ryuqq.setof.domain.shippingpolicy.id.ShippingPolicyId;
+import java.time.Instant;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +54,6 @@ public class ProductGroupJpaEntityMapper {
      * @return ProductGroupJpaEntity
      */
     public ProductGroupJpaEntity toEntity(ProductGroup domain) {
-        Integer salePriceValue = domain.salePriceValue() == 0 ? null : domain.salePriceValue();
         return ProductGroupJpaEntity.create(
                 domain.idValue(),
                 domain.sellerIdValue(),
@@ -65,10 +65,11 @@ public class ProductGroupJpaEntityMapper {
                 domain.optionType().name(),
                 domain.regularPriceValue(),
                 domain.currentPriceValue(),
-                salePriceValue,
+                domain.salePriceValue(),
                 domain.status().name(),
                 domain.createdAt(),
-                domain.updatedAt());
+                domain.updatedAt(),
+                null);
     }
 
     /**
@@ -79,15 +80,16 @@ public class ProductGroupJpaEntityMapper {
      */
     public SellerOptionGroupJpaEntity toOptionGroupEntity(SellerOptionGroup group) {
         DeletionStatus deletionStatus = group.deletionStatus();
+        Instant now = Instant.now();
         return SellerOptionGroupJpaEntity.create(
                 group.idValue(),
                 group.productGroupIdValue(),
                 group.optionGroupNameValue(),
-                null,
-                "SELECT",
                 group.sortOrder(),
                 deletionStatus.isDeleted(),
-                deletionStatus.deletedAt());
+                deletionStatus.deletedAt(),
+                now,
+                now);
     }
 
     /**
@@ -98,14 +100,16 @@ public class ProductGroupJpaEntityMapper {
      */
     public SellerOptionValueJpaEntity toOptionValueEntity(SellerOptionValue value) {
         DeletionStatus deletionStatus = value.deletionStatus();
+        Instant now = Instant.now();
         return SellerOptionValueJpaEntity.create(
                 value.idValue(),
                 value.sellerOptionGroupIdValue(),
                 value.optionValueNameValue(),
-                null,
                 value.sortOrder(),
                 deletionStatus.isDeleted(),
-                deletionStatus.deletedAt());
+                deletionStatus.deletedAt(),
+                now,
+                now);
     }
 
     /**
@@ -118,14 +122,16 @@ public class ProductGroupJpaEntityMapper {
     public SellerOptionValueJpaEntity toOptionValueEntity(
             SellerOptionValue value, Long overrideGroupId) {
         DeletionStatus deletionStatus = value.deletionStatus();
+        Instant now = Instant.now();
         return SellerOptionValueJpaEntity.create(
                 value.idValue(),
                 overrideGroupId,
                 value.optionValueNameValue(),
-                null,
                 value.sortOrder(),
                 deletionStatus.isDeleted(),
-                deletionStatus.deletedAt());
+                deletionStatus.deletedAt(),
+                now,
+                now);
     }
 
     /**
@@ -171,8 +177,7 @@ public class ProductGroupJpaEntityMapper {
                                 })
                         .toList();
 
-        Integer salePriceRaw = entity.getSalePrice();
-        Money salePrice = salePriceRaw != null ? Money.of(salePriceRaw) : null;
+        Money salePrice = Money.of(entity.getSalePrice());
 
         return ProductGroup.reconstitute(
                 ProductGroupId.of(entity.getId()),

@@ -37,7 +37,7 @@ public class ProductGroupImageQueryDslRepository {
                 .selectFrom(productGroupImage)
                 .where(
                         productGroupImage.productGroupId.eq(productGroupId),
-                        productGroupImage.deleted.isFalse())
+                        productGroupImage.deletedAt.isNull())
                 .orderBy(productGroupImage.sortOrder.asc())
                 .fetch();
     }
@@ -53,7 +53,7 @@ public class ProductGroupImageQueryDslRepository {
                 .selectFrom(productGroupImage)
                 .where(
                         productGroupImage.productGroupId.in(productGroupIds),
-                        productGroupImage.deleted.isFalse())
+                        productGroupImage.deletedAt.isNull())
                 .orderBy(productGroupImage.sortOrder.asc())
                 .fetch();
     }

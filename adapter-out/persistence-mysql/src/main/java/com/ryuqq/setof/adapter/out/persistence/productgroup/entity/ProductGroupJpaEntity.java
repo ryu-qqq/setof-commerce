@@ -1,6 +1,6 @@
 package com.ryuqq.setof.adapter.out.persistence.productgroup.entity;
 
-import com.ryuqq.setof.adapter.out.persistence.common.entity.BaseAuditEntity;
+import com.ryuqq.setof.adapter.out.persistence.common.entity.SoftDeletableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,7 +25,7 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "product_groups")
-public class ProductGroupJpaEntity extends BaseAuditEntity {
+public class ProductGroupJpaEntity extends SoftDeletableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,7 +46,7 @@ public class ProductGroupJpaEntity extends BaseAuditEntity {
     @Column(name = "refund_policy_id", nullable = false)
     private Long refundPolicyId;
 
-    @Column(name = "product_group_name", nullable = false, length = 200)
+    @Column(name = "product_group_name", nullable = false, length = 500)
     private String productGroupName;
 
     @Column(name = "option_type", nullable = false, length = 50)
@@ -58,8 +58,8 @@ public class ProductGroupJpaEntity extends BaseAuditEntity {
     @Column(name = "current_price", nullable = false)
     private int currentPrice;
 
-    @Column(name = "sale_price")
-    private Integer salePrice;
+    @Column(name = "sale_price", nullable = false)
+    private int salePrice;
 
     @Column(name = "status", nullable = false, length = 50)
     private String status;
@@ -79,11 +79,12 @@ public class ProductGroupJpaEntity extends BaseAuditEntity {
             String optionType,
             int regularPrice,
             int currentPrice,
-            Integer salePrice,
+            int salePrice,
             String status,
             Instant createdAt,
-            Instant updatedAt) {
-        super(createdAt, updatedAt);
+            Instant updatedAt,
+            Instant deletedAt) {
+        super(createdAt, updatedAt, deletedAt);
         this.id = id;
         this.sellerId = sellerId;
         this.brandId = brandId;
@@ -109,10 +110,11 @@ public class ProductGroupJpaEntity extends BaseAuditEntity {
             String optionType,
             int regularPrice,
             int currentPrice,
-            Integer salePrice,
+            int salePrice,
             String status,
             Instant createdAt,
-            Instant updatedAt) {
+            Instant updatedAt,
+            Instant deletedAt) {
         return new ProductGroupJpaEntity(
                 id,
                 sellerId,
@@ -127,7 +129,8 @@ public class ProductGroupJpaEntity extends BaseAuditEntity {
                 salePrice,
                 status,
                 createdAt,
-                updatedAt);
+                updatedAt,
+                deletedAt);
     }
 
     public Long getId() {
@@ -170,7 +173,7 @@ public class ProductGroupJpaEntity extends BaseAuditEntity {
         return currentPrice;
     }
 
-    public Integer getSalePrice() {
+    public int getSalePrice() {
         return salePrice;
     }
 
