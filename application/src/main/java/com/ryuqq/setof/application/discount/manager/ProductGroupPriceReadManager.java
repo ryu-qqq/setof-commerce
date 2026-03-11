@@ -1,23 +1,23 @@
 package com.ryuqq.setof.application.discount.manager;
 
-import com.ryuqq.setof.application.discount.port.out.query.LegacyProductGroupPriceQueryPort;
+import com.ryuqq.setof.application.discount.port.out.query.ProductGroupPriceQueryPort;
 import com.ryuqq.setof.domain.discount.dto.ProductGroupPriceRow;
 import com.ryuqq.setof.domain.discount.vo.DiscountTargetType;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
- * 레거시 상품그룹 가격 조회 매니저.
+ * 새 스키마(setof) 상품그룹 가격 조회 매니저.
  *
  * @author ryu-qqq
  * @since 1.1.0
  */
 @Component
-public class LegacyProductGroupPriceReadManager {
+public class ProductGroupPriceReadManager {
 
-    private final LegacyProductGroupPriceQueryPort priceQueryPort;
+    private final ProductGroupPriceQueryPort priceQueryPort;
 
-    public LegacyProductGroupPriceReadManager(LegacyProductGroupPriceQueryPort priceQueryPort) {
+    public ProductGroupPriceReadManager(ProductGroupPriceQueryPort priceQueryPort) {
         this.priceQueryPort = priceQueryPort;
     }
 

@@ -53,9 +53,9 @@ class ProductGroupQueryTest {
         }
 
         @Test
-        @DisplayName("defaultKey()는 CREATED_AT을 반환한다")
-        void defaultKeyIsCreatedAt() {
-            assertThat(ProductGroupSortKey.defaultKey()).isEqualTo(ProductGroupSortKey.CREATED_AT);
+        @DisplayName("defaultKey()는 RECOMMEND를 반환한다")
+        void defaultKeyIsRecommend() {
+            assertThat(ProductGroupSortKey.defaultKey()).isEqualTo(ProductGroupSortKey.RECOMMEND);
         }
 
         @Test
@@ -67,7 +67,36 @@ class ProductGroupQueryTest {
                             ProductGroupSortKey.UPDATED_AT,
                             ProductGroupSortKey.NAME,
                             ProductGroupSortKey.CURRENT_PRICE,
-                            ProductGroupSortKey.SALE_PRICE);
+                            ProductGroupSortKey.SALE_PRICE,
+                            ProductGroupSortKey.RECOMMEND,
+                            ProductGroupSortKey.REVIEW,
+                            ProductGroupSortKey.RATING,
+                            ProductGroupSortKey.DISCOUNT,
+                            ProductGroupSortKey.RECENT);
+        }
+
+        @Test
+        @DisplayName("fromLegacyOrderType()으로 레거시 orderType을 변환한다")
+        void fromLegacyOrderType() {
+            assertThat(ProductGroupSortKey.fromLegacyOrderType("RECOMMEND"))
+                    .isEqualTo(ProductGroupSortKey.RECOMMEND);
+            assertThat(ProductGroupSortKey.fromLegacyOrderType("LOW_PRICE"))
+                    .isEqualTo(ProductGroupSortKey.CURRENT_PRICE);
+            assertThat(ProductGroupSortKey.fromLegacyOrderType("HIGH_PRICE"))
+                    .isEqualTo(ProductGroupSortKey.CURRENT_PRICE);
+            assertThat(ProductGroupSortKey.fromLegacyOrderType("RECENT"))
+                    .isEqualTo(ProductGroupSortKey.RECENT);
+            assertThat(ProductGroupSortKey.fromLegacyOrderType(null))
+                    .isEqualTo(ProductGroupSortKey.RECOMMEND);
+        }
+
+        @Test
+        @DisplayName("isAscendingForLegacy()로 정렬 방향을 결정한다")
+        void isAscendingForLegacy() {
+            assertThat(ProductGroupSortKey.isAscendingForLegacy("LOW_PRICE")).isTrue();
+            assertThat(ProductGroupSortKey.isAscendingForLegacy("LOW_DISCOUNT")).isTrue();
+            assertThat(ProductGroupSortKey.isAscendingForLegacy("HIGH_PRICE")).isFalse();
+            assertThat(ProductGroupSortKey.isAscendingForLegacy("RECOMMEND")).isFalse();
         }
     }
 

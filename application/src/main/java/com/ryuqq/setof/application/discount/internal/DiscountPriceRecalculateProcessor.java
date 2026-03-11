@@ -2,10 +2,10 @@ package com.ryuqq.setof.application.discount.internal;
 
 import com.ryuqq.setof.application.discount.factory.ProductGroupPriceUpdateFactory;
 import com.ryuqq.setof.application.discount.manager.DiscountPolicyReadManager;
-import com.ryuqq.setof.application.discount.manager.LegacyProductGroupPriceCommandManager;
-import com.ryuqq.setof.application.discount.manager.LegacyProductGroupPriceReadManager;
-import com.ryuqq.setof.application.discount.port.out.query.LegacyProductGroupPriceQueryPort.ProductGroupPriceRow;
+import com.ryuqq.setof.application.discount.manager.ProductGroupPriceCommandManager;
+import com.ryuqq.setof.application.discount.manager.ProductGroupPriceReadManager;
 import com.ryuqq.setof.domain.discount.aggregate.DiscountPolicy;
+import com.ryuqq.setof.domain.discount.dto.ProductGroupPriceRow;
 import com.ryuqq.setof.domain.discount.dto.ProductGroupPriceUpdateData;
 import com.ryuqq.setof.domain.discount.vo.DiscountTargetType;
 import java.time.Instant;
@@ -18,7 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 할인 가격 재계산 프로세서.
  *
- * <p>타겟에 해당하는 상품들의 가격을 현재 활성 할인 정책으로 재계산하고 일괄 갱신합니다.
+ * <p>타겟에 해당하는 상품들의 가격을 현재 활성 할인 정책으로 재계산하고 새 스키마(setof)에 일괄 갱신합니다. 레거시 스키마는 별도의 AOP+Redis 메커니즘으로
+ * 처리되므로 여기서는 갱신하지 않습니다.
  *
  * @author ryu-qqq
  * @since 1.1.0
@@ -29,14 +30,14 @@ public class DiscountPriceRecalculateProcessor {
     private static final Logger log =
             LoggerFactory.getLogger(DiscountPriceRecalculateProcessor.class);
 
-    private final LegacyProductGroupPriceReadManager priceReadManager;
-    private final LegacyProductGroupPriceCommandManager priceCommandManager;
+    private final ProductGroupPriceReadManager priceReadManager;
+    private final ProductGroupPriceCommandManager priceCommandManager;
     private final DiscountPolicyReadManager policyReadManager;
     private final ProductGroupPriceUpdateFactory priceUpdateFactory;
 
     public DiscountPriceRecalculateProcessor(
-            LegacyProductGroupPriceReadManager priceReadManager,
-            LegacyProductGroupPriceCommandManager priceCommandManager,
+            ProductGroupPriceReadManager priceReadManager,
+            ProductGroupPriceCommandManager priceCommandManager,
             DiscountPolicyReadManager policyReadManager,
             ProductGroupPriceUpdateFactory priceUpdateFactory) {
         this.priceReadManager = priceReadManager;
@@ -46,7 +47,7 @@ public class DiscountPriceRecalculateProcessor {
     }
 
     /**
-     * 타겟에 해당하는 모든 상품의 가격을 재계산하여 일괄 갱신.
+     * 타겟에 해당하는 모든 상품의 가격을 재계산하여 새 스키마에 일괄 갱신.
      *
      * @param targetType 대상 유형
      * @param targetId 대상 ID
@@ -69,6 +70,13 @@ public class DiscountPriceRecalculateProcessor {
                 priceUpdateFactory.createAll(productGroups, applicablePolicies);
 
         priceCommandManager.persistAll(updates);
+
+        for (ProductGroupPriceUpdateData update : updates) {
+            if (!update.appliedDiscounts().isEmpty()) {
+                priceCommandManager.replaceAppliedDiscounts(
+                        update.productGroupId(), update.appliedDiscounts(), now);
+            }
+        }
 
         log.info(
                 "상품 가격 갱신 완료: target={}:{}, count={}, appliedPolicies={}",

@@ -76,8 +76,8 @@ class BrandQueryFactoryTest {
         }
 
         @Test
-        @DisplayName("displayed가 null이면 true로 기본값 적용한다")
-        void createDisplayCriteria_NullDisplayed_DefaultsToTrue() {
+        @DisplayName("displayed가 null이면 null로 전달된다")
+        void createDisplayCriteria_NullDisplayed_RemainsNull() {
             // given
             BrandDisplaySearchParams params = BrandQueryFixtures.displaySearchParams("브랜드", null);
 
@@ -85,7 +85,7 @@ class BrandQueryFactoryTest {
             BrandSearchCriteria result = sut.createDisplayCriteria(params);
 
             // then
-            assertThat(result.displayed()).isTrue();
+            assertThat(result.displayed()).isNull();
         }
     }
 }

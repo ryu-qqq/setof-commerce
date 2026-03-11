@@ -7,7 +7,7 @@ import com.ryuqq.setof.application.productgroup.dto.response.ProductGroupSliceRe
 import com.ryuqq.setof.application.productgroup.factory.ProductGroupQueryFactory;
 import com.ryuqq.setof.application.productgroup.internal.ProductGroupReadFacade;
 import com.ryuqq.setof.application.productgroup.port.in.query.FetchProductGroupsUseCase;
-import com.ryuqq.setof.domain.legacy.product.dto.query.LegacyProductGroupSearchCondition;
+import com.ryuqq.setof.domain.productgroup.query.ProductGroupSearchCriteria;
 import org.springframework.stereotype.Service;
 
 /**
@@ -36,8 +36,8 @@ public class FetchProductGroupsService implements FetchProductGroupsUseCase {
 
     @Override
     public ProductGroupSliceResult execute(ProductGroupSearchParams params) {
-        LegacyProductGroupSearchCondition condition = queryFactory.createCondition(params);
-        ProductGroupListBundle bundle = readFacade.getListBundle(condition);
+        ProductGroupSearchCriteria criteria = queryFactory.createCriteria(params);
+        ProductGroupListBundle bundle = readFacade.getListBundle(criteria);
         return assembler.toSliceResult(bundle, params.size());
     }
 }

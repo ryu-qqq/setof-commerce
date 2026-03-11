@@ -6,10 +6,10 @@ import static org.mockito.BDDMockito.then;
 
 import com.ryuqq.setof.application.discount.DiscountDomainFixtures;
 import com.ryuqq.setof.application.discount.internal.DiscountCalculator;
-import com.ryuqq.setof.application.discount.port.out.query.LegacyProductGroupPriceQueryPort.ProductGroupPriceRow;
 import com.ryuqq.setof.domain.common.vo.Money;
 import com.ryuqq.setof.domain.discount.DiscountFixtures;
 import com.ryuqq.setof.domain.discount.aggregate.DiscountPolicy;
+import com.ryuqq.setof.domain.discount.dto.ProductGroupPriceRow;
 import com.ryuqq.setof.domain.discount.dto.ProductGroupPriceUpdateData;
 import com.ryuqq.setof.domain.discount.vo.DiscountedPrice;
 import com.ryuqq.setof.domain.discount.vo.StackingGroup;

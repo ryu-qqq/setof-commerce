@@ -1,9 +1,9 @@
 package com.ryuqq.setof.application.discount.factory;
 
 import com.ryuqq.setof.application.discount.internal.DiscountCalculator;
-import com.ryuqq.setof.application.discount.port.out.query.LegacyProductGroupPriceQueryPort.ProductGroupPriceRow;
 import com.ryuqq.setof.domain.common.vo.Money;
 import com.ryuqq.setof.domain.discount.aggregate.DiscountPolicy;
+import com.ryuqq.setof.domain.discount.dto.ProductGroupPriceRow;
 import com.ryuqq.setof.domain.discount.dto.ProductGroupPriceUpdateData;
 import com.ryuqq.setof.domain.discount.vo.DiscountedPrice;
 import java.util.List;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 /**
  * 상품그룹 가격 갱신 데이터 팩토리.
  *
- * <p>할인 계산 결과를 레거시 가격 갱신 데이터로 변환합니다.
+ * <p>할인 계산 결과를 가격 갱신 데이터로 변환합니다.
  *
  * @author ryu-qqq
  * @since 1.1.0
@@ -58,6 +58,7 @@ public class ProductGroupPriceUpdateFactory {
                 result.salePrice().value(),
                 result.totalDiscountRate(),
                 result.directDiscountRate(currentPrice),
-                result.directDiscountPrice(currentPrice).value());
+                result.directDiscountPrice(currentPrice).value(),
+                result.appliedDiscounts());
     }
 }

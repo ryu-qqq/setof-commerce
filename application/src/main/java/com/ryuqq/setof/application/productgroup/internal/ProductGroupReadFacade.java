@@ -4,8 +4,11 @@ import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetail
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupListBundle;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupThumbnailCompositeResult;
 import com.ryuqq.setof.application.productgroup.manager.ProductGroupCompositionReadManager;
-import com.ryuqq.setof.domain.legacy.product.dto.query.LegacyProductGroupSearchCondition;
-import com.ryuqq.setof.domain.legacy.search.dto.query.LegacySearchCondition;
+import com.ryuqq.setof.domain.brand.id.BrandId;
+import com.ryuqq.setof.domain.common.vo.CursorQueryContext;
+import com.ryuqq.setof.domain.productgroup.query.ProductGroupSearchCriteria;
+import com.ryuqq.setof.domain.productgroup.query.ProductGroupSortKey;
+import com.ryuqq.setof.domain.seller.id.SellerId;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
  * ProductGroupReadFacade - 상품그룹 Read Facade.
  *
  * <p>Manager들만 조합하여 조회 결과를 번들 DTO로 묶어 반환합니다. 조립(Assembling)은 Service에서 Assembler를 통해 수행합니다.
- *
- * <p>Redis 캐시 없이 모든 조회는 레거시 DB 직접 조회합니다.
  *
  * @author ryu-qqq
  * @since 1.1.0
@@ -31,8 +32,6 @@ public class ProductGroupReadFacade {
 
     /**
      * 상품그룹 단건 상세 조회.
-     *
-     * <p>기본 정보(쿼리 1) + 개별 상품 목록(쿼리 2) + 이미지 목록(쿼리 3)을 조합합니다.
      *
      * @param productGroupId 상품그룹 ID
      * @return 상세 Composite 결과
@@ -51,21 +50,20 @@ public class ProductGroupReadFacade {
     /**
      * 상품그룹 커서 페이징 목록 번들.
      *
-     * @param condition 검색 조건
-     * @return 썸네일 목록 + 전체 건수 + orderType 번들
+     * @param criteria 검색 조건
+     * @return 썸네일 목록 + 전체 건수 + sortKey 번들
      */
     @Transactional(readOnly = true)
-    public ProductGroupListBundle getListBundle(LegacyProductGroupSearchCondition condition) {
+    public ProductGroupListBundle getListBundle(ProductGroupSearchCriteria criteria) {
         List<ProductGroupThumbnailCompositeResult> thumbnails =
-                compositionReadManager.fetchProductGroupThumbnails(condition);
-        long totalElements = compositionReadManager.fetchProductGroupCount(condition);
-        return new ProductGroupListBundle(thumbnails, totalElements, condition.orderType());
+                compositionReadManager.fetchProductGroupThumbnails(criteria);
+        long totalElements = compositionReadManager.fetchProductGroupCount(criteria);
+        return new ProductGroupListBundle(
+                thumbnails, totalElements, criteria.queryContext().sortKey());
     }
 
     /**
      * ID 목록 기반 상품그룹 썸네일 번들 (찜 목록 등).
-     *
-     * <p>요청 ID 순서로 재정렬된 결과를 반환합니다.
      *
      * @param productGroupIds 상품그룹 ID 목록
      * @return 썸네일 목록 번들 (totalElements = 요청 ID 수)
@@ -86,9 +84,26 @@ public class ProductGroupReadFacade {
      */
     @Transactional(readOnly = true)
     public ProductGroupListBundle getListBundleByBrand(Long brandId, int pageSize) {
+        CursorQueryContext<ProductGroupSortKey, Long> queryContext =
+                CursorQueryContext.firstPage(ProductGroupSortKey.RECOMMEND, null, pageSize);
+        ProductGroupSearchCriteria criteria =
+                new ProductGroupSearchCriteria(
+                        null,
+                        BrandId.of(brandId),
+                        null,
+                        List.of(),
+                        List.of(),
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        queryContext);
         List<ProductGroupThumbnailCompositeResult> thumbnails =
-                compositionReadManager.fetchProductGroupsByBrand(brandId, pageSize);
-        return new ProductGroupListBundle(thumbnails, thumbnails.size(), "RECOMMEND");
+                compositionReadManager.fetchProductGroupThumbnails(criteria);
+        return new ProductGroupListBundle(
+                thumbnails, thumbnails.size(), ProductGroupSortKey.RECOMMEND);
     }
 
     /**
@@ -100,22 +115,40 @@ public class ProductGroupReadFacade {
      */
     @Transactional(readOnly = true)
     public ProductGroupListBundle getListBundleBySeller(Long sellerId, int pageSize) {
+        CursorQueryContext<ProductGroupSortKey, Long> queryContext =
+                CursorQueryContext.firstPage(ProductGroupSortKey.RECOMMEND, null, pageSize);
+        ProductGroupSearchCriteria criteria =
+                new ProductGroupSearchCriteria(
+                        SellerId.of(sellerId),
+                        null,
+                        null,
+                        List.of(),
+                        List.of(),
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        queryContext);
         List<ProductGroupThumbnailCompositeResult> thumbnails =
-                compositionReadManager.fetchProductGroupsBySeller(sellerId, pageSize);
-        return new ProductGroupListBundle(thumbnails, thumbnails.size(), "RECOMMEND");
+                compositionReadManager.fetchProductGroupThumbnails(criteria);
+        return new ProductGroupListBundle(
+                thumbnails, thumbnails.size(), ProductGroupSortKey.RECOMMEND);
     }
 
     /**
      * 키워드 검색 결과 번들 (MySQL ngram FULLTEXT + 커서 페이징).
      *
-     * @param condition 검색 조건 (searchWord 포함)
-     * @return 검색 결과 목록 + 전체 건수 + orderType 번들
+     * @param criteria 검색 조건 (searchWord 포함)
+     * @return 검색 결과 목록 + 전체 건수 + sortKey 번들
      */
     @Transactional(readOnly = true)
-    public ProductGroupListBundle getSearchBundle(LegacySearchCondition condition) {
+    public ProductGroupListBundle getSearchBundle(ProductGroupSearchCriteria criteria) {
         List<ProductGroupThumbnailCompositeResult> thumbnails =
-                compositionReadManager.fetchSearchResults(condition);
-        long totalElements = compositionReadManager.fetchSearchCount(condition);
-        return new ProductGroupListBundle(thumbnails, totalElements, condition.orderType());
+                compositionReadManager.fetchSearchResults(criteria);
+        long totalElements = compositionReadManager.fetchSearchCount(criteria);
+        return new ProductGroupListBundle(
+                thumbnails, totalElements, criteria.queryContext().sortKey());
     }
 }

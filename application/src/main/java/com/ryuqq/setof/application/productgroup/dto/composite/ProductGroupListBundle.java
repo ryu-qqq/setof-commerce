@@ -1,5 +1,6 @@
 package com.ryuqq.setof.application.productgroup.dto.composite;
 
+import com.ryuqq.setof.domain.productgroup.query.ProductGroupSortKey;
 import java.util.List;
 
 /**
@@ -9,11 +10,11 @@ import java.util.List;
  *
  * @param thumbnails 썸네일 목록 (pageSize + 1개 조회)
  * @param totalElements 전체 건수
- * @param orderType 정렬 타입 (커서 값 결정에 사용)
+ * @param sortKey 정렬 키 (커서 값 결정에 사용)
  * @author ryu-qqq
  * @since 1.1.0
  */
 public record ProductGroupListBundle(
         List<ProductGroupThumbnailCompositeResult> thumbnails,
         long totalElements,
-        String orderType) {}
+        ProductGroupSortKey sortKey) {}

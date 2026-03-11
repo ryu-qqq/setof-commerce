@@ -1,6 +1,6 @@
 package com.ryuqq.setof.adapter.out.persistence.product.entity;
 
-import com.ryuqq.setof.adapter.out.persistence.common.entity.BaseAuditEntity;
+import com.ryuqq.setof.adapter.out.persistence.common.entity.SoftDeletableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,7 +25,7 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "products")
-public class ProductJpaEntity extends BaseAuditEntity {
+public class ProductJpaEntity extends SoftDeletableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,8 +74,9 @@ public class ProductJpaEntity extends BaseAuditEntity {
             String status,
             int sortOrder,
             Instant createdAt,
-            Instant updatedAt) {
-        super(createdAt, updatedAt);
+            Instant updatedAt,
+            Instant deletedAt) {
+        super(createdAt, updatedAt, deletedAt);
         this.id = id;
         this.productGroupId = productGroupId;
         this.skuCode = skuCode;
@@ -100,7 +101,8 @@ public class ProductJpaEntity extends BaseAuditEntity {
             String status,
             int sortOrder,
             Instant createdAt,
-            Instant updatedAt) {
+            Instant updatedAt,
+            Instant deletedAt) {
         return new ProductJpaEntity(
                 id,
                 productGroupId,
@@ -113,7 +115,8 @@ public class ProductJpaEntity extends BaseAuditEntity {
                 status,
                 sortOrder,
                 createdAt,
-                updatedAt);
+                updatedAt,
+                deletedAt);
     }
 
     public Long getId() {

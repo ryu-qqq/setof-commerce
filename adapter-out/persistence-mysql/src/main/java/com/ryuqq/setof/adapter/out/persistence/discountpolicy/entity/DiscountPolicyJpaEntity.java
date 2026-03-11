@@ -1,6 +1,6 @@
 package com.ryuqq.setof.adapter.out.persistence.discountpolicy.entity;
 
-import com.ryuqq.setof.adapter.out.persistence.common.entity.BaseAuditEntity;
+import com.ryuqq.setof.adapter.out.persistence.common.entity.SoftDeletableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -27,7 +27,7 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "discount_policy")
-public class DiscountPolicyJpaEntity extends BaseAuditEntity {
+public class DiscountPolicyJpaEntity extends SoftDeletableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -91,9 +91,6 @@ public class DiscountPolicyJpaEntity extends BaseAuditEntity {
     @Column(name = "active", nullable = false)
     private boolean active;
 
-    @Column(name = "deleted_at")
-    private Instant deletedAt;
-
     protected DiscountPolicyJpaEntity() {
         super();
     }
@@ -121,7 +118,7 @@ public class DiscountPolicyJpaEntity extends BaseAuditEntity {
             Instant deletedAt,
             Instant createdAt,
             Instant updatedAt) {
-        super(createdAt, updatedAt);
+        super(createdAt, updatedAt, deletedAt);
         this.id = id;
         this.name = name;
         this.description = description;
@@ -141,7 +138,6 @@ public class DiscountPolicyJpaEntity extends BaseAuditEntity {
         this.totalBudget = totalBudget;
         this.usedBudget = usedBudget;
         this.active = active;
-        this.deletedAt = deletedAt;
     }
 
     public static DiscountPolicyJpaEntity create(
@@ -266,10 +262,6 @@ public class DiscountPolicyJpaEntity extends BaseAuditEntity {
 
     public boolean isActive() {
         return active;
-    }
-
-    public Instant getDeletedAt() {
-        return deletedAt;
     }
 
     /** Entity 내부 DiscountMethod enum (domain과 1:1 매핑) */

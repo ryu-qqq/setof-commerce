@@ -137,28 +137,28 @@ class DescriptionHtmlTest {
     class MaxLengthTest {
 
         @Test
-        @DisplayName("100000자 초과 시 예외가 발생한다")
+        @DisplayName("500000자 초과 시 예외가 발생한다")
         void throwExceptionForTooLong() {
             // given
-            String longContent = "가".repeat(100_001);
+            String longContent = "가".repeat(500_001);
 
             // when & then
             assertThatThrownBy(() -> DescriptionHtml.of(longContent))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("100000");
+                    .hasMessageContaining("500000");
         }
 
         @Test
-        @DisplayName("100000자는 허용된다")
+        @DisplayName("500000자는 허용된다")
         void allowsMaxLength() {
             // given
-            String maxContent = "가".repeat(100_000);
+            String maxContent = "가".repeat(500_000);
 
             // when
             var html = DescriptionHtml.of(maxContent);
 
             // then
-            assertThat(html.value()).hasSize(100_000);
+            assertThat(html.value()).hasSize(500_000);
         }
     }
 

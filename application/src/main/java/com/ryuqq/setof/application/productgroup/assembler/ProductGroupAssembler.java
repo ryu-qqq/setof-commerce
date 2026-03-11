@@ -5,6 +5,7 @@ import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupThumbn
 import com.ryuqq.setof.application.productgroup.dto.response.ProductGroupSliceResult;
 import com.ryuqq.setof.application.productgroup.dto.response.ProductGroupThumbnailResult;
 import com.ryuqq.setof.domain.common.vo.SliceMeta;
+import com.ryuqq.setof.domain.productgroup.query.ProductGroupSortKey;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,7 @@ public class ProductGroupAssembler {
      * <p>pageSize + 1개 조회한 결과에서 hasNext를 판별하고, 커서를 결정합니다. cursor는 레거시 방식과 동일하게
      * "lastDomainId,cursorValue" 형식으로 인코딩합니다.
      *
-     * @param bundle 썸네일 번들 (thumbnails + totalElements + orderType)
+     * @param bundle 썸네일 번들 (thumbnails + totalElements + sortKey)
      * @param requestedSize 요청 페이지 크기
      * @return 슬라이스 결과
      */
@@ -41,7 +42,7 @@ public class ProductGroupAssembler {
         List<ProductGroupThumbnailResult> content =
                 rawContent.stream().map(ProductGroupThumbnailResult::from).toList();
 
-        String nextCursor = resolveNextCursor(rawContent, bundle.orderType());
+        String nextCursor = resolveNextCursor(rawContent, bundle.sortKey());
         SliceMeta sliceMeta =
                 SliceMeta.withCursor(nextCursor, requestedSize, hasNext, content.size());
 
@@ -51,11 +52,11 @@ public class ProductGroupAssembler {
     /**
      * 다음 커서 값 결정.
      *
-     * <p>레거시 커서 전략: - 마지막 아이템의 productGroupId를 lastDomainId로 사용 - orderType에 따라 cursorValue를 결정 -
+     * <p>커서 전략: - 마지막 아이템의 productGroupId를 lastDomainId로 사용 - sortKey에 따라 cursorValue를 결정 -
      * "lastDomainId,cursorValue" 형식으로 인코딩
      */
     private String resolveNextCursor(
-            List<ProductGroupThumbnailCompositeResult> content, String orderType) {
+            List<ProductGroupThumbnailCompositeResult> content, ProductGroupSortKey sortKey) {
         if (content.isEmpty()) {
             return null;
         }
@@ -63,7 +64,7 @@ public class ProductGroupAssembler {
         ProductGroupThumbnailCompositeResult last = content.get(content.size() - 1);
         long lastDomainId = last.productGroupId();
 
-        String cursorValue = resolveCursorValue(last, orderType);
+        String cursorValue = resolveCursorValue(last, sortKey);
 
         if (cursorValue != null) {
             return lastDomainId + "," + cursorValue;
@@ -71,19 +72,22 @@ public class ProductGroupAssembler {
         return String.valueOf(lastDomainId);
     }
 
-    /** orderType에 따른 cursorValue 결정. */
-    private String resolveCursorValue(ProductGroupThumbnailCompositeResult item, String orderType) {
-        if (orderType == null) {
+    /** sortKey에 따른 cursorValue 결정. */
+    private String resolveCursorValue(
+            ProductGroupThumbnailCompositeResult item, ProductGroupSortKey sortKey) {
+        if (sortKey == null) {
             return null;
         }
-        return switch (orderType.toUpperCase()) {
-            case "RECOMMEND" -> String.valueOf(item.score());
-            case "REVIEW" -> String.valueOf(item.reviewCount());
-            case "HIGH_RATING" -> String.valueOf(item.averageRating());
-            case "LOW_PRICE", "HIGH_PRICE" -> String.valueOf(item.salePrice());
-            case "LOW_DISCOUNT", "HIGH_DISCOUNT" -> String.valueOf(item.discountRate());
-            case "RECENT" -> item.insertDate() != null ? item.insertDate().toString() : null;
-            default -> null;
+        return switch (sortKey) {
+            case RECOMMEND -> String.valueOf(item.score());
+            case REVIEW -> String.valueOf(item.reviewCount());
+            case RATING -> String.valueOf(item.averageRating());
+            case CURRENT_PRICE, SALE_PRICE -> String.valueOf(item.salePrice());
+            case DISCOUNT -> String.valueOf(item.discountRate());
+            case RECENT, CREATED_AT ->
+                    item.insertDate() != null ? item.insertDate().toString() : null;
+            case UPDATED_AT -> item.insertDate() != null ? item.insertDate().toString() : null;
+            case NAME -> null;
         };
     }
 }

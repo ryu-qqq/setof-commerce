@@ -6,7 +6,7 @@ import static org.mockito.BDDMockito.then;
 
 import com.ryuqq.setof.application.discount.DiscountDomainFixtures;
 import com.ryuqq.setof.application.discount.port.out.query.LegacyProductGroupPriceQueryPort;
-import com.ryuqq.setof.application.discount.port.out.query.LegacyProductGroupPriceQueryPort.ProductGroupPriceRow;
+import com.ryuqq.setof.domain.discount.dto.ProductGroupPriceRow;
 import com.ryuqq.setof.domain.discount.vo.DiscountTargetType;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;

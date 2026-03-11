@@ -51,7 +51,8 @@ public class ProductJpaEntityMapper {
                 domain.status().name(),
                 domain.sortOrder(),
                 domain.createdAt(),
-                domain.updatedAt());
+                domain.updatedAt(),
+                null);
     }
 
     /**

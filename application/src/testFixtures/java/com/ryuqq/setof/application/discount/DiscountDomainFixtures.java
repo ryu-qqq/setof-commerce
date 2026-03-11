@@ -1,9 +1,9 @@
 package com.ryuqq.setof.application.discount;
 
-import com.ryuqq.setof.application.discount.port.out.query.LegacyProductGroupPriceQueryPort.ProductGroupPriceRow;
 import com.ryuqq.setof.domain.discount.DiscountFixtures;
 import com.ryuqq.setof.domain.discount.aggregate.DiscountOutbox;
 import com.ryuqq.setof.domain.discount.aggregate.DiscountPolicy;
+import com.ryuqq.setof.domain.discount.dto.ProductGroupPriceRow;
 import com.ryuqq.setof.domain.discount.dto.ProductGroupPriceUpdateData;
 import com.ryuqq.setof.domain.discount.id.DiscountOutboxId;
 import com.ryuqq.setof.domain.discount.vo.DiscountTargetType;
@@ -152,11 +152,12 @@ public final class DiscountDomainFixtures {
     // ===== ProductGroupPriceUpdateData Fixtures =====
 
     public static ProductGroupPriceUpdateData priceUpdateData() {
-        return new ProductGroupPriceUpdateData(DEFAULT_PRODUCT_GROUP_ID, 85000, 15, 6, 5000);
+        return new ProductGroupPriceUpdateData(
+                DEFAULT_PRODUCT_GROUP_ID, 85000, 15, 6, 5000, List.of());
     }
 
     public static ProductGroupPriceUpdateData priceUpdateData(long productGroupId) {
-        return new ProductGroupPriceUpdateData(productGroupId, 85000, 15, 6, 5000);
+        return new ProductGroupPriceUpdateData(productGroupId, 85000, 15, 6, 5000, List.of());
     }
 
     public static List<ProductGroupPriceUpdateData> priceUpdateDataList() {

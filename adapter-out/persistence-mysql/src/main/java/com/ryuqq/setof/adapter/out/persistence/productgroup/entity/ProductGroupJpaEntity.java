@@ -61,6 +61,15 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity {
     @Column(name = "sale_price", nullable = false)
     private int salePrice;
 
+    @Column(name = "discount_rate", nullable = false)
+    private int discountRate;
+
+    @Column(name = "direct_discount_rate", nullable = false)
+    private int directDiscountRate;
+
+    @Column(name = "direct_discount_price", nullable = false)
+    private int directDiscountPrice;
+
     @Column(name = "status", nullable = false, length = 50)
     private String status;
 
@@ -80,6 +89,9 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity {
             int regularPrice,
             int currentPrice,
             int salePrice,
+            int discountRate,
+            int directDiscountRate,
+            int directDiscountPrice,
             String status,
             Instant createdAt,
             Instant updatedAt,
@@ -96,6 +108,9 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity {
         this.regularPrice = regularPrice;
         this.currentPrice = currentPrice;
         this.salePrice = salePrice;
+        this.discountRate = discountRate;
+        this.directDiscountRate = directDiscountRate;
+        this.directDiscountPrice = directDiscountPrice;
         this.status = status;
     }
 
@@ -111,6 +126,9 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity {
             int regularPrice,
             int currentPrice,
             int salePrice,
+            int discountRate,
+            int directDiscountRate,
+            int directDiscountPrice,
             String status,
             Instant createdAt,
             Instant updatedAt,
@@ -127,6 +145,9 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity {
                 regularPrice,
                 currentPrice,
                 salePrice,
+                discountRate,
+                directDiscountRate,
+                directDiscountPrice,
                 status,
                 createdAt,
                 updatedAt,
@@ -175,6 +196,18 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity {
 
     public int getSalePrice() {
         return salePrice;
+    }
+
+    public int getDiscountRate() {
+        return discountRate;
+    }
+
+    public int getDirectDiscountRate() {
+        return directDiscountRate;
+    }
+
+    public int getDirectDiscountPrice() {
+        return directDiscountPrice;
     }
 
     public String getStatus() {
