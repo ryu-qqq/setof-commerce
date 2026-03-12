@@ -18,6 +18,7 @@ import java.util.List;
  * <p>salePrice와 discountRate는 도메인 내부에서 자동 계산됩니다.
  */
 public record ProductCreationData(
+        Long productId,
         SkuCode skuCode,
         Money regularPrice,
         Money currentPrice,
@@ -33,7 +34,7 @@ public record ProductCreationData(
      * @return Product 도메인 객체
      */
     public Product toProduct(ProductGroupId productGroupId, Instant now) {
-        ProductId tempProductId = ProductId.forNew();
+        ProductId tempProductId = productId != null ? ProductId.of(productId) : ProductId.forNew();
         List<ProductOptionMapping> optionMappings =
                 resolvedOptionValueIds.stream()
                         .map(valueId -> ProductOptionMapping.forNew(tempProductId, valueId))

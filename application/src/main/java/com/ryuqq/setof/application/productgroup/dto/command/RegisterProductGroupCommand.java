@@ -71,6 +71,7 @@ public record RegisterProductGroupCommand(
     /**
      * 상품 커맨드.
      *
+     * @param productId 상품 ID (nullable, 마이그레이션 시 레거시 DB ID 동기화용)
      * @param skuCode SKU 코드
      * @param regularPrice 정가
      * @param currentPrice 판매가
@@ -79,6 +80,7 @@ public record RegisterProductGroupCommand(
      * @param selectedOptions 선택된 옵션 목록
      */
     public record ProductCommand(
+            Long productId,
             String skuCode,
             int regularPrice,
             int currentPrice,

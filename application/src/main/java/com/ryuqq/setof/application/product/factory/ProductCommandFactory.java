@@ -54,6 +54,7 @@ public class ProductCommandFactory {
                             List<SellerOptionValueId> resolvedIds =
                                     resolveOptionIds(entry.selectedOptions(), nameMap);
                             return new ProductCreationData(
+                                    entry.productId(),
                                     SkuCode.of(entry.skuCode()),
                                     Money.of(entry.regularPrice()),
                                     Money.of(entry.currentPrice()),

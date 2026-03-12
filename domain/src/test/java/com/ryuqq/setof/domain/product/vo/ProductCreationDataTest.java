@@ -65,6 +65,7 @@ class ProductCreationDataTest {
             // when
             ProductCreationData data =
                     new ProductCreationData(
+                            null,
                             skuCode,
                             regularPrice,
                             currentPrice,
@@ -110,6 +111,7 @@ class ProductCreationDataTest {
             // given
             ProductCreationData data =
                     new ProductCreationData(
+                            null,
                             SkuCode.of("SKU-PRICE"),
                             Money.of(20000),
                             Money.of(16000),
@@ -138,6 +140,7 @@ class ProductCreationDataTest {
                             SellerOptionValueId.of(3L));
             ProductCreationData data =
                     new ProductCreationData(
+                            null,
                             SkuCode.of("SKU-OPT"),
                             Money.of(10000),
                             Money.of(10000),
@@ -171,7 +174,7 @@ class ProductCreationDataTest {
             // given
             ProductCreationData data =
                     new ProductCreationData(
-                            null, Money.of(10000), Money.of(10000), 200, 5, List.of());
+                            null, null, Money.of(10000), Money.of(10000), 200, 5, List.of());
 
             // when
             Product product = data.toProduct(ProductGroupId.of(1L), CommonVoFixtures.now());

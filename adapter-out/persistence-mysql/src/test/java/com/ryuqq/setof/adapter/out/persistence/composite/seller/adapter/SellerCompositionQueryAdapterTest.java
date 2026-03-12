@@ -3,9 +3,11 @@ package com.ryuqq.setof.adapter.out.persistence.composite.seller.adapter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
+import com.ryuqq.setof.adapter.out.persistence.composite.seller.dto.RefundPolicyDto;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.dto.SellerCompositeDto;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.dto.SellerCompositeDtoFixtures;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.dto.SellerPolicyCompositeDto;
+import com.ryuqq.setof.adapter.out.persistence.composite.seller.dto.ShippingPolicyDto;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.mapper.SellerCompositeMapper;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.repository.SellerCompositeQueryDslRepository;
 import com.ryuqq.setof.adapter.out.persistence.composite.seller.repository.SellerPolicyCompositeQueryDslRepository;
@@ -214,7 +216,9 @@ class SellerCompositionQueryAdapterTest {
             Long sellerId = 1L;
             SellerPolicyCompositeDto dto =
                     SellerCompositeDtoFixtures.sellerPolicyCompositeDto(sellerId);
+            SellerPolicyCompositeResult expectedResult = toPolicyResult(dto);
             given(policyCompositeRepository.findBySellerId(sellerId)).willReturn(Optional.of(dto));
+            given(compositeMapper.toPolicyResult(dto)).willReturn(expectedResult);
 
             // when
             Optional<SellerPolicyCompositeResult> result =
@@ -251,7 +255,9 @@ class SellerCompositionQueryAdapterTest {
             Long sellerId = 3L;
             SellerPolicyCompositeDto dto =
                     SellerCompositeDtoFixtures.emptyPolicyCompositeDto(sellerId);
+            SellerPolicyCompositeResult expectedResult = toPolicyResult(dto);
             given(policyCompositeRepository.findBySellerId(sellerId)).willReturn(Optional.of(dto));
+            given(compositeMapper.toPolicyResult(dto)).willReturn(expectedResult);
 
             // when
             Optional<SellerPolicyCompositeResult> result =
@@ -270,7 +276,9 @@ class SellerCompositionQueryAdapterTest {
             Long sellerId = 1L;
             SellerPolicyCompositeDto dto =
                     SellerCompositeDtoFixtures.sellerPolicyCompositeDto(sellerId);
+            SellerPolicyCompositeResult expectedResult = toPolicyResult(dto);
             given(policyCompositeRepository.findBySellerId(sellerId)).willReturn(Optional.of(dto));
+            given(compositeMapper.toPolicyResult(dto)).willReturn(expectedResult);
 
             // when
             Optional<SellerPolicyCompositeResult> result =
@@ -296,7 +304,9 @@ class SellerCompositionQueryAdapterTest {
             Long sellerId = 1L;
             SellerPolicyCompositeDto dto =
                     SellerCompositeDtoFixtures.sellerPolicyCompositeDto(sellerId);
+            SellerPolicyCompositeResult expectedResult = toPolicyResult(dto);
             given(policyCompositeRepository.findBySellerId(sellerId)).willReturn(Optional.of(dto));
+            given(compositeMapper.toPolicyResult(dto)).willReturn(expectedResult);
 
             // when
             Optional<SellerPolicyCompositeResult> result =
@@ -314,6 +324,52 @@ class SellerCompositionQueryAdapterTest {
                     .isEqualTo(dto.refundPolicies().get(0).returnPeriodDays());
             assertThat(refundPolicy.partialRefundEnabled())
                     .isEqualTo(dto.refundPolicies().get(0).partialRefundEnabled());
+        }
+
+        private SellerPolicyCompositeResult toPolicyResult(SellerPolicyCompositeDto dto) {
+            return new SellerPolicyCompositeResult(
+                    dto.sellerId(),
+                    dto.shippingPolicies().stream().map(this::toShippingInfo).toList(),
+                    dto.refundPolicies().stream().map(this::toRefundInfo).toList());
+        }
+
+        private SellerPolicyCompositeResult.ShippingPolicyInfo toShippingInfo(ShippingPolicyDto s) {
+            return new SellerPolicyCompositeResult.ShippingPolicyInfo(
+                    s.id(),
+                    s.sellerId(),
+                    s.policyName(),
+                    s.defaultPolicy(),
+                    s.active(),
+                    s.shippingFeeType(),
+                    s.baseFee(),
+                    s.freeThreshold(),
+                    s.jejuExtraFee(),
+                    s.islandExtraFee(),
+                    s.returnFee(),
+                    s.exchangeFee(),
+                    s.leadTimeMinDays(),
+                    s.leadTimeMaxDays(),
+                    s.leadTimeCutoffTime(),
+                    s.createdAt(),
+                    s.updatedAt());
+        }
+
+        private SellerPolicyCompositeResult.RefundPolicyInfo toRefundInfo(RefundPolicyDto r) {
+            return new SellerPolicyCompositeResult.RefundPolicyInfo(
+                    r.id(),
+                    r.sellerId(),
+                    r.policyName(),
+                    r.defaultPolicy(),
+                    r.active(),
+                    r.returnPeriodDays(),
+                    r.exchangePeriodDays(),
+                    r.nonReturnableConditions(),
+                    r.partialRefundEnabled(),
+                    r.inspectionRequired(),
+                    r.inspectionPeriodDays(),
+                    r.additionalInfo(),
+                    r.createdAt(),
+                    r.updatedAt());
         }
     }
 }

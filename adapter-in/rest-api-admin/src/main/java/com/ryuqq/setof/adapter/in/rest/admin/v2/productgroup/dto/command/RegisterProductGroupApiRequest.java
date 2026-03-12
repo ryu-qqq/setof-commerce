@@ -162,6 +162,11 @@ public record RegisterProductGroupApiRequest(
     /** 상품 API Request. */
     @Schema(description = "상품 데이터")
     public record ProductApiRequest(
+            @Schema(
+                            description = "상품 ID (마이그레이션 시 레거시 DB ID 동기화용, 미입력 시 자동 생성)",
+                            example = "99999",
+                            nullable = true)
+                    Long productId,
             @Schema(description = "SKU 코드", example = "SKU-001", nullable = true) String skuCode,
             @Schema(
                             description = "정가",

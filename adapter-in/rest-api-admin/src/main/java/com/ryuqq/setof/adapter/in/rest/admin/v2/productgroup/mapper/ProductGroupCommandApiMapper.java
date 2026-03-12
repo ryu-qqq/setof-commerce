@@ -75,6 +75,7 @@ public class ProductGroupCommandApiMapper {
                         .map(
                                 product ->
                                         new RegisterProductGroupCommand.ProductCommand(
+                                                product.productId(),
                                                 product.skuCode(),
                                                 product.regularPrice(),
                                                 product.currentPrice(),

@@ -255,6 +255,7 @@ public final class ProductFixtures {
     /** 기본 ProductCreationData 생성. */
     public static ProductCreationData defaultProductCreationData() {
         return new ProductCreationData(
+                null,
                 defaultSkuCode(),
                 Money.of(DEFAULT_REGULAR_PRICE),
                 Money.of(DEFAULT_CURRENT_PRICE),
@@ -266,6 +267,7 @@ public final class ProductFixtures {
     /** 옵션 없는 ProductCreationData 생성. */
     public static ProductCreationData productCreationDataWithoutOptions() {
         return new ProductCreationData(
+                null,
                 emptySkuCode(),
                 Money.of(DEFAULT_REGULAR_PRICE),
                 Money.of(DEFAULT_CURRENT_PRICE),

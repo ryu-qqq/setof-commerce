@@ -74,6 +74,7 @@ public class Products {
             } else {
                 ProductCreationData creationData =
                         new ProductCreationData(
+                                null,
                                 entry.skuCode(),
                                 entry.regularPrice(),
                                 entry.currentPrice(),

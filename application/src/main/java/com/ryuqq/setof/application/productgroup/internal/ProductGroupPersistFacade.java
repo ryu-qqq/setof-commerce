@@ -250,6 +250,7 @@ public class ProductGroupPersistFacade {
                                         p ->
                                                 new com.ryuqq.setof.application.product.dto.command
                                                         .RegisterProductsCommand.ProductData(
+                                                        p.productId(),
                                                         p.skuCode(),
                                                         p.regularPrice(),
                                                         p.currentPrice(),
