@@ -170,8 +170,8 @@ public final class SellerApiFixtures {
                 "1588-0000",
                 "010-1234-5678",
                 "cs@nike.co.kr",
-                "09:00",
-                "18:00",
+                Instant.parse("1970-01-01T00:00:00Z"),
+                Instant.parse("1970-01-01T09:00:00Z"),
                 "월~금",
                 "https://pf.kakao.com/nike");
     }

@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
-import java.time.LocalTime;
 
 /**
  * SellerCsJpaEntity - 셀러 CS 정보 JPA 엔티티.
@@ -42,10 +41,10 @@ public class SellerCsJpaEntity extends SoftDeletableEntity {
     private String csEmail;
 
     @Column(name = "operating_start_time")
-    private LocalTime operatingStartTime;
+    private Instant operatingStartTime;
 
     @Column(name = "operating_end_time")
-    private LocalTime operatingEndTime;
+    private Instant operatingEndTime;
 
     @Column(name = "operating_days", length = 50)
     private String operatingDays;
@@ -63,8 +62,8 @@ public class SellerCsJpaEntity extends SoftDeletableEntity {
             String csPhone,
             String csMobile,
             String csEmail,
-            LocalTime operatingStartTime,
-            LocalTime operatingEndTime,
+            Instant operatingStartTime,
+            Instant operatingEndTime,
             String operatingDays,
             String kakaoChannelUrl,
             Instant createdAt,
@@ -88,8 +87,8 @@ public class SellerCsJpaEntity extends SoftDeletableEntity {
             String csPhone,
             String csMobile,
             String csEmail,
-            LocalTime operatingStartTime,
-            LocalTime operatingEndTime,
+            Instant operatingStartTime,
+            Instant operatingEndTime,
             String operatingDays,
             String kakaoChannelUrl,
             Instant createdAt,
@@ -130,11 +129,11 @@ public class SellerCsJpaEntity extends SoftDeletableEntity {
         return csEmail;
     }
 
-    public LocalTime getOperatingStartTime() {
+    public Instant getOperatingStartTime() {
         return operatingStartTime;
     }
 
-    public LocalTime getOperatingEndTime() {
+    public Instant getOperatingEndTime() {
         return operatingEndTime;
     }
 

@@ -46,8 +46,8 @@ public record SellerCompositeResult(
             String csPhone,
             String csMobile,
             String csEmail,
-            String operatingStartTime,
-            String operatingEndTime,
+            Instant operatingStartTime,
+            Instant operatingEndTime,
             String operatingDays,
             String kakaoChannelUrl) {}
 }

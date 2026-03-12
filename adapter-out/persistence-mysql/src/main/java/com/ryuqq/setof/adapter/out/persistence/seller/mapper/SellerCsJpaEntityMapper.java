@@ -6,6 +6,10 @@ import com.ryuqq.setof.domain.seller.id.SellerCsId;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import com.ryuqq.setof.domain.seller.vo.CsContact;
 import com.ryuqq.setof.domain.seller.vo.OperatingHours;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,6 +33,8 @@ public class SellerCsJpaEntityMapper {
      * @param domain SellerCs 도메인 객체
      * @return SellerCsJpaEntity
      */
+    private static final ZoneId ZONE_ID = ZoneId.of("Asia/Seoul");
+
     public SellerCsJpaEntity toEntity(SellerCs domain) {
         OperatingHours hours = domain.operatingHours();
         return SellerCsJpaEntity.create(
@@ -37,8 +43,8 @@ public class SellerCsJpaEntityMapper {
                 domain.csPhone(),
                 domain.csMobile(),
                 domain.csEmail(),
-                hours != null ? hours.startTime() : null,
-                hours != null ? hours.endTime() : null,
+                hours != null ? toInstant(hours.startTime()) : null,
+                hours != null ? toInstant(hours.endTime()) : null,
                 domain.operatingDays(),
                 domain.kakaoChannelUrl(),
                 domain.createdAt(),
@@ -56,7 +62,9 @@ public class SellerCsJpaEntityMapper {
         CsContact csContact =
                 CsContact.of(entity.getCsPhone(), entity.getCsMobile(), entity.getCsEmail());
         OperatingHours operatingHours =
-                OperatingHours.of(entity.getOperatingStartTime(), entity.getOperatingEndTime());
+                OperatingHours.of(
+                        toLocalTime(entity.getOperatingStartTime()),
+                        toLocalTime(entity.getOperatingEndTime()));
 
         return SellerCs.reconstitute(
                 SellerCsId.of(entity.getId()),
@@ -67,5 +75,15 @@ public class SellerCsJpaEntityMapper {
                 entity.getKakaoChannelUrl(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt());
+    }
+
+    private Instant toInstant(LocalTime time) {
+        if (time == null) return null;
+        return time.atDate(LocalDate.EPOCH).atZone(ZONE_ID).toInstant();
+    }
+
+    private LocalTime toLocalTime(Instant instant) {
+        if (instant == null) return null;
+        return instant.atZone(ZONE_ID).toLocalTime();
     }
 }

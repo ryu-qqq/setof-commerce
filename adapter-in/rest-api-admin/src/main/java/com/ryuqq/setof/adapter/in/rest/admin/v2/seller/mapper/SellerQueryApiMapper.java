@@ -137,8 +137,8 @@ public class SellerQueryApiMapper {
                             c.csPhone(),
                             c.csMobile(),
                             c.csEmail(),
-                            c.operatingStartTime(),
-                            c.operatingEndTime(),
+                            DateTimeFormatUtils.format(c.operatingStartTime()),
+                            DateTimeFormatUtils.format(c.operatingEndTime()),
                             c.operatingDays(),
                             c.kakaoChannelUrl());
         }

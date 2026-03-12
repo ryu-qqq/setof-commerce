@@ -2,7 +2,6 @@ package com.ryuqq.setof.adapter.out.persistence.seller;
 
 import com.ryuqq.setof.adapter.out.persistence.seller.entity.SellerCsJpaEntity;
 import java.time.Instant;
-import java.time.LocalTime;
 
 /**
  * SellerCsJpaEntity 테스트 Fixtures.
@@ -19,8 +18,9 @@ public final class SellerCsJpaEntityFixtures {
     public static final String DEFAULT_CS_PHONE = "02-1234-5678";
     public static final String DEFAULT_CS_MOBILE = "010-1234-5678";
     public static final String DEFAULT_CS_EMAIL = "cs@example.com";
-    public static final LocalTime DEFAULT_OPERATING_START_TIME = LocalTime.of(9, 0);
-    public static final LocalTime DEFAULT_OPERATING_END_TIME = LocalTime.of(18, 0);
+    public static final Instant DEFAULT_OPERATING_START_TIME =
+            Instant.parse("1970-01-01T00:00:00Z");
+    public static final Instant DEFAULT_OPERATING_END_TIME = Instant.parse("1970-01-01T09:00:00Z");
     public static final String DEFAULT_OPERATING_DAYS = "MON,TUE,WED,THU,FRI";
     public static final String DEFAULT_KAKAO_CHANNEL_URL = "https://pf.kakao.com/_test";
 

@@ -105,8 +105,8 @@ public final class SellerQueryFixtures {
                         "02-1234-5678",
                         "010-1234-5678",
                         "cs@test.com",
-                        "09:00",
-                        "18:00",
+                        Instant.parse("1970-01-01T00:00:00Z"),
+                        Instant.parse("1970-01-01T09:00:00Z"),
                         "MON,TUE,WED,THU,FRI",
                         null);
 
