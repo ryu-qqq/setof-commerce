@@ -5,7 +5,8 @@ import com.ryuqq.setof.domain.brand.aggregate.BrandUpdateData;
 import com.ryuqq.setof.domain.brand.id.BrandId;
 import com.ryuqq.setof.domain.brand.vo.BrandIconImageUrl;
 import com.ryuqq.setof.domain.brand.vo.BrandName;
-import com.ryuqq.setof.domain.brand.vo.DisplayName;
+import com.ryuqq.setof.domain.brand.vo.DisplayEnglishName;
+import com.ryuqq.setof.domain.brand.vo.DisplayKoreanName;
 import com.ryuqq.setof.domain.brand.vo.DisplayOrder;
 import com.ryuqq.setof.domain.common.CommonVoFixtures;
 import java.time.Instant;
@@ -22,7 +23,8 @@ public final class BrandFixtures {
     // ===== 상수 =====
     public static final String DEFAULT_BRAND_NAME = "테스트브랜드";
     public static final String DEFAULT_ICON_URL = "https://example.com/brand-icon.png";
-    public static final String DEFAULT_DISPLAY_NAME = "테스트 브랜드 표시명";
+    public static final String DEFAULT_DISPLAY_KOREAN_NAME = "테스트 브랜드";
+    public static final String DEFAULT_DISPLAY_ENGLISH_NAME = "Test Brand";
     public static final int DEFAULT_DISPLAY_ORDER = 1;
 
     // ===== Brand Aggregate Fixtures =====
@@ -30,16 +32,19 @@ public final class BrandFixtures {
         return Brand.forNew(
                 defaultBrandName(),
                 defaultBrandIconImageUrl(),
-                defaultDisplayName(),
+                defaultDisplayKoreanName(),
+                defaultDisplayEnglishName(),
                 defaultDisplayOrder(),
                 CommonVoFixtures.now());
     }
 
-    public static Brand newBrand(String brandName, String displayName) {
+    public static Brand newBrand(
+            String brandName, String displayKoreanName, String displayEnglishName) {
         return Brand.forNew(
                 BrandName.of(brandName),
                 defaultBrandIconImageUrl(),
-                DisplayName.of(displayName),
+                DisplayKoreanName.of(displayKoreanName),
+                DisplayEnglishName.of(displayEnglishName),
                 defaultDisplayOrder(),
                 CommonVoFixtures.now());
     }
@@ -49,7 +54,8 @@ public final class BrandFixtures {
                 BrandId.of(1L),
                 defaultBrandName(),
                 defaultBrandIconImageUrl(),
-                defaultDisplayName(),
+                defaultDisplayKoreanName(),
+                defaultDisplayEnglishName(),
                 defaultDisplayOrder(),
                 true,
                 null,
@@ -62,7 +68,8 @@ public final class BrandFixtures {
                 BrandId.of(id),
                 defaultBrandName(),
                 defaultBrandIconImageUrl(),
-                defaultDisplayName(),
+                defaultDisplayKoreanName(),
+                defaultDisplayEnglishName(),
                 defaultDisplayOrder(),
                 true,
                 null,
@@ -75,7 +82,8 @@ public final class BrandFixtures {
                 BrandId.of(2L),
                 defaultBrandName(),
                 defaultBrandIconImageUrl(),
-                defaultDisplayName(),
+                defaultDisplayKoreanName(),
+                defaultDisplayEnglishName(),
                 defaultDisplayOrder(),
                 false,
                 null,
@@ -89,7 +97,8 @@ public final class BrandFixtures {
                 BrandId.of(3L),
                 defaultBrandName(),
                 defaultBrandIconImageUrl(),
-                defaultDisplayName(),
+                defaultDisplayKoreanName(),
+                defaultDisplayEnglishName(),
                 defaultDisplayOrder(),
                 false,
                 deletedAt,
@@ -106,8 +115,12 @@ public final class BrandFixtures {
         return BrandIconImageUrl.of(DEFAULT_ICON_URL);
     }
 
-    public static DisplayName defaultDisplayName() {
-        return DisplayName.of(DEFAULT_DISPLAY_NAME);
+    public static DisplayKoreanName defaultDisplayKoreanName() {
+        return DisplayKoreanName.of(DEFAULT_DISPLAY_KOREAN_NAME);
+    }
+
+    public static DisplayEnglishName defaultDisplayEnglishName() {
+        return DisplayEnglishName.of(DEFAULT_DISPLAY_ENGLISH_NAME);
     }
 
     public static DisplayOrder defaultDisplayOrder() {

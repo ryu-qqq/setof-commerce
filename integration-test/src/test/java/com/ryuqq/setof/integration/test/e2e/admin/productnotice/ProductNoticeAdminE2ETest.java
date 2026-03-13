@@ -10,10 +10,10 @@ import com.ryuqq.setof.adapter.out.persistence.category.entity.CategoryJpaEntity
 import com.ryuqq.setof.adapter.out.persistence.category.repository.CategoryJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.product.repository.ProductJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.product.repository.ProductOptionMappingJpaRepository;
-import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.ProductGroupImageJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.ProductGroupJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.SellerOptionGroupJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.SellerOptionValueJpaRepository;
+import com.ryuqq.setof.adapter.out.persistence.productgroupimage.repository.ProductGroupImageJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productnotice.entity.ProductNoticeEntryJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.productnotice.entity.ProductNoticeJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.productnotice.repository.ProductNoticeEntryJpaRepository;
@@ -113,6 +113,91 @@ class ProductNoticeAdminE2ETest extends AdminE2ETestBase {
     }
 
     @Nested
+    @DisplayName("POST /v2/admin/product-groups/{productGroupId}/notice - 상품 고시정보 직접 등록")
+    class RegisterNoticeTest {
+
+        @Test
+        @DisplayName("유효한 요청으로 상품 고시정보 직접 등록 성공")
+        void shouldRegisterNoticeSuccessfully() {
+            // given - 상품그룹 등록 (notice 없이)
+            Long productGroupId = registerProductGroupWithoutNotice();
+
+            Map<String, Object> request = new HashMap<>();
+            request.put(
+                    "entries",
+                    List.of(
+                            Map.of(
+                                    "noticeFieldId", 1,
+                                    "fieldName", "제조국",
+                                    "fieldValue", "대한민국"),
+                            Map.of(
+                                    "noticeFieldId", 2,
+                                    "fieldName", "제조자",
+                                    "fieldValue", "테스트 제조사")));
+
+            // when
+            io.restassured.response.Response response =
+                    givenAdmin()
+                            .body(request)
+                            .when()
+                            .post(BASE_PATH + "/" + productGroupId + "/notice");
+
+            // then
+            response.then().statusCode(HttpStatus.CREATED.value());
+
+            Long noticeId = response.jsonPath().getLong("data");
+            assertThat(noticeId).isGreaterThan(0);
+
+            // DB 저장 확인
+            ProductNoticeJpaEntity notice =
+                    productNoticeJpaRepository
+                            .findByProductGroupId(productGroupId)
+                            .orElseThrow(
+                                    () ->
+                                            new AssertionError(
+                                                    "productGroupId="
+                                                            + productGroupId
+                                                            + "에 해당하는 고시정보가 존재하지 않습니다."));
+
+            List<ProductNoticeEntryJpaEntity> entries =
+                    productNoticeEntryJpaRepository.findByProductNoticeId(notice.getId());
+            assertThat(entries).hasSize(2);
+        }
+
+        @Test
+        @DisplayName("entries가 빈 목록이면 400 에러 반환")
+        void shouldReturn400WhenEntriesEmpty() {
+            // given
+            Map<String, Object> request = new HashMap<>();
+            request.put("entries", List.of());
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .post(BASE_PATH + "/" + savedProductGroupId + "/notice")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
+        @DisplayName("entries가 null이면 400 에러 반환")
+        void shouldReturn400WhenEntriesNull() {
+            // given
+            Map<String, Object> request = new HashMap<>();
+            request.put("entries", null);
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .post(BASE_PATH + "/" + savedProductGroupId + "/notice")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Nested
     @DisplayName("PUT /v2/admin/product-groups/{productGroupId}/notice - 상품 고시정보 수정")
     class UpdateNoticeTest {
 
@@ -124,15 +209,15 @@ class ProductNoticeAdminE2ETest extends AdminE2ETestBase {
             request.put(
                     "entries",
                     List.of(
-                            Map.of("fieldName", "제조국", "fieldValue", "중국", "sortOrder", 1),
+                            Map.of("noticeFieldId", 1, "fieldName", "제조국", "fieldValue", "중국"),
                             Map.of(
+                                    "noticeFieldId", 2,
                                     "fieldName", "제조자",
-                                    "fieldValue", "테스트 제조사",
-                                    "sortOrder", 2),
+                                    "fieldValue", "테스트 제조사"),
                             Map.of(
+                                    "noticeFieldId", 3,
                                     "fieldName", "수입자",
-                                    "fieldValue", "테스트 수입사",
-                                    "sortOrder", 3)));
+                                    "fieldValue", "테스트 수입사")));
 
             // when & then
             givenAdmin()
@@ -160,6 +245,31 @@ class ProductNoticeAdminE2ETest extends AdminE2ETestBase {
         }
 
         @Test
+        @DisplayName("존재하지 않는 productGroupId로 수정 시 404 에러 반환")
+        void shouldReturn404WhenProductGroupNotFound() {
+            // given
+            long nonExistentProductGroupId = Long.MAX_VALUE;
+
+            Map<String, Object> request = new HashMap<>();
+            request.put(
+                    "entries",
+                    List.of(
+                            Map.of(
+                                    "noticeFieldId", 1,
+                                    "fieldName", "제조국",
+                                    "fieldValue", "대한민국")));
+
+            // when & then
+            io.restassured.response.Response response =
+                    givenAdmin()
+                            .body(request)
+                            .when()
+                            .put(BASE_PATH + "/" + nonExistentProductGroupId + "/notice");
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        }
+
+        @Test
         @DisplayName("다른 항목으로 재수정 시 항목 수가 변경됨")
         void shouldUpdateNoticeWithDifferentEntries() {
             // given - 1차 수정: 3개 항목
@@ -167,15 +277,15 @@ class ProductNoticeAdminE2ETest extends AdminE2ETestBase {
             firstRequest.put(
                     "entries",
                     List.of(
-                            Map.of("fieldName", "제조국", "fieldValue", "중국", "sortOrder", 1),
+                            Map.of("noticeFieldId", 1, "fieldName", "제조국", "fieldValue", "중국"),
                             Map.of(
+                                    "noticeFieldId", 2,
                                     "fieldName", "제조자",
-                                    "fieldValue", "테스트 제조사",
-                                    "sortOrder", 2),
+                                    "fieldValue", "테스트 제조사"),
                             Map.of(
+                                    "noticeFieldId", 3,
                                     "fieldName", "수입자",
-                                    "fieldValue", "테스트 수입사",
-                                    "sortOrder", 3)));
+                                    "fieldValue", "테스트 수입사")));
 
             givenAdmin()
                     .body(firstRequest)
@@ -197,7 +307,7 @@ class ProductNoticeAdminE2ETest extends AdminE2ETestBase {
             Map<String, Object> secondRequest = new HashMap<>();
             secondRequest.put(
                     "entries",
-                    List.of(Map.of("fieldName", "제조국", "fieldValue", "대한민국", "sortOrder", 1)));
+                    List.of(Map.of("noticeFieldId", 1, "fieldName", "제조국", "fieldValue", "대한민국")));
 
             // when
             givenAdmin()
@@ -221,6 +331,46 @@ class ProductNoticeAdminE2ETest extends AdminE2ETestBase {
 
     // ===== Helper Methods =====
 
+    private Long registerProductGroupWithoutNotice() {
+        Map<String, Object> request = new HashMap<>();
+        request.put("sellerId", savedSellerId);
+        request.put("brandId", savedBrandId);
+        request.put("categoryId", savedCategoryId);
+        request.put("shippingPolicyId", savedShippingPolicyId);
+        request.put("refundPolicyId", savedRefundPolicyId);
+        request.put("productGroupName", "E2E 테스트 상품그룹 (notice 없음)");
+        request.put("optionType", "SINGLE");
+        request.put("regularPrice", 50000);
+        request.put("currentPrice", 45000);
+        request.put(
+                "images",
+                List.of(
+                        Map.of(
+                                "imageType", "THUMBNAIL",
+                                "imageUrl", "https://example.com/thumb.png",
+                                "sortOrder", 1)));
+        request.put(
+                "products",
+                List.of(
+                        Map.of(
+                                "regularPrice", 50000,
+                                "currentPrice", 45000,
+                                "stockQuantity", 100,
+                                "sortOrder", 0,
+                                "selectedOptions", List.of())));
+        request.put("description", Map.of("content", "<p>설명</p>", "descriptionImages", List.of()));
+
+        return givenAdmin()
+                .body(request)
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .jsonPath()
+                .getLong("data.productGroupId");
+    }
+
     private Long registerProductGroup() {
         Map<String, Object> request = new HashMap<>();
         request.put("sellerId", savedSellerId);
@@ -243,20 +393,21 @@ class ProductNoticeAdminE2ETest extends AdminE2ETestBase {
                 "products",
                 List.of(
                         Map.of(
-                                "additionalPrice", 0,
+                                "regularPrice", 50000,
+                                "currentPrice", 45000,
                                 "stockQuantity", 100,
                                 "sortOrder", 0,
                                 "selectedOptions", List.of())));
-        request.put("description", Map.of("content", "<p>설명</p>", "cdnPath", ""));
+        request.put("description", Map.of("content", "<p>설명</p>", "descriptionImages", List.of()));
         request.put(
                 "notice",
                 Map.of(
                         "entries",
                         List.of(
                                 Map.of(
+                                        "noticeFieldId", 1,
                                         "fieldName", "제조국",
-                                        "fieldValue", "대한민국",
-                                        "sortOrder", 1))));
+                                        "fieldValue", "대한민국"))));
 
         return givenAdmin()
                 .body(request)
@@ -266,6 +417,6 @@ class ProductNoticeAdminE2ETest extends AdminE2ETestBase {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()
                 .jsonPath()
-                .getLong("data");
+                .getLong("data.productGroupId");
     }
 }

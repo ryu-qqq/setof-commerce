@@ -55,7 +55,8 @@ class GetBrandsForDisplayServiceTest {
                                             BrandDisplayResult.of(
                                                     b.idValue(),
                                                     b.brandNameValue(),
-                                                    b.displayNameValue(),
+                                                    b.displayKoreanNameValue(),
+                                                    b.displayEnglishNameValue(),
                                                     b.brandIconImageUrlValue()))
                             .toList();
 

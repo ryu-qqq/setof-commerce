@@ -145,7 +145,11 @@ public class SecurityConfig {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding("UTF-8");
             response.getWriter()
-                    .write("{\"status\":401,\"message\":\"인증이 필요합니다. 유효한 토큰을 제공해주세요.\"}");
+                    .write(
+                            "{\"status\":401,\"message\":\"인증이 필요합니다. 유효한 토큰을"
+                                    + " 제공해주세요.\",\"error\":\""
+                                    + authException.getClass().getSimpleName()
+                                    + "\"}");
         };
     }
 

@@ -397,6 +397,7 @@ public class ProductGroupPersistFacade {
 
         noticeEntryCommandManager.deleteByProductNoticeId(notice.idValue());
         noticeCommandManager.persist(notice);
+        notice.assignId(notice.id());
         noticeEntryCommandManager.persistAll(notice.entries());
     }
 

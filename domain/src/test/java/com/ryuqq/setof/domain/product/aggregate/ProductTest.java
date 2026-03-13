@@ -672,6 +672,122 @@ class ProductTest {
             // then
             assertThat(product.optionMappings()).isEmpty();
         }
+
+        @Test
+        @DisplayName("isOnSale() - salePrice가 null이면 false를 반환한다")
+        void isOnSaleReturnsFalseWhenSalePriceIsNull() {
+            // given: salePrice를 null로 세팅한 상품 reconstitute
+            var product =
+                    Product.reconstitute(
+                            com.ryuqq.setof.domain.product.id.ProductId.of(10L),
+                            com.ryuqq.setof.domain.productgroup.id.ProductGroupId.of(1L),
+                            null,
+                            Money.of(10000),
+                            Money.of(8000),
+                            null,
+                            20,
+                            100,
+                            com.ryuqq.setof.domain.product.vo.ProductStatus.ACTIVE,
+                            0,
+                            List.of(),
+                            CommonVoFixtures.now(),
+                            CommonVoFixtures.now());
+
+            // then
+            assertThat(product.isOnSale()).isFalse();
+        }
+
+        @Test
+        @DisplayName("effectivePrice() - discountRate > 0이지만 salePrice가 null이면 currentPrice를 반환한다")
+        void effectivePriceReturnsCurrentPriceWhenSalePriceIsNullButDiscountRatePositive() {
+            // given: discountRate > 0이지만 salePrice가 null인 상품
+            var product =
+                    Product.reconstitute(
+                            com.ryuqq.setof.domain.product.id.ProductId.of(11L),
+                            com.ryuqq.setof.domain.productgroup.id.ProductGroupId.of(1L),
+                            null,
+                            Money.of(10000),
+                            Money.of(8000),
+                            null,
+                            20,
+                            100,
+                            com.ryuqq.setof.domain.product.vo.ProductStatus.ACTIVE,
+                            0,
+                            List.of(),
+                            CommonVoFixtures.now(),
+                            CommonVoFixtures.now());
+
+            // when
+            var effectivePrice = product.effectivePrice();
+
+            // then: salePrice가 null이므로 isOnSale() = false → currentPrice 반환
+            assertThat(effectivePrice.value()).isEqualTo(8000);
+        }
+    }
+
+    @Nested
+    @DisplayName("changeStatus() - 통합 상태 전이")
+    class ChangeStatusTest {
+
+        @Test
+        @DisplayName("ACTIVE 상태로 변경한다")
+        void changeStatusToActive() {
+            // given
+            var product = ProductFixtures.inactiveProduct();
+            Instant now = CommonVoFixtures.now();
+
+            // when
+            product.changeStatus(com.ryuqq.setof.domain.product.vo.ProductStatus.ACTIVE, now);
+
+            // then
+            assertThat(product.status())
+                    .isEqualTo(com.ryuqq.setof.domain.product.vo.ProductStatus.ACTIVE);
+        }
+
+        @Test
+        @DisplayName("INACTIVE 상태로 변경한다")
+        void changeStatusToInactive() {
+            // given
+            var product = ProductFixtures.activeProduct();
+            Instant now = CommonVoFixtures.now();
+
+            // when
+            product.changeStatus(com.ryuqq.setof.domain.product.vo.ProductStatus.INACTIVE, now);
+
+            // then
+            assertThat(product.status())
+                    .isEqualTo(com.ryuqq.setof.domain.product.vo.ProductStatus.INACTIVE);
+        }
+
+        @Test
+        @DisplayName("SOLD_OUT 상태로 변경한다")
+        void changeStatusToSoldOut() {
+            // given
+            var product = ProductFixtures.activeProduct();
+            Instant now = CommonVoFixtures.now();
+
+            // when
+            product.changeStatus(com.ryuqq.setof.domain.product.vo.ProductStatus.SOLD_OUT, now);
+
+            // then
+            assertThat(product.status())
+                    .isEqualTo(com.ryuqq.setof.domain.product.vo.ProductStatus.SOLD_OUT);
+        }
+
+        @Test
+        @DisplayName("DELETED 상태로 변경한다")
+        void changeStatusToDeleted() {
+            // given
+            var product = ProductFixtures.activeProduct();
+            Instant now = CommonVoFixtures.now();
+
+            // when
+            product.changeStatus(com.ryuqq.setof.domain.product.vo.ProductStatus.DELETED, now);
+
+            // then
+            assertThat(product.status())
+                    .isEqualTo(com.ryuqq.setof.domain.product.vo.ProductStatus.DELETED);
+        }
     }
 
     @Nested

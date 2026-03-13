@@ -1,9 +1,9 @@
 package com.ryuqq.setof.storage.legacy.composite.productgroup.mapper;
 
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeResult;
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeResult.OptionInfoResult;
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeResult.ProductImageResult;
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeResult.ProductInfoResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroupDetailCompositeResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroupDetailCompositeResult.OptionInfoResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroupDetailCompositeResult.ProductImageResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroupDetailCompositeResult.ProductInfoResult;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupThumbnailCompositeResult;
 import com.ryuqq.setof.storage.legacy.composite.productgroup.dto.LegacyWebProductGroupBasicQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.productgroup.dto.LegacyWebProductGroupThumbnailQueryDto;
@@ -99,14 +99,14 @@ public class LegacyWebProductGroupMapper {
     }
 
     /**
-     * 상품그룹 상세 정보 조합 → ProductGroupDetailCompositeResult 변환.
+     * 상품그룹 상세 정보 조합 → LegacyProductGroupDetailCompositeResult 변환.
      *
      * @param basic 기본 정보 QueryDto
      * @param products 개별 상품 목록 QueryDto
      * @param images 이미지 목록 QueryDto
-     * @return ProductGroupDetailCompositeResult
+     * @return LegacyProductGroupDetailCompositeResult
      */
-    public ProductGroupDetailCompositeResult toDetailCompositeResult(
+    public LegacyProductGroupDetailCompositeResult toDetailCompositeResult(
             LegacyWebProductGroupBasicQueryDto basic,
             List<LegacyWebProductQueryDto> products,
             List<LegacyWebProductImageQueryDto> images) {
@@ -114,7 +114,7 @@ public class LegacyWebProductGroupMapper {
         Set<ProductInfoResult> productInfos = toProductInfoSet(products);
         Set<ProductImageResult> imageInfos = toImageInfoSet(images);
 
-        return new ProductGroupDetailCompositeResult(
+        return new LegacyProductGroupDetailCompositeResult(
                 basic.productGroupId(),
                 basic.productGroupName(),
                 basic.sellerId(),

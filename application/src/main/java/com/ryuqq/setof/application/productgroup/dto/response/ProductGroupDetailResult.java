@@ -1,6 +1,6 @@
 package com.ryuqq.setof.application.productgroup.dto.response;
 
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroupDetailCompositeResult;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -66,11 +66,11 @@ public record ProductGroupDetailResult(
         String refundNotice,
         double averageRating,
         long reviewCount,
-        Set<ProductGroupDetailCompositeResult.ProductInfoResult> products,
-        Set<ProductGroupDetailCompositeResult.ProductImageResult> images,
+        Set<LegacyProductGroupDetailCompositeResult.ProductInfoResult> products,
+        Set<LegacyProductGroupDetailCompositeResult.ProductImageResult> images,
         LocalDateTime insertDate) {
 
-    public static ProductGroupDetailResult from(ProductGroupDetailCompositeResult composite) {
+    public static ProductGroupDetailResult from(LegacyProductGroupDetailCompositeResult composite) {
         return new ProductGroupDetailResult(
                 composite.productGroupId(),
                 composite.productGroupName(),

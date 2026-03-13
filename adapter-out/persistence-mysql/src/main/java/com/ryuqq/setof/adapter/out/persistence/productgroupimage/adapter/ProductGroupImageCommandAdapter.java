@@ -60,4 +60,14 @@ public class ProductGroupImageCommandAdapter implements ProductGroupImageCommand
                 images.stream().map(img -> mapper.toEntity(img, productGroupId)).toList();
         repository.saveAll(entities);
     }
+
+    /**
+     * 상품그룹 이미지 소프트 삭제.
+     *
+     * @param productGroupId 상품그룹 ID
+     */
+    @Override
+    public void softDeleteByProductGroupId(Long productGroupId) {
+        repository.softDeleteByProductGroupId(productGroupId);
+    }
 }

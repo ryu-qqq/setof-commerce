@@ -28,7 +28,8 @@ public class BrandAssembler {
         return BrandResult.of(
                 brand.idValue(),
                 brand.brandNameValue(),
-                brand.displayNameValue(),
+                brand.displayKoreanNameValue(),
+                brand.displayEnglishNameValue(),
                 brand.brandIconImageUrlValue(),
                 brand.isDisplayed());
     }
@@ -67,7 +68,8 @@ public class BrandAssembler {
         return BrandDisplayResult.of(
                 brand.idValue(),
                 brand.brandNameValue(),
-                brand.displayNameValue(),
+                brand.displayKoreanNameValue(),
+                brand.displayEnglishNameValue(),
                 brand.brandIconImageUrlValue());
     }
 

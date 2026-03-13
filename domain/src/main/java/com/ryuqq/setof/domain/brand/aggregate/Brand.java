@@ -3,7 +3,8 @@ package com.ryuqq.setof.domain.brand.aggregate;
 import com.ryuqq.setof.domain.brand.id.BrandId;
 import com.ryuqq.setof.domain.brand.vo.BrandIconImageUrl;
 import com.ryuqq.setof.domain.brand.vo.BrandName;
-import com.ryuqq.setof.domain.brand.vo.DisplayName;
+import com.ryuqq.setof.domain.brand.vo.DisplayEnglishName;
+import com.ryuqq.setof.domain.brand.vo.DisplayKoreanName;
 import com.ryuqq.setof.domain.brand.vo.DisplayOrder;
 import com.ryuqq.setof.domain.common.vo.DeletionStatus;
 import java.time.Instant;
@@ -16,7 +17,7 @@ import java.time.Instant;
  * <p>주요 불변식:
  *
  * <ul>
- *   <li>brandName, brandIconImageUrl, displayName은 필수
+ *   <li>brandName, brandIconImageUrl, displayKoreanName, displayEnglishName은 필수
  *   <li>displayOrder는 0 이상이어야 함
  * </ul>
  *
@@ -28,7 +29,8 @@ public class Brand {
     private final BrandId id;
     private final BrandName brandName;
     private final BrandIconImageUrl brandIconImageUrl;
-    private final DisplayName displayName;
+    private final DisplayKoreanName displayKoreanName;
+    private final DisplayEnglishName displayEnglishName;
     private DisplayOrder displayOrder;
     private boolean displayed;
     private DeletionStatus deletionStatus;
@@ -39,7 +41,8 @@ public class Brand {
             BrandId id,
             BrandName brandName,
             BrandIconImageUrl brandIconImageUrl,
-            DisplayName displayName,
+            DisplayKoreanName displayKoreanName,
+            DisplayEnglishName displayEnglishName,
             DisplayOrder displayOrder,
             boolean displayed,
             DeletionStatus deletionStatus,
@@ -48,7 +51,8 @@ public class Brand {
         this.id = id;
         this.brandName = brandName;
         this.brandIconImageUrl = brandIconImageUrl;
-        this.displayName = displayName;
+        this.displayKoreanName = displayKoreanName;
+        this.displayEnglishName = displayEnglishName;
         this.displayOrder = displayOrder;
         this.displayed = displayed;
         this.deletionStatus = deletionStatus != null ? deletionStatus : DeletionStatus.active();
@@ -63,7 +67,8 @@ public class Brand {
      *
      * @param brandName 브랜드명 (필수)
      * @param brandIconImageUrl 브랜드 아이콘 이미지 URL (필수)
-     * @param displayName 표시명 (필수)
+     * @param displayKoreanName 한글 표시명 (필수)
+     * @param displayEnglishName 영문 표시명 (필수)
      * @param displayOrder 표시 순서 (0 이상)
      * @param now 생성 시각
      * @return 새 Brand 인스턴스 (displayed=true)
@@ -71,14 +76,16 @@ public class Brand {
     public static Brand forNew(
             BrandName brandName,
             BrandIconImageUrl brandIconImageUrl,
-            DisplayName displayName,
+            DisplayKoreanName displayKoreanName,
+            DisplayEnglishName displayEnglishName,
             DisplayOrder displayOrder,
             Instant now) {
         return new Brand(
                 BrandId.forNew(),
                 brandName,
                 brandIconImageUrl,
-                displayName,
+                displayKoreanName,
+                displayEnglishName,
                 displayOrder,
                 true,
                 DeletionStatus.active(),
@@ -92,7 +99,8 @@ public class Brand {
      * @param id 식별자
      * @param brandName 브랜드명
      * @param brandIconImageUrl 브랜드 아이콘 이미지 URL
-     * @param displayName 표시명
+     * @param displayKoreanName 한글 표시명
+     * @param displayEnglishName 영문 표시명
      * @param displayOrder 표시 순서
      * @param displayed 표시 여부
      * @param deletedAt 삭제 시각 (null이면 활성 상태)
@@ -104,7 +112,8 @@ public class Brand {
             BrandId id,
             BrandName brandName,
             BrandIconImageUrl brandIconImageUrl,
-            DisplayName displayName,
+            DisplayKoreanName displayKoreanName,
+            DisplayEnglishName displayEnglishName,
             DisplayOrder displayOrder,
             boolean displayed,
             Instant deletedAt,
@@ -116,7 +125,8 @@ public class Brand {
                 id,
                 brandName,
                 brandIconImageUrl,
-                displayName,
+                displayKoreanName,
+                displayEnglishName,
                 displayOrder,
                 displayed,
                 status,
@@ -201,12 +211,20 @@ public class Brand {
         return brandIconImageUrl.value();
     }
 
-    public DisplayName displayName() {
-        return displayName;
+    public DisplayKoreanName displayKoreanName() {
+        return displayKoreanName;
     }
 
-    public String displayNameValue() {
-        return displayName.value();
+    public String displayKoreanNameValue() {
+        return displayKoreanName.value();
+    }
+
+    public DisplayEnglishName displayEnglishName() {
+        return displayEnglishName;
+    }
+
+    public String displayEnglishNameValue() {
+        return displayEnglishName.value();
     }
 
     public DisplayOrder displayOrder() {

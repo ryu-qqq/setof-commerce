@@ -1,6 +1,7 @@
 package com.ryuqq.setof.adapter.out.persistence.productnotice.repository;
 
 import com.ryuqq.setof.adapter.out.persistence.productnotice.entity.ProductNoticeJpaEntity;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -13,4 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author ryu-qqq
  * @since 1.0.0
  */
-public interface ProductNoticeJpaRepository extends JpaRepository<ProductNoticeJpaEntity, Long> {}
+public interface ProductNoticeJpaRepository extends JpaRepository<ProductNoticeJpaEntity, Long> {
+
+    Optional<ProductNoticeJpaEntity> findByProductGroupId(Long productGroupId);
+}

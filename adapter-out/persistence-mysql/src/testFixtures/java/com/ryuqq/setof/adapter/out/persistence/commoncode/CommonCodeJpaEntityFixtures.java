@@ -201,4 +201,35 @@ public final class CommonCodeJpaEntityFixtures {
                 now,
                 null);
     }
+
+    /** 타입 ID를 지정한 비활성 상태 새 Entity 생성 (ID는 null). */
+    public static CommonCodeJpaEntity newInactiveEntityWithTypeId(Long commonCodeTypeId) {
+        Instant now = Instant.now();
+        return CommonCodeJpaEntity.create(
+                null,
+                commonCodeTypeId,
+                "INACTIVE_" + DEFAULT_CODE,
+                DEFAULT_DISPLAY_NAME,
+                DEFAULT_DISPLAY_ORDER,
+                false,
+                now,
+                now,
+                null);
+    }
+
+    /** 타입 ID와 코드를 지정한 비활성 상태 새 Entity 생성 (ID는 null). */
+    public static CommonCodeJpaEntity newInactiveEntityWithTypeIdAndCode(
+            Long commonCodeTypeId, String code, String displayName) {
+        Instant now = Instant.now();
+        return CommonCodeJpaEntity.create(
+                null,
+                commonCodeTypeId,
+                code,
+                displayName,
+                DEFAULT_DISPLAY_ORDER,
+                false,
+                now,
+                now,
+                null);
+    }
 }

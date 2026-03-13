@@ -1,7 +1,6 @@
 package com.ryuqq.setof.domain.product.vo;
 
 import com.ryuqq.setof.domain.product.aggregate.Product;
-import com.ryuqq.setof.domain.product.exception.ProductNotFoundException;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,11 +55,8 @@ public class Products {
         Set<Long> matchedIds = new HashSet<>();
 
         for (ProductUpdateData.Entry entry : updateData.entries()) {
-            if (entry.productId() != null) {
+            if (entry.productId() != null && existingById.containsKey(entry.productId())) {
                 Product existing = existingById.get(entry.productId());
-                if (existing == null) {
-                    throw new ProductNotFoundException(entry.productId());
-                }
                 SkuCode skuCode = entry.skuCode() != null ? entry.skuCode() : existing.skuCode();
                 existing.update(
                         skuCode,
@@ -74,7 +70,7 @@ public class Products {
             } else {
                 ProductCreationData creationData =
                         new ProductCreationData(
-                                null,
+                                entry.productId(),
                                 entry.skuCode(),
                                 entry.regularPrice(),
                                 entry.currentPrice(),

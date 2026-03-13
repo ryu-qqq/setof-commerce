@@ -9,12 +9,12 @@ import com.ryuqq.setof.adapter.out.persistence.category.CategoryJpaEntityFixture
 import com.ryuqq.setof.adapter.out.persistence.category.entity.CategoryJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.category.repository.CategoryJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.product.repository.ProductJpaRepository;
-import com.ryuqq.setof.adapter.out.persistence.productdescription.entity.ProductGroupDescriptionJpaEntity;
-import com.ryuqq.setof.adapter.out.persistence.productdescription.repository.ProductGroupDescriptionJpaRepository;
-import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.ProductGroupImageJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.ProductGroupJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.SellerOptionGroupJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.SellerOptionValueJpaRepository;
+import com.ryuqq.setof.adapter.out.persistence.productgroupdescription.entity.ProductGroupDescriptionJpaEntity;
+import com.ryuqq.setof.adapter.out.persistence.productgroupdescription.repository.ProductGroupDescriptionJpaRepository;
+import com.ryuqq.setof.adapter.out.persistence.productgroupimage.repository.ProductGroupImageJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productnotice.repository.ProductNoticeEntryJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productnotice.repository.ProductNoticeJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.refundpolicy.RefundPolicyJpaEntityFixtures;
@@ -111,6 +111,87 @@ class ProductDescriptionAdminE2ETest extends AdminE2ETestBase {
     }
 
     @Nested
+    @DisplayName("POST /v2/admin/product-groups/{productGroupId}/description - 상품그룹 상세설명 직접 등록")
+    class RegisterDescriptionTest {
+
+        @Test
+        @DisplayName("유효한 요청으로 상품그룹 상세설명 직접 등록 성공")
+        void shouldRegisterDescriptionSuccessfully() {
+            // given - 상품그룹 등록 (description 없이)
+            Long productGroupId = registerProductGroupWithoutDescription();
+
+            Map<String, Object> request = new HashMap<>();
+            request.put("content", "<p>직접 등록한 상품 상세 설명입니다</p>");
+
+            // when
+            io.restassured.response.Response response =
+                    givenAdmin()
+                            .body(request)
+                            .when()
+                            .post(PRODUCT_GROUPS_BASE_PATH + "/" + productGroupId + "/description");
+
+            // then
+            response.then().statusCode(HttpStatus.CREATED.value());
+
+            Long descriptionId = response.jsonPath().getLong("data");
+            assertThat(descriptionId).isGreaterThan(0);
+
+            // DB 저장 확인
+            ProductGroupDescriptionJpaEntity saved =
+                    productGroupDescriptionJpaRepository
+                            .findByProductGroupId(productGroupId)
+                            .orElseThrow(
+                                    () ->
+                                            new AssertionError(
+                                                    "productGroupId="
+                                                            + productGroupId
+                                                            + "에 해당하는 상세설명이 존재하지 않습니다."));
+            assertThat(saved.getContent()).isEqualTo("<p>직접 등록한 상품 상세 설명입니다</p>");
+        }
+
+        @Test
+        @DisplayName("이미지 목록을 포함한 상품그룹 상세설명 등록 성공")
+        void shouldRegisterDescriptionWithImagesSuccessfully() {
+            // given - 상품그룹 등록 (description 없이)
+            Long productGroupId = registerProductGroupWithoutDescription();
+
+            Map<String, Object> request = new HashMap<>();
+            request.put("content", "<p>이미지 포함 상세 설명</p>");
+            request.put(
+                    "descriptionImages",
+                    List.of(
+                            Map.of("imageUrl", "https://example.com/desc-1.png", "sortOrder", 0),
+                            Map.of("imageUrl", "https://example.com/desc-2.png", "sortOrder", 1)));
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .post(PRODUCT_GROUPS_BASE_PATH + "/" + productGroupId + "/description")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value());
+        }
+
+        @Test
+        @DisplayName("content가 blank이면 400 에러 반환")
+        void shouldReturn400WhenContentBlank() {
+            // given - 상품그룹 등록
+            Long productGroupId = registerProductGroupWithoutDescription();
+
+            Map<String, Object> request = new HashMap<>();
+            request.put("content", "   ");
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .post(PRODUCT_GROUPS_BASE_PATH + "/" + productGroupId + "/description")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Nested
     @DisplayName("PUT /v2/admin/product-groups/{productGroupId}/description - 상품그룹 상세설명 수정")
     class UpdateDescriptionTest {
 
@@ -122,7 +203,6 @@ class ProductDescriptionAdminE2ETest extends AdminE2ETestBase {
 
             Map<String, Object> request = new HashMap<>();
             request.put("content", "<p>수정된 상품 상세 설명입니다</p>");
-            request.put("cdnPath", "https://cdn.example.com/desc/updated.html");
 
             // when
             givenAdmin()
@@ -138,7 +218,6 @@ class ProductDescriptionAdminE2ETest extends AdminE2ETestBase {
                             .findByProductGroupId(productGroupId)
                             .orElseThrow();
             assertThat(updated.getContent()).isEqualTo("<p>수정된 상품 상세 설명입니다</p>");
-            assertThat(updated.getCdnPath()).isEqualTo("https://cdn.example.com/desc/updated.html");
         }
 
         @Test
@@ -149,7 +228,6 @@ class ProductDescriptionAdminE2ETest extends AdminE2ETestBase {
 
             Map<String, Object> request = new HashMap<>();
             request.put("content", "<p>수정된 상품 상세 설명입니다</p>");
-            request.put("cdnPath", "https://cdn.example.com/desc/updated.html");
 
             // when & then
             Response response =
@@ -167,6 +245,54 @@ class ProductDescriptionAdminE2ETest extends AdminE2ETestBase {
     }
 
     // ===== Helper Methods =====
+
+    private Long registerProductGroupWithoutDescription() {
+        Map<String, Object> request = new HashMap<>();
+        request.put("sellerId", savedSellerId);
+        request.put("brandId", savedBrandId);
+        request.put("categoryId", savedCategoryId);
+        request.put("shippingPolicyId", savedShippingPolicyId);
+        request.put("refundPolicyId", savedRefundPolicyId);
+        request.put("productGroupName", "E2E 테스트 상품그룹 (description 없음)");
+        request.put("optionType", "SINGLE");
+        request.put("regularPrice", 50000);
+        request.put("currentPrice", 45000);
+        request.put(
+                "images",
+                List.of(
+                        Map.of(
+                                "imageType", "THUMBNAIL",
+                                "imageUrl", "https://example.com/thumb.png",
+                                "sortOrder", 1)));
+        request.put(
+                "products",
+                List.of(
+                        Map.of(
+                                "regularPrice", 50000,
+                                "currentPrice", 45000,
+                                "stockQuantity", 100,
+                                "sortOrder", 0,
+                                "selectedOptions", List.of())));
+        request.put(
+                "notice",
+                Map.of(
+                        "entries",
+                        List.of(
+                                Map.of(
+                                        "noticeFieldId", 1,
+                                        "fieldName", "제조국",
+                                        "fieldValue", "대한민국"))));
+
+        return givenAdmin()
+                .body(request)
+                .when()
+                .post(PRODUCT_GROUPS_BASE_PATH)
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .jsonPath()
+                .getLong("data.productGroupId");
+    }
 
     private Long registerProductGroup() {
         Map<String, Object> request = new HashMap<>();
@@ -193,20 +319,30 @@ class ProductDescriptionAdminE2ETest extends AdminE2ETestBase {
                 "products",
                 List.of(
                         Map.of(
-                                "additionalPrice",
-                                0,
+                                "regularPrice",
+                                50000,
+                                "currentPrice",
+                                45000,
                                 "stockQuantity",
                                 100,
                                 "sortOrder",
                                 0,
                                 "selectedOptions",
                                 List.of())));
-        request.put("description", Map.of("content", "<p>초기 설명</p>", "cdnPath", ""));
+        request.put(
+                "description", Map.of("content", "<p>초기 설명</p>", "descriptionImages", List.of()));
         request.put(
                 "notice",
                 Map.of(
                         "entries",
-                        List.of(Map.of("fieldName", "제조국", "fieldValue", "대한민국", "sortOrder", 1))));
+                        List.of(
+                                Map.of(
+                                        "noticeFieldId",
+                                        1,
+                                        "fieldName",
+                                        "제조국",
+                                        "fieldValue",
+                                        "대한민국"))));
 
         return givenAdmin()
                 .body(request)

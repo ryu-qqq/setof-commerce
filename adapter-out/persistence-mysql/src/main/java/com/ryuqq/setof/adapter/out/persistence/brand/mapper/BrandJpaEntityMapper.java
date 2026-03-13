@@ -5,7 +5,8 @@ import com.ryuqq.setof.domain.brand.aggregate.Brand;
 import com.ryuqq.setof.domain.brand.id.BrandId;
 import com.ryuqq.setof.domain.brand.vo.BrandIconImageUrl;
 import com.ryuqq.setof.domain.brand.vo.BrandName;
-import com.ryuqq.setof.domain.brand.vo.DisplayName;
+import com.ryuqq.setof.domain.brand.vo.DisplayEnglishName;
+import com.ryuqq.setof.domain.brand.vo.DisplayKoreanName;
 import com.ryuqq.setof.domain.brand.vo.DisplayOrder;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +38,8 @@ public class BrandJpaEntityMapper {
                 domain.idValue(),
                 domain.brandNameValue(),
                 domain.brandIconImageUrlValue(),
-                domain.displayNameValue(),
+                domain.displayKoreanNameValue(),
+                domain.displayEnglishNameValue(),
                 domain.displayOrderValue(),
                 domain.isDisplayed(),
                 domain.createdAt(),
@@ -56,7 +58,8 @@ public class BrandJpaEntityMapper {
                 BrandId.of(entity.getId()),
                 BrandName.of(entity.getBrandName()),
                 BrandIconImageUrl.of(entity.getBrandIconImageUrl()),
-                DisplayName.of(entity.getDisplayName()),
+                DisplayKoreanName.of(entity.getDisplayKoreanName()),
+                DisplayEnglishName.of(entity.getDisplayEnglishName()),
                 DisplayOrder.of(entity.getDisplayOrder()),
                 entity.isDisplayed(),
                 entity.getDeletedAt(),

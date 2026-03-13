@@ -123,6 +123,23 @@ management:
     enabled-by-default: false
 
 # ============================================================
+# FileFlow SDK (dummy for testing)
+# ============================================================
+fileflow:
+  base-url: http://localhost:9999
+  bucket: test-bucket
+  service-token: test-token
+
+# ============================================================
+# Legacy Persistence (disabled for testing)
+# ============================================================
+persistence:
+  legacy:
+    enabled: false
+    seller:
+      enabled: false
+
+# ============================================================
 # Logging Configuration
 # ============================================================
 logging:

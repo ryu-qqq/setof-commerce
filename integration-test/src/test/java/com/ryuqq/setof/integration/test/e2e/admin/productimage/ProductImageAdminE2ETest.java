@@ -10,12 +10,12 @@ import com.ryuqq.setof.adapter.out.persistence.category.entity.CategoryJpaEntity
 import com.ryuqq.setof.adapter.out.persistence.category.repository.CategoryJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.product.repository.ProductJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.product.repository.ProductOptionMappingJpaRepository;
-import com.ryuqq.setof.adapter.out.persistence.productdescription.repository.ProductGroupDescriptionJpaRepository;
-import com.ryuqq.setof.adapter.out.persistence.productgroup.entity.ProductGroupImageJpaEntity;
-import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.ProductGroupImageJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.ProductGroupJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.SellerOptionGroupJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.SellerOptionValueJpaRepository;
+import com.ryuqq.setof.adapter.out.persistence.productgroupdescription.repository.ProductGroupDescriptionJpaRepository;
+import com.ryuqq.setof.adapter.out.persistence.productgroupimage.entity.ProductGroupImageJpaEntity;
+import com.ryuqq.setof.adapter.out.persistence.productgroupimage.repository.ProductGroupImageJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productnotice.repository.ProductNoticeEntryJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productnotice.repository.ProductNoticeJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.refundpolicy.RefundPolicyJpaEntityFixtures;
@@ -111,6 +111,82 @@ class ProductImageAdminE2ETest extends AdminE2ETestBase {
     }
 
     @Nested
+    @DisplayName("POST /v2/admin/product-groups/{productGroupId}/images - 상품 이미지 직접 등록")
+    class RegisterImagesTest {
+
+        @Test
+        @DisplayName("유효한 요청으로 상품 이미지 직접 등록 성공")
+        void shouldRegisterImagesSuccessfully() {
+            // given - 상품그룹 등록
+            Long productGroupId = registerProductGroup();
+
+            Map<String, Object> request = new HashMap<>();
+            request.put(
+                    "images",
+                    List.of(
+                            Map.of(
+                                    "imageType", "THUMBNAIL",
+                                    "imageUrl", "https://example.com/post-thumb.png",
+                                    "sortOrder", 0),
+                            Map.of(
+                                    "imageType", "DETAIL",
+                                    "imageUrl", "https://example.com/post-detail.png",
+                                    "sortOrder", 1)));
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .post(BASE_PATH + "/" + productGroupId + "/images")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value());
+
+            // DB 저장 확인 - 등록 이미지 포함 전체 이미지 수 확인
+            List<ProductGroupImageJpaEntity> images =
+                    productGroupImageJpaRepository.findByProductGroupIdAndDeletedAtIsNull(
+                            productGroupId);
+            // 초기 등록 시 1개 + POST로 2개 추가 = 총 3개
+            assertThat(images).hasSize(3);
+        }
+
+        @Test
+        @DisplayName("빈 이미지 목록으로 등록 요청 시 400 에러 반환")
+        void shouldReturn400WhenImagesEmpty() {
+            // given - 상품그룹 등록
+            Long productGroupId = registerProductGroup();
+
+            Map<String, Object> request = new HashMap<>();
+            request.put("images", List.of());
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .post(BASE_PATH + "/" + productGroupId + "/images")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
+        @DisplayName("images가 null이면 400 에러 반환")
+        void shouldReturn400WhenImagesNull() {
+            // given - 상품그룹 등록
+            Long productGroupId = registerProductGroup();
+
+            Map<String, Object> request = new HashMap<>();
+            request.put("images", null);
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .post(BASE_PATH + "/" + productGroupId + "/images")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Nested
     @DisplayName("PUT /v2/admin/product-groups/{productGroupId}/images - 상품 이미지 전체 교체")
     class UpdateImagesTest {
 
@@ -178,6 +254,30 @@ class ProductImageAdminE2ETest extends AdminE2ETestBase {
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value());
         }
+
+        @Test
+        @DisplayName("존재하지 않는 productGroupId로 교체 요청 시 404 에러 반환")
+        void shouldReturn404WhenProductGroupNotFound() {
+            // given
+            long nonExistentProductGroupId = Long.MAX_VALUE;
+
+            Map<String, Object> request = new HashMap<>();
+            request.put(
+                    "images",
+                    List.of(
+                            Map.of(
+                                    "imageType", "THUMBNAIL",
+                                    "imageUrl", "https://example.com/thumb.png",
+                                    "sortOrder", 0)));
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .put(BASE_PATH + "/" + nonExistentProductGroupId + "/images")
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value());
+        }
     }
 
     // ===== Helper Methods =====
@@ -207,20 +307,29 @@ class ProductImageAdminE2ETest extends AdminE2ETestBase {
                 "products",
                 List.of(
                         Map.of(
-                                "additionalPrice",
-                                0,
+                                "regularPrice",
+                                50000,
+                                "currentPrice",
+                                45000,
                                 "stockQuantity",
                                 100,
                                 "sortOrder",
                                 0,
                                 "selectedOptions",
                                 List.of())));
-        request.put("description", Map.of("content", "<p>설명</p>", "cdnPath", ""));
+        request.put("description", Map.of("content", "<p>설명</p>", "descriptionImages", List.of()));
         request.put(
                 "notice",
                 Map.of(
                         "entries",
-                        List.of(Map.of("fieldName", "제조국", "fieldValue", "대한민국", "sortOrder", 1))));
+                        List.of(
+                                Map.of(
+                                        "noticeFieldId",
+                                        1,
+                                        "fieldName",
+                                        "제조국",
+                                        "fieldValue",
+                                        "대한민국"))));
 
         return givenAdmin()
                 .body(request)

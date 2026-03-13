@@ -4,10 +4,10 @@ import com.ryuqq.setof.domain.brand.aggregate.Brand;
 import com.ryuqq.setof.domain.brand.id.BrandId;
 import com.ryuqq.setof.domain.brand.vo.BrandIconImageUrl;
 import com.ryuqq.setof.domain.brand.vo.BrandName;
-import com.ryuqq.setof.domain.brand.vo.DisplayName;
+import com.ryuqq.setof.domain.brand.vo.DisplayEnglishName;
+import com.ryuqq.setof.domain.brand.vo.DisplayKoreanName;
 import com.ryuqq.setof.domain.brand.vo.DisplayOrder;
 import com.ryuqq.setof.storage.legacy.brand.entity.LegacyBrandEntity;
-import com.ryuqq.setof.storage.legacy.brand.entity.LegacyBrandEntity.MainDisplayNameType;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -31,37 +31,36 @@ public class LegacyBrandEntityMapper {
     /**
      * 레거시 Entity → Domain 변환.
      *
-     * <p>레거시 스키마의 displayEnglishName/displayKoreanName을 mainDisplayType에 따라 단일 displayName으로 변환합니다.
+     * <p>레거시 스키마의 displayKoreanName/displayEnglishName을 각각 매핑합니다.
      *
      * @param entity LegacyBrandEntity
      * @return Brand 도메인 객체
      */
     public Brand toDomain(LegacyBrandEntity entity) {
-        String displayName =
-                resolveDisplayName(
-                        entity.getDisplayEnglishName(),
-                        entity.getDisplayKoreanName(),
-                        entity.getMainDisplayType());
-
         boolean displayed = entity.getDisplayYn().toBoolean();
         Instant createdAt = toInstant(entity.getInsertDate());
         Instant updatedAt = toInstant(entity.getUpdateDate());
+
+        String koreanName =
+                entity.getDisplayKoreanName() != null
+                        ? entity.getDisplayKoreanName()
+                        : entity.getBrandName();
+        String englishName =
+                entity.getDisplayEnglishName() != null
+                        ? entity.getDisplayEnglishName()
+                        : entity.getBrandName();
 
         return Brand.reconstitute(
                 BrandId.of(entity.getId()),
                 BrandName.of(entity.getBrandName()),
                 BrandIconImageUrl.of(entity.getBrandIconImageUrl()),
-                DisplayName.of(displayName),
+                DisplayKoreanName.of(koreanName),
+                DisplayEnglishName.of(englishName),
                 DisplayOrder.of(entity.getDisplayOrder()),
                 displayed,
                 null,
                 createdAt,
                 updatedAt);
-    }
-
-    private String resolveDisplayName(
-            String englishName, String koreanName, MainDisplayNameType type) {
-        return koreanName != null ? koreanName : englishName;
     }
 
     private Instant toInstant(LocalDateTime localDateTime) {

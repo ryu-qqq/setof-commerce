@@ -1,108 +1,61 @@
 package com.ryuqq.setof.application.productgroup.dto.composite;
 
-import java.time.LocalDateTime;
+import com.ryuqq.setof.application.productgroup.dto.response.ProductOptionMatrixResult;
+import com.ryuqq.setof.application.productgroupdescription.dto.response.ProductGroupDescriptionResult;
+import com.ryuqq.setof.application.productgroupimage.dto.response.ProductGroupImageResult;
+import com.ryuqq.setof.application.productnotice.dto.response.ProductNoticeResult;
+import com.ryuqq.setof.application.refundpolicy.dto.response.RefundPolicyResult;
+import com.ryuqq.setof.application.shippingpolicy.dto.response.ShippingPolicyResult;
+import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 /**
- * ProductGroupDetailCompositeResult - 상품그룹 상세 Composite 조회 결과.
+ * 상품 그룹 상세 Composite 결과 DTO.
  *
- * <p>fetchProductGroup 엔드포인트의 단건 상세 조회 결과입니다. 기본 정보 + 개별 상품(옵션 포함) + 이미지 목록을 포함합니다.
+ * <p>상품 그룹 기본 정보 + 크로스 도메인 정보 + 이미지 + 옵션-상품 매트릭스 + 배송/환불 정책 + 상세설명 + 고시정보를 통합 제공합니다.
  *
- * @param productGroupId 상품그룹 ID
- * @param productGroupName 상품그룹명
+ * @param id 상품 그룹 ID
  * @param sellerId 셀러 ID
  * @param sellerName 셀러명
  * @param brandId 브랜드 ID
  * @param brandName 브랜드명
- * @param displayKoreanName 브랜드 한글 표시명
- * @param displayEnglishName 브랜드 영문 표시명
- * @param brandIconImageUrl 브랜드 아이콘 이미지 URL
  * @param categoryId 카테고리 ID
- * @param path 카테고리 경로 (쉼표 구분)
- * @param regularPrice 정가
- * @param currentPrice 현재가
- * @param salePrice 판매가
- * @param directDiscountRate 직접 할인율
- * @param directDiscountPrice 직접 할인액
- * @param discountRate 총 할인율
+ * @param categoryName 카테고리명
+ * @param categoryPath 카테고리 ID 경로
+ * @param productGroupName 상품 그룹명
  * @param optionType 옵션 유형
- * @param displayYn 노출 여부
- * @param soldOutYn 품절 여부
- * @param detailDescription 상세 설명 이미지 URL
- * @param deliveryNotice 배송 안내 (JSON)
- * @param refundNotice 반품 안내 (JSON)
- * @param averageRating 평균 평점
- * @param reviewCount 리뷰 수
- * @param products 개별 상품 목록
- * @param images 이미지 목록
- * @param insertDate 등록일
- * @author ryu-qqq
- * @since 1.1.0
+ * @param status 상품 그룹 상태
+ * @param createdAt 생성일시
+ * @param updatedAt 수정일시
+ * @param images 상품 그룹 이미지 목록
+ * @param optionProductMatrix 옵션 구조 + 상품(SKU) 통합 매트릭스
+ * @param shippingPolicy 배송 정책 상세
+ * @param refundPolicy 환불 정책 상세
+ * @param description 상품 상세설명 (nullable)
+ * @param productNotice 상품 고시정보 (nullable)
  */
 public record ProductGroupDetailCompositeResult(
-        long productGroupId,
-        String productGroupName,
-        long sellerId,
+        Long id,
+        Long sellerId,
         String sellerName,
-        long brandId,
+        Long brandId,
         String brandName,
-        String displayKoreanName,
-        String displayEnglishName,
-        String brandIconImageUrl,
-        long categoryId,
-        String path,
-        int regularPrice,
-        int currentPrice,
-        int salePrice,
-        int directDiscountRate,
-        int directDiscountPrice,
-        int discountRate,
+        Long categoryId,
+        String categoryName,
+        String categoryPath,
+        String productGroupName,
         String optionType,
-        String displayYn,
-        String soldOutYn,
-        String detailDescription,
-        String deliveryNotice,
-        String refundNotice,
-        double averageRating,
-        long reviewCount,
-        Set<ProductInfoResult> products,
-        Set<ProductImageResult> images,
-        LocalDateTime insertDate) {
+        String status,
+        Instant createdAt,
+        Instant updatedAt,
+        List<ProductGroupImageResult> images,
+        ProductOptionMatrixResult optionProductMatrix,
+        ShippingPolicyResult shippingPolicy,
+        RefundPolicyResult refundPolicy,
+        ProductGroupDescriptionResult description,
+        ProductNoticeResult productNotice) {
 
-    /**
-     * ProductInfoResult - 개별 상품 정보.
-     *
-     * @param productId 상품 ID
-     * @param additionalPrice 추가 가격
-     * @param stockQuantity 재고 수량
-     * @param soldOutYn 품절 여부
-     * @param options 옵션 목록
-     */
-    public record ProductInfoResult(
-            long productId,
-            int additionalPrice,
-            int stockQuantity,
-            String soldOutYn,
-            List<OptionInfoResult> options) {}
-
-    /**
-     * OptionInfoResult - 옵션 정보.
-     *
-     * @param optionGroupId 옵션 그룹 ID
-     * @param optionGroupName 옵션 그룹명
-     * @param optionDetailId 옵션 상세 ID
-     * @param optionValue 옵션값
-     */
-    public record OptionInfoResult(
-            long optionGroupId, String optionGroupName, long optionDetailId, String optionValue) {}
-
-    /**
-     * ProductImageResult - 상품 이미지 정보.
-     *
-     * @param productGroupImageId 이미지 ID
-     * @param imageType 이미지 유형 (MAIN / SUB 등)
-     * @param imageUrl 이미지 URL
-     */
-    public record ProductImageResult(long productGroupImageId, String imageType, String imageUrl) {}
+    public ProductGroupDetailCompositeResult {
+        images = images != null ? List.copyOf(images) : List.of();
+    }
 }

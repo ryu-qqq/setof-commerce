@@ -48,7 +48,6 @@ class RefundPolicyAdminE2ETest extends AdminE2ETestBase {
         refundPolicyJpaRepository.deleteAll();
         sellerJpaRepository.deleteAll();
 
-        // 테스트용 셀러 생성
         SellerJpaEntity seller = sellerJpaRepository.save(SellerJpaEntityFixtures.newEntity());
         testSellerId = seller.getId();
     }
@@ -80,7 +79,7 @@ class RefundPolicyAdminE2ETest extends AdminE2ETestBase {
         }
 
         @Test
-        @DisplayName("필수 필드 누락시 400 에러 반환")
+        @DisplayName("필수 필드(policyName) 누락시 400 에러 반환")
         void shouldReturn400WhenRequiredFieldMissing() {
             // given - policyName 누락
             Map<String, Object> request = new HashMap<>();
@@ -98,11 +97,11 @@ class RefundPolicyAdminE2ETest extends AdminE2ETestBase {
         }
 
         @Test
-        @DisplayName("유효하지 않은 반품 가능 기간시 400 에러 반환")
+        @DisplayName("반품 가능 기간이 최대값(90일) 초과시 400 에러 반환")
         void shouldReturn400WhenInvalidReturnPeriodDays() {
-            // given - 반품 가능 기간이 범위 초과
+            // given - returnPeriodDays 90일 초과
             Map<String, Object> request = createRegisterRequest();
-            request.put("returnPeriodDays", 100); // 90일 초과
+            request.put("returnPeriodDays", 100);
 
             // when & then
             givenAdmin(testSellerId)
@@ -160,7 +159,7 @@ class RefundPolicyAdminE2ETest extends AdminE2ETestBase {
         }
 
         @Test
-        @DisplayName("빈 결과 조회")
+        @DisplayName("데이터 없을 때 빈 결과 반환")
         void shouldReturnEmptyResult() {
             // when & then
             givenAdmin(testSellerId)
@@ -209,34 +208,61 @@ class RefundPolicyAdminE2ETest extends AdminE2ETestBase {
                             RefundPolicyJpaEntityFixtures.newActiveEntity(testSellerId));
             Long policyId = saved.getId();
 
-            Map<String, Object> request = new HashMap<>();
-            request.put("policyName", "수정된 정책명");
-            request.put("defaultPolicy", false);
-            request.put("returnPeriodDays", 14);
-            request.put("exchangePeriodDays", 21);
-            request.put("nonReturnableConditions", List.of("OPENED_PACKAGING"));
+            Map<String, Object> request = createUpdateRequest();
 
-            // when & then
-            Response updateResponse =
-                    givenAdmin(testSellerId)
-                            .body(request)
-                            .when()
-                            .put(getBasePath() + "/" + policyId);
+            // when
+            givenAdmin(testSellerId)
+                    .body(request)
+                    .when()
+                    .put(getBasePath() + "/" + policyId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
 
-            // 400인 경우 원인 확인 후 처리 (업데이트 API가 구현되지 않았거나 제약조건 실패)
-            if (updateResponse.statusCode() == HttpStatus.BAD_REQUEST.value()) {
-                // API가 400을 반환하는 경우, 등록 API는 동작하므로 테스트 성공으로 간주
-                return;
-            }
-
-            updateResponse.then().statusCode(HttpStatus.NO_CONTENT.value());
-
-            // 변경 확인
+            // then - DB 상태 검증
             RefundPolicyJpaEntity updated =
                     refundPolicyJpaRepository.findById(policyId).orElseThrow();
             assertThat(updated.getPolicyName()).isEqualTo("수정된 정책명");
             assertThat(updated.getReturnPeriodDays()).isEqualTo(14);
             assertThat(updated.getExchangePeriodDays()).isEqualTo(21);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 policyId로 수정 요청시 404 에러 반환")
+        void shouldReturn404WhenPolicyNotFound() {
+            // given
+            Long nonExistentPolicyId = 999999L;
+            Map<String, Object> request = createUpdateRequest();
+
+            // when & then
+            givenAdmin(testSellerId)
+                    .body(request)
+                    .when()
+                    .put(getBasePath() + "/" + nonExistentPolicyId)
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value());
+        }
+
+        @Test
+        @DisplayName("필수 필드(policyName) 누락시 400 에러 반환")
+        void shouldReturn400WhenRequiredFieldMissing() {
+            // given
+            RefundPolicyJpaEntity saved =
+                    refundPolicyJpaRepository.save(
+                            RefundPolicyJpaEntityFixtures.newActiveEntity(testSellerId));
+            Long policyId = saved.getId();
+
+            Map<String, Object> request = new HashMap<>();
+            request.put("defaultPolicy", false);
+            request.put("returnPeriodDays", 14);
+            request.put("exchangePeriodDays", 21);
+
+            // when & then
+            givenAdmin(testSellerId)
+                    .body(request)
+                    .when()
+                    .put(getBasePath() + "/" + policyId)
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
         }
     }
 
@@ -245,12 +271,15 @@ class RefundPolicyAdminE2ETest extends AdminE2ETestBase {
     class ChangeStatusTest {
 
         @Test
-        @DisplayName("환불정책 상태 변경 성공")
+        @DisplayName("환불정책 상태 비활성화 성공")
         void shouldChangeStatusSuccessfully() {
-            // given
+            // given - 기본 정책은 유지하고, 비기본 정책을 비활성화 대상으로 생성
+            refundPolicyJpaRepository.save(
+                    RefundPolicyJpaEntityFixtures.newDefaultEntity(testSellerId));
             RefundPolicyJpaEntity saved =
                     refundPolicyJpaRepository.save(
-                            RefundPolicyJpaEntityFixtures.newActiveEntity(testSellerId));
+                            RefundPolicyJpaEntityFixtures.newActiveEntityWithName(
+                                    testSellerId, "비기본 정책"));
             Long policyId = saved.getId();
             assertThat(saved.isActive()).isTrue();
 
@@ -258,54 +287,90 @@ class RefundPolicyAdminE2ETest extends AdminE2ETestBase {
             request.put("policyIds", List.of(policyId));
             request.put("active", false);
 
-            // when & then
-            Response statusResponse =
-                    givenAdmin(testSellerId).body(request).when().patch(getBasePath() + "/status");
+            // when
+            givenAdmin(testSellerId)
+                    .body(request)
+                    .when()
+                    .patch(getBasePath() + "/status")
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
 
-            // 400인 경우 원인 확인 후 처리
-            if (statusResponse.statusCode() == HttpStatus.BAD_REQUEST.value()) {
-                return;
-            }
-
-            statusResponse.then().statusCode(HttpStatus.NO_CONTENT.value());
-
-            // 변경 확인
+            // then - DB 상태 검증
             RefundPolicyJpaEntity updated =
                     refundPolicyJpaRepository.findById(policyId).orElseThrow();
             assertThat(updated.isActive()).isFalse();
         }
 
         @Test
-        @DisplayName("여러 환불정책 상태 일괄 변경 성공")
+        @DisplayName("여러 환불정책 상태 일괄 비활성화 성공")
         void shouldChangeMultiplePoliciesStatus() {
-            // given
+            // given - 기본 정책은 유지하고, 비기본 정책 2개를 비활성화 대상으로 생성
+            refundPolicyJpaRepository.save(
+                    RefundPolicyJpaEntityFixtures.newDefaultEntity(testSellerId));
             RefundPolicyJpaEntity policy1 =
                     refundPolicyJpaRepository.save(
-                            RefundPolicyJpaEntityFixtures.newActiveEntity(testSellerId));
+                            RefundPolicyJpaEntityFixtures.newActiveEntityWithName(
+                                    testSellerId, "비기본 정책1"));
             RefundPolicyJpaEntity policy2 =
                     refundPolicyJpaRepository.save(
-                            RefundPolicyJpaEntityFixtures.newActiveEntity(testSellerId));
+                            RefundPolicyJpaEntityFixtures.newActiveEntityWithName(
+                                    testSellerId, "비기본 정책2"));
 
             Map<String, Object> request = new HashMap<>();
             request.put("policyIds", List.of(policy1.getId(), policy2.getId()));
             request.put("active", false);
 
-            // when & then
-            Response statusResponse =
-                    givenAdmin(testSellerId).body(request).when().patch(getBasePath() + "/status");
+            // when
+            givenAdmin(testSellerId)
+                    .body(request)
+                    .when()
+                    .patch(getBasePath() + "/status")
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
 
-            // 400인 경우 원인 확인 후 처리
-            if (statusResponse.statusCode() == HttpStatus.BAD_REQUEST.value()) {
-                return;
-            }
-
-            statusResponse.then().statusCode(HttpStatus.NO_CONTENT.value());
-
-            // 변경 확인
+            // then - DB 상태 검증
             assertThat(refundPolicyJpaRepository.findById(policy1.getId()).orElseThrow().isActive())
                     .isFalse();
             assertThat(refundPolicyJpaRepository.findById(policy2.getId()).orElseThrow().isActive())
                     .isFalse();
+        }
+
+        @Test
+        @DisplayName("policyIds 목록이 비어있을 때 400 에러 반환")
+        void shouldReturn400WhenPolicyIdsEmpty() {
+            // given
+            Map<String, Object> request = new HashMap<>();
+            request.put("policyIds", List.of());
+            request.put("active", false);
+
+            // when & then
+            givenAdmin(testSellerId)
+                    .body(request)
+                    .when()
+                    .patch(getBasePath() + "/status")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
+        @DisplayName("active 필드 누락시 400 에러 반환")
+        void shouldReturn400WhenActiveFieldMissing() {
+            // given
+            RefundPolicyJpaEntity saved =
+                    refundPolicyJpaRepository.save(
+                            RefundPolicyJpaEntityFixtures.newActiveEntity(testSellerId));
+
+            Map<String, Object> request = new HashMap<>();
+            request.put("policyIds", List.of(saved.getId()));
+            // active 누락
+
+            // when & then
+            givenAdmin(testSellerId)
+                    .body(request)
+                    .when()
+                    .patch(getBasePath() + "/status")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
         }
     }
 
@@ -322,6 +387,19 @@ class RefundPolicyAdminE2ETest extends AdminE2ETestBase {
         request.put("inspectionRequired", true);
         request.put("inspectionPeriodDays", 3);
         request.put("additionalInfo", "테스트 추가 안내 문구");
+        return request;
+    }
+
+    private Map<String, Object> createUpdateRequest() {
+        Map<String, Object> request = new HashMap<>();
+        request.put("policyName", "수정된 정책명");
+        request.put("defaultPolicy", true);
+        request.put("returnPeriodDays", 14);
+        request.put("exchangePeriodDays", 21);
+        request.put("nonReturnableConditions", List.of("OPENED_PACKAGING"));
+        request.put("partialRefundEnabled", false);
+        request.put("inspectionRequired", false);
+        request.put("inspectionPeriodDays", 0);
         return request;
     }
 }

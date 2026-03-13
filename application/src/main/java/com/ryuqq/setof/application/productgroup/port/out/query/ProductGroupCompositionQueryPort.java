@@ -1,6 +1,6 @@
 package com.ryuqq.setof.application.productgroup.port.out.query;
 
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroupDetailCompositeResult;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupThumbnailCompositeResult;
 import com.ryuqq.setof.domain.legacy.product.dto.query.LegacyProductGroupSearchCondition;
 import com.ryuqq.setof.domain.legacy.search.dto.query.LegacySearchCondition;
@@ -30,7 +30,7 @@ public interface ProductGroupCompositionQueryPort {
      * @param productGroupId 상품그룹 ID
      * @return 상세 Composite 결과 Optional
      */
-    Optional<ProductGroupDetailCompositeResult> fetchProductGroupDetail(Long productGroupId);
+    Optional<LegacyProductGroupDetailCompositeResult> fetchProductGroupDetail(Long productGroupId);
 
     /**
      * 상품그룹 썸네일 목록 조회 (커서 페이징).

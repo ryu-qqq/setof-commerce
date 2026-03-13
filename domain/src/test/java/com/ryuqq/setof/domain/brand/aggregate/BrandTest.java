@@ -28,7 +28,10 @@ class BrandTest {
             assertThat(brand.isNew()).isTrue();
             assertThat(brand.brandNameValue()).isEqualTo(BrandFixtures.DEFAULT_BRAND_NAME);
             assertThat(brand.brandIconImageUrlValue()).isEqualTo(BrandFixtures.DEFAULT_ICON_URL);
-            assertThat(brand.displayNameValue()).isEqualTo(BrandFixtures.DEFAULT_DISPLAY_NAME);
+            assertThat(brand.displayKoreanNameValue())
+                    .isEqualTo(BrandFixtures.DEFAULT_DISPLAY_KOREAN_NAME);
+            assertThat(brand.displayEnglishNameValue())
+                    .isEqualTo(BrandFixtures.DEFAULT_DISPLAY_ENGLISH_NAME);
             assertThat(brand.displayOrderValue()).isEqualTo(BrandFixtures.DEFAULT_DISPLAY_ORDER);
             assertThat(brand.isDisplayed()).isTrue();
             assertThat(brand.isDeleted()).isFalse();
@@ -38,11 +41,12 @@ class BrandTest {
         @DisplayName("커스텀 값으로 브랜드를 생성한다")
         void createWithCustomValues() {
             // when
-            var brand = BrandFixtures.newBrand("커스텀브랜드", "커스텀 표시명");
+            var brand = BrandFixtures.newBrand("커스텀브랜드", "커스텀 한글명", "Custom English");
 
             // then
             assertThat(brand.brandNameValue()).isEqualTo("커스텀브랜드");
-            assertThat(brand.displayNameValue()).isEqualTo("커스텀 표시명");
+            assertThat(brand.displayKoreanNameValue()).isEqualTo("커스텀 한글명");
+            assertThat(brand.displayEnglishNameValue()).isEqualTo("Custom English");
         }
     }
 

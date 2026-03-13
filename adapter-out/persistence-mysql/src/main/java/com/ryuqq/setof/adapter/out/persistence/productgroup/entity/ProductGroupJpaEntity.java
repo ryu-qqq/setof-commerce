@@ -7,7 +7,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.time.Instant;
+import org.springframework.data.domain.Persistable;
 
 /**
  * ProductGroupJpaEntity - 상품 그룹 JPA 엔티티.
@@ -16,7 +18,7 @@ import java.time.Instant;
  *
  * <p>PER-ENT-002: JPA 관계 어노테이션 금지 (@OneToMany, @ManyToOne 등).
  *
- * <p>PER-ENT-003: ID 필드는 @GeneratedValue(strategy = IDENTITY).
+ * <p>PER-ENT-003: Persistable 구현으로 persist/merge 제어 (레거시 PK 동기화 지원).
  *
  * <p>PER-ENT-004: Lombok 사용 금지 - 수동 Getter/생성자.
  *
@@ -25,11 +27,13 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "product_groups")
-public class ProductGroupJpaEntity extends SoftDeletableEntity {
+public class ProductGroupJpaEntity extends SoftDeletableEntity implements Persistable<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Transient private boolean isNew = false;
 
     @Column(name = "seller_id", nullable = false)
     private Long sellerId;
@@ -66,6 +70,12 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity {
 
     protected ProductGroupJpaEntity() {
         super();
+        this.isNew = false;
+    }
+
+    @Override
+    public boolean isNew() {
+        return isNew;
     }
 
     private ProductGroupJpaEntity(
@@ -115,22 +125,25 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity {
             Instant createdAt,
             Instant updatedAt,
             Instant deletedAt) {
-        return new ProductGroupJpaEntity(
-                id,
-                sellerId,
-                brandId,
-                categoryId,
-                shippingPolicyId,
-                refundPolicyId,
-                productGroupName,
-                optionType,
-                regularPrice,
-                currentPrice,
-                salePrice,
-                status,
-                createdAt,
-                updatedAt,
-                deletedAt);
+        ProductGroupJpaEntity entity =
+                new ProductGroupJpaEntity(
+                        id,
+                        sellerId,
+                        brandId,
+                        categoryId,
+                        shippingPolicyId,
+                        refundPolicyId,
+                        productGroupName,
+                        optionType,
+                        regularPrice,
+                        currentPrice,
+                        salePrice,
+                        status,
+                        createdAt,
+                        updatedAt,
+                        deletedAt);
+        entity.isNew = (id == null);
+        return entity;
     }
 
     public Long getId() {

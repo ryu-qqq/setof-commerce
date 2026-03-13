@@ -1,6 +1,6 @@
 package com.ryuqq.setof.integration.test.common.base;
 
-import com.ryuqq.setof.admin.SetofCommerceAdminApplication;
+import com.ryuqq.setof.integration.test.common.config.TestAdminApplication;
 import com.ryuqq.setof.integration.test.common.config.TestSecurityConfig;
 import com.ryuqq.setof.integration.test.common.tag.TestTags;
 import io.restassured.RestAssured;
@@ -54,7 +54,7 @@ import org.springframework.test.context.ActiveProfiles;
 @Tag(TestTags.E2E)
 @Tag(TestTags.ADMIN)
 @SpringBootTest(
-        classes = SetofCommerceAdminApplication.class,
+        classes = TestAdminApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Import(TestSecurityConfig.class)
 @ActiveProfiles("test")

@@ -2,8 +2,11 @@ package com.ryuqq.setof.adapter.out.persistence.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;
+import java.util.HashMap;
+import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +28,9 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 @Configuration
 public class PrimaryDataSourceConfig {
+
+    @Value("${spring.jpa.hibernate.ddl-auto:none}")
+    private String ddlAuto;
 
     @Bean
     @Primary
@@ -53,8 +59,14 @@ public class PrimaryDataSourceConfig {
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setShowSql(false);
-        vendorAdapter.setGenerateDdl(false);
+        vendorAdapter.setGenerateDdl(!"none".equals(ddlAuto));
         factory.setJpaVendorAdapter(vendorAdapter);
+
+        if (!"none".equals(ddlAuto)) {
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("hibernate.hbm2ddl.auto", ddlAuto);
+            factory.setJpaPropertyMap(properties);
+        }
 
         return factory;
     }

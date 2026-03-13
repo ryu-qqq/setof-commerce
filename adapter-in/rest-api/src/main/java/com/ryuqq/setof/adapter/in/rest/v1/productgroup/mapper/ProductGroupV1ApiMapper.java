@@ -7,8 +7,8 @@ import com.ryuqq.setof.adapter.in.rest.v1.productgroup.dto.response.ProductGroup
 import com.ryuqq.setof.adapter.in.rest.v1.productgroup.dto.response.ProductGroupSliceV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.v1.productgroup.dto.response.ProductGroupThumbnailV1ApiResponse;
 import com.ryuqq.setof.application.common.dto.query.CommonCursorParams;
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeResult.OptionInfoResult;
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeResult.ProductInfoResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroupDetailCompositeResult.OptionInfoResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroupDetailCompositeResult.ProductInfoResult;
 import com.ryuqq.setof.application.productgroup.dto.query.ProductGroupSearchParams;
 import com.ryuqq.setof.application.productgroup.dto.response.ProductGroupDetailResult;
 import com.ryuqq.setof.application.productgroup.dto.response.ProductGroupSliceResult;

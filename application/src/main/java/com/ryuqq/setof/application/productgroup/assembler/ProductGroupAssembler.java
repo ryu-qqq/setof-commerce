@@ -1,11 +1,29 @@
 package com.ryuqq.setof.application.productgroup.assembler;
 
+import com.ryuqq.setof.application.product.dto.response.ProductDetailResult;
+import com.ryuqq.setof.application.product.dto.response.ResolvedProductOptionResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailBundle;
+import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeQueryResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeResult;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupListBundle;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupThumbnailCompositeResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.WebProductGroupDetailCompositeResult;
 import com.ryuqq.setof.application.productgroup.dto.response.ProductGroupSliceResult;
 import com.ryuqq.setof.application.productgroup.dto.response.ProductGroupThumbnailResult;
+import com.ryuqq.setof.application.productgroup.dto.response.ProductOptionMatrixResult;
+import com.ryuqq.setof.application.productgroup.dto.response.SellerOptionGroupResult;
+import com.ryuqq.setof.application.productgroupdescription.dto.response.ProductGroupDescriptionResult;
+import com.ryuqq.setof.application.productgroupimage.dto.response.ProductGroupImageResult;
+import com.ryuqq.setof.application.productnotice.dto.response.ProductNoticeResult;
 import com.ryuqq.setof.domain.common.vo.SliceMeta;
+import com.ryuqq.setof.domain.product.aggregate.Product;
+import com.ryuqq.setof.domain.productgroup.aggregate.ProductGroup;
+import com.ryuqq.setof.domain.productgroup.aggregate.SellerOptionGroup;
+import com.ryuqq.setof.domain.productgroup.aggregate.SellerOptionValue;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import org.springframework.stereotype.Component;
 
 /**
@@ -85,5 +103,152 @@ public class ProductGroupAssembler {
             case "RECENT" -> item.insertDate() != null ? item.insertDate().toString() : null;
             default -> null;
         };
+    }
+
+    /** 상세 번들 → DetailCompositeResult 조립. */
+    public ProductGroupDetailCompositeResult toDetailResult(ProductGroupDetailBundle bundle) {
+        ProductGroupDetailCompositeQueryResult queryResult = bundle.queryResult();
+        ProductGroup group = bundle.group();
+
+        List<ProductGroupImageResult> images =
+                group.images().stream().map(ProductGroupImageResult::from).toList();
+
+        ProductOptionMatrixResult optionProductMatrix =
+                buildOptionProductMatrix(group, bundle.products());
+
+        ProductGroupDescriptionResult descriptionResult =
+                bundle.description().map(ProductGroupDescriptionResult::from).orElse(null);
+        ProductNoticeResult noticeResult =
+                bundle.notice().map(ProductNoticeResult::from).orElse(null);
+
+        return new ProductGroupDetailCompositeResult(
+                queryResult.id(),
+                queryResult.sellerId(),
+                queryResult.sellerName(),
+                queryResult.brandId(),
+                queryResult.brandName(),
+                queryResult.categoryId(),
+                queryResult.categoryName(),
+                queryResult.categoryPath(),
+                queryResult.productGroupName(),
+                queryResult.optionType(),
+                queryResult.status(),
+                queryResult.createdAt(),
+                queryResult.updatedAt(),
+                images,
+                optionProductMatrix,
+                queryResult.shippingPolicy(),
+                queryResult.refundPolicy(),
+                descriptionResult,
+                noticeResult);
+    }
+
+    /** 상세 번들 → 웹(사용자) DetailCompositeResult 조립. */
+    public WebProductGroupDetailCompositeResult toWebDetailResult(ProductGroupDetailBundle bundle) {
+        ProductGroupDetailCompositeQueryResult queryResult = bundle.queryResult();
+        ProductGroup group = bundle.group();
+
+        List<ProductGroupImageResult> images =
+                group.images().stream().map(ProductGroupImageResult::from).toList();
+
+        ProductOptionMatrixResult optionProductMatrix =
+                buildOptionProductMatrix(group, bundle.products());
+
+        ProductGroupDescriptionResult descriptionResult =
+                bundle.description().map(ProductGroupDescriptionResult::from).orElse(null);
+        ProductNoticeResult noticeResult =
+                bundle.notice().map(ProductNoticeResult::from).orElse(null);
+
+        return new WebProductGroupDetailCompositeResult(
+                queryResult.id(),
+                queryResult.sellerId(),
+                queryResult.sellerName(),
+                queryResult.brandId(),
+                queryResult.brandName(),
+                queryResult.brandIconImageUrl(),
+                queryResult.categoryId(),
+                queryResult.categoryName(),
+                queryResult.categoryPath(),
+                queryResult.productGroupName(),
+                queryResult.optionType(),
+                queryResult.status(),
+                0.0,
+                0L,
+                queryResult.createdAt(),
+                queryResult.updatedAt(),
+                images,
+                optionProductMatrix,
+                queryResult.shippingPolicy(),
+                queryResult.refundPolicy(),
+                descriptionResult,
+                noticeResult);
+    }
+
+    /**
+     * ProductGroup + Products → ProductDetailResult 목록.
+     *
+     * <p>옵션 매핑을 resolved하여 각 Product를 ProductDetailResult로 변환합니다.
+     */
+    public List<ProductDetailResult> toProductDetailResults(
+            ProductGroup group, List<Product> products) {
+        Map<Long, ResolvedProductOptionResult> optionValueMap = buildOptionValueMap(group);
+        return toProductDetailResults(products, optionValueMap);
+    }
+
+    private ProductOptionMatrixResult buildOptionProductMatrix(
+            ProductGroup group, List<Product> products) {
+        List<SellerOptionGroupResult> optionGroups =
+                group.sellerOptionGroups().stream().map(SellerOptionGroupResult::from).toList();
+
+        Map<Long, ResolvedProductOptionResult> optionValueMap = buildOptionValueMap(group);
+        List<ProductDetailResult> productDetails = toProductDetailResults(products, optionValueMap);
+
+        return new ProductOptionMatrixResult(optionGroups, productDetails);
+    }
+
+    private Map<Long, ResolvedProductOptionResult> buildOptionValueMap(ProductGroup group) {
+        Map<Long, ResolvedProductOptionResult> map = new HashMap<>();
+        for (SellerOptionGroup optionGroup : group.sellerOptionGroups()) {
+            for (SellerOptionValue optionValue : optionGroup.optionValues()) {
+                map.put(
+                        optionValue.idValue(),
+                        new ResolvedProductOptionResult(
+                                optionGroup.idValue(),
+                                optionGroup.optionGroupNameValue(),
+                                optionValue.idValue(),
+                                optionValue.optionValueNameValue()));
+            }
+        }
+        return map;
+    }
+
+    private List<ProductDetailResult> toProductDetailResults(
+            List<Product> products, Map<Long, ResolvedProductOptionResult> optionValueMap) {
+        return products.stream()
+                .map(product -> toProductDetailResult(product, optionValueMap))
+                .toList();
+    }
+
+    private ProductDetailResult toProductDetailResult(
+            Product product, Map<Long, ResolvedProductOptionResult> optionValueMap) {
+        List<ResolvedProductOptionResult> options =
+                product.optionMappings().stream()
+                        .map(mapping -> optionValueMap.get(mapping.sellerOptionValueIdValue()))
+                        .filter(Objects::nonNull)
+                        .toList();
+
+        return new ProductDetailResult(
+                product.idValue(),
+                product.skuCodeValue(),
+                product.regularPriceValue(),
+                product.currentPriceValue(),
+                product.salePriceValue(),
+                product.discountRate(),
+                product.stockQuantity(),
+                product.status().name(),
+                product.sortOrder(),
+                options,
+                product.createdAt(),
+                product.updatedAt());
     }
 }

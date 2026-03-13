@@ -1,6 +1,6 @@
 package com.ryuqq.setof.storage.legacy.composite.productgroup.adapter;
 
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroupDetailCompositeResult;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupThumbnailCompositeResult;
 import com.ryuqq.setof.application.productgroup.port.out.query.ProductGroupCompositionQueryPort;
 import com.ryuqq.setof.domain.legacy.product.dto.query.LegacyProductGroupSearchCondition;
@@ -53,10 +53,10 @@ public class LegacyWebProductGroupCompositeQueryAdapter
      * <p>기본 정보(쿼리 1) + 개별 상품 목록(쿼리 2) + 이미지 목록(쿼리 3)을 조합합니다.
      *
      * @param productGroupId 상품그룹 ID
-     * @return ProductGroupDetailCompositeResult Optional
+     * @return LegacyProductGroupDetailCompositeResult Optional
      */
     @Override
-    public Optional<ProductGroupDetailCompositeResult> fetchProductGroupDetail(
+    public Optional<LegacyProductGroupDetailCompositeResult> fetchProductGroupDetail(
             Long productGroupId) {
         Optional<LegacyWebProductGroupBasicQueryDto> basicOpt =
                 productGroupRepository.fetchBasicInfo(productGroupId);

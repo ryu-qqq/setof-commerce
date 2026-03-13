@@ -1,9 +1,11 @@
 package com.ryuqq.setof.application.productgroupimage.internal;
 
+import com.ryuqq.setof.application.productgroup.manager.ProductGroupReadManager;
 import com.ryuqq.setof.application.productgroupimage.dto.command.RegisterProductGroupImagesCommand;
 import com.ryuqq.setof.application.productgroupimage.dto.command.UpdateProductGroupImagesCommand;
 import com.ryuqq.setof.application.productgroupimage.factory.ProductGroupImageFactory;
 import com.ryuqq.setof.application.productgroupimage.manager.ProductGroupImageCommandManager;
+import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import com.ryuqq.setof.domain.productgroupimage.aggregate.ProductGroupImage;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -22,11 +24,15 @@ public class ImageCommandCoordinator {
 
     private final ProductGroupImageFactory factory;
     private final ProductGroupImageCommandManager commandManager;
+    private final ProductGroupReadManager productGroupReadManager;
 
     public ImageCommandCoordinator(
-            ProductGroupImageFactory factory, ProductGroupImageCommandManager commandManager) {
+            ProductGroupImageFactory factory,
+            ProductGroupImageCommandManager commandManager,
+            ProductGroupReadManager productGroupReadManager) {
         this.factory = factory;
         this.commandManager = commandManager;
+        this.productGroupReadManager = productGroupReadManager;
     }
 
     /**
@@ -43,10 +49,17 @@ public class ImageCommandCoordinator {
     /**
      * 상품그룹 이미지를 수정합니다 (전체 교체).
      *
+     * <p>기존 이미지를 소프트 삭제한 뒤, 새 이미지를 일괄 저장합니다.
+     *
      * @param command 수정 커맨드
      */
     @Transactional
     public void update(UpdateProductGroupImagesCommand command) {
+        ProductGroupId pgId = ProductGroupId.of(command.productGroupId());
+        productGroupReadManager.getById(pgId);
+
+        commandManager.softDeleteByProductGroupId(command.productGroupId());
+
         List<ProductGroupImage> images = factory.createNewImagesFromUpdate(command.images());
         commandManager.persistAll(images, command.productGroupId());
     }

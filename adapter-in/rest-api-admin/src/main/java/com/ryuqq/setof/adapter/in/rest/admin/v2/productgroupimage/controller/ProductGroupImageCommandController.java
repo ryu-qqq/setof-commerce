@@ -125,7 +125,7 @@ public class ProductGroupImageCommandController {
                 description = "상품 그룹을 찾을 수 없음")
     })
     @PutMapping(ProductGroupImageAdminEndpoints.ID + ProductGroupImageAdminEndpoints.IMAGES)
-    public ResponseEntity<ApiResponse<Void>> update(
+    public ResponseEntity<Void> update(
             @Parameter(description = "상품 그룹 ID", required = true)
                     @PathVariable(ProductGroupImageAdminEndpoints.PATH_PRODUCT_GROUP_ID)
                     Long productGroupId,
@@ -134,6 +134,6 @@ public class ProductGroupImageCommandController {
         UpdateProductGroupImagesCommand command = mapper.toUpdateCommand(productGroupId, request);
         updateUseCase.execute(command);
 
-        return ResponseEntity.ok(ApiResponse.of());
+        return ResponseEntity.noContent().build();
     }
 }

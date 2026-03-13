@@ -89,39 +89,76 @@ class BrandVoTest {
     }
 
     @Nested
-    @DisplayName("DisplayName 테스트")
-    class BrandDisplayNameTest {
+    @DisplayName("DisplayKoreanName 테스트")
+    class DisplayKoreanNameTest {
 
         @Test
-        @DisplayName("유효한 표시명을 생성한다")
-        void createValidDisplayName() {
-            var displayName = com.ryuqq.setof.domain.brand.vo.DisplayName.of("테스트 표시명");
-            assertThat(displayName.value()).isEqualTo("테스트 표시명");
+        @DisplayName("유효한 한글 표시명을 생성한다")
+        void createValidDisplayKoreanName() {
+            var name = DisplayKoreanName.of("나이키");
+            assertThat(name.value()).isEqualTo("나이키");
         }
 
         @Test
         @DisplayName("공백은 트림된다")
         void trimWhitespace() {
-            var displayName = com.ryuqq.setof.domain.brand.vo.DisplayName.of("  테스트 표시명  ");
-            assertThat(displayName.value()).isEqualTo("테스트 표시명");
+            var name = DisplayKoreanName.of("  나이키  ");
+            assertThat(name.value()).isEqualTo("나이키");
         }
 
         @ParameterizedTest
         @NullAndEmptySource
         @DisplayName("null 또는 빈 값이면 예외가 발생한다")
         void throwExceptionForNullOrEmpty(String value) {
-            assertThatThrownBy(() -> com.ryuqq.setof.domain.brand.vo.DisplayName.of(value))
+            assertThatThrownBy(() -> DisplayKoreanName.of(value))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("브랜드 표시명");
+                    .hasMessageContaining("한글 표시명");
         }
 
         @Test
         @DisplayName("100자 초과 시 예외가 발생한다")
         void throwExceptionForTooLong() {
             String longName = "가".repeat(101);
-            assertThatThrownBy(() -> com.ryuqq.setof.domain.brand.vo.DisplayName.of(longName))
+            assertThatThrownBy(() -> DisplayKoreanName.of(longName))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("1~100");
+                    .hasMessageContaining("100");
+        }
+    }
+
+    @Nested
+    @DisplayName("DisplayEnglishName 테스트")
+    class DisplayEnglishNameTest {
+
+        @Test
+        @DisplayName("유효한 영문 표시명을 생성한다")
+        void createValidDisplayEnglishName() {
+            var name = DisplayEnglishName.of("NIKE");
+            assertThat(name.value()).isEqualTo("NIKE");
+        }
+
+        @Test
+        @DisplayName("공백은 트림된다")
+        void trimWhitespace() {
+            var name = DisplayEnglishName.of("  NIKE  ");
+            assertThat(name.value()).isEqualTo("NIKE");
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @DisplayName("null 또는 빈 값이면 예외가 발생한다")
+        void throwExceptionForNullOrEmpty(String value) {
+            assertThatThrownBy(() -> DisplayEnglishName.of(value))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("영문 표시명");
+        }
+
+        @Test
+        @DisplayName("100자 초과 시 예외가 발생한다")
+        void throwExceptionForTooLong() {
+            String longName = "a".repeat(101);
+            assertThatThrownBy(() -> DisplayEnglishName.of(longName))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("100");
         }
     }
 

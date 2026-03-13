@@ -48,7 +48,6 @@ class ShippingPolicyAdminE2ETest extends AdminE2ETestBase {
         shippingPolicyJpaRepository.deleteAll();
         sellerJpaRepository.deleteAll();
 
-        // 테스트용 셀러 생성
         SellerJpaEntity seller = sellerJpaRepository.save(SellerJpaEntityFixtures.newEntity());
         testSellerId = seller.getId();
     }
@@ -80,7 +79,7 @@ class ShippingPolicyAdminE2ETest extends AdminE2ETestBase {
         }
 
         @Test
-        @DisplayName("필수 필드 누락시 400 에러 반환")
+        @DisplayName("필수 필드(policyName) 누락시 400 에러 반환")
         void shouldReturn400WhenRequiredFieldMissing() {
             // given - policyName 누락
             Map<String, Object> request = new HashMap<>();
@@ -187,7 +186,7 @@ class ShippingPolicyAdminE2ETest extends AdminE2ETestBase {
         }
 
         @Test
-        @DisplayName("빈 결과 조회")
+        @DisplayName("데이터 없을 때 빈 결과 반환")
         void shouldReturnEmptyResult() {
             // when & then
             givenAdmin(testSellerId)
@@ -235,33 +234,60 @@ class ShippingPolicyAdminE2ETest extends AdminE2ETestBase {
                             ShippingPolicyJpaEntityFixtures.newActiveEntity(testSellerId));
             Long policyId = saved.getId();
 
-            Map<String, Object> request = new HashMap<>();
-            request.put("policyName", "수정된 정책명");
-            request.put("defaultPolicy", false);
-            request.put("shippingFeeType", "PAID");
-            request.put("baseFee", 5000L);
-            request.put("returnFee", 5000L);
-            request.put("exchangeFee", 10000L);
+            Map<String, Object> request = createUpdateRequest();
 
-            // when & then
-            Response updateResponse =
-                    givenAdmin(testSellerId)
-                            .body(request)
-                            .when()
-                            .put(getBasePath() + "/" + policyId);
+            // when
+            givenAdmin(testSellerId)
+                    .body(request)
+                    .when()
+                    .put(getBasePath() + "/" + policyId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
 
-            // 400인 경우 원인 확인 후 처리
-            if (updateResponse.statusCode() == HttpStatus.BAD_REQUEST.value()) {
-                return;
-            }
-
-            updateResponse.then().statusCode(HttpStatus.NO_CONTENT.value());
-
-            // 변경 확인
+            // then - DB 상태 검증
             ShippingPolicyJpaEntity updated =
                     shippingPolicyJpaRepository.findById(policyId).orElseThrow();
             assertThat(updated.getPolicyName()).isEqualTo("수정된 정책명");
             assertThat(updated.getBaseFee()).isEqualTo(5000);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 policyId로 수정 요청시 404 에러 반환")
+        void shouldReturn404WhenPolicyNotFound() {
+            // given
+            Long nonExistentPolicyId = 999999L;
+            Map<String, Object> request = createUpdateRequest();
+
+            // when & then
+            givenAdmin(testSellerId)
+                    .body(request)
+                    .when()
+                    .put(getBasePath() + "/" + nonExistentPolicyId)
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value());
+        }
+
+        @Test
+        @DisplayName("필수 필드(shippingFeeType) 누락시 400 에러 반환")
+        void shouldReturn400WhenRequiredFieldMissing() {
+            // given
+            ShippingPolicyJpaEntity saved =
+                    shippingPolicyJpaRepository.save(
+                            ShippingPolicyJpaEntityFixtures.newActiveEntity(testSellerId));
+            Long policyId = saved.getId();
+
+            Map<String, Object> request = new HashMap<>();
+            request.put("policyName", "수정된 정책명");
+            request.put("defaultPolicy", false);
+            // shippingFeeType 누락
+
+            // when & then
+            givenAdmin(testSellerId)
+                    .body(request)
+                    .when()
+                    .put(getBasePath() + "/" + policyId)
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
         }
     }
 
@@ -270,12 +296,15 @@ class ShippingPolicyAdminE2ETest extends AdminE2ETestBase {
     class ChangeStatusTest {
 
         @Test
-        @DisplayName("배송정책 상태 변경 성공")
+        @DisplayName("배송정책 상태 비활성화 성공")
         void shouldChangeStatusSuccessfully() {
-            // given
+            // given - 기본 정책은 유지하고, 비기본 정책을 비활성화 대상으로 생성
+            shippingPolicyJpaRepository.save(
+                    ShippingPolicyJpaEntityFixtures.newDefaultEntity(testSellerId));
             ShippingPolicyJpaEntity saved =
                     shippingPolicyJpaRepository.save(
-                            ShippingPolicyJpaEntityFixtures.newActiveEntity(testSellerId));
+                            ShippingPolicyJpaEntityFixtures.newActiveEntityWithName(
+                                    testSellerId, "비기본 정책"));
             Long policyId = saved.getId();
             assertThat(saved.isActive()).isTrue();
 
@@ -283,50 +312,48 @@ class ShippingPolicyAdminE2ETest extends AdminE2ETestBase {
             request.put("policyIds", List.of(policyId));
             request.put("active", false);
 
-            // when & then
-            Response statusResponse =
-                    givenAdmin(testSellerId).body(request).when().patch(getBasePath() + "/status");
+            // when
+            givenAdmin(testSellerId)
+                    .body(request)
+                    .when()
+                    .patch(getBasePath() + "/status")
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
 
-            // 400인 경우 원인 확인 후 처리
-            if (statusResponse.statusCode() == HttpStatus.BAD_REQUEST.value()) {
-                return;
-            }
-
-            statusResponse.then().statusCode(HttpStatus.NO_CONTENT.value());
-
-            // 변경 확인
+            // then - DB 상태 검증
             ShippingPolicyJpaEntity updated =
                     shippingPolicyJpaRepository.findById(policyId).orElseThrow();
             assertThat(updated.isActive()).isFalse();
         }
 
         @Test
-        @DisplayName("여러 배송정책 상태 일괄 변경 성공")
+        @DisplayName("여러 배송정책 상태 일괄 비활성화 성공")
         void shouldChangeMultiplePoliciesStatus() {
-            // given
+            // given - 기본 정책은 유지하고, 비기본 정책 2개를 비활성화 대상으로 생성
+            shippingPolicyJpaRepository.save(
+                    ShippingPolicyJpaEntityFixtures.newDefaultEntity(testSellerId));
             ShippingPolicyJpaEntity policy1 =
                     shippingPolicyJpaRepository.save(
-                            ShippingPolicyJpaEntityFixtures.newActiveEntity(testSellerId));
+                            ShippingPolicyJpaEntityFixtures.newActiveEntityWithName(
+                                    testSellerId, "비기본 정책1"));
             ShippingPolicyJpaEntity policy2 =
                     shippingPolicyJpaRepository.save(
-                            ShippingPolicyJpaEntityFixtures.newActiveEntity(testSellerId));
+                            ShippingPolicyJpaEntityFixtures.newActiveEntityWithName(
+                                    testSellerId, "비기본 정책2"));
 
             Map<String, Object> request = new HashMap<>();
             request.put("policyIds", List.of(policy1.getId(), policy2.getId()));
             request.put("active", false);
 
-            // when & then
-            Response statusResponse =
-                    givenAdmin(testSellerId).body(request).when().patch(getBasePath() + "/status");
+            // when
+            givenAdmin(testSellerId)
+                    .body(request)
+                    .when()
+                    .patch(getBasePath() + "/status")
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
 
-            // 400인 경우 원인 확인 후 처리
-            if (statusResponse.statusCode() == HttpStatus.BAD_REQUEST.value()) {
-                return;
-            }
-
-            statusResponse.then().statusCode(HttpStatus.NO_CONTENT.value());
-
-            // 변경 확인
+            // then - DB 상태 검증
             assertThat(
                             shippingPolicyJpaRepository
                                     .findById(policy1.getId())
@@ -339,6 +366,44 @@ class ShippingPolicyAdminE2ETest extends AdminE2ETestBase {
                                     .orElseThrow()
                                     .isActive())
                     .isFalse();
+        }
+
+        @Test
+        @DisplayName("policyIds 목록이 비어있을 때 400 에러 반환")
+        void shouldReturn400WhenPolicyIdsEmpty() {
+            // given
+            Map<String, Object> request = new HashMap<>();
+            request.put("policyIds", List.of());
+            request.put("active", false);
+
+            // when & then
+            givenAdmin(testSellerId)
+                    .body(request)
+                    .when()
+                    .patch(getBasePath() + "/status")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
+        @DisplayName("active 필드 누락시 400 에러 반환")
+        void shouldReturn400WhenActiveFieldMissing() {
+            // given
+            ShippingPolicyJpaEntity saved =
+                    shippingPolicyJpaRepository.save(
+                            ShippingPolicyJpaEntityFixtures.newActiveEntity(testSellerId));
+
+            Map<String, Object> request = new HashMap<>();
+            request.put("policyIds", List.of(saved.getId()));
+            // active 누락
+
+            // when & then
+            givenAdmin(testSellerId)
+                    .body(request)
+                    .when()
+                    .patch(getBasePath() + "/status")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
         }
     }
 
@@ -362,6 +427,17 @@ class ShippingPolicyAdminE2ETest extends AdminE2ETestBase {
         leadTime.put("cutoffTime", "14:00");
         request.put("leadTime", leadTime);
 
+        return request;
+    }
+
+    private Map<String, Object> createUpdateRequest() {
+        Map<String, Object> request = new HashMap<>();
+        request.put("policyName", "수정된 정책명");
+        request.put("defaultPolicy", true);
+        request.put("shippingFeeType", "PAID");
+        request.put("baseFee", 5000L);
+        request.put("returnFee", 5000L);
+        request.put("exchangeFee", 10000L);
         return request;
     }
 }

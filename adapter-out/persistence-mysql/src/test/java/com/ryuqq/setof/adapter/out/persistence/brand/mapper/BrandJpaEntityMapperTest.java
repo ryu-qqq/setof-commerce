@@ -54,7 +54,8 @@ class BrandJpaEntityMapperTest {
             assertThat(entity.getId()).isEqualTo(domain.idValue());
             assertThat(entity.getBrandName()).isEqualTo(domain.brandNameValue());
             assertThat(entity.getBrandIconImageUrl()).isEqualTo(domain.brandIconImageUrlValue());
-            assertThat(entity.getDisplayName()).isEqualTo(domain.displayNameValue());
+            assertThat(entity.getDisplayKoreanName()).isEqualTo(domain.displayKoreanNameValue());
+            assertThat(entity.getDisplayEnglishName()).isEqualTo(domain.displayEnglishNameValue());
             assertThat(entity.getDisplayOrder()).isEqualTo(domain.displayOrderValue());
             assertThat(entity.isDisplayed()).isTrue();
         }
@@ -121,7 +122,8 @@ class BrandJpaEntityMapperTest {
             assertThat(domain.idValue()).isEqualTo(entity.getId());
             assertThat(domain.brandNameValue()).isEqualTo(entity.getBrandName());
             assertThat(domain.brandIconImageUrlValue()).isEqualTo(entity.getBrandIconImageUrl());
-            assertThat(domain.displayNameValue()).isEqualTo(entity.getDisplayName());
+            assertThat(domain.displayKoreanNameValue()).isEqualTo(entity.getDisplayKoreanName());
+            assertThat(domain.displayEnglishNameValue()).isEqualTo(entity.getDisplayEnglishName());
             assertThat(domain.displayOrderValue()).isEqualTo(entity.getDisplayOrder());
             assertThat(domain.isDisplayed()).isTrue();
         }
@@ -177,7 +179,10 @@ class BrandJpaEntityMapperTest {
             assertThat(converted.brandNameValue()).isEqualTo(original.brandNameValue());
             assertThat(converted.brandIconImageUrlValue())
                     .isEqualTo(original.brandIconImageUrlValue());
-            assertThat(converted.displayNameValue()).isEqualTo(original.displayNameValue());
+            assertThat(converted.displayKoreanNameValue())
+                    .isEqualTo(original.displayKoreanNameValue());
+            assertThat(converted.displayEnglishNameValue())
+                    .isEqualTo(original.displayEnglishNameValue());
             assertThat(converted.displayOrderValue()).isEqualTo(original.displayOrderValue());
             assertThat(converted.isDisplayed()).isEqualTo(original.isDisplayed());
         }
@@ -196,7 +201,9 @@ class BrandJpaEntityMapperTest {
             assertThat(converted.getId()).isEqualTo(original.getId());
             assertThat(converted.getBrandName()).isEqualTo(original.getBrandName());
             assertThat(converted.getBrandIconImageUrl()).isEqualTo(original.getBrandIconImageUrl());
-            assertThat(converted.getDisplayName()).isEqualTo(original.getDisplayName());
+            assertThat(converted.getDisplayKoreanName()).isEqualTo(original.getDisplayKoreanName());
+            assertThat(converted.getDisplayEnglishName())
+                    .isEqualTo(original.getDisplayEnglishName());
             assertThat(converted.getDisplayOrder()).isEqualTo(original.getDisplayOrder());
             assertThat(converted.isDisplayed()).isEqualTo(original.isDisplayed());
         }

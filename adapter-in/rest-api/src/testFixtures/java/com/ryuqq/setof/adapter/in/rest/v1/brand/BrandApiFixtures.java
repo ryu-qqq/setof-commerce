@@ -54,12 +54,12 @@ public final class BrandApiFixtures {
 
     public static BrandDisplayResult displayResult(long brandId) {
         return BrandDisplayResult.of(
-                brandId, "NIKE", "나이키", "https://cdn.example.com/brands/nike.png");
+                brandId, "NIKE", "나이키", "Nike", "https://cdn.example.com/brands/nike.png");
     }
 
     public static BrandDisplayResult displayResult(
             long brandId, String brandName, String brandNameKo, String brandIconUrl) {
-        return BrandDisplayResult.of(brandId, brandName, brandNameKo, brandIconUrl);
+        return BrandDisplayResult.of(brandId, brandName, brandNameKo, brandName, brandIconUrl);
     }
 
     public static List<BrandDisplayResult> displayResultList() {
@@ -72,7 +72,7 @@ public final class BrandApiFixtures {
 
     public static BrandResult brandResult(long brandId) {
         return BrandResult.of(
-                brandId, "NIKE", "나이키", "https://cdn.example.com/brands/nike.png", true);
+                brandId, "NIKE", "나이키", "Nike", "https://cdn.example.com/brands/nike.png", true);
     }
 
     public static BrandResult brandResult(
@@ -81,6 +81,6 @@ public final class BrandApiFixtures {
             String brandNameKo,
             String brandIconUrl,
             boolean displayed) {
-        return BrandResult.of(brandId, brandName, brandNameKo, brandIconUrl, displayed);
+        return BrandResult.of(brandId, brandName, brandNameKo, brandName, brandIconUrl, displayed);
     }
 }

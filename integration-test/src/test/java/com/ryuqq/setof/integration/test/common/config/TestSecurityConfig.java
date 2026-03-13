@@ -6,11 +6,13 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.ryuqq.setof.application.member.dto.response.TokenPairResponse;
-import com.ryuqq.setof.application.member.port.out.client.TokenProviderClient;
-import com.ryuqq.setof.application.member.port.out.command.RefreshTokenCacheCommandPort;
-import com.ryuqq.setof.application.member.port.out.query.RefreshTokenCacheQueryPort;
-import com.ryuqq.setof.domain.member.vo.RefreshTokenCacheKey;
+import com.ryuqq.setof.application.auth.dto.response.TokenPairResponse;
+import com.ryuqq.setof.application.auth.port.out.cache.RefreshTokenCacheCommandPort;
+import com.ryuqq.setof.application.auth.port.out.cache.RefreshTokenCacheQueryPort;
+import com.ryuqq.setof.application.auth.port.out.client.TokenProviderPort;
+import com.ryuqq.setof.application.productgroup.port.out.query.ProductGroupCompositeQueryPort;
+import com.ryuqq.setof.application.productgroup.port.out.query.ProductGroupCompositionQueryPort;
+import com.ryuqq.setof.domain.auth.vo.RefreshTokenCacheKey;
 import java.util.Optional;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +33,8 @@ public class TestSecurityConfig {
      * @return TokenProviderPort Mock
      */
     @Bean
-    public TokenProviderClient tokenProviderPort() {
-        TokenProviderClient mock = mock(TokenProviderClient.class);
+    public TokenProviderPort tokenProviderPort() {
+        TokenProviderPort mock = mock(TokenProviderPort.class);
         when(mock.generateTokenPair(anyString()))
                 .thenReturn(
                         new TokenPairResponse(
@@ -71,5 +73,29 @@ public class TestSecurityConfig {
         when(mock.findMemberIdByToken(any(RefreshTokenCacheKey.class)))
                 .thenReturn(Optional.of("1"));
         return mock;
+    }
+
+    /**
+     * 테스트용 ProductGroupCompositionQueryPort Mock.
+     *
+     * <p>레거시 DB 전용 포트로, 테스트 환경에서는 Mock으로 대체합니다.
+     *
+     * @return ProductGroupCompositionQueryPort Mock
+     */
+    @Bean
+    public ProductGroupCompositionQueryPort productGroupCompositionQueryPort() {
+        return mock(ProductGroupCompositionQueryPort.class);
+    }
+
+    /**
+     * 테스트용 ProductGroupCompositeQueryPort Mock.
+     *
+     * <p>Composite QueryDSL 포트로, 구현체가 WIP 상태이므로 Mock으로 대체합니다.
+     *
+     * @return ProductGroupCompositeQueryPort Mock
+     */
+    @Bean
+    public ProductGroupCompositeQueryPort productGroupCompositeQueryPort() {
+        return mock(ProductGroupCompositeQueryPort.class);
     }
 }

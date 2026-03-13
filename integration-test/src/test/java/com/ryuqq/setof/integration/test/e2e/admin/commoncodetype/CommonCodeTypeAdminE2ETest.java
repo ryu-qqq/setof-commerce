@@ -129,6 +129,97 @@ class CommonCodeTypeAdminE2ETest extends AdminE2ETestBase {
         }
 
         @Test
+        @DisplayName("active=true 필터로 활성 타입만 조회")
+        void shouldFilterByActiveTrue() {
+            // given - 활성 2개, 비활성 1개 저장
+            commonCodeTypeJpaRepository.save(
+                    CommonCodeTypeJpaEntityFixtures.newEntityWithCode("ACTIVE_TYPE_1", "활성타입1"));
+            commonCodeTypeJpaRepository.save(
+                    CommonCodeTypeJpaEntityFixtures.newEntityWithCode("ACTIVE_TYPE_2", "활성타입2"));
+            commonCodeTypeJpaRepository.save(CommonCodeTypeJpaEntityFixtures.newInactiveEntity());
+
+            // when & then
+            givenAdmin()
+                    .queryParam("active", true)
+                    .queryParam("page", 0)
+                    .queryParam("size", 20)
+                    .when()
+                    .get(BASE_PATH)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("data.content", hasSize(2))
+                    .body("data.totalElements", equalTo(2));
+        }
+
+        @Test
+        @DisplayName("active=false 필터로 비활성 타입만 조회")
+        void shouldFilterByActiveFalse() {
+            // given - 활성 1개, 비활성 1개 저장
+            commonCodeTypeJpaRepository.save(
+                    CommonCodeTypeJpaEntityFixtures.newEntityWithCode("ACTIVE_TYPE", "활성타입"));
+            commonCodeTypeJpaRepository.save(CommonCodeTypeJpaEntityFixtures.newInactiveEntity());
+
+            // when & then
+            givenAdmin()
+                    .queryParam("active", false)
+                    .queryParam("page", 0)
+                    .queryParam("size", 20)
+                    .when()
+                    .get(BASE_PATH)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("data.content", hasSize(1))
+                    .body("data.totalElements", equalTo(1));
+        }
+
+        @Test
+        @DisplayName("searchWord 키워드로 타입 이름 검색")
+        void shouldFilterBySearchWord() {
+            // given
+            commonCodeTypeJpaRepository.save(
+                    CommonCodeTypeJpaEntityFixtures.newEntityWithCode("PAYMENT_METHOD", "결제수단"));
+            commonCodeTypeJpaRepository.save(
+                    CommonCodeTypeJpaEntityFixtures.newEntityWithCode("ORDER_STATUS", "주문상태"));
+            commonCodeTypeJpaRepository.save(
+                    CommonCodeTypeJpaEntityFixtures.newEntityWithCode("DELIVERY_TYPE", "배송유형"));
+
+            // when & then - "주문" 키워드가 포함된 타입만 조회
+            givenAdmin()
+                    .queryParam("searchWord", "주문")
+                    .queryParam("page", 0)
+                    .queryParam("size", 20)
+                    .when()
+                    .get(BASE_PATH)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("data.content", hasSize(1))
+                    .body("data.totalElements", equalTo(1));
+        }
+
+        @Test
+        @DisplayName("searchField=code 로 코드 검색")
+        void shouldFilterByCodeField() {
+            // given
+            commonCodeTypeJpaRepository.save(
+                    CommonCodeTypeJpaEntityFixtures.newEntityWithCode("PAYMENT_METHOD", "결제수단"));
+            commonCodeTypeJpaRepository.save(
+                    CommonCodeTypeJpaEntityFixtures.newEntityWithCode("ORDER_STATUS", "주문상태"));
+
+            // when & then - 코드 필드에서 "PAYMENT" 검색
+            givenAdmin()
+                    .queryParam("searchField", "code")
+                    .queryParam("searchWord", "PAYMENT")
+                    .queryParam("page", 0)
+                    .queryParam("size", 20)
+                    .when()
+                    .get(BASE_PATH)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("data.content", hasSize(1))
+                    .body("data.totalElements", equalTo(1));
+        }
+
+        @Test
         @DisplayName("페이징 처리 확인")
         void shouldPaginateCorrectly() {
             // given
@@ -199,6 +290,47 @@ class CommonCodeTypeAdminE2ETest extends AdminE2ETestBase {
             assertThat(updated.getDescription()).isEqualTo("수정된 설명");
             assertThat(updated.getDisplayOrder()).isEqualTo(99);
         }
+
+        @Test
+        @DisplayName("존재하지 않는 ID로 수정 시 404 에러 반환")
+        void shouldReturn404WhenTypeNotFound() {
+            // given - DB에 없는 ID
+            Long nonExistentId = 999999L;
+
+            Map<String, Object> request = new HashMap<>();
+            request.put("name", "수정된 이름");
+            request.put("displayOrder", 1);
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .put(BASE_PATH + "/" + nonExistentId)
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value());
+        }
+
+        @Test
+        @DisplayName("name 누락 시 400 에러 반환")
+        void shouldReturn400WhenNameMissing() {
+            // given
+            CommonCodeTypeJpaEntity saved =
+                    commonCodeTypeJpaRepository.save(CommonCodeTypeJpaEntityFixtures.newEntity());
+            Long typeId = saved.getId();
+
+            Map<String, Object> request = new HashMap<>();
+            request.put("description", "설명만 있음");
+            request.put("displayOrder", 1);
+            // name 누락
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .put(BASE_PATH + "/" + typeId)
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
     }
 
     @Nested
@@ -230,6 +362,74 @@ class CommonCodeTypeAdminE2ETest extends AdminE2ETestBase {
             CommonCodeTypeJpaEntity updated =
                     commonCodeTypeJpaRepository.findById(typeId).orElseThrow();
             assertThat(updated.isActive()).isFalse();
+        }
+
+        @Test
+        @DisplayName("ids 빈 리스트 전달 시 400 에러 반환")
+        void shouldReturn400WhenIdsIsEmpty() {
+            // given
+            Map<String, Object> request = new HashMap<>();
+            request.put("ids", List.of());
+            request.put("active", false);
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .patch(BASE_PATH + "/active-status")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
+        @DisplayName("active 필드 누락 시 400 에러 반환")
+        void shouldReturn400WhenActiveIsMissing() {
+            // given
+            CommonCodeTypeJpaEntity saved =
+                    commonCodeTypeJpaRepository.save(CommonCodeTypeJpaEntityFixtures.newEntity());
+            Long typeId = saved.getId();
+
+            Map<String, Object> request = new HashMap<>();
+            request.put("ids", List.of(typeId));
+            // active 누락
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .patch(BASE_PATH + "/active-status")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
+        @DisplayName("여러 타입을 한 번에 활성화 성공")
+        void shouldChangeMultipleTypesActiveStatusSuccessfully() {
+            // given - 비활성 타입 2개 저장
+            CommonCodeTypeJpaEntity type1 =
+                    commonCodeTypeJpaRepository.save(
+                            CommonCodeTypeJpaEntityFixtures.newInactiveEntity());
+            CommonCodeTypeJpaEntity type2 =
+                    commonCodeTypeJpaRepository.save(
+                            CommonCodeTypeJpaEntityFixtures.newInactiveEntity());
+
+            Map<String, Object> request = new HashMap<>();
+            request.put("ids", List.of(type1.getId(), type2.getId()));
+            request.put("active", true);
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .patch(BASE_PATH + "/active-status")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+
+            // 변경 확인
+            assertThat(commonCodeTypeJpaRepository.findById(type1.getId()).orElseThrow().isActive())
+                    .isTrue();
+            assertThat(commonCodeTypeJpaRepository.findById(type2.getId()).orElseThrow().isActive())
+                    .isTrue();
         }
     }
 

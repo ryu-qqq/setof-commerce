@@ -16,7 +16,8 @@ public final class BrandJpaEntityFixtures {
     public static final Long DEFAULT_ID = 1L;
     public static final String DEFAULT_BRAND_NAME = "테스트브랜드";
     public static final String DEFAULT_ICON_URL = "https://example.com/brand-icon.png";
-    public static final String DEFAULT_DISPLAY_NAME = "테스트 브랜드 표시명";
+    public static final String DEFAULT_DISPLAY_KOREAN_NAME = "테스트 브랜드";
+    public static final String DEFAULT_DISPLAY_ENGLISH_NAME = "Test Brand";
     public static final int DEFAULT_DISPLAY_ORDER = 1;
 
     // ===== Entity Fixtures =====
@@ -28,7 +29,8 @@ public final class BrandJpaEntityFixtures {
                 DEFAULT_ID,
                 DEFAULT_BRAND_NAME,
                 DEFAULT_ICON_URL,
-                DEFAULT_DISPLAY_NAME,
+                DEFAULT_DISPLAY_KOREAN_NAME,
+                DEFAULT_DISPLAY_ENGLISH_NAME,
                 DEFAULT_DISPLAY_ORDER,
                 true,
                 now,
@@ -43,7 +45,8 @@ public final class BrandJpaEntityFixtures {
                 id,
                 DEFAULT_BRAND_NAME,
                 DEFAULT_ICON_URL,
-                DEFAULT_DISPLAY_NAME,
+                DEFAULT_DISPLAY_KOREAN_NAME,
+                DEFAULT_DISPLAY_ENGLISH_NAME,
                 DEFAULT_DISPLAY_ORDER,
                 true,
                 now,
@@ -52,13 +55,20 @@ public final class BrandJpaEntityFixtures {
     }
 
     /** 커스텀 브랜드명을 가진 활성 상태 브랜드 Entity 생성. */
-    public static BrandJpaEntity activeEntityWithName(String brandName, String displayName) {
+    public static BrandJpaEntity activeEntityWithName(String brandName, String displayKoreanName) {
+        return activeEntityWithName(brandName, displayKoreanName, brandName);
+    }
+
+    /** 커스텀 브랜드명을 가진 활성 상태 브랜드 Entity 생성 (한글/영문 표시명 개별 지정). */
+    public static BrandJpaEntity activeEntityWithName(
+            String brandName, String displayKoreanName, String displayEnglishName) {
         Instant now = Instant.now();
         return BrandJpaEntity.create(
                 null,
                 brandName,
                 DEFAULT_ICON_URL,
-                displayName,
+                displayKoreanName,
+                displayEnglishName,
                 DEFAULT_DISPLAY_ORDER,
                 true,
                 now,
@@ -73,7 +83,8 @@ public final class BrandJpaEntityFixtures {
                 2L,
                 DEFAULT_BRAND_NAME,
                 DEFAULT_ICON_URL,
-                DEFAULT_DISPLAY_NAME,
+                DEFAULT_DISPLAY_KOREAN_NAME,
+                DEFAULT_DISPLAY_ENGLISH_NAME,
                 DEFAULT_DISPLAY_ORDER,
                 false,
                 now,
@@ -88,7 +99,8 @@ public final class BrandJpaEntityFixtures {
                 3L,
                 DEFAULT_BRAND_NAME,
                 DEFAULT_ICON_URL,
-                DEFAULT_DISPLAY_NAME,
+                DEFAULT_DISPLAY_KOREAN_NAME,
+                DEFAULT_DISPLAY_ENGLISH_NAME,
                 DEFAULT_DISPLAY_ORDER,
                 false,
                 now,
@@ -103,7 +115,8 @@ public final class BrandJpaEntityFixtures {
                 null,
                 DEFAULT_BRAND_NAME,
                 DEFAULT_ICON_URL,
-                DEFAULT_DISPLAY_NAME,
+                DEFAULT_DISPLAY_KOREAN_NAME,
+                DEFAULT_DISPLAY_ENGLISH_NAME,
                 DEFAULT_DISPLAY_ORDER,
                 true,
                 now,
@@ -118,7 +131,8 @@ public final class BrandJpaEntityFixtures {
                 DEFAULT_ID,
                 DEFAULT_BRAND_NAME,
                 DEFAULT_ICON_URL,
-                DEFAULT_DISPLAY_NAME,
+                DEFAULT_DISPLAY_KOREAN_NAME,
+                DEFAULT_DISPLAY_ENGLISH_NAME,
                 displayOrder,
                 true,
                 now,
@@ -133,7 +147,8 @@ public final class BrandJpaEntityFixtures {
                 null,
                 DEFAULT_BRAND_NAME,
                 DEFAULT_ICON_URL,
-                DEFAULT_DISPLAY_NAME,
+                DEFAULT_DISPLAY_KOREAN_NAME,
+                DEFAULT_DISPLAY_ENGLISH_NAME,
                 DEFAULT_DISPLAY_ORDER,
                 false,
                 now,
@@ -148,7 +163,8 @@ public final class BrandJpaEntityFixtures {
                 null,
                 DEFAULT_BRAND_NAME,
                 DEFAULT_ICON_URL,
-                DEFAULT_DISPLAY_NAME,
+                DEFAULT_DISPLAY_KOREAN_NAME,
+                DEFAULT_DISPLAY_ENGLISH_NAME,
                 DEFAULT_DISPLAY_ORDER,
                 false,
                 now,

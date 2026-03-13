@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.ryuqq.setof.domain.brand.aggregate.Brand;
 import com.ryuqq.setof.storage.legacy.brand.LegacyBrandEntityFixtures;
 import com.ryuqq.setof.storage.legacy.brand.entity.LegacyBrandEntity;
-import com.ryuqq.setof.storage.legacy.brand.entity.LegacyBrandEntity.MainDisplayNameType;
 import com.ryuqq.setof.storage.legacy.common.Yn;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -34,17 +33,16 @@ class LegacyBrandEntityMapperTest {
     class ToDomainTest {
 
         @Test
-        @DisplayName("정상 변환 - KR 타입일 때 한글 표시명 사용")
-        void shouldConvertEntityToDomainWithKoreanDisplayName() {
+        @DisplayName("정상 변환 - 한글/영문 표시명 모두 매핑")
+        void shouldConvertEntityToDomainWithBothDisplayNames() {
             // given
             LegacyBrandEntity entity =
                     LegacyBrandEntityFixtures.builder()
                             .id(1L)
                             .brandName("나이키")
                             .brandIconImageUrl("https://example.com/nike-icon.png")
-                            .displayEnglishName("Nike")
                             .displayKoreanName("나이키 코리아")
-                            .mainDisplayType(MainDisplayNameType.KR)
+                            .displayEnglishName("Nike")
                             .displayOrder(5)
                             .displayYn(Yn.Y)
                             .insertDate(LocalDateTime.of(2024, 1, 15, 10, 30))
@@ -59,9 +57,10 @@ class LegacyBrandEntityMapperTest {
             assertThat(brand.brandName().value()).isEqualTo("나이키");
             assertThat(brand.brandIconImageUrl().value())
                     .isEqualTo("https://example.com/nike-icon.png");
-            assertThat(brand.displayName().value()).isEqualTo("나이키 코리아");
+            assertThat(brand.displayKoreanName().value()).isEqualTo("나이키 코리아");
+            assertThat(brand.displayEnglishName().value()).isEqualTo("Nike");
             assertThat(brand.displayOrder().value()).isEqualTo(5);
-            assertThat(brand.displayed()).isTrue();
+            assertThat(brand.isDisplayed()).isTrue();
 
             Instant expectedCreatedAt =
                     LocalDateTime.of(2024, 1, 15, 10, 30)
@@ -76,57 +75,41 @@ class LegacyBrandEntityMapperTest {
         }
 
         @Test
-        @DisplayName("US 타입일 때 영문 표시명 사용")
-        void shouldUseEnglishDisplayNameWhenTypeIsEnglish() {
+        @DisplayName("한글 표시명이 null일 때 brandName으로 폴백")
+        void shouldFallbackToBrandNameWhenKoreanNameIsNull() {
             // given
             LegacyBrandEntity entity =
                     LegacyBrandEntityFixtures.builder()
-                            .displayEnglishName("Adidas")
-                            .displayKoreanName("아디다스 코리아")
-                            .mainDisplayType(MainDisplayNameType.US)
-                            .build();
-
-            // when
-            Brand brand = mapper.toDomain(entity);
-
-            // then
-            assertThat(brand.displayName().value()).isEqualTo("Adidas");
-        }
-
-        @Test
-        @DisplayName("KR 타입이지만 한글 표시명이 null일 때 영문 표시명 폴백")
-        void shouldFallbackToEnglishWhenKoreanNameIsNull() {
-            // given
-            LegacyBrandEntity entity =
-                    LegacyBrandEntityFixtures.builder()
-                            .displayEnglishName("Puma")
+                            .brandName("Puma")
                             .displayKoreanName(null)
-                            .mainDisplayType(MainDisplayNameType.KR)
+                            .displayEnglishName("Puma Global")
                             .build();
 
             // when
             Brand brand = mapper.toDomain(entity);
 
             // then
-            assertThat(brand.displayName().value()).isEqualTo("Puma");
+            assertThat(brand.displayKoreanName().value()).isEqualTo("Puma");
+            assertThat(brand.displayEnglishName().value()).isEqualTo("Puma Global");
         }
 
         @Test
-        @DisplayName("US 타입이지만 영문 표시명이 null일 때 한글 표시명 폴백")
-        void shouldFallbackToKoreanWhenEnglishNameIsNull() {
+        @DisplayName("영문 표시명이 null일 때 brandName으로 폴백")
+        void shouldFallbackToBrandNameWhenEnglishNameIsNull() {
             // given
             LegacyBrandEntity entity =
                     LegacyBrandEntityFixtures.builder()
-                            .displayEnglishName(null)
+                            .brandName("뉴발란스")
                             .displayKoreanName("뉴발란스 코리아")
-                            .mainDisplayType(MainDisplayNameType.US)
+                            .displayEnglishName(null)
                             .build();
 
             // when
             Brand brand = mapper.toDomain(entity);
 
             // then
-            assertThat(brand.displayName().value()).isEqualTo("뉴발란스 코리아");
+            assertThat(brand.displayKoreanName().value()).isEqualTo("뉴발란스 코리아");
+            assertThat(brand.displayEnglishName().value()).isEqualTo("뉴발란스");
         }
 
         @Test
@@ -144,8 +127,8 @@ class LegacyBrandEntityMapperTest {
             Brand notDisplayedBrand = mapper.toDomain(notDisplayedEntity);
 
             // then
-            assertThat(displayedBrand.displayed()).isTrue();
-            assertThat(notDisplayedBrand.displayed()).isFalse();
+            assertThat(displayedBrand.isDisplayed()).isTrue();
+            assertThat(notDisplayedBrand.isDisplayed()).isFalse();
         }
 
         @Test

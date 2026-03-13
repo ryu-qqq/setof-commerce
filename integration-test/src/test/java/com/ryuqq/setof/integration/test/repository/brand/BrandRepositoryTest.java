@@ -56,8 +56,8 @@ class BrandRepositoryTest extends RepositoryTestBase {
             // then
             BrandJpaEntity found = find(BrandJpaEntity.class, saved.getId());
             assertThat(found.getBrandName()).isEqualTo(BrandJpaEntityFixtures.DEFAULT_BRAND_NAME);
-            assertThat(found.getDisplayName())
-                    .isEqualTo(BrandJpaEntityFixtures.DEFAULT_DISPLAY_NAME);
+            assertThat(found.getDisplayKoreanName())
+                    .isEqualTo(BrandJpaEntityFixtures.DEFAULT_DISPLAY_KOREAN_NAME);
             assertThat(found.getBrandIconImageUrl())
                     .isEqualTo(BrandJpaEntityFixtures.DEFAULT_ICON_URL);
             assertThat(found.getDisplayOrder())

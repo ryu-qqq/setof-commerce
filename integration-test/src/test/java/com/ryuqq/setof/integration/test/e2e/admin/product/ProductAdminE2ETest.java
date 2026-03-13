@@ -11,10 +11,10 @@ import com.ryuqq.setof.adapter.out.persistence.category.repository.CategoryJpaRe
 import com.ryuqq.setof.adapter.out.persistence.product.entity.ProductJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.product.repository.ProductJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.product.repository.ProductOptionMappingJpaRepository;
-import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.ProductGroupImageJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.ProductGroupJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.SellerOptionGroupJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.repository.SellerOptionValueJpaRepository;
+import com.ryuqq.setof.adapter.out.persistence.productgroupimage.repository.ProductGroupImageJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.refundpolicy.RefundPolicyJpaEntityFixtures;
 import com.ryuqq.setof.adapter.out.persistence.refundpolicy.entity.RefundPolicyJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.refundpolicy.repository.RefundPolicyJpaRepository;
@@ -159,6 +159,40 @@ class ProductAdminE2ETest extends AdminE2ETestBase {
                     .as("존재하지 않는 상품 가격 수정은 404 또는 500을 반환해야 합니다")
                     .isIn(HttpStatus.NOT_FOUND.value(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
+
+        @Test
+        @DisplayName("판매가가 정가보다 큰 경우 400 반환")
+        void shouldReturn400WhenCurrentPriceExceedsRegularPrice() {
+            // given - currentPrice > regularPrice
+            Map<String, Object> request = new HashMap<>();
+            request.put("regularPrice", 50000);
+            request.put("currentPrice", 60000);
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .patch(BASE_PATH + "/" + savedProductId + "/price")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @Test
+        @DisplayName("음수 정가 요청 시 400 반환")
+        void shouldReturn400WhenRegularPriceIsNegative() {
+            // given
+            Map<String, Object> request = new HashMap<>();
+            request.put("regularPrice", -1000);
+            request.put("currentPrice", 50000);
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .patch(BASE_PATH + "/" + savedProductId + "/price")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
     }
 
     @Nested
@@ -170,7 +204,7 @@ class ProductAdminE2ETest extends AdminE2ETestBase {
         void shouldUpdateStockSuccessfully() {
             // given
             Map<String, Object> request = new HashMap<>();
-            request.put("quantity", 200);
+            request.put("stockQuantity", 200);
 
             // when & then
             givenAdmin()
@@ -184,6 +218,44 @@ class ProductAdminE2ETest extends AdminE2ETestBase {
             ProductJpaEntity updated = productJpaRepository.findById(savedProductId).orElseThrow();
             assertThat(updated.getStockQuantity()).isEqualTo(200);
         }
+
+        @Test
+        @DisplayName("존재하지 않는 상품 재고 수정 시 404 반환")
+        void shouldReturn404WhenProductNotFound() {
+            // given
+            Map<String, Object> request = new HashMap<>();
+            request.put("stockQuantity", 200);
+
+            // when & then
+            int statusCode =
+                    givenAdmin()
+                            .body(request)
+                            .when()
+                            .patch(BASE_PATH + "/999999/stock")
+                            .then()
+                            .extract()
+                            .statusCode();
+
+            assertThat(statusCode)
+                    .as("존재하지 않는 상품 재고 수정은 404 또는 500을 반환해야 합니다")
+                    .isIn(HttpStatus.NOT_FOUND.value(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+
+        @Test
+        @DisplayName("음수 재고 수량 요청 시 400 반환")
+        void shouldReturn400WhenStockQuantityIsNegative() {
+            // given
+            Map<String, Object> request = new HashMap<>();
+            request.put("stockQuantity", -1);
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .patch(BASE_PATH + "/" + savedProductId + "/stock")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
     }
 
     @Nested
@@ -194,18 +266,8 @@ class ProductAdminE2ETest extends AdminE2ETestBase {
         @DisplayName("유효한 요청으로 상품그룹 하위 상품 일괄 수정 성공")
         void shouldBulkUpdateProductsSuccessfully() {
             // given
-            Map<String, Object> productUpdate = new HashMap<>();
-            productUpdate.put("productId", savedProductId);
-            productUpdate.put("skuCode", "SKU-001");
-            productUpdate.put("regularPrice", 55000);
-            productUpdate.put("currentPrice", 50000);
-            productUpdate.put("stockQuantity", 150);
-            productUpdate.put("sortOrder", 0);
-            productUpdate.put("selectedOptions", List.of());
-
-            Map<String, Object> request = new HashMap<>();
-            request.put("optionGroups", List.of());
-            request.put("products", List.of(productUpdate));
+            Map<String, Object> request =
+                    buildBulkUpdateRequest(savedProductId, "SKU-001", 55000, 50000, 150);
 
             // when & then
             givenAdmin()
@@ -221,9 +283,65 @@ class ProductAdminE2ETest extends AdminE2ETestBase {
             assertThat(updated.getCurrentPrice()).isEqualTo(50000);
             assertThat(updated.getStockQuantity()).isEqualTo(150);
         }
+
+        @Test
+        @DisplayName("존재하지 않는 상품그룹 ID로 일괄 수정 시 404 또는 500 반환")
+        void shouldReturn404WhenProductGroupNotFound() {
+            // given
+            Map<String, Object> request =
+                    buildBulkUpdateRequest(savedProductId, "SKU-001", 55000, 50000, 150);
+
+            // when & then
+            int statusCode =
+                    givenAdmin()
+                            .body(request)
+                            .when()
+                            .patch(BASE_PATH + "/product-groups/999999")
+                            .then()
+                            .extract()
+                            .statusCode();
+
+            assertThat(statusCode)
+                    .as("존재하지 않는 상품그룹 일괄 수정은 404 또는 500을 반환해야 합니다")
+                    .isIn(HttpStatus.NOT_FOUND.value(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+
+        @Test
+        @DisplayName("빈 products 목록으로 일괄 수정 요청 시 400 반환")
+        void shouldReturn400WhenProductsListIsEmpty() {
+            // given
+            Map<String, Object> request = new HashMap<>();
+            request.put("optionGroups", List.of());
+            request.put("products", List.of());
+
+            // when & then
+            givenAdmin()
+                    .body(request)
+                    .when()
+                    .patch(BASE_PATH + "/product-groups/" + savedProductGroupId)
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+        }
     }
 
     // ===== Helper Methods =====
+
+    private Map<String, Object> buildBulkUpdateRequest(
+            Long productId, String skuCode, int regularPrice, int currentPrice, int stockQuantity) {
+        Map<String, Object> productUpdate = new HashMap<>();
+        productUpdate.put("productId", productId);
+        productUpdate.put("skuCode", skuCode);
+        productUpdate.put("regularPrice", regularPrice);
+        productUpdate.put("currentPrice", currentPrice);
+        productUpdate.put("stockQuantity", stockQuantity);
+        productUpdate.put("sortOrder", 0);
+        productUpdate.put("selectedOptions", List.of());
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("optionGroups", List.of());
+        request.put("products", List.of(productUpdate));
+        return request;
+    }
 
     private Long registerProductGroup() {
         Map<String, Object> request = new HashMap<>();
@@ -247,20 +365,21 @@ class ProductAdminE2ETest extends AdminE2ETestBase {
                 "products",
                 List.of(
                         Map.of(
-                                "additionalPrice", 0,
+                                "regularPrice", 50000,
+                                "currentPrice", 45000,
                                 "stockQuantity", 100,
                                 "sortOrder", 0,
                                 "selectedOptions", List.of())));
-        request.put("description", Map.of("content", "<p>설명</p>", "cdnPath", ""));
+        request.put("description", Map.of("content", "<p>설명</p>", "descriptionImages", List.of()));
         request.put(
                 "notice",
                 Map.of(
                         "entries",
                         List.of(
                                 Map.of(
+                                        "noticeFieldId", 1,
                                         "fieldName", "제조국",
-                                        "fieldValue", "대한민국",
-                                        "sortOrder", 1))));
+                                        "fieldValue", "대한민국"))));
 
         return givenAdmin()
                 .body(request)
@@ -270,6 +389,6 @@ class ProductAdminE2ETest extends AdminE2ETestBase {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract()
                 .jsonPath()
-                .getLong("data");
+                .getLong("data.productGroupId");
     }
 }

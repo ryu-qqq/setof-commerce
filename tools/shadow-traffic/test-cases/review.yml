@@ -250,6 +250,9 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy 400(validation 우선) vs New 401(auth 우선). New가 HTTP 표준에 맞음. 의도적 차이 수용."
 
   - name: "review_create_invalid_rating_decimal"
     # @ValidRating: 소수점 두 자리 이상 불허 → 400
@@ -263,6 +266,9 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy 400(validation 우선) vs New 401(auth 우선). New가 HTTP 표준에 맞음. 의도적 차이 수용."
 
   - name: "review_create_duplicate_order"
     # 동일 orderId로 이미 리뷰 존재 → REVIEW-400

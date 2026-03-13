@@ -1,6 +1,7 @@
 package com.ryuqq.setof.adapter.out.persistence.productnotice.repository;
 
 import com.ryuqq.setof.adapter.out.persistence.productnotice.entity.ProductNoticeEntryJpaEntity;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -17,4 +18,6 @@ public interface ProductNoticeEntryJpaRepository
         extends JpaRepository<ProductNoticeEntryJpaEntity, Long> {
 
     void deleteByProductNoticeId(Long productNoticeId);
+
+    List<ProductNoticeEntryJpaEntity> findByProductNoticeId(Long productNoticeId);
 }

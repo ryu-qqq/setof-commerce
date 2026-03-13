@@ -7,15 +7,19 @@ import com.ryuqq.setof.domain.brand.id.BrandId;
 import com.ryuqq.setof.domain.category.id.CategoryId;
 import com.ryuqq.setof.domain.common.CommonVoFixtures;
 import com.ryuqq.setof.domain.productgroup.ProductGroupFixtures;
+import com.ryuqq.setof.domain.productgroup.exception.ProductGroupInvalidOptionStructureException;
 import com.ryuqq.setof.domain.productgroup.exception.ProductGroupInvalidStatusTransitionException;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import com.ryuqq.setof.domain.productgroup.vo.OptionType;
 import com.ryuqq.setof.domain.productgroup.vo.ProductGroupName;
 import com.ryuqq.setof.domain.productgroup.vo.ProductGroupStatus;
 import com.ryuqq.setof.domain.productgroup.vo.ProductGroupUpdateData;
+import com.ryuqq.setof.domain.productgroup.vo.SellerOptionGroups;
+import com.ryuqq.setof.domain.productgroupimage.vo.ProductGroupImages;
 import com.ryuqq.setof.domain.refundpolicy.id.RefundPolicyId;
 import com.ryuqq.setof.domain.shippingpolicy.id.ShippingPolicyId;
 import java.time.Instant;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -41,6 +45,53 @@ class ProductGroupTest {
                     .isEqualTo(ProductGroupFixtures.DEFAULT_PRODUCT_GROUP_NAME);
             assertThat(productGroup.status()).isEqualTo(ProductGroupStatus.ACTIVE);
             assertThat(productGroup.optionType()).isEqualTo(OptionType.SINGLE);
+        }
+
+        @Test
+        @DisplayName("지정 ID를 전달하면 해당 ID로 생성된다 - 레거시 ID 동기화 시나리오")
+        void createWithSpecifiedIdSyncsLegacyId() {
+            // when
+            var productGroup =
+                    ProductGroup.forNew(
+                            999L,
+                            CommonVoFixtures.defaultSellerId(),
+                            BrandId.of(ProductGroupFixtures.DEFAULT_BRAND_ID),
+                            CategoryId.of(ProductGroupFixtures.DEFAULT_CATEGORY_ID),
+                            ShippingPolicyId.of(ProductGroupFixtures.DEFAULT_SHIPPING_POLICY_ID),
+                            RefundPolicyId.of(ProductGroupFixtures.DEFAULT_REFUND_POLICY_ID),
+                            ProductGroupFixtures.defaultProductGroupName(),
+                            OptionType.SINGLE,
+                            CommonVoFixtures.money(ProductGroupFixtures.DEFAULT_REGULAR_PRICE),
+                            CommonVoFixtures.money(ProductGroupFixtures.DEFAULT_CURRENT_PRICE),
+                            CommonVoFixtures.money(ProductGroupFixtures.DEFAULT_SALE_PRICE),
+                            CommonVoFixtures.now());
+
+            // then
+            assertThat(productGroup.isNew()).isFalse();
+            assertThat(productGroup.idValue()).isEqualTo(999L);
+        }
+
+        @Test
+        @DisplayName("지정 ID를 null로 전달하면 신규 ID로 생성된다")
+        void createWithNullIdCreatesNewId() {
+            // when
+            var productGroup =
+                    ProductGroup.forNew(
+                            null,
+                            CommonVoFixtures.defaultSellerId(),
+                            BrandId.of(ProductGroupFixtures.DEFAULT_BRAND_ID),
+                            CategoryId.of(ProductGroupFixtures.DEFAULT_CATEGORY_ID),
+                            ShippingPolicyId.of(ProductGroupFixtures.DEFAULT_SHIPPING_POLICY_ID),
+                            RefundPolicyId.of(ProductGroupFixtures.DEFAULT_REFUND_POLICY_ID),
+                            ProductGroupFixtures.defaultProductGroupName(),
+                            OptionType.SINGLE,
+                            CommonVoFixtures.money(ProductGroupFixtures.DEFAULT_REGULAR_PRICE),
+                            CommonVoFixtures.money(ProductGroupFixtures.DEFAULT_CURRENT_PRICE),
+                            CommonVoFixtures.money(ProductGroupFixtures.DEFAULT_SALE_PRICE),
+                            CommonVoFixtures.now());
+
+            // then
+            assertThat(productGroup.isNew()).isTrue();
         }
 
         @Test
@@ -522,6 +573,170 @@ class ProductGroupTest {
 
             // when & then
             assertThat(productGroup.totalOptionValueCount()).isZero();
+        }
+    }
+
+    @Nested
+    @DisplayName("replaceSellerOptionGroups() - 옵션 구조 검증")
+    class ReplaceSellerOptionGroupsTest {
+
+        @Test
+        @DisplayName("SINGLE optionType에 그룹 1개를 전달하면 교체에 성공한다")
+        void replaceSingleOptionGroupSucceeds() {
+            // given
+            var productGroup = ProductGroupFixtures.activeProductGroup();
+            SellerOptionGroups singleGroup =
+                    SellerOptionGroups.of(List.of(ProductGroupFixtures.activeSellerOptionGroup()));
+
+            // when & then
+            org.assertj.core.api.Assertions.assertThatCode(
+                            () -> productGroup.replaceSellerOptionGroups(singleGroup))
+                    .doesNotThrowAnyException();
+            assertThat(productGroup.sellerOptionGroups()).hasSize(1);
+        }
+
+        @Test
+        @DisplayName("SINGLE optionType인데 그룹 2개를 전달하면 예외가 발생한다")
+        void replaceSingleOptionGroupWithTwoGroupsThrowsException() {
+            // given
+            var productGroup = ProductGroupFixtures.activeProductGroup();
+            SellerOptionGroups twoGroups =
+                    SellerOptionGroups.of(ProductGroupFixtures.combinationSellerOptionGroups());
+
+            // when & then
+            assertThatThrownBy(() -> productGroup.replaceSellerOptionGroups(twoGroups))
+                    .isInstanceOf(ProductGroupInvalidOptionStructureException.class);
+        }
+
+        @Test
+        @DisplayName("COMBINATION optionType인데 그룹 1개만 전달하면 예외가 발생한다")
+        void replaceCombinationOptionGroupWithOneGroupThrowsException() {
+            // given
+            var productGroup =
+                    ProductGroup.reconstitute(
+                            ProductGroupId.of(10L),
+                            CommonVoFixtures.defaultSellerId(),
+                            BrandId.of(ProductGroupFixtures.DEFAULT_BRAND_ID),
+                            CategoryId.of(ProductGroupFixtures.DEFAULT_CATEGORY_ID),
+                            ShippingPolicyId.of(ProductGroupFixtures.DEFAULT_SHIPPING_POLICY_ID),
+                            RefundPolicyId.of(ProductGroupFixtures.DEFAULT_REFUND_POLICY_ID),
+                            ProductGroupFixtures.defaultProductGroupName(),
+                            OptionType.COMBINATION,
+                            CommonVoFixtures.money(ProductGroupFixtures.DEFAULT_REGULAR_PRICE),
+                            CommonVoFixtures.money(ProductGroupFixtures.DEFAULT_CURRENT_PRICE),
+                            CommonVoFixtures.money(ProductGroupFixtures.DEFAULT_SALE_PRICE),
+                            ProductGroupStatus.ACTIVE,
+                            ProductGroupFixtures.defaultImages(),
+                            List.of(),
+                            CommonVoFixtures.yesterday(),
+                            CommonVoFixtures.yesterday());
+            SellerOptionGroups oneGroup =
+                    SellerOptionGroups.of(List.of(ProductGroupFixtures.activeSellerOptionGroup()));
+
+            // when & then
+            assertThatThrownBy(() -> productGroup.replaceSellerOptionGroups(oneGroup))
+                    .isInstanceOf(ProductGroupInvalidOptionStructureException.class);
+        }
+
+        @Test
+        @DisplayName("NONE optionType인데 그룹이 존재하면 예외가 발생한다")
+        void replaceNoneOptionTypeWithGroupsThrowsException() {
+            // given
+            var productGroup =
+                    ProductGroup.reconstitute(
+                            ProductGroupId.of(11L),
+                            CommonVoFixtures.defaultSellerId(),
+                            BrandId.of(ProductGroupFixtures.DEFAULT_BRAND_ID),
+                            CategoryId.of(ProductGroupFixtures.DEFAULT_CATEGORY_ID),
+                            ShippingPolicyId.of(ProductGroupFixtures.DEFAULT_SHIPPING_POLICY_ID),
+                            RefundPolicyId.of(ProductGroupFixtures.DEFAULT_REFUND_POLICY_ID),
+                            ProductGroupFixtures.defaultProductGroupName(),
+                            OptionType.NONE,
+                            CommonVoFixtures.money(ProductGroupFixtures.DEFAULT_REGULAR_PRICE),
+                            CommonVoFixtures.money(ProductGroupFixtures.DEFAULT_CURRENT_PRICE),
+                            CommonVoFixtures.money(ProductGroupFixtures.DEFAULT_SALE_PRICE),
+                            ProductGroupStatus.ACTIVE,
+                            ProductGroupFixtures.defaultImages(),
+                            List.of(),
+                            CommonVoFixtures.yesterday(),
+                            CommonVoFixtures.yesterday());
+            SellerOptionGroups groupsWithOne =
+                    SellerOptionGroups.of(List.of(ProductGroupFixtures.activeSellerOptionGroup()));
+
+            // when & then
+            assertThatThrownBy(() -> productGroup.replaceSellerOptionGroups(groupsWithOne))
+                    .isInstanceOf(ProductGroupInvalidOptionStructureException.class);
+        }
+
+        @Test
+        @DisplayName("NONE optionType에 빈 그룹 목록을 전달하면 교체에 성공한다")
+        void replaceNoneOptionTypeWithEmptyGroupsSucceeds() {
+            // given
+            var productGroup =
+                    ProductGroup.reconstitute(
+                            ProductGroupId.of(12L),
+                            CommonVoFixtures.defaultSellerId(),
+                            BrandId.of(ProductGroupFixtures.DEFAULT_BRAND_ID),
+                            CategoryId.of(ProductGroupFixtures.DEFAULT_CATEGORY_ID),
+                            ShippingPolicyId.of(ProductGroupFixtures.DEFAULT_SHIPPING_POLICY_ID),
+                            RefundPolicyId.of(ProductGroupFixtures.DEFAULT_REFUND_POLICY_ID),
+                            ProductGroupFixtures.defaultProductGroupName(),
+                            OptionType.NONE,
+                            CommonVoFixtures.money(ProductGroupFixtures.DEFAULT_REGULAR_PRICE),
+                            CommonVoFixtures.money(ProductGroupFixtures.DEFAULT_CURRENT_PRICE),
+                            CommonVoFixtures.money(ProductGroupFixtures.DEFAULT_SALE_PRICE),
+                            ProductGroupStatus.ACTIVE,
+                            ProductGroupFixtures.defaultImages(),
+                            List.of(),
+                            CommonVoFixtures.yesterday(),
+                            CommonVoFixtures.yesterday());
+            SellerOptionGroups emptyGroups = SellerOptionGroups.of(List.of());
+
+            // when & then
+            org.assertj.core.api.Assertions.assertThatCode(
+                            () -> productGroup.replaceSellerOptionGroups(emptyGroups))
+                    .doesNotThrowAnyException();
+            assertThat(productGroup.sellerOptionGroups()).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("replaceImages() - 이미지 교체")
+    class ReplaceImagesTest {
+
+        @Test
+        @DisplayName("이미지를 교체하면 썸네일을 포함한 새 이미지 목록으로 변경된다")
+        void replaceImagesIncludesThumbnail() {
+            // given
+            var productGroup = ProductGroupFixtures.newProductGroup();
+            var thumbnail = ProductGroupFixtures.thumbnailImage();
+            var detail = ProductGroupFixtures.detailImage();
+            ProductGroupImages newImages = ProductGroupImages.of(List.of(thumbnail, detail));
+
+            // when
+            productGroup.replaceImages(newImages);
+
+            // then
+            assertThat(productGroup.images()).hasSize(2);
+            assertThat(productGroup.hasThumbnailImage()).isTrue();
+        }
+
+        @Test
+        @DisplayName("이미지를 교체하면 이전 이미지는 제거된다")
+        void replaceImagesRemovesPreviousImages() {
+            // given
+            var productGroup = ProductGroupFixtures.activeProductGroup();
+            assertThat(productGroup.images()).hasSize(2);
+
+            var newThumbnail = ProductGroupFixtures.thumbnailImage();
+            ProductGroupImages newImages = ProductGroupImages.of(List.of(newThumbnail));
+
+            // when
+            productGroup.replaceImages(newImages);
+
+            // then
+            assertThat(productGroup.images()).hasSize(1);
+            assertThat(productGroup.hasThumbnailImage()).isTrue();
         }
     }
 

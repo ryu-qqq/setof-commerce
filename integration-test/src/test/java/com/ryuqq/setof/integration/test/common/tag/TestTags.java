@@ -126,6 +126,9 @@ public final class TestTags {
     /** 셀러 관리자 관련 테스트 */
     public static final String SELLER_ADMIN = "seller-admin";
 
+    /** 상품그룹 관련 테스트 */
+    public static final String PRODUCT_GROUP = "product-group";
+
     // ========================================
     // Migration Tags (마이그레이션 태그)
     // ========================================

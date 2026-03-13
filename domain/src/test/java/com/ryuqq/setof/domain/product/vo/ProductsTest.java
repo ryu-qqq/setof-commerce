@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.ryuqq.setof.domain.common.CommonVoFixtures;
 import com.ryuqq.setof.domain.common.vo.Money;
 import com.ryuqq.setof.domain.product.aggregate.Product;
-import com.ryuqq.setof.domain.product.exception.ProductNotFoundException;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import com.ryuqq.setof.domain.productgroup.id.SellerOptionValueId;
 import com.setof.commerce.domain.product.ProductFixtures;
@@ -126,15 +125,19 @@ class ProductsTest {
         }
 
         @Test
-        @DisplayName("존재하지 않는 productId로 수정하면 ProductNotFoundException이 발생한다")
-        void throwExceptionWhenProductIdNotFound() {
+        @DisplayName("존재하지 않는 productId로 수정하면 레거시 이관으로 간주하여 added로 처리한다")
+        void unknownProductIdTreatedAsAdded() {
             // given
             Products products = ProductFixtures.singleProductsVO(); // ID: 1L
             ProductUpdateData updateData = ProductFixtures.defaultProductUpdateData(999L); // 없는 ID
 
-            // when & then
-            assertThatThrownBy(() -> products.update(updateData))
-                    .isInstanceOf(ProductNotFoundException.class);
+            // when
+            ProductDiff diff = products.update(updateData);
+
+            // then
+            assertThat(diff.added()).hasSize(1);
+            assertThat(diff.removed()).hasSize(1); // 기존 1L은 매칭 안 됨 → removed
+            assertThat(diff.retained()).isEmpty();
         }
 
         @Test

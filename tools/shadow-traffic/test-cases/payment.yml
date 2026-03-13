@@ -655,6 +655,9 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy 400(validation 우선) vs New 401(auth 우선). New가 HTTP 표준에 맞음. 의도적 차이 수용."
 
   # --- 직접 구매: orders 빈 배열 → 400 Bean Validation 실패 (@Size(min=1)) ---
   - name: "payment_create_direct_empty_orders"
@@ -787,6 +790,9 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy 400(validation 우선) vs New 401(auth 우선). New가 HTTP 표준에 맞음. 의도적 차이 수용."
 
   # --- 직접 구매: 배송지 receiverName 미입력 → 400 Bean Validation 실패 (@NotNull) ---
   - name: "payment_create_direct_missing_receiver_name"
@@ -819,6 +825,9 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy 400(validation 우선) vs New 401(auth 우선). New가 HTTP 표준에 맞음. 의도적 차이 수용."
 
   # --- 직접 구매: 마일리지 100원 단위 위반 → 400 InvalidCashAndMileageUseException ---
   # 마일리지 사용 시 100원 단위여야 함 (예: 150은 불가)
@@ -959,6 +968,9 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff:
+      fields: ["status"]
+      reason: "Legacy 400(validation 우선) vs New 401(auth 우선). New가 HTTP 표준에 맞음. 의도적 차이 수용."
 
   # --- 장바구니 결제: 존재하지 않는 cartId → 오류 (카트 조회 실패 또는 가격 검증 실패) ---
   - name: "payment_create_cart_invalid_cart_id"

@@ -18,6 +18,56 @@
 
 ---
 
+## 🔴 핵심 모듈 vs 레거시 모듈 (반드시 준수)
+
+### 모듈 구분
+
+| 구분 | 모듈 | 설명 |
+|------|------|------|
+| **핵심 (New)** | `domain`, `application` | 새로 설계한 고도화/리팩토링 모듈. **진실의 원천** |
+| **레거시** | `rest-api v1`, `rest-api-admin v1`, `persistence-mysql-legacy` | 기존 운영 코드. 점진적 마이그레이션 대상 |
+| **어댑터** | `rest-api v2`, `rest-api-admin v2`, `persistence-mysql` | 핵심과 외부를 연결하는 브릿지 |
+
+### 의존성 방향 원칙
+
+> **Domain과 Application은 독립적인 핵심이다. 절대로 레거시에 맞추지 않는다.**
+
+```text
+[레거시 요청] → Adapter-In(Mapper) → Application UseCase → Domain
+                                                              ↓
+[레거시 DB] ← Adapter-Out(Mapper) ← Domain 객체 반환 ← Domain
+```
+
+**인바운드 (외부 → 내부)**
+- 레거시 v1 Controller나 외부 요청이 들어오면, **Adapter-In의 Mapper가 변환**하여 Application UseCase 형태에 맞춘다
+- Application의 UseCase 시그니처를 레거시 요청 형태에 맞추는 것은 **금지**
+
+**아웃바운드 (내부 → 외부)**
+- Domain 객체를 그대로 반환하면, **Adapter-Out의 Mapper/Repository가 자기 DB 구조에 맞춰 저장**한다
+- Domain 객체의 필드나 구조를 레거시 DB 스키마에 맞추는 것은 **금지**
+
+### 위반 사례 (하지 말 것)
+
+```java
+// ❌ Domain 객체에 레거시 DB 컬럼명을 그대로 반영
+public class Product {
+    private Long old_product_seq;  // 레거시 PK 이름 그대로 사용
+}
+
+// ❌ Application UseCase가 레거시 DTO를 직접 받음
+public interface RegisterProductUseCase {
+    void execute(LegacyProductRequest request);  // 레거시 DTO 의존
+}
+
+// ✅ Adapter-In Mapper가 변환
+// Controller(v1) → Mapper.toCommand(legacyRequest) → UseCase.execute(command)
+
+// ✅ Adapter-Out Mapper가 변환
+// Domain Product → PersistenceMapper.toEntity(product) → LegacyEntity 저장
+```
+
+---
+
 ## 🧰 MCP 도구 사용법
 
 이 프로젝트의 코딩 컨벤션은 **Convention Hub DB**에서 관리됩니다.

@@ -129,7 +129,7 @@ public class ProductGroupDescriptionCommandController {
     @PutMapping(
             ProductGroupDescriptionAdminEndpoints.ID
                     + ProductGroupDescriptionAdminEndpoints.DESCRIPTION)
-    public ResponseEntity<ApiResponse<Void>> update(
+    public ResponseEntity<Void> update(
             @Parameter(description = "상품 그룹 ID", required = true)
                     @PathVariable(ProductGroupDescriptionAdminEndpoints.PATH_PRODUCT_GROUP_ID)
                     Long productGroupId,
@@ -139,6 +139,6 @@ public class ProductGroupDescriptionCommandController {
                 mapper.toUpdateCommand(productGroupId, request);
         updateUseCase.execute(command);
 
-        return ResponseEntity.ok(ApiResponse.of());
+        return ResponseEntity.noContent().build();
     }
 }

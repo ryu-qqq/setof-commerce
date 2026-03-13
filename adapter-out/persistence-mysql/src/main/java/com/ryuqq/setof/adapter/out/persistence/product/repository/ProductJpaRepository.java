@@ -1,6 +1,7 @@
 package com.ryuqq.setof.adapter.out.persistence.product.repository;
 
 import com.ryuqq.setof.adapter.out.persistence.product.entity.ProductJpaEntity;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -11,4 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author ryu-qqq
  * @since 1.0.0
  */
-public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Long> {}
+public interface ProductJpaRepository extends JpaRepository<ProductJpaEntity, Long> {
+
+    List<ProductJpaEntity> findByProductGroupId(Long productGroupId);
+}

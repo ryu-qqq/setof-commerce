@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -34,6 +35,9 @@ import org.springframework.transaction.PlatformTransactionManager;
         transactionManagerRef = "legacyTransactionManager")
 public class LegacyJpaConfig {
 
+    @Value("${datasource.legacy.hibernate.ddl-auto:none}")
+    private String ddlAuto;
+
     @Bean
     @ConfigurationProperties(prefix = "datasource.legacy.hikari")
     public DataSource legacyDataSource() {
@@ -51,7 +55,7 @@ public class LegacyJpaConfig {
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setShowSql(false);
-        vendorAdapter.setGenerateDdl(false);
+        vendorAdapter.setGenerateDdl(!"none".equals(ddlAuto));
         factory.setJpaVendorAdapter(vendorAdapter);
 
         return factory;

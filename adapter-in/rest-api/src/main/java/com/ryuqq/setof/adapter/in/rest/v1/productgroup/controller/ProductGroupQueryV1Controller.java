@@ -10,11 +10,11 @@ import com.ryuqq.setof.adapter.in.rest.v1.productgroup.mapper.ProductGroupV1ApiM
 import com.ryuqq.setof.application.productgroup.dto.query.ProductGroupSearchParams;
 import com.ryuqq.setof.application.productgroup.dto.response.ProductGroupDetailResult;
 import com.ryuqq.setof.application.productgroup.dto.response.ProductGroupSliceResult;
-import com.ryuqq.setof.application.productgroup.port.in.query.FetchProductGroupDetailUseCase;
-import com.ryuqq.setof.application.productgroup.port.in.query.FetchProductGroupsByBrandUseCase;
-import com.ryuqq.setof.application.productgroup.port.in.query.FetchProductGroupsByIdsUseCase;
-import com.ryuqq.setof.application.productgroup.port.in.query.FetchProductGroupsBySellerUseCase;
-import com.ryuqq.setof.application.productgroup.port.in.query.FetchProductGroupsUseCase;
+import com.ryuqq.setof.application.productgroup.port.in.query.GetProductGroupDetailUseCase;
+import com.ryuqq.setof.application.productgroup.port.in.query.GetProductGroupsByBrandUseCase;
+import com.ryuqq.setof.application.productgroup.port.in.query.GetProductGroupsByIdsUseCase;
+import com.ryuqq.setof.application.productgroup.port.in.query.GetProductGroupsBySellerUseCase;
+import com.ryuqq.setof.application.productgroup.port.in.query.GetProductGroupsUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -60,25 +60,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(ProductGroupV1Endpoints.BASE_V1)
 public class ProductGroupQueryV1Controller {
 
-    private final FetchProductGroupDetailUseCase fetchDetailUseCase;
-    private final FetchProductGroupsUseCase fetchProductGroupsUseCase;
-    private final FetchProductGroupsByIdsUseCase fetchByIdsUseCase;
-    private final FetchProductGroupsByBrandUseCase fetchByBrandUseCase;
-    private final FetchProductGroupsBySellerUseCase fetchBySellerUseCase;
+    private final GetProductGroupDetailUseCase getDetailUseCase;
+    private final GetProductGroupsUseCase getProductGroupsUseCase;
+    private final GetProductGroupsByIdsUseCase getByIdsUseCase;
+    private final GetProductGroupsByBrandUseCase getByBrandUseCase;
+    private final GetProductGroupsBySellerUseCase getBySellerUseCase;
     private final ProductGroupV1ApiMapper mapper;
 
     public ProductGroupQueryV1Controller(
-            FetchProductGroupDetailUseCase fetchDetailUseCase,
-            FetchProductGroupsUseCase fetchProductGroupsUseCase,
-            FetchProductGroupsByIdsUseCase fetchByIdsUseCase,
-            FetchProductGroupsByBrandUseCase fetchByBrandUseCase,
-            FetchProductGroupsBySellerUseCase fetchBySellerUseCase,
+            GetProductGroupDetailUseCase getDetailUseCase,
+            GetProductGroupsUseCase getProductGroupsUseCase,
+            GetProductGroupsByIdsUseCase getByIdsUseCase,
+            GetProductGroupsByBrandUseCase getByBrandUseCase,
+            GetProductGroupsBySellerUseCase getBySellerUseCase,
             ProductGroupV1ApiMapper mapper) {
-        this.fetchDetailUseCase = fetchDetailUseCase;
-        this.fetchProductGroupsUseCase = fetchProductGroupsUseCase;
-        this.fetchByIdsUseCase = fetchByIdsUseCase;
-        this.fetchByBrandUseCase = fetchByBrandUseCase;
-        this.fetchBySellerUseCase = fetchBySellerUseCase;
+        this.getDetailUseCase = getDetailUseCase;
+        this.getProductGroupsUseCase = getProductGroupsUseCase;
+        this.getByIdsUseCase = getByIdsUseCase;
+        this.getByBrandUseCase = getByBrandUseCase;
+        this.getBySellerUseCase = getBySellerUseCase;
         this.mapper = mapper;
     }
 
@@ -105,12 +105,12 @@ public class ProductGroupQueryV1Controller {
                 description = "데이터 없음 (레거시 호환: HTTP 200, body status 404)")
     })
     @GetMapping("/product/group/{productGroupId}")
-    public ResponseEntity<V1ApiResponse<ProductGroupDetailV1ApiResponse>> fetchProductGroup(
+    public ResponseEntity<V1ApiResponse<ProductGroupDetailV1ApiResponse>> getProductGroup(
             @Parameter(description = "상품그룹 ID", required = true)
                     @PathVariable(ProductGroupV1Endpoints.PATH_PRODUCT_GROUP_ID)
                     Long productGroupId) {
 
-        ProductGroupDetailResult result = fetchDetailUseCase.execute(productGroupId);
+        ProductGroupDetailResult result = getDetailUseCase.execute(productGroupId);
         ProductGroupDetailV1ApiResponse response = mapper.toDetailResponse(result);
         return ResponseEntity.ok(V1ApiResponse.success(response));
     }
@@ -135,11 +135,11 @@ public class ProductGroupQueryV1Controller {
                 description = "조회 성공")
     })
     @GetMapping("/products/group")
-    public ResponseEntity<V1ApiResponse<ProductGroupSliceV1ApiResponse>> fetchProductGroups(
+    public ResponseEntity<V1ApiResponse<ProductGroupSliceV1ApiResponse>> getProductGroups(
             @ParameterObject @ModelAttribute SearchProductGroupsCursorV1ApiRequest request) {
 
         ProductGroupSearchParams params = mapper.toSearchParams(request);
-        ProductGroupSliceResult result = fetchProductGroupsUseCase.execute(params);
+        ProductGroupSliceResult result = getProductGroupsUseCase.execute(params);
         ProductGroupSliceV1ApiResponse response = mapper.toSliceResponse(result);
 
         return ResponseEntity.ok(V1ApiResponse.success(response));
@@ -167,11 +167,11 @@ public class ProductGroupQueryV1Controller {
     })
     @GetMapping("/products/group/recent")
     public ResponseEntity<V1ApiResponse<List<ProductGroupThumbnailV1ApiResponse>>>
-            fetchProductGroupLikes(
+            getProductGroupLikes(
                     @Parameter(description = "조회할 상품그룹 ID 목록", required = true) @RequestParam
                             List<Long> productGroupIds) {
 
-        ProductGroupSliceResult result = fetchByIdsUseCase.execute(productGroupIds);
+        ProductGroupSliceResult result = getByIdsUseCase.execute(productGroupIds);
         List<ProductGroupThumbnailV1ApiResponse> response =
                 mapper.toThumbnailListResponse(result.content());
 
@@ -201,7 +201,7 @@ public class ProductGroupQueryV1Controller {
     })
     @GetMapping("/product/group/brand/{brandId}")
     public ResponseEntity<V1ApiResponse<List<ProductGroupThumbnailV1ApiResponse>>>
-            fetchProductGroupWithBrand(
+            getProductGroupWithBrand(
                     @Parameter(description = "브랜드 ID", required = true)
                             @PathVariable(ProductGroupV1Endpoints.PATH_BRAND_ID)
                             Long brandId,
@@ -210,7 +210,7 @@ public class ProductGroupQueryV1Controller {
                             Integer size) {
 
         int pageSize = size != null ? size : 20;
-        ProductGroupSliceResult result = fetchByBrandUseCase.execute(brandId, pageSize);
+        ProductGroupSliceResult result = getByBrandUseCase.execute(brandId, pageSize);
         List<ProductGroupThumbnailV1ApiResponse> response =
                 mapper.toThumbnailListResponse(result.content());
 
@@ -240,7 +240,7 @@ public class ProductGroupQueryV1Controller {
     })
     @GetMapping("/product/group/seller/{sellerId}")
     public ResponseEntity<V1ApiResponse<List<ProductGroupThumbnailV1ApiResponse>>>
-            fetchProductGroupWithSeller(
+            getProductGroupWithSeller(
                     @Parameter(description = "셀러 ID", required = true)
                             @PathVariable(ProductGroupV1Endpoints.PATH_SELLER_ID)
                             Long sellerId,
@@ -249,7 +249,7 @@ public class ProductGroupQueryV1Controller {
                             Integer size) {
 
         int pageSize = size != null ? size : 20;
-        ProductGroupSliceResult result = fetchBySellerUseCase.execute(sellerId, pageSize);
+        ProductGroupSliceResult result = getBySellerUseCase.execute(sellerId, pageSize);
         List<ProductGroupThumbnailV1ApiResponse> response =
                 mapper.toThumbnailListResponse(result.content());
 

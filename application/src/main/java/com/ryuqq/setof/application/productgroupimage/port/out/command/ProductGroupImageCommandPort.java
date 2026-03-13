@@ -28,4 +28,11 @@ public interface ProductGroupImageCommandPort {
      * @param productGroupId 상품그룹 ID
      */
     void persistAll(List<ProductGroupImage> images, Long productGroupId);
+
+    /**
+     * 상품그룹에 속한 이미지를 모두 소프트 삭제합니다.
+     *
+     * @param productGroupId 상품그룹 ID
+     */
+    void softDeleteByProductGroupId(Long productGroupId);
 }

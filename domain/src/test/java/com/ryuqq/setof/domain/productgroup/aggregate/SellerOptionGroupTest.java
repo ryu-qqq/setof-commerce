@@ -72,6 +72,24 @@ class SellerOptionGroupTest {
             // then
             assertThat(group.optionValues()).hasSize(1);
         }
+
+        @Test
+        @DisplayName("빈 optionValues 리스트로 신규 생성할 수 있다")
+        void createWithEmptyOptionValues() {
+            // when
+            SellerOptionGroup group =
+                    SellerOptionGroup.forNew(
+                            ProductGroupId.of(1L),
+                            ProductGroupFixtures.defaultOptionGroupName(),
+                            1,
+                            List.of());
+
+            // then
+            assertThat(group).isNotNull();
+            assertThat(group.optionValueCount()).isZero();
+            assertThat(group.optionValues()).isEmpty();
+            assertThat(group.id().isNew()).isTrue();
+        }
     }
 
     @Nested

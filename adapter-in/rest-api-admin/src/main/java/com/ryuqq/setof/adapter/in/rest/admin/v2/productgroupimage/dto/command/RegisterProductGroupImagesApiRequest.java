@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -20,7 +20,7 @@ import java.util.List;
 @Schema(description = "상품 그룹 이미지 등록 요청")
 public record RegisterProductGroupImagesApiRequest(
         @Schema(description = "등록할 이미지 목록", requiredMode = Schema.RequiredMode.REQUIRED)
-                @NotNull(message = "이미지 목록은 필수입니다")
+                @NotEmpty(message = "이미지는 최소 1개 이상 필요합니다")
                 @Valid
                 List<ImageApiRequest> images) {
 

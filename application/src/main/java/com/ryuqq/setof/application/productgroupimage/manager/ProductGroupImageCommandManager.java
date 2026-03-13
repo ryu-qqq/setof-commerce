@@ -31,4 +31,8 @@ public class ProductGroupImageCommandManager {
     public void persistAll(List<ProductGroupImage> images, Long productGroupId) {
         commandPort.persistAll(images, productGroupId);
     }
+
+    public void softDeleteByProductGroupId(Long productGroupId) {
+        commandPort.softDeleteByProductGroupId(productGroupId);
+    }
 }

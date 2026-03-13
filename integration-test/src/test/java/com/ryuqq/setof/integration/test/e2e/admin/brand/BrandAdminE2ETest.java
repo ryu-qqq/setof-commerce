@@ -10,6 +10,7 @@ import com.ryuqq.setof.adapter.out.persistence.brand.repository.BrandJpaReposito
 import com.ryuqq.setof.integration.test.common.base.AdminE2ETestBase;
 import com.ryuqq.setof.integration.test.common.tag.TestTags;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -21,7 +22,10 @@ import org.springframework.http.HttpStatus;
  * Brand Admin E2E 통합 테스트.
  *
  * <p>브랜드 Admin API의 전체 흐름을 테스트합니다. REST API -> Application -> Domain -> Repository -> DB
+ *
+ * <p>현재 v1 브랜드 엔드포인트는 rest-api(web) 모듈에만 존재하며 rest-api-admin에는 없음. v2 Admin 컨트롤러 추가 시 활성화 필요.
  */
+@Disabled("v1 브랜드 엔드포인트는 rest-api-admin 모듈에 존재하지 않음 - v2 Admin 컨트롤러 추가 시 활성화")
 @Tag(TestTags.BRAND)
 @DisplayName("브랜드 Admin API E2E 테스트")
 class BrandAdminE2ETest extends AdminE2ETestBase {

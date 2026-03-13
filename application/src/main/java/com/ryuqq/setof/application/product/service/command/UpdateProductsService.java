@@ -5,6 +5,7 @@ import com.ryuqq.setof.application.product.dto.command.UpdateProductsCommand;
 import com.ryuqq.setof.application.product.factory.ProductCommandFactory;
 import com.ryuqq.setof.application.product.internal.ProductCommandCoordinator;
 import com.ryuqq.setof.application.product.port.in.command.UpdateProductsUseCase;
+import com.ryuqq.setof.application.productgroup.manager.ProductGroupReadManager;
 import com.ryuqq.setof.application.selleroption.dto.command.UpdateSellerOptionGroupsCommand;
 import com.ryuqq.setof.application.selleroption.dto.result.SellerOptionUpdateResult;
 import com.ryuqq.setof.application.selleroption.internal.SellerOptionCommandCoordinator;
@@ -20,25 +21,31 @@ public class UpdateProductsService implements UpdateProductsUseCase {
     private final SellerOptionCommandCoordinator sellerOptionCoordinator;
     private final ProductCommandFactory productCommandFactory;
     private final ProductCommandCoordinator productCoordinator;
+    private final ProductGroupReadManager productGroupReadManager;
 
     public UpdateProductsService(
             SellerOptionCommandCoordinator sellerOptionCoordinator,
             ProductCommandFactory productCommandFactory,
-            ProductCommandCoordinator productCoordinator) {
+            ProductCommandCoordinator productCoordinator,
+            ProductGroupReadManager productGroupReadManager) {
         this.sellerOptionCoordinator = sellerOptionCoordinator;
         this.productCommandFactory = productCommandFactory;
         this.productCoordinator = productCoordinator;
+        this.productGroupReadManager = productGroupReadManager;
     }
 
     @Override
     @Transactional
     public void execute(UpdateProductsCommand command) {
+        // 0. 상품그룹 존재 검증
+        ProductGroupId pgId = ProductGroupId.of(command.productGroupId());
+        productGroupReadManager.getById(pgId);
+
         // 1. 옵션 수정 → resolvedActiveValueIds 획득
         UpdateSellerOptionGroupsCommand optionCmd = productCommandFactory.toOptionCommand(command);
         SellerOptionUpdateResult optionResult = sellerOptionCoordinator.update(optionCmd);
 
         // 2. Factory가 이름 → ID resolve + ProductUpdateData 생성
-        ProductGroupId pgId = ProductGroupId.of(command.productGroupId());
         List<ProductDiffUpdateEntry> entries = productCommandFactory.toEntries(command.products());
         ProductUpdateData updateData =
                 productCommandFactory.toUpdateData(

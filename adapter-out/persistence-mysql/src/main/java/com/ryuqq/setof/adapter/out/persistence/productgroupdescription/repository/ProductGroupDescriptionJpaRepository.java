@@ -1,6 +1,7 @@
 package com.ryuqq.setof.adapter.out.persistence.productgroupdescription.repository;
 
 import com.ryuqq.setof.adapter.out.persistence.productgroupdescription.entity.ProductGroupDescriptionJpaEntity;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -12,4 +13,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @since 1.0.0
  */
 public interface ProductGroupDescriptionJpaRepository
-        extends JpaRepository<ProductGroupDescriptionJpaEntity, Long> {}
+        extends JpaRepository<ProductGroupDescriptionJpaEntity, Long> {
+
+    Optional<ProductGroupDescriptionJpaEntity> findByProductGroupId(Long productGroupId);
+}

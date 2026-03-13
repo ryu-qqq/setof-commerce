@@ -40,12 +40,7 @@ public class BrandConditionBuilder {
                 : null;
     }
 
-    /**
-     * 검색 필드 기반 검색 조건.
-     *
-     * <p>persistence-mysql brand 테이블은 displayName 단일 필드만 있음. DISPLAY_KOREAN_NAME,
-     * DISPLAY_ENGLISH_NAME은 displayName으로 매핑.
-     */
+    /** 검색 필드 기반 검색 조건. */
     public BooleanExpression searchFieldContains(BrandSearchField searchField, String searchWord) {
         if (searchWord == null || searchWord.isBlank()) {
             return null;
@@ -55,8 +50,10 @@ public class BrandConditionBuilder {
         }
         return switch (searchField) {
             case BRAND_NAME -> brandJpaEntity.brandName.containsIgnoreCase(searchWord);
-            case DISPLAY_KOREAN_NAME, DISPLAY_ENGLISH_NAME ->
-                    brandJpaEntity.displayName.containsIgnoreCase(searchWord);
+            case DISPLAY_KOREAN_NAME ->
+                    brandJpaEntity.displayKoreanName.containsIgnoreCase(searchWord);
+            case DISPLAY_ENGLISH_NAME ->
+                    brandJpaEntity.displayEnglishName.containsIgnoreCase(searchWord);
         };
     }
 

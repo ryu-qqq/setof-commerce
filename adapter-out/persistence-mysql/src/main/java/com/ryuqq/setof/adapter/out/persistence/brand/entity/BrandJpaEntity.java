@@ -37,8 +37,11 @@ public class BrandJpaEntity extends SoftDeletableEntity {
     @Column(name = "brand_icon_image_url", nullable = false, length = 500)
     private String brandIconImageUrl;
 
-    @Column(name = "display_name", nullable = false, length = 100)
-    private String displayName;
+    @Column(name = "display_korean_name", nullable = false, length = 100)
+    private String displayKoreanName;
+
+    @Column(name = "display_english_name", nullable = false, length = 100)
+    private String displayEnglishName;
 
     @Column(name = "display_order", nullable = false)
     private int displayOrder;
@@ -54,7 +57,8 @@ public class BrandJpaEntity extends SoftDeletableEntity {
             Long id,
             String brandName,
             String brandIconImageUrl,
-            String displayName,
+            String displayKoreanName,
+            String displayEnglishName,
             int displayOrder,
             boolean displayed,
             Instant createdAt,
@@ -64,7 +68,8 @@ public class BrandJpaEntity extends SoftDeletableEntity {
         this.id = id;
         this.brandName = brandName;
         this.brandIconImageUrl = brandIconImageUrl;
-        this.displayName = displayName;
+        this.displayKoreanName = displayKoreanName;
+        this.displayEnglishName = displayEnglishName;
         this.displayOrder = displayOrder;
         this.displayed = displayed;
     }
@@ -73,7 +78,8 @@ public class BrandJpaEntity extends SoftDeletableEntity {
             Long id,
             String brandName,
             String brandIconImageUrl,
-            String displayName,
+            String displayKoreanName,
+            String displayEnglishName,
             int displayOrder,
             boolean displayed,
             Instant createdAt,
@@ -83,7 +89,8 @@ public class BrandJpaEntity extends SoftDeletableEntity {
                 id,
                 brandName,
                 brandIconImageUrl,
-                displayName,
+                displayKoreanName,
+                displayEnglishName,
                 displayOrder,
                 displayed,
                 createdAt,
@@ -103,8 +110,12 @@ public class BrandJpaEntity extends SoftDeletableEntity {
         return brandIconImageUrl;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getDisplayKoreanName() {
+        return displayKoreanName;
+    }
+
+    public String getDisplayEnglishName() {
+        return displayEnglishName;
     }
 
     public int getDisplayOrder() {

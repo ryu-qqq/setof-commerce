@@ -12,7 +12,8 @@ import com.ryuqq.setof.domain.brand.query.BrandSearchField;
 import com.ryuqq.setof.domain.brand.query.BrandSortKey;
 import com.ryuqq.setof.domain.brand.vo.BrandIconImageUrl;
 import com.ryuqq.setof.domain.brand.vo.BrandName;
-import com.ryuqq.setof.domain.brand.vo.DisplayName;
+import com.ryuqq.setof.domain.brand.vo.DisplayEnglishName;
+import com.ryuqq.setof.domain.brand.vo.DisplayKoreanName;
 import com.ryuqq.setof.domain.brand.vo.DisplayOrder;
 import com.ryuqq.setof.domain.common.vo.QueryContext;
 import com.ryuqq.setof.storage.legacy.brand.LegacyBrandEntityFixtures;
@@ -351,7 +352,8 @@ class LegacyBrandQueryAdapterTest {
                 BrandId.of(id),
                 BrandName.of(brandName),
                 BrandIconImageUrl.of("https://example.com/icon.png"),
-                DisplayName.of(brandName + " 표시명"),
+                DisplayKoreanName.of(brandName),
+                DisplayEnglishName.of(brandName),
                 DisplayOrder.of(1),
                 displayed,
                 null,

@@ -1,12 +1,26 @@
 package com.ryuqq.setof.application.productgroup.internal;
 
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeResult;
+import com.ryuqq.setof.application.product.port.out.query.ProductQueryPort;
+import com.ryuqq.setof.application.productdescription.port.out.query.ProductGroupDescriptionQueryPort;
+import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroupDetailCompositeResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailBundle;
+import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeQueryResult;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupListBundle;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupThumbnailCompositeResult;
 import com.ryuqq.setof.application.productgroup.manager.ProductGroupCompositionReadManager;
+import com.ryuqq.setof.application.productgroup.port.out.query.ProductGroupCompositeQueryPort;
+import com.ryuqq.setof.application.productgroup.port.out.query.ProductGroupQueryPort;
+import com.ryuqq.setof.application.productnotice.port.out.query.ProductNoticeQueryPort;
 import com.ryuqq.setof.domain.legacy.product.dto.query.LegacyProductGroupSearchCondition;
 import com.ryuqq.setof.domain.legacy.search.dto.query.LegacySearchCondition;
+import com.ryuqq.setof.domain.product.aggregate.Product;
+import com.ryuqq.setof.domain.productdescription.aggregate.ProductGroupDescription;
+import com.ryuqq.setof.domain.productgroup.aggregate.ProductGroup;
+import com.ryuqq.setof.domain.productgroup.exception.ProductGroupNotFoundException;
+import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
+import com.ryuqq.setof.domain.productnotice.aggregate.ProductNotice;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +38,25 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductGroupReadFacade {
 
     private final ProductGroupCompositionReadManager compositionReadManager;
+    private final ProductGroupCompositeQueryPort compositeQueryPort;
+    private final ProductGroupQueryPort productGroupQueryPort;
+    private final ProductQueryPort productQueryPort;
+    private final ProductGroupDescriptionQueryPort descriptionQueryPort;
+    private final ProductNoticeQueryPort noticeQueryPort;
 
-    public ProductGroupReadFacade(ProductGroupCompositionReadManager compositionReadManager) {
+    public ProductGroupReadFacade(
+            ProductGroupCompositionReadManager compositionReadManager,
+            ProductGroupCompositeQueryPort compositeQueryPort,
+            ProductGroupQueryPort productGroupQueryPort,
+            ProductQueryPort productQueryPort,
+            ProductGroupDescriptionQueryPort descriptionQueryPort,
+            ProductNoticeQueryPort noticeQueryPort) {
         this.compositionReadManager = compositionReadManager;
+        this.compositeQueryPort = compositeQueryPort;
+        this.productGroupQueryPort = productGroupQueryPort;
+        this.productQueryPort = productQueryPort;
+        this.descriptionQueryPort = descriptionQueryPort;
+        this.noticeQueryPort = noticeQueryPort;
     }
 
     /**
@@ -39,13 +69,44 @@ public class ProductGroupReadFacade {
      * @throws IllegalArgumentException 상품그룹이 존재하지 않을 경우
      */
     @Transactional(readOnly = true)
-    public ProductGroupDetailCompositeResult getDetailBundle(Long productGroupId) {
+    public LegacyProductGroupDetailCompositeResult getDetailBundle(Long productGroupId) {
         return compositionReadManager
                 .fetchProductGroupDetail(productGroupId)
-                .orElseThrow(
-                        () ->
-                                new IllegalArgumentException(
-                                        "ProductGroup not found: " + productGroupId));
+                .orElseThrow(() -> new ProductGroupNotFoundException(productGroupId));
+    }
+
+    /**
+     * 상품그룹 상세 조회 번들 (Admin/Web 공용).
+     *
+     * <p>Composition 쿼리(기본 정보 + 정책) + Aggregate(이미지, 옵션 구조) + Products + Description + Notice를
+     * 조합합니다. Assembler에서 용도별(Admin/Web)로 다르게 조립합니다.
+     *
+     * @param productGroupId 상품그룹 ID
+     * @return 상세 번들
+     * @throws ProductGroupNotFoundException 상품그룹이 존재하지 않을 경우
+     */
+    @Transactional(readOnly = true)
+    public ProductGroupDetailBundle getProductGroupDetailBundle(Long productGroupId) {
+        ProductGroupId pgId = ProductGroupId.of(productGroupId);
+
+        ProductGroupDetailCompositeQueryResult queryResult =
+                compositeQueryPort
+                        .findDetailCompositeById(productGroupId)
+                        .orElseThrow(() -> new ProductGroupNotFoundException(productGroupId));
+
+        ProductGroup group =
+                productGroupQueryPort
+                        .findById(pgId)
+                        .orElseThrow(() -> new ProductGroupNotFoundException(productGroupId));
+
+        List<Product> products = productQueryPort.findByProductGroupId(pgId);
+
+        Optional<ProductGroupDescription> description =
+                descriptionQueryPort.findByProductGroupId(pgId);
+
+        Optional<ProductNotice> notice = noticeQueryPort.findByProductGroupId(pgId);
+
+        return new ProductGroupDetailBundle(queryResult, group, products, description, notice);
     }
 
     /**

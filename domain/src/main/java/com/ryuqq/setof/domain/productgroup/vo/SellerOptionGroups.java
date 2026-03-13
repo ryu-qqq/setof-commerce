@@ -159,12 +159,9 @@ public record SellerOptionGroups(List<SellerOptionGroup> groups) {
         Set<Long> matchedGroupIds = new HashSet<>();
 
         for (SellerOptionGroupUpdateData.GroupEntry entry : updateData.groupEntries()) {
-            if (entry.sellerOptionGroupId() != null) {
+            if (entry.sellerOptionGroupId() != null
+                    && existingById.containsKey(entry.sellerOptionGroupId())) {
                 SellerOptionGroup existing = existingById.get(entry.sellerOptionGroupId());
-                if (existing == null) {
-                    throw new IllegalArgumentException(
-                            "존재하지 않는 셀러 옵션 그룹입니다: " + entry.sellerOptionGroupId());
-                }
                 matchedGroupIds.add(entry.sellerOptionGroupId());
 
                 existing.updateName(OptionGroupName.of(entry.optionGroupName()));
@@ -176,7 +173,7 @@ public record SellerOptionGroups(List<SellerOptionGroup> groups) {
                 collectOrderedActiveValueIds(valueDiff, entry.values(), orderedActiveValueIds);
             } else {
                 SellerOptionGroup newGroup =
-                        createGroupFromEntry(entry, updateData.productGroupId());
+                        createGroupFromEntryWithId(entry, updateData.productGroupId());
                 added.add(newGroup);
                 for (SellerOptionValue v : newGroup.optionValues()) {
                     orderedActiveValueIds.add(v.id());
@@ -212,19 +209,16 @@ public record SellerOptionGroups(List<SellerOptionGroup> groups) {
         Set<Long> matchedValueIds = new HashSet<>();
 
         for (SellerOptionGroupUpdateData.ValueEntry entry : valueEntries) {
-            if (entry.sellerOptionValueId() != null) {
+            if (entry.sellerOptionValueId() != null
+                    && existingById.containsKey(entry.sellerOptionValueId())) {
                 SellerOptionValue existingValue = existingById.get(entry.sellerOptionValueId());
-                if (existingValue == null) {
-                    throw new IllegalArgumentException(
-                            "존재하지 않는 셀러 옵션 값입니다: " + entry.sellerOptionValueId());
-                }
                 matchedValueIds.add(entry.sellerOptionValueId());
 
                 existingValue.updateName(OptionValueName.of(entry.optionValueName()));
                 existingValue.updateSortOrder(entry.sortOrder());
                 retainedValues.add(existingValue);
             } else {
-                SellerOptionValue newValue = createValueFromEntry(entry, existing.id());
+                SellerOptionValue newValue = createValueFromEntryWithId(entry, existing.id());
                 addedValues.add(newValue);
             }
         }
@@ -241,27 +235,45 @@ public record SellerOptionGroups(List<SellerOptionGroup> groups) {
         return SellerOptionValueDiff.of(addedValues, removedValues, retainedValues);
     }
 
-    /** entry → SellerOptionGroup 신규 생성. */
-    private SellerOptionGroup createGroupFromEntry(
+    /** entry → SellerOptionGroup 신규 생성 (레거시 ID 지원). */
+    private SellerOptionGroup createGroupFromEntryWithId(
             SellerOptionGroupUpdateData.GroupEntry entry,
             com.ryuqq.setof.domain.productgroup.id.ProductGroupId productGroupId) {
-        SellerOptionGroupId tempGroupId = SellerOptionGroupId.forNew();
+        SellerOptionGroupId groupId =
+                entry.sellerOptionGroupId() != null
+                        ? SellerOptionGroupId.of(entry.sellerOptionGroupId())
+                        : SellerOptionGroupId.forNew();
         OptionGroupName groupName = OptionGroupName.of(entry.optionGroupName());
 
         List<SellerOptionValue> values =
-                entry.values().stream().map(v -> createValueFromEntry(v, tempGroupId)).toList();
+                entry.values().stream().map(v -> createValueFromEntryWithId(v, groupId)).toList();
 
-        return SellerOptionGroup.forNew(productGroupId, groupName, entry.sortOrder(), values);
+        return SellerOptionGroup.reconstitute(
+                groupId,
+                productGroupId,
+                groupName,
+                entry.sortOrder(),
+                values,
+                com.ryuqq.setof.domain.common.vo.DeletionStatus.active());
     }
 
-    /** entry → SellerOptionValue 신규 생성. */
-    private SellerOptionValue createValueFromEntry(
+    /** entry → SellerOptionValue 신규 생성 (레거시 ID 지원). */
+    private SellerOptionValue createValueFromEntryWithId(
             SellerOptionGroupUpdateData.ValueEntry entry, SellerOptionGroupId groupId) {
         OptionValueName valueName = OptionValueName.of(entry.optionValueName());
+        if (entry.sellerOptionValueId() != null) {
+            SellerOptionValueId valueId = SellerOptionValueId.of(entry.sellerOptionValueId());
+            return SellerOptionValue.reconstitute(
+                    valueId,
+                    groupId,
+                    valueName,
+                    entry.sortOrder(),
+                    com.ryuqq.setof.domain.common.vo.DeletionStatus.active());
+        }
         return SellerOptionValue.forNew(groupId, valueName, entry.sortOrder());
     }
 
-    /** retained Group 내 활성 SellerOptionValueId를 entry 순서대로 수집. */
+    /** retained/added Group 내 활성 SellerOptionValueId를 entry 순서대로 수집. */
     private void collectOrderedActiveValueIds(
             SellerOptionValueDiff valueDiff,
             List<SellerOptionGroupUpdateData.ValueEntry> valueEntries,
@@ -271,7 +283,15 @@ public record SellerOptionGroups(List<SellerOptionGroup> groups) {
             retainedIdMap.put(v.idValue(), v.id());
         }
 
-        List<SellerOptionValue> addedValuesList = new ArrayList<>(valueDiff.added());
+        java.util.Map<Long, SellerOptionValueId> addedIdMap = new java.util.HashMap<>();
+        List<SellerOptionValue> addedWithoutId = new ArrayList<>();
+        for (SellerOptionValue v : valueDiff.added()) {
+            if (v.idValue() != null) {
+                addedIdMap.put(v.idValue(), v.id());
+            } else {
+                addedWithoutId.add(v);
+            }
+        }
         int addedIdx = 0;
 
         for (SellerOptionGroupUpdateData.ValueEntry entry : valueEntries) {
@@ -279,10 +299,15 @@ public record SellerOptionGroups(List<SellerOptionGroup> groups) {
                 SellerOptionValueId id = retainedIdMap.get(entry.sellerOptionValueId());
                 if (id != null) {
                     result.add(id);
+                } else {
+                    id = addedIdMap.get(entry.sellerOptionValueId());
+                    if (id != null) {
+                        result.add(id);
+                    }
                 }
             } else {
-                if (addedIdx < addedValuesList.size()) {
-                    SellerOptionValue addedValue = addedValuesList.get(addedIdx++);
+                if (addedIdx < addedWithoutId.size()) {
+                    SellerOptionValue addedValue = addedWithoutId.get(addedIdx++);
                     result.add(addedValue.id());
                 }
             }

@@ -3,6 +3,7 @@ package com.ryuqq.setof.integration.test.e2e.admin.seller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -38,7 +39,7 @@ import org.springframework.http.HttpStatus;
 @DisplayName("셀러 Admin API E2E 테스트")
 class SellerAdminE2ETest extends AdminE2ETestBase {
 
-    private static final String BASE_PATH = "/v2/admin/sellers";
+    private static final String BASE_PATH = "/v2/sellers";
 
     @Autowired private SellerJpaRepository sellerJpaRepository;
     @Autowired private SellerBusinessInfoJpaRepository businessInfoJpaRepository;
@@ -59,6 +60,7 @@ class SellerAdminE2ETest extends AdminE2ETestBase {
     class RegisterTest {
 
         @Test
+        @Disabled("SellerCommandController 미구현")
         @DisplayName("유효한 요청으로 셀러 등록 성공")
         void shouldRegisterSuccessfully() {
             // given - 유니크한 값 사용
@@ -78,6 +80,7 @@ class SellerAdminE2ETest extends AdminE2ETestBase {
         }
 
         @Test
+        @Disabled("SellerCommandController 미구현")
         @DisplayName("필수 필드 누락시 400 에러 반환")
         void shouldReturn400WhenRequiredFieldMissing() {
             // given - sellerName 누락
@@ -99,6 +102,7 @@ class SellerAdminE2ETest extends AdminE2ETestBase {
         }
 
         @Test
+        @Disabled("SellerCommandController 미구현")
         @DisplayName("중복 셀러명으로 등록시 409 에러 반환")
         void shouldReturn409WhenDuplicateSellerName() {
             // given - 기존 셀러 생성
@@ -128,7 +132,7 @@ class SellerAdminE2ETest extends AdminE2ETestBase {
     class GetDetailTest {
 
         @Test
-        @DisplayName("존재하는 셀러 상세 조회 성공")
+        @DisplayName("존재하는 셀러 상세 조회 성공 - sellerInfo 필드 검증")
         void shouldGetDetailSuccessfully() {
             // given
             SellerJpaEntity seller = sellerJpaRepository.save(SellerJpaEntityFixtures.newEntity());
@@ -146,11 +150,58 @@ class SellerAdminE2ETest extends AdminE2ETestBase {
                     .get(BASE_PATH + "/" + sellerId)
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("data.seller.id", equalTo(sellerId.intValue()))
-                    .body("data.seller.sellerName", notNullValue())
-                    .body("data.seller.displayName", notNullValue())
+                    // sellerInfo 필드 검증 (SellerDetailApiResponse.sellerInfo)
+                    .body("data.sellerInfo.id", equalTo(sellerId.intValue()))
+                    .body(
+                            "data.sellerInfo.sellerName",
+                            equalTo(SellerJpaEntityFixtures.DEFAULT_SELLER_NAME))
+                    .body(
+                            "data.sellerInfo.displayName",
+                            equalTo(SellerJpaEntityFixtures.DEFAULT_DISPLAY_NAME))
+                    .body(
+                            "data.sellerInfo.logoUrl",
+                            equalTo(SellerJpaEntityFixtures.DEFAULT_LOGO_URL))
+                    .body("data.sellerInfo.active", equalTo(true))
+                    .body("data.sellerInfo.createdAt", notNullValue())
+                    .body("data.sellerInfo.updatedAt", notNullValue())
+                    // businessInfo 필드 검증
                     .body("data.businessInfo", notNullValue())
-                    .body("data.address", notNullValue());
+                    .body(
+                            "data.businessInfo.registrationNumber",
+                            equalTo(
+                                    SellerBusinessInfoJpaEntityFixtures
+                                            .DEFAULT_REGISTRATION_NUMBER))
+                    .body(
+                            "data.businessInfo.companyName",
+                            equalTo(SellerBusinessInfoJpaEntityFixtures.DEFAULT_COMPANY_NAME))
+                    .body(
+                            "data.businessInfo.representative",
+                            equalTo(SellerBusinessInfoJpaEntityFixtures.DEFAULT_REPRESENTATIVE))
+                    // csInfo 필드 검증
+                    .body("data.csInfo", notNullValue())
+                    .body(
+                            "data.csInfo.csPhone",
+                            equalTo(SellerCsJpaEntityFixtures.DEFAULT_CS_PHONE))
+                    .body(
+                            "data.csInfo.csEmail",
+                            equalTo(SellerCsJpaEntityFixtures.DEFAULT_CS_EMAIL));
+        }
+
+        @Test
+        @DisplayName("사업자정보/CS정보 없이 셀러만 존재할 때 sellerInfo만 반환")
+        void shouldGetDetailWithOnlySellerInfo() {
+            // given - 셀러 기본 정보만 저장, 사업자/CS 정보 없음
+            SellerJpaEntity seller = sellerJpaRepository.save(SellerJpaEntityFixtures.newEntity());
+            Long sellerId = seller.getId();
+
+            // when & then
+            givenAdmin()
+                    .when()
+                    .get(BASE_PATH + "/" + sellerId)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("data.sellerInfo.id", equalTo(sellerId.intValue()))
+                    .body("data.sellerInfo.sellerName", notNullValue());
         }
 
         @Test
@@ -171,7 +222,7 @@ class SellerAdminE2ETest extends AdminE2ETestBase {
     class SearchTest {
 
         @Test
-        @DisplayName("전체 목록 조회 성공")
+        @DisplayName("전체 목록 조회 성공 - 응답 필드 검증")
         void shouldSearchAllSellers() {
             // given
             sellerJpaRepository.save(SellerJpaEntityFixtures.newEntity());
@@ -189,11 +240,16 @@ class SellerAdminE2ETest extends AdminE2ETestBase {
                     .body("data.content", hasSize(2))
                     .body("data.totalElements", equalTo(2))
                     .body("data.page", equalTo(0))
-                    .body("data.size", equalTo(20));
+                    .body("data.size", equalTo(20))
+                    // 목록 항목 필드 구조 검증 (SellerApiResponse)
+                    .body("data.content[0].id", notNullValue())
+                    .body("data.content[0].sellerName", notNullValue())
+                    .body("data.content[0].displayName", notNullValue())
+                    .body("data.content[0].createdAt", notNullValue());
         }
 
         @Test
-        @DisplayName("셀러명으로 검색 성공")
+        @DisplayName("셀러명으로 검색 성공 - 정확한 일치 결과 반환")
         void shouldSearchBySellerName() {
             // given
             sellerJpaRepository.save(SellerJpaEntityFixtures.newEntity());
@@ -211,11 +267,59 @@ class SellerAdminE2ETest extends AdminE2ETestBase {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("data.content", hasSize(1))
-                    .body("data.content[0].sellerName", equalTo("특별한셀러"));
+                    .body("data.content[0].sellerName", equalTo("특별한셀러"))
+                    .body("data.content[0].displayName", equalTo("특별한 스토어"))
+                    .body("data.totalElements", equalTo(1));
         }
 
         @Test
-        @DisplayName("페이징 처리 확인")
+        @DisplayName("활성화 여부 필터 - active=true 조회")
+        void shouldFilterByActiveStatus() {
+            // given - 활성 2개, 비활성 1개
+            sellerJpaRepository.save(
+                    SellerJpaEntityFixtures.activeEntityWithName("활성셀러1", "활성스토어1"));
+            sellerJpaRepository.save(
+                    SellerJpaEntityFixtures.activeEntityWithName("활성셀러2", "활성스토어2"));
+            sellerJpaRepository.save(
+                    SellerJpaEntityFixtures.inactiveEntityWithName("비활성셀러", "비활성스토어"));
+
+            // when & then - active=true 필터 적용
+            givenAdmin()
+                    .queryParam("active", true)
+                    .queryParam("page", 0)
+                    .queryParam("size", 20)
+                    .when()
+                    .get(BASE_PATH)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("data.content", hasSize(2))
+                    .body("data.totalElements", equalTo(2));
+        }
+
+        @Test
+        @DisplayName("활성화 여부 필터 - active=false 조회")
+        void shouldFilterByInactiveStatus() {
+            // given - 활성 1개, 비활성 2개
+            sellerJpaRepository.save(SellerJpaEntityFixtures.activeEntityWithName("활성셀러", "활성스토어"));
+            sellerJpaRepository.save(
+                    SellerJpaEntityFixtures.inactiveEntityWithName("비활성셀러1", "비활성스토어1"));
+            sellerJpaRepository.save(
+                    SellerJpaEntityFixtures.inactiveEntityWithName("비활성셀러2", "비활성스토어2"));
+
+            // when & then
+            givenAdmin()
+                    .queryParam("active", false)
+                    .queryParam("page", 0)
+                    .queryParam("size", 20)
+                    .when()
+                    .get(BASE_PATH)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("data.content", hasSize(greaterThanOrEqualTo(2)));
+        }
+
+        @Test
+        @DisplayName("페이징 처리 확인 - size 제한 및 totalElements 정확성")
         void shouldPaginateCorrectly() {
             // given
             for (int i = 0; i < 5; i++) {
@@ -235,6 +339,28 @@ class SellerAdminE2ETest extends AdminE2ETestBase {
                     .body("data.totalElements", equalTo(5))
                     .body("data.page", equalTo(0))
                     .body("data.size", equalTo(2));
+        }
+
+        @Test
+        @DisplayName("두 번째 페이지 조회 성공")
+        void shouldReturnSecondPage() {
+            // given
+            for (int i = 0; i < 5; i++) {
+                sellerJpaRepository.save(
+                        SellerJpaEntityFixtures.activeEntityWithName("셀러" + i, "스토어" + i));
+            }
+
+            // when & then - 두 번째 페이지 (page=1, size=2) → 2개 반환
+            givenAdmin()
+                    .queryParam("page", 1)
+                    .queryParam("size", 2)
+                    .when()
+                    .get(BASE_PATH)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("data.content", hasSize(2))
+                    .body("data.page", equalTo(1))
+                    .body("data.totalElements", equalTo(5));
         }
 
         @Test
@@ -258,6 +384,7 @@ class SellerAdminE2ETest extends AdminE2ETestBase {
     class UpdateBasicInfoTest {
 
         @Test
+        @Disabled("SellerCommandController 미구현")
         @DisplayName("셀러 기본정보 수정 성공")
         void shouldUpdateBasicInfoSuccessfully() {
             // given

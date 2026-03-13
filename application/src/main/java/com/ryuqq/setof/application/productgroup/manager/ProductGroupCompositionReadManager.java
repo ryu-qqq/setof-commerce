@@ -1,6 +1,6 @@
 package com.ryuqq.setof.application.productgroup.manager;
 
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroupDetailCompositeResult;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupThumbnailCompositeResult;
 import com.ryuqq.setof.application.productgroup.port.out.query.ProductGroupCompositionQueryPort;
 import com.ryuqq.setof.domain.legacy.product.dto.query.LegacyProductGroupSearchCondition;
@@ -30,7 +30,7 @@ public class ProductGroupCompositionReadManager {
 
     /** 상품그룹 단건 상세 조회. */
     @Transactional(readOnly = true)
-    public Optional<ProductGroupDetailCompositeResult> fetchProductGroupDetail(
+    public Optional<LegacyProductGroupDetailCompositeResult> fetchProductGroupDetail(
             Long productGroupId) {
         return compositionQueryPort.fetchProductGroupDetail(productGroupId);
     }
