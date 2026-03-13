@@ -45,6 +45,8 @@ public final class ContentPageProductFixtures {
                 10L,
                 "브랜드명",
                 "https://example.com/image/" + productGroupId + ".jpg",
+                null,
+                null,
                 30000,
                 25000,
                 5000,

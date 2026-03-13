@@ -9,7 +9,8 @@ import java.util.stream.Collectors;
 /**
  * ProductThumbnailSnapshot - 디스플레이 컴포넌트 내 상품그룹 썸네일 스냅샷.
  *
- * <p>PRODUCT/BRAND/CATEGORY/TAB 컴포넌트에 포함되는 상품 썸네일 정보.
+ * <p>PRODUCT/BRAND/CATEGORY/TAB 컴포넌트에 포함되는 상품 썸네일 정보. displayName/displayImageUrl이 non-null이면 전시 영역
+ * 전용 오버라이드, null이면 원본 상품 정보(productGroupName/productImageUrl)를 사용한다.
  *
  * @author ryu-qqq
  * @since 1.1.0
@@ -21,6 +22,8 @@ public record ProductThumbnailSnapshot(
         long brandId,
         String brandName,
         String productImageUrl,
+        String displayName,
+        String displayImageUrl,
         int regularPrice,
         int currentPrice,
         int salePrice,
@@ -34,6 +37,18 @@ public record ProductThumbnailSnapshot(
         boolean favorite,
         String displayYn,
         String soldOutYn) {
+
+    /** 전시 영역에 노출할 상품명을 반환한다. displayName이 있으면 오버라이드, 없으면 원본 productGroupName. */
+    public String resolvedName() {
+        return (displayName != null && !displayName.isBlank()) ? displayName : productGroupName;
+    }
+
+    /** 전시 영역에 노출할 상품 이미지를 반환한다. displayImageUrl이 있으면 오버라이드, 없으면 원본 productImageUrl. */
+    public String resolvedImageUrl() {
+        return (displayImageUrl != null && !displayImageUrl.isBlank())
+                ? displayImageUrl
+                : productImageUrl;
+    }
 
     /**
      * FIXED + AUTO 상품 병합 및 정렬.

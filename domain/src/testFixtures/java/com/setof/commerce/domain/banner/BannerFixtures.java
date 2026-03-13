@@ -1,4 +1,4 @@
-package com.ryuqq.setof.domain.banner;
+package com.setof.commerce.domain.banner;
 
 import com.ryuqq.setof.domain.banner.aggregate.BannerGroup;
 import com.ryuqq.setof.domain.banner.aggregate.BannerGroupUpdateData;

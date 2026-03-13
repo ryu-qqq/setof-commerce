@@ -2,8 +2,8 @@ package com.ryuqq.setof.domain.banner.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ryuqq.setof.domain.banner.BannerFixtures;
 import com.ryuqq.setof.domain.common.CommonVoFixtures;
+import com.setof.commerce.domain.banner.BannerFixtures;
 import java.time.Instant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

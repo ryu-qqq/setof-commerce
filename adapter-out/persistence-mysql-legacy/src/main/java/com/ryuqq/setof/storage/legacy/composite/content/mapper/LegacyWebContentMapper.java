@@ -297,6 +297,8 @@ public class LegacyWebContentMapper {
                 dto.brandId(),
                 dto.brandName(),
                 dto.productImageUrl(),
+                null,
+                null,
                 dto.regularPrice(),
                 dto.currentPrice(),
                 dto.salePrice(),

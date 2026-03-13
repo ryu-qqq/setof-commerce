@@ -2,10 +2,10 @@ package com.ryuqq.setof.domain.banner.aggregate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ryuqq.setof.domain.banner.BannerFixtures;
 import com.ryuqq.setof.domain.banner.entity.BannerSlide;
 import com.ryuqq.setof.domain.banner.vo.BannerType;
 import com.ryuqq.setof.domain.common.CommonVoFixtures;
+import com.setof.commerce.domain.banner.BannerFixtures;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;

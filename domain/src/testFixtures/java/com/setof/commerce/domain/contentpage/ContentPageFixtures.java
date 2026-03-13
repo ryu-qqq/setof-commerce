@@ -2,7 +2,11 @@ package com.setof.commerce.domain.contentpage;
 
 import com.ryuqq.setof.domain.common.vo.DeletionStatus;
 import com.ryuqq.setof.domain.common.vo.DisplayPeriod;
+import com.ryuqq.setof.domain.contentpage.aggregate.ContentPage;
+import com.ryuqq.setof.domain.contentpage.aggregate.ContentPageUpdateData;
 import com.ryuqq.setof.domain.contentpage.aggregate.DisplayComponent;
+import com.ryuqq.setof.domain.contentpage.aggregate.DisplayComponentUpdateData;
+import com.ryuqq.setof.domain.contentpage.id.ContentPageId;
 import com.ryuqq.setof.domain.contentpage.id.DisplayComponentId;
 import com.ryuqq.setof.domain.contentpage.vo.BadgeType;
 import com.ryuqq.setof.domain.contentpage.vo.ComponentSpec;
@@ -31,6 +35,113 @@ public final class ContentPageFixtures {
 
     private ContentPageFixtures() {}
 
+    // ===== ContentPageId Fixtures =====
+
+    public static ContentPageId defaultContentPageId() {
+        return ContentPageId.of(1L);
+    }
+
+    public static ContentPageId contentPageId(Long value) {
+        return ContentPageId.of(value);
+    }
+
+    // ===== ContentPage Aggregate Fixtures =====
+
+    public static ContentPage newContentPage() {
+        return ContentPage.forNew(
+                "테스트 콘텐츠 페이지",
+                "테스트 메모",
+                "https://example.com/image.jpg",
+                alwaysPeriod(),
+                true,
+                Instant.now());
+    }
+
+    public static ContentPage activeContentPage() {
+        return ContentPage.reconstitute(
+                ContentPageId.of(1L),
+                "테스트 콘텐츠 페이지",
+                "테스트 메모",
+                "https://example.com/image.jpg",
+                alwaysPeriod(),
+                true,
+                DeletionStatus.active(),
+                Instant.now().minusSeconds(86400),
+                Instant.now().minusSeconds(86400));
+    }
+
+    public static ContentPage activeContentPage(Long id) {
+        return ContentPage.reconstitute(
+                ContentPageId.of(id),
+                "테스트 콘텐츠 페이지",
+                "테스트 메모",
+                "https://example.com/image.jpg",
+                alwaysPeriod(),
+                true,
+                DeletionStatus.active(),
+                Instant.now().minusSeconds(86400),
+                Instant.now().minusSeconds(86400));
+    }
+
+    public static ContentPage inactiveContentPage() {
+        return ContentPage.reconstitute(
+                ContentPageId.of(2L),
+                "비활성 콘텐츠 페이지",
+                "비활성 메모",
+                "https://example.com/inactive.jpg",
+                alwaysPeriod(),
+                false,
+                DeletionStatus.active(),
+                Instant.now().minusSeconds(86400),
+                Instant.now().minusSeconds(86400));
+    }
+
+    public static ContentPage deletedContentPage() {
+        Instant deletedAt = Instant.now().minusSeconds(86400);
+        return ContentPage.reconstitute(
+                ContentPageId.of(3L),
+                "삭제된 콘텐츠 페이지",
+                "삭제된 메모",
+                "https://example.com/deleted.jpg",
+                alwaysPeriod(),
+                false,
+                DeletionStatus.deletedAt(deletedAt),
+                Instant.now().minusSeconds(86400),
+                Instant.now().minusSeconds(86400));
+    }
+
+    // ===== ContentPageUpdateData Fixtures =====
+
+    public static ContentPageUpdateData contentPageUpdateData() {
+        return new ContentPageUpdateData(
+                "수정된 콘텐츠 페이지",
+                "수정된 메모",
+                "https://example.com/updated.jpg",
+                alwaysPeriod(),
+                true,
+                Instant.now());
+    }
+
+    // ===== DisplayComponentId Fixtures =====
+
+    public static DisplayComponentId defaultDisplayComponentId() {
+        return DisplayComponentId.of(1L);
+    }
+
+    // ===== DisplayComponentUpdateData Fixtures =====
+
+    public static DisplayComponentUpdateData displayComponentUpdateData() {
+        return new DisplayComponentUpdateData(
+                "수정된 컴포넌트",
+                2,
+                defaultDisplayConfig(),
+                null,
+                null,
+                alwaysPeriod(),
+                true,
+                Instant.now());
+    }
+
     // ===== DisplayPeriod 헬퍼 =====
 
     public static DisplayPeriod alwaysPeriod() {
@@ -54,6 +165,8 @@ public final class ContentPageFixtures {
                 10L,
                 "브랜드A",
                 "https://example.com/image/" + productGroupId + ".jpg",
+                null,
+                null,
                 10000,
                 8000,
                 8000,
@@ -85,6 +198,8 @@ public final class ContentPageFixtures {
                 10L,
                 "브랜드A",
                 "https://example.com/image/" + productGroupId + ".jpg",
+                null,
+                null,
                 regularPrice,
                 currentPrice,
                 currentPrice,

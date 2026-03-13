@@ -273,16 +273,18 @@ ON DUPLICATE KEY UPDATE tab_name = VALUES(tab_name);
 -- ============================================================
 -- component_target.tab_id = 0 → tab_id NULL (컴포넌트 레벨)
 -- component_target.tab_id != 0 → tab_id = tab_id (탭 레벨)
-INSERT INTO setof.component_fixed_product (component_id, tab_id, product_group_id, display_order, deleted_at)
+INSERT INTO setof.component_fixed_product (component_id, tab_id, product_group_id, display_name, display_image_url, display_order, deleted_at)
 SELECT
     ct.component_id,
     CASE WHEN ct.tab_id = 0 OR ct.tab_id IS NULL THEN NULL ELSE ct.tab_id END,
     ci.product_group_id,
+    NULLIF(TRIM(ci.PRODUCT_DISPLAY_NAME), ''),
+    NULLIF(TRIM(ci.PRODUCT_DISPLAY_IMAGE), ''),
     ci.display_order,
     CASE WHEN ci.delete_yn = 'Y' OR ct.delete_yn = 'Y' THEN NOW(6) ELSE NULL END
 FROM luxurydb.component_target ct
 INNER JOIN luxurydb.component_item ci ON ci.component_target_id = ct.component_target_id
-ON DUPLICATE KEY UPDATE display_order = VALUES(display_order);
+ON DUPLICATE KEY UPDATE display_order = VALUES(display_order), display_name = VALUES(display_name), display_image_url = VALUES(display_image_url);
 
 -- ============================================================
 -- 검증 쿼리
