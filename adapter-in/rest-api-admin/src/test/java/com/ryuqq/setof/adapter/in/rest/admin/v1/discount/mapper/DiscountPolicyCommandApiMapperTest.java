@@ -96,17 +96,16 @@ class DiscountPolicyCommandApiMapperTest {
         }
 
         @Test
-        @DisplayName("issueType PRODUCT를 targetType PRODUCT로 변환한다")
-        void toCommand_IssueTypeProduct_ToProduct() {
+        @DisplayName("정책 생성 시 targets는 빈 리스트로 변환한다 (대상은 별도 API로 추가)")
+        void toCommand_Targets_EmptyList() {
             // given
             CreateDiscountV1ApiRequest request = DiscountPolicyApiFixtures.createRequest();
 
             // when
             CreateDiscountPolicyCommand command = mapper.toCommand(request);
 
-            // then
-            assertThat(command.targets()).hasSize(1);
-            assertThat(command.targets().get(0).targetType()).isEqualTo("PRODUCT");
+            // then - 정책 생성 시 targets는 비어있어야 함 (targets 추가는 별도 API)
+            assertThat(command.targets()).isEmpty();
         }
 
         @Test
