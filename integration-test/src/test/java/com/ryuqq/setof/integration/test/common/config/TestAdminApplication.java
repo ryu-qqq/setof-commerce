@@ -1,5 +1,6 @@
 package com.ryuqq.setof.integration.test.common.config;
 
+import com.ryuqq.setof.admin.config.security.SecurityConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -29,16 +30,19 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
             "com.ryuqq.setof.application.refundpolicy",
             "com.ryuqq.setof.application.seller",
             "com.ryuqq.setof.application.selleroption",
+            "com.ryuqq.setof.application.imagevariant",
             "com.ryuqq.setof.application.shippingpolicy",
             "com.ryuqq.setof.adapter.in.rest.admin",
             "com.ryuqq.setof.adapter.out.persistence",
             "com.ryuqq.setof.adapter.out.security",
             "com.ryuqq.setof.adapter.out.client",
         },
-        excludeFilters =
-                @ComponentScan.Filter(
-                        type = FilterType.REGEX,
-                        pattern = "com\\.ryuqq\\.setof\\.storage\\.legacy\\..*"))
+        excludeFilters = {
+            @ComponentScan.Filter(
+                    type = FilterType.REGEX,
+                    pattern = "com\\.ryuqq\\.setof\\.storage\\.legacy\\..*"),
+            @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class)
+        })
 @EnableJpaRepositories(basePackages = "com.ryuqq.setof.adapter.out.persistence")
 @EntityScan(basePackages = "com.ryuqq.setof.adapter.out.persistence")
 public class TestAdminApplication {

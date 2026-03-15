@@ -138,6 +138,9 @@ public final class TestTags {
     /** 콘텐츠 페이지 관련 테스트 */
     public static final String CONTENT_PAGE = "content-page";
 
+    /** 이미지 Variant 관련 테스트 */
+    public static final String IMAGE_VARIANT = "image-variant";
+
     // ========================================
     // Migration Tags (마이그레이션 태그)
     // ========================================

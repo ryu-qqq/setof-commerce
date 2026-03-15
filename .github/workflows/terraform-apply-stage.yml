@@ -186,11 +186,23 @@ jobs:
             fi
           fi
 
-          # Plan 실행하여 충돌 확인
+          # Plan 실행하여 충돌 확인 (stale lock 자동 해제)
           set +e
-          terraform plan -out=tfplan 2>&1 | tee plan_output.txt
+          terraform plan -out=tfplan 2>plan_lock_err.txt | tee plan_output.txt
           PLAN_EXIT_CODE=$?
           set -e
+
+          if [ $PLAN_EXIT_CODE -ne 0 ] && grep -q "Error acquiring the state lock" plan_lock_err.txt; then
+            echo "⚠️ State lock detected. Attempting force-unlock..."
+            LOCK_ID=$(grep "ID:" plan_lock_err.txt | head -1 | awk '{print $2}')
+            if [ -n "$LOCK_ID" ]; then
+              terraform force-unlock -force "$LOCK_ID" || true
+              echo "🔄 Retrying plan after unlock..."
+              terraform plan -out=tfplan 2>&1 | tee plan_output.txt
+              PLAN_EXIT_CODE=$?
+            fi
+          fi
+          rm -f plan_lock_err.txt
 
           # "already exists" 패턴 확인
           if grep -q "EntityAlreadyExists\|already exists" plan_output.txt; then
@@ -253,9 +265,29 @@ jobs:
               ;;
           esac
 
-          # Terraform Plan with optional image_tag variable
+          # Terraform Plan with optional image_tag variable (retry on stale lock)
           echo "📋 Generating fresh terraform plan..."
-          terraform plan $EXTRA_VARS -out=tfplan
+          set +e
+          terraform plan $EXTRA_VARS -out=tfplan 2>plan_err.txt
+          PLAN_RC=$?
+          set -e
+
+          if [ $PLAN_RC -ne 0 ] && grep -q "Error acquiring the state lock" plan_err.txt; then
+            echo "⚠️ State lock detected. Attempting force-unlock..."
+            LOCK_ID=$(grep "ID:" plan_err.txt | head -1 | awk '{print $2}')
+            if [ -n "$LOCK_ID" ]; then
+              terraform force-unlock -force "$LOCK_ID" || true
+              echo "🔄 Retrying plan after unlock..."
+              terraform plan $EXTRA_VARS -out=tfplan
+            else
+              cat plan_err.txt
+              exit 1
+            fi
+          elif [ $PLAN_RC -ne 0 ]; then
+            cat plan_err.txt
+            exit $PLAN_RC
+          fi
+          rm -f plan_err.txt
 
           terraform apply -auto-approve -no-color tfplan
           echo "✅ Apply completed for ${{ matrix.module.name }}"
