@@ -50,8 +50,7 @@ public final class BannerQueryV1ApiFixtures {
             LocalDateTime.of(2025, 1, 1, 9, 0, 0);
     public static final LocalDateTime DEFAULT_DISPLAY_END_KST =
             LocalDateTime.of(2025, 12, 31, 23, 59, 59);
-    public static final LocalDateTime DEFAULT_CREATED_KST =
-            LocalDateTime.of(2025, 1, 1, 10, 30, 0);
+    public static final LocalDateTime DEFAULT_CREATED_KST = LocalDateTime.of(2025, 1, 1, 10, 30, 0);
 
     // ===== Search Request Fixtures =====
 
@@ -60,13 +59,11 @@ public final class BannerQueryV1ApiFixtures {
     }
 
     public static SearchBannersV1ApiRequest searchRequestWithDisplayYn(String displayYn) {
-        return new SearchBannersV1ApiRequest(
-                null, displayYn, null, null, null, null, null, 0, 20);
+        return new SearchBannersV1ApiRequest(null, displayYn, null, null, null, null, null, 0, 20);
     }
 
     public static SearchBannersV1ApiRequest searchRequestWithBannerType(String bannerType) {
-        return new SearchBannersV1ApiRequest(
-                bannerType, null, null, null, null, null, null, 0, 20);
+        return new SearchBannersV1ApiRequest(bannerType, null, null, null, null, null, null, 0, 20);
     }
 
     public static SearchBannersV1ApiRequest searchRequestWithBannerName(String searchWord) {
@@ -75,13 +72,11 @@ public final class BannerQueryV1ApiFixtures {
     }
 
     public static SearchBannersV1ApiRequest searchRequestWithOperator(String keyword) {
-        return new SearchBannersV1ApiRequest(
-                null, null, null, null, null, keyword, "admin", 0, 20);
+        return new SearchBannersV1ApiRequest(null, null, null, null, null, keyword, "admin", 0, 20);
     }
 
     public static SearchBannersV1ApiRequest searchRequestWithNullPage() {
-        return new SearchBannersV1ApiRequest(
-                null, null, null, null, null, null, null, null, null);
+        return new SearchBannersV1ApiRequest(null, null, null, null, null, null, null, null, null);
     }
 
     public static SearchBannersV1ApiRequest searchRequestWithDateRange() {

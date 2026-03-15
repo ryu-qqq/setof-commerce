@@ -617,10 +617,7 @@ class DiscountPolicyCommandControllerRestDocsTest extends RestDocsTestSupport {
                                                     .description("분담 여부 (편의 메서드)"),
                                             fieldWithPath("[].singleTarget")
                                                     .type(JsonFieldType.BOOLEAN)
-                                                    .description("단건 대상 여부 (편의 메서드)"),
-                                            fieldWithPath("[].targetCount")
-                                                    .type(JsonFieldType.NUMBER)
-                                                    .description("대상 수 (편의 메서드)")),
+                                                    .description("단건 대상 여부 (편의 메서드)")),
                                     responseFields(
                                             fieldWithPath("data")
                                                     .type(JsonFieldType.ARRAY)
