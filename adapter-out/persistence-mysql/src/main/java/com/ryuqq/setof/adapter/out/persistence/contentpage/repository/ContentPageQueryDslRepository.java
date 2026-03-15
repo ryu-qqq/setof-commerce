@@ -5,6 +5,7 @@ import static com.ryuqq.setof.adapter.out.persistence.contentpage.entity.QConten
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ryuqq.setof.adapter.out.persistence.contentpage.condition.ContentPageConditionBuilder;
 import com.ryuqq.setof.adapter.out.persistence.contentpage.entity.ContentPageJpaEntity;
+import com.ryuqq.setof.domain.contentpage.query.ContentPageListSearchCriteria;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
@@ -53,5 +54,58 @@ public class ContentPageQueryDslRepository {
                         conditionBuilder.contentPageNotDeleted(),
                         conditionBuilder.contentPageDisplayPeriodBetween())
                 .fetch();
+    }
+
+    public List<ContentPageJpaEntity> searchContentPages(ContentPageListSearchCriteria criteria) {
+        var query =
+                queryFactory
+                        .selectFrom(contentPageJpaEntity)
+                        .where(
+                                conditionBuilder.contentPageNotDeleted(),
+                                conditionBuilder.contentPageActiveEq(criteria.active()),
+                                conditionBuilder.contentPageDisplayStartAfter(
+                                        criteria.displayPeriodStart()),
+                                conditionBuilder.contentPageDisplayEndBefore(
+                                        criteria.displayPeriodEnd()),
+                                conditionBuilder.contentPageCreatedAtAfter(
+                                        criteria.createdAtStart()),
+                                conditionBuilder.contentPageCreatedAtBefore(
+                                        criteria.createdAtEnd()),
+                                conditionBuilder.contentPageTitleContains(
+                                        criteria.titleKeyword()),
+                                conditionBuilder.contentPageIdEq(criteria.contentPageId()),
+                                conditionBuilder.contentPageIdLt(criteria.lastDomainId()))
+                        .orderBy(contentPageJpaEntity.id.desc());
+
+        if (criteria.isNoOffset()) {
+            query.limit(criteria.size());
+        } else {
+            query.offset(criteria.offset()).limit(criteria.size());
+        }
+
+        return query.fetch();
+    }
+
+    public long countContentPages(ContentPageListSearchCriteria criteria) {
+        Long count =
+                queryFactory
+                        .select(contentPageJpaEntity.count())
+                        .from(contentPageJpaEntity)
+                        .where(
+                                conditionBuilder.contentPageNotDeleted(),
+                                conditionBuilder.contentPageActiveEq(criteria.active()),
+                                conditionBuilder.contentPageDisplayStartAfter(
+                                        criteria.displayPeriodStart()),
+                                conditionBuilder.contentPageDisplayEndBefore(
+                                        criteria.displayPeriodEnd()),
+                                conditionBuilder.contentPageCreatedAtAfter(
+                                        criteria.createdAtStart()),
+                                conditionBuilder.contentPageCreatedAtBefore(
+                                        criteria.createdAtEnd()),
+                                conditionBuilder.contentPageTitleContains(
+                                        criteria.titleKeyword()),
+                                conditionBuilder.contentPageIdEq(criteria.contentPageId()))
+                        .fetchOne();
+        return count != null ? count : 0L;
     }
 }
