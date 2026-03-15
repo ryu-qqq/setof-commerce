@@ -3,6 +3,7 @@ package com.ryuqq.setof.adapter.in.rest.admin.v1.content.error;
 import com.ryuqq.setof.adapter.in.rest.admin.common.mapper.ErrorMapper;
 import com.ryuqq.setof.domain.banner.exception.BannerException;
 import com.ryuqq.setof.domain.common.exception.DomainException;
+import com.ryuqq.setof.domain.contentpage.exception.ContentPageException;
 import com.ryuqq.setof.domain.navigation.exception.NavigationException;
 import java.net.URI;
 import java.util.Locale;
@@ -14,8 +15,8 @@ import org.springframework.stereotype.Component;
  *
  * <p>OCP(Open-Closed Principle) 준수를 위해 도메인별로 구현체를 생성합니다.
  *
- * <p>배너(BannerException)와 네비게이션(NavigationException)을 하나의 매퍼에서 처리합니다. 레거시에서는 배너/GNB가 모두 content 모듈에
- * 속하므로 통합 처리합니다.
+ * <p>배너(BannerException), 네비게이션(NavigationException), 콘텐츠 페이지(ContentPageException)를 하나의 매퍼에서
+ * 처리합니다. 레거시에서는 배너/GNB/콘텐츠가 모두 content 모듈에 속하므로 통합 처리합니다.
  *
  * @author ryu-qqq
  * @since 1.1.0
@@ -27,7 +28,9 @@ public class ContentErrorMapper implements ErrorMapper {
 
     @Override
     public boolean supports(DomainException ex) {
-        return ex instanceof BannerException || ex instanceof NavigationException;
+        return ex instanceof BannerException
+                || ex instanceof NavigationException
+                || ex instanceof ContentPageException;
     }
 
     @Override
@@ -47,6 +50,9 @@ public class ContentErrorMapper implements ErrorMapper {
         }
         if (ex instanceof NavigationException) {
             return "navigation";
+        }
+        if (ex instanceof ContentPageException) {
+            return "contentpage";
         }
         return "unknown";
     }

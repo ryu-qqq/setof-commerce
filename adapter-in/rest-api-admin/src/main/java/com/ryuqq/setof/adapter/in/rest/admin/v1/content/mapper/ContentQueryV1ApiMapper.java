@@ -6,7 +6,7 @@ import com.ryuqq.setof.adapter.in.rest.admin.v1.content.dto.response.ContentV1Ap
 import com.ryuqq.setof.application.contentpage.dto.ContentPageDetailResult;
 import com.ryuqq.setof.application.contentpage.dto.ContentPageSearchParams;
 import com.ryuqq.setof.domain.contentpage.aggregate.ContentPage;
-import com.ryuqq.setof.domain.displaycomponent.aggregate.DisplayComponent;
+import com.ryuqq.setof.domain.contentpage.aggregate.DisplayComponent;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -123,19 +123,38 @@ public class ContentQueryV1ApiMapper {
     private ContentDetailV1ApiResponse.ComponentResponse toComponentResponse(
             DisplayComponent component) {
         Long viewExtensionId =
-                component.viewExtension() != null ? component.viewExtension().idValue() : null;
+                component.viewExtension() != null
+                        ? component.viewExtension().viewExtensionId()
+                        : null;
 
         return ContentDetailV1ApiResponse.ComponentResponse.of(
                 component.idValue(),
                 component.displayOrder(),
                 viewExtensionId,
-                component.componentLayout().componentType().name(),
+                component.componentType().name(),
                 component.name(),
                 ContentDetailV1ApiResponse.DisplayPeriodResponse.of(
                         toLocalDateTime(component.displayPeriod().startDate()),
                         toLocalDateTime(component.displayPeriod().endDate())),
                 toDisplayYn(component.isActive()),
-                component.exposedProductCount());
+                resolveExposedProducts(component));
+    }
+
+    private int resolveExposedProducts(DisplayComponent component) {
+        if (component.componentSpec() == null) {
+            return 0;
+        }
+        return switch (component.componentSpec()) {
+            case com.ryuqq.setof.domain.contentpage.vo.ComponentSpec.ProductSpec s ->
+                    s.exposedProducts();
+            case com.ryuqq.setof.domain.contentpage.vo.ComponentSpec.BrandSpec s ->
+                    s.exposedProducts();
+            case com.ryuqq.setof.domain.contentpage.vo.ComponentSpec.CategorySpec s ->
+                    s.exposedProducts();
+            case com.ryuqq.setof.domain.contentpage.vo.ComponentSpec.TabSpec s ->
+                    s.exposedProducts();
+            default -> 0;
+        };
     }
 
     private Boolean toActiveNullable(String displayYn) {
