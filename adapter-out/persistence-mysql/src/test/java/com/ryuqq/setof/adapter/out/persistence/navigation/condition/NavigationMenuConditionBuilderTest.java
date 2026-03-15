@@ -67,4 +67,44 @@ class NavigationMenuConditionBuilderTest {
             assertThat(result).isNotNull();
         }
     }
+
+    @Nested
+    @DisplayName("displayStartAfter 메서드 테스트")
+    class DisplayStartAfterTest {
+
+        @Test
+        @DisplayName("유효한 시작일 입력 시 BooleanExpression을 반환합니다")
+        void displayStartAfter_WithValidDate_ReturnsBooleanExpression() {
+            BooleanExpression result =
+                    conditionBuilder.displayStartAfter(java.time.Instant.now().minusSeconds(3600));
+            assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("null 입력 시 null을 반환합니다")
+        void displayStartAfter_WithNull_ReturnsNull() {
+            BooleanExpression result = conditionBuilder.displayStartAfter(null);
+            assertThat(result).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("displayEndBefore 메서드 테스트")
+    class DisplayEndBeforeTest {
+
+        @Test
+        @DisplayName("유효한 종료일 입력 시 BooleanExpression을 반환합니다")
+        void displayEndBefore_WithValidDate_ReturnsBooleanExpression() {
+            BooleanExpression result =
+                    conditionBuilder.displayEndBefore(java.time.Instant.now().plusSeconds(86400));
+            assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("null 입력 시 null을 반환합니다")
+        void displayEndBefore_WithNull_ReturnsNull() {
+            BooleanExpression result = conditionBuilder.displayEndBefore(null);
+            assertThat(result).isNull();
+        }
+    }
 }

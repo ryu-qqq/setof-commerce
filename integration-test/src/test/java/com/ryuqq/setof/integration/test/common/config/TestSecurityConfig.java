@@ -6,6 +6,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ryuqq.setof.application.auth.dto.response.TokenPairResponse;
 import com.ryuqq.setof.application.auth.port.out.cache.RefreshTokenCacheCommandPort;
 import com.ryuqq.setof.application.auth.port.out.cache.RefreshTokenCacheQueryPort;
@@ -17,6 +18,7 @@ import com.ryuqq.setof.application.productgroup.port.out.query.LegacyProductGrou
 import com.ryuqq.setof.domain.auth.vo.RefreshTokenCacheKey;
 import java.util.Optional;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
@@ -145,5 +147,17 @@ public class TestSecurityConfig {
     @ConditionalOnMissingBean(DiscountOutboxMessageClient.class)
     public DiscountOutboxMessageClient discountOutboxMessageClient() {
         return mock(DiscountOutboxMessageClient.class);
+    }
+
+    /**
+     * 테스트용 Jackson2ObjectMapperBuilderCustomizer - JavaTimeModule 등록.
+     *
+     * <p>LocalDateTime 직렬화/역직렬화를 위해 JavaTimeModule을 명시적으로 등록합니다.
+     *
+     * @return Jackson2ObjectMapperBuilderCustomizer
+     */
+    @Bean
+    public Jackson2ObjectMapperBuilderCustomizer javaTimeModuleCustomizer() {
+        return builder -> builder.modules(new JavaTimeModule());
     }
 }

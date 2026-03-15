@@ -12,7 +12,12 @@ import com.ryuqq.setof.adapter.out.persistence.banner.mapper.BannerSlideJpaEntit
 import com.ryuqq.setof.adapter.out.persistence.banner.repository.BannerSlideQueryDslRepository;
 import com.ryuqq.setof.domain.banner.aggregate.BannerGroup;
 import com.ryuqq.setof.domain.banner.entity.BannerSlide;
+import com.ryuqq.setof.domain.banner.query.BannerGroupSearchCriteria;
+import com.ryuqq.setof.domain.banner.query.BannerGroupSortKey;
+import com.ryuqq.setof.domain.banner.vo.BannerType;
+import com.ryuqq.setof.domain.common.vo.QueryContext;
 import com.setof.commerce.domain.banner.BannerFixtures;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -164,6 +169,325 @@ class BannerGroupQueryAdapterTest {
             then(queryDslRepository).should().findBannerGroupById(bannerGroupId);
             then(bannerGroupMapper).shouldHaveNoInteractions();
             then(bannerSlideMapper).shouldHaveNoInteractions();
+        }
+    }
+
+    // ========================================================================
+    // 2. findByCriteria 테스트
+    // ========================================================================
+
+    @Nested
+    @DisplayName("findByCriteria 메서드 테스트")
+    class FindByCriteriaTest {
+
+        @Test
+        @DisplayName("검색 조건으로 배너 그룹 목록을 반환합니다")
+        void findByCriteria_WithConditions_ReturnsDomainList() {
+            // given
+            BannerGroupSearchCriteria criteria =
+                    BannerGroupSearchCriteria.of(
+                            BannerType.RECOMMEND,
+                            true,
+                            null,
+                            null,
+                            null,
+                            null,
+                            QueryContext.defaultOf(BannerGroupSortKey.CREATED_AT));
+
+            BannerGroupJpaEntity entity1 = BannerJpaEntityFixtures.activeGroupEntity(1L);
+            BannerGroupJpaEntity entity2 = BannerJpaEntityFixtures.activeGroupEntity(2L);
+            BannerGroup domain1 = BannerFixtures.activeBannerGroup(1L);
+            BannerGroup domain2 = BannerFixtures.activeBannerGroup(2L);
+
+            given(
+                            queryDslRepository.searchBannerGroups(
+                                    "RECOMMEND",
+                                    true,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    criteria.offset(),
+                                    criteria.size(),
+                                    criteria.isNoOffset()))
+                    .willReturn(List.of(entity1, entity2));
+            given(bannerGroupMapper.toDomain(entity1, List.of())).willReturn(domain1);
+            given(bannerGroupMapper.toDomain(entity2, List.of())).willReturn(domain2);
+
+            // when
+            List<BannerGroup> result = queryAdapter.findByCriteria(criteria);
+
+            // then
+            assertThat(result).hasSize(2);
+            assertThat(result).containsExactly(domain1, domain2);
+            then(queryDslRepository)
+                    .should()
+                    .searchBannerGroups(
+                            "RECOMMEND",
+                            true,
+                            null,
+                            null,
+                            null,
+                            null,
+                            criteria.offset(),
+                            criteria.size(),
+                            criteria.isNoOffset());
+        }
+
+        @Test
+        @DisplayName("결과가 없으면 빈 목록을 반환합니다")
+        void findByCriteria_WithNoResults_ReturnsEmptyList() {
+            // given
+            BannerGroupSearchCriteria criteria =
+                    BannerGroupSearchCriteria.of(
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            QueryContext.defaultOf(BannerGroupSortKey.CREATED_AT));
+
+            given(
+                            queryDslRepository.searchBannerGroups(
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    criteria.offset(),
+                                    criteria.size(),
+                                    criteria.isNoOffset()))
+                    .willReturn(List.of());
+
+            // when
+            List<BannerGroup> result = queryAdapter.findByCriteria(criteria);
+
+            // then
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        @DisplayName("No-Offset 조건으로 조회 시 lastDomainId를 전달하고 isNoOffset이 true입니다")
+        void findByCriteria_WithNoOffset_PassesLastDomainIdAndIsNoOffsetTrue() {
+            // given
+            Long lastDomainId = 50L;
+            BannerGroupSearchCriteria criteria =
+                    BannerGroupSearchCriteria.of(
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            lastDomainId,
+                            QueryContext.defaultOf(BannerGroupSortKey.CREATED_AT));
+
+            given(
+                            queryDslRepository.searchBannerGroups(
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    lastDomainId,
+                                    criteria.offset(),
+                                    criteria.size(),
+                                    true))
+                    .willReturn(List.of());
+
+            // when
+            queryAdapter.findByCriteria(criteria);
+
+            // then
+            then(queryDslRepository)
+                    .should()
+                    .searchBannerGroups(
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            lastDomainId,
+                            criteria.offset(),
+                            criteria.size(),
+                            true);
+        }
+
+        @Test
+        @DisplayName("bannerType이 null이면 null로 전달합니다")
+        void findByCriteria_WithNullBannerType_PassesNull() {
+            // given
+            BannerGroupSearchCriteria criteria =
+                    BannerGroupSearchCriteria.of(
+                            null,
+                            true,
+                            null,
+                            null,
+                            null,
+                            null,
+                            QueryContext.defaultOf(BannerGroupSortKey.CREATED_AT));
+
+            given(
+                            queryDslRepository.searchBannerGroups(
+                                    null,
+                                    true,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    criteria.offset(),
+                                    criteria.size(),
+                                    false))
+                    .willReturn(List.of());
+
+            // when
+            queryAdapter.findByCriteria(criteria);
+
+            // then
+            then(queryDslRepository)
+                    .should()
+                    .searchBannerGroups(
+                            null,
+                            true,
+                            null,
+                            null,
+                            null,
+                            null,
+                            criteria.offset(),
+                            criteria.size(),
+                            false);
+        }
+
+        @Test
+        @DisplayName("전시 기간 조건으로 조회합니다")
+        void findByCriteria_WithDisplayPeriodCondition_PassesDates() {
+            // given
+            Instant startAfter = Instant.now().minusSeconds(86400);
+            Instant endBefore = Instant.now().plusSeconds(86400);
+            BannerGroupSearchCriteria criteria =
+                    BannerGroupSearchCriteria.of(
+                            null,
+                            null,
+                            startAfter,
+                            endBefore,
+                            null,
+                            null,
+                            QueryContext.defaultOf(BannerGroupSortKey.CREATED_AT));
+
+            given(
+                            queryDslRepository.searchBannerGroups(
+                                    null,
+                                    null,
+                                    startAfter,
+                                    endBefore,
+                                    null,
+                                    null,
+                                    criteria.offset(),
+                                    criteria.size(),
+                                    false))
+                    .willReturn(List.of());
+
+            // when
+            queryAdapter.findByCriteria(criteria);
+
+            // then
+            then(queryDslRepository)
+                    .should()
+                    .searchBannerGroups(
+                            null,
+                            null,
+                            startAfter,
+                            endBefore,
+                            null,
+                            null,
+                            criteria.offset(),
+                            criteria.size(),
+                            false);
+        }
+    }
+
+    // ========================================================================
+    // 3. countByCriteria 테스트
+    // ========================================================================
+
+    @Nested
+    @DisplayName("countByCriteria 메서드 테스트")
+    class CountByCriteriaTest {
+
+        @Test
+        @DisplayName("검색 조건으로 배너 그룹 카운트를 반환합니다")
+        void countByCriteria_WithConditions_ReturnsCount() {
+            // given
+            BannerGroupSearchCriteria criteria =
+                    BannerGroupSearchCriteria.of(
+                            BannerType.RECOMMEND,
+                            true,
+                            null,
+                            null,
+                            "테스트",
+                            null,
+                            QueryContext.defaultOf(BannerGroupSortKey.CREATED_AT));
+
+            given(queryDslRepository.countBannerGroups("RECOMMEND", true, null, null, "테스트"))
+                    .willReturn(5L);
+
+            // when
+            long count = queryAdapter.countByCriteria(criteria);
+
+            // then
+            assertThat(count).isEqualTo(5L);
+            then(queryDslRepository)
+                    .should()
+                    .countBannerGroups("RECOMMEND", true, null, null, "테스트");
+        }
+
+        @Test
+        @DisplayName("조건이 없을 때 전체 카운트를 반환합니다")
+        void countByCriteria_WithNoConditions_ReturnsTotalCount() {
+            // given
+            BannerGroupSearchCriteria criteria =
+                    BannerGroupSearchCriteria.of(
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            QueryContext.defaultOf(BannerGroupSortKey.CREATED_AT));
+
+            given(queryDslRepository.countBannerGroups(null, null, null, null, null))
+                    .willReturn(10L);
+
+            // when
+            long count = queryAdapter.countByCriteria(criteria);
+
+            // then
+            assertThat(count).isEqualTo(10L);
+        }
+
+        @Test
+        @DisplayName("결과가 없으면 0을 반환합니다")
+        void countByCriteria_WithNoResults_ReturnsZero() {
+            // given
+            BannerGroupSearchCriteria criteria =
+                    BannerGroupSearchCriteria.of(
+                            null,
+                            null,
+                            null,
+                            null,
+                            "존재하지않는제목",
+                            null,
+                            QueryContext.defaultOf(BannerGroupSortKey.CREATED_AT));
+
+            given(queryDslRepository.countBannerGroups(null, null, null, null, "존재하지않는제목"))
+                    .willReturn(0L);
+
+            // when
+            long count = queryAdapter.countByCriteria(criteria);
+
+            // then
+            assertThat(count).isZero();
         }
     }
 }
