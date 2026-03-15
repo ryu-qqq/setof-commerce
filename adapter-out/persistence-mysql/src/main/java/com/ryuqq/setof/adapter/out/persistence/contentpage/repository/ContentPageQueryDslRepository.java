@@ -71,8 +71,7 @@ public class ContentPageQueryDslRepository {
                                         criteria.createdAtStart()),
                                 conditionBuilder.contentPageCreatedAtBefore(
                                         criteria.createdAtEnd()),
-                                conditionBuilder.contentPageTitleContains(
-                                        criteria.titleKeyword()),
+                                conditionBuilder.contentPageTitleContains(criteria.titleKeyword()),
                                 conditionBuilder.contentPageIdEq(criteria.contentPageId()),
                                 conditionBuilder.contentPageIdLt(criteria.lastDomainId()))
                         .orderBy(contentPageJpaEntity.id.desc());
@@ -102,8 +101,7 @@ public class ContentPageQueryDslRepository {
                                         criteria.createdAtStart()),
                                 conditionBuilder.contentPageCreatedAtBefore(
                                         criteria.createdAtEnd()),
-                                conditionBuilder.contentPageTitleContains(
-                                        criteria.titleKeyword()),
+                                conditionBuilder.contentPageTitleContains(criteria.titleKeyword()),
                                 conditionBuilder.contentPageIdEq(criteria.contentPageId()))
                         .fetchOne();
         return count != null ? count : 0L;

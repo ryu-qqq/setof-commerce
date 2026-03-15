@@ -146,8 +146,8 @@ public class ContentQueryV1ApiMapper {
     }
 
     /**
-     * searchKeyword가 CONTENT_TITLE일 때만 searchWord를 제목 검색어로 반환합니다.
-     * INSERT_OPERATOR/UPDATE_OPERATOR는 새 도메인에 없으므로 무시합니다.
+     * searchKeyword가 CONTENT_TITLE일 때만 searchWord를 제목 검색어로 반환합니다. INSERT_OPERATOR/UPDATE_OPERATOR는
+     * 새 도메인에 없으므로 무시합니다.
      */
     private String resolveTitleKeyword(String searchKeyword, String searchWord) {
         if ("CONTENT_TITLE".equalsIgnoreCase(searchKeyword)
@@ -158,9 +158,7 @@ public class ContentQueryV1ApiMapper {
         return null;
     }
 
-    /**
-     * searchKeyword가 CONTENT_ID일 때 searchWord를 Long ID로 파싱합니다.
-     */
+    /** searchKeyword가 CONTENT_ID일 때 searchWord를 Long ID로 파싱합니다. */
     private Long resolveContentPageId(String searchKeyword, String searchWord) {
         if ("CONTENT_ID".equalsIgnoreCase(searchKeyword)
                 && searchWord != null

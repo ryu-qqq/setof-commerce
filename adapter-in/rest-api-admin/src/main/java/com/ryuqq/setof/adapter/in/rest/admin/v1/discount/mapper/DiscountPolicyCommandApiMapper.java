@@ -218,9 +218,7 @@ public class DiscountPolicyCommandApiMapper {
         DiscountDetailsV1ApiRequest details = request.discountDetails();
         String targetType = toTargetType(details.issueType());
         List<TargetItem> targets =
-                request.targetIds().stream()
-                        .map(id -> new TargetItem(targetType, id))
-                        .toList();
+                request.targetIds().stream().map(id -> new TargetItem(targetType, id)).toList();
         return new CreateDiscountPolicyCommand(
                 details.discountPolicyName(),
                 details.memo(),
