@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ryuqq.setof.adapter.out.persistence.banner.condition.BannerConditionBuilder;
 import com.ryuqq.setof.adapter.out.persistence.banner.entity.BannerGroupJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.banner.entity.BannerSlideJpaEntity;
+import java.time.Instant;
 import java.util.List;
 import org.springframework.stereotype.Repository;
 
@@ -85,5 +86,84 @@ public class BannerSlideQueryDslRepository {
                 .where(bannerSlideJpaEntity.bannerGroupId.eq(bannerGroupId))
                 .orderBy(bannerSlideJpaEntity.displayOrder.asc())
                 .fetch();
+    }
+
+    /**
+     * 검색 조건으로 배너 그룹 목록 조회 (페이징).
+     *
+     * @param bannerType 배너 타입 (nullable)
+     * @param active 활성 여부 (nullable)
+     * @param displayStartAfter 전시 시작일 이후 (nullable)
+     * @param displayEndBefore 전시 종료일 이전 (nullable)
+     * @param titleKeyword 제목 검색어 (nullable)
+     * @param lastDomainId No-Offset 마지막 ID (nullable)
+     * @param offset SQL offset
+     * @param limit SQL limit
+     * @param isNoOffset No-Offset 페이징 여부
+     * @return BannerGroupJpaEntity 목록
+     */
+    public List<BannerGroupJpaEntity> searchBannerGroups(
+            String bannerType,
+            Boolean active,
+            Instant displayStartAfter,
+            Instant displayEndBefore,
+            String titleKeyword,
+            Long lastDomainId,
+            long offset,
+            int limit,
+            boolean isNoOffset) {
+
+        var query =
+                queryFactory
+                        .selectFrom(bannerGroupJpaEntity)
+                        .where(
+                                conditionBuilder.bannerGroupTypeEq(bannerType),
+                                conditionBuilder.bannerGroupActiveEq(active),
+                                conditionBuilder.bannerGroupNotDeleted(),
+                                conditionBuilder.bannerGroupDisplayStartAfter(displayStartAfter),
+                                conditionBuilder.bannerGroupDisplayEndBefore(displayEndBefore),
+                                conditionBuilder.bannerGroupTitleContains(titleKeyword),
+                                conditionBuilder.bannerGroupIdLt(lastDomainId))
+                        .orderBy(bannerGroupJpaEntity.id.desc())
+                        .limit(limit);
+
+        if (!isNoOffset) {
+            query.offset(offset);
+        }
+
+        return query.fetch();
+    }
+
+    /**
+     * 검색 조건으로 배너 그룹 총 건수 조회.
+     *
+     * @param bannerType 배너 타입 (nullable)
+     * @param active 활성 여부 (nullable)
+     * @param displayStartAfter 전시 시작일 이후 (nullable)
+     * @param displayEndBefore 전시 종료일 이전 (nullable)
+     * @param titleKeyword 제목 검색어 (nullable)
+     * @return 총 건수
+     */
+    public long countBannerGroups(
+            String bannerType,
+            Boolean active,
+            Instant displayStartAfter,
+            Instant displayEndBefore,
+            String titleKeyword) {
+
+        Long count =
+                queryFactory
+                        .select(bannerGroupJpaEntity.count())
+                        .from(bannerGroupJpaEntity)
+                        .where(
+                                conditionBuilder.bannerGroupTypeEq(bannerType),
+                                conditionBuilder.bannerGroupActiveEq(active),
+                                conditionBuilder.bannerGroupNotDeleted(),
+                                conditionBuilder.bannerGroupDisplayStartAfter(displayStartAfter),
+                                conditionBuilder.bannerGroupDisplayEndBefore(displayEndBefore),
+                                conditionBuilder.bannerGroupTitleContains(titleKeyword))
+                        .fetchOne();
+
+        return count != null ? count : 0L;
     }
 }

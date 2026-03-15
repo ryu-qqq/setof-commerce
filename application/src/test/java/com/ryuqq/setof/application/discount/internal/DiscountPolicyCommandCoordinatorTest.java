@@ -3,7 +3,6 @@ package com.ryuqq.setof.application.discount.internal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willDoNothing;
 
 import com.ryuqq.setof.application.discount.manager.DiscountOutboxCommandManager;
 import com.ryuqq.setof.application.discount.manager.DiscountPolicyCommandManager;
@@ -65,13 +64,15 @@ class DiscountPolicyCommandCoordinatorTest {
         void createPolicyWithTargets_PolicyWithTargets_PersistsTargets() {
             // given
             DiscountPolicy policy = DiscountFixtures.newRateInstantPolicy();
-            policy.addTarget(DiscountTargetType.PRODUCT, 300L, Instant.parse("2025-01-01T00:00:00Z"));
+            policy.addTarget(
+                    DiscountTargetType.PRODUCT, 300L, Instant.parse("2025-01-01T00:00:00Z"));
             long expectedPolicyId = 1L;
 
             given(policyCommandManager.persist(policy)).willReturn(expectedPolicyId);
-            given(outboxValidator.canCreateOutbox(
-                    org.mockito.ArgumentMatchers.any(DiscountTargetType.class),
-                    org.mockito.ArgumentMatchers.anyLong()))
+            given(
+                            outboxValidator.canCreateOutbox(
+                                    org.mockito.ArgumentMatchers.any(DiscountTargetType.class),
+                                    org.mockito.ArgumentMatchers.anyLong()))
                     .willReturn(false);
 
             // when
@@ -80,9 +81,11 @@ class DiscountPolicyCommandCoordinatorTest {
             // then
             assertThat(result).isEqualTo(expectedPolicyId);
             then(policyCommandManager).should().persist(policy);
-            then(targetCommandManager).should().persistAll(
-                    org.mockito.ArgumentMatchers.eq(expectedPolicyId),
-                    org.mockito.ArgumentMatchers.anyList());
+            then(targetCommandManager)
+                    .should()
+                    .persistAll(
+                            org.mockito.ArgumentMatchers.eq(expectedPolicyId),
+                            org.mockito.ArgumentMatchers.anyList());
         }
 
         @Test
@@ -102,10 +105,12 @@ class DiscountPolicyCommandCoordinatorTest {
             sut.createPolicyWithTargets(policy);
 
             // then
-            then(outboxCommandManager).should().create(
-                    org.mockito.ArgumentMatchers.eq(DiscountTargetType.PRODUCT),
-                    org.mockito.ArgumentMatchers.eq(300L),
-                    org.mockito.ArgumentMatchers.any(Instant.class));
+            then(outboxCommandManager)
+                    .should()
+                    .create(
+                            org.mockito.ArgumentMatchers.eq(DiscountTargetType.PRODUCT),
+                            org.mockito.ArgumentMatchers.eq(300L),
+                            org.mockito.ArgumentMatchers.any(Instant.class));
         }
 
         @Test
@@ -157,17 +162,18 @@ class DiscountPolicyCommandCoordinatorTest {
             policy.addTarget(DiscountTargetType.SELLER, 1L, now);
 
             given(policyCommandManager.persist(policy)).willReturn(1L);
-            given(outboxValidator.canCreateOutbox(DiscountTargetType.SELLER, 1L))
-                    .willReturn(true);
+            given(outboxValidator.canCreateOutbox(DiscountTargetType.SELLER, 1L)).willReturn(true);
 
             // when
             sut.updatePolicy(policy);
 
             // then
-            then(outboxCommandManager).should().create(
-                    org.mockito.ArgumentMatchers.eq(DiscountTargetType.SELLER),
-                    org.mockito.ArgumentMatchers.eq(1L),
-                    org.mockito.ArgumentMatchers.any(Instant.class));
+            then(outboxCommandManager)
+                    .should()
+                    .create(
+                            org.mockito.ArgumentMatchers.eq(DiscountTargetType.SELLER),
+                            org.mockito.ArgumentMatchers.eq(1L),
+                            org.mockito.ArgumentMatchers.any(Instant.class));
         }
     }
 
@@ -200,9 +206,10 @@ class DiscountPolicyCommandCoordinatorTest {
             List<DiscountTarget> added = List.of(DiscountFixtures.activeTarget(1L));
             DiscountTargetDiff diff = DiscountTargetDiff.of(added, List.of(), List.of(), now);
 
-            given(outboxValidator.canCreateOutbox(
-                    org.mockito.ArgumentMatchers.any(DiscountTargetType.class),
-                    org.mockito.ArgumentMatchers.anyLong()))
+            given(
+                            outboxValidator.canCreateOutbox(
+                                    org.mockito.ArgumentMatchers.any(DiscountTargetType.class),
+                                    org.mockito.ArgumentMatchers.anyLong()))
                     .willReturn(false);
 
             // when
@@ -221,18 +228,21 @@ class DiscountPolicyCommandCoordinatorTest {
             List<DiscountTarget> added = List.of(DiscountFixtures.activeTarget(1L));
             DiscountTargetDiff diff = DiscountTargetDiff.of(added, List.of(), List.of(), now);
 
-            given(outboxValidator.canCreateOutbox(
-                    org.mockito.ArgumentMatchers.any(DiscountTargetType.class),
-                    org.mockito.ArgumentMatchers.anyLong()))
+            given(
+                            outboxValidator.canCreateOutbox(
+                                    org.mockito.ArgumentMatchers.any(DiscountTargetType.class),
+                                    org.mockito.ArgumentMatchers.anyLong()))
                     .willReturn(true);
 
             // when
             sut.persistTargetDiff(policyId, diff);
 
             // then
-            then(outboxValidator).should().canCreateOutbox(
-                    org.mockito.ArgumentMatchers.any(DiscountTargetType.class),
-                    org.mockito.ArgumentMatchers.anyLong());
+            then(outboxValidator)
+                    .should()
+                    .canCreateOutbox(
+                            org.mockito.ArgumentMatchers.any(DiscountTargetType.class),
+                            org.mockito.ArgumentMatchers.anyLong());
         }
     }
 }

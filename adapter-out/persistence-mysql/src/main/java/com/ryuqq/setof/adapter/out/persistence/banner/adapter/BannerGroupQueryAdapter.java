@@ -7,6 +7,7 @@ import com.ryuqq.setof.adapter.out.persistence.banner.repository.BannerSlideQuer
 import com.ryuqq.setof.application.banner.port.out.BannerGroupQueryPort;
 import com.ryuqq.setof.domain.banner.aggregate.BannerGroup;
 import com.ryuqq.setof.domain.banner.entity.BannerSlide;
+import com.ryuqq.setof.domain.banner.query.BannerGroupSearchCriteria;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -73,5 +74,38 @@ public class BannerGroupQueryAdapter implements BannerGroupQueryPort {
                         .map(bannerSlideMapper::toDomain)
                         .toList();
         return Optional.of(bannerGroupMapper.toDomain(groupEntity, slides));
+    }
+
+    @Override
+    public List<BannerGroup> findByCriteria(BannerGroupSearchCriteria criteria) {
+        String bannerType = criteria.bannerType() != null ? criteria.bannerType().name() : null;
+
+        List<BannerGroupJpaEntity> entities =
+                queryDslRepository.searchBannerGroups(
+                        bannerType,
+                        criteria.active(),
+                        criteria.displayPeriodStart(),
+                        criteria.displayPeriodEnd(),
+                        criteria.titleKeyword(),
+                        criteria.lastDomainId(),
+                        criteria.offset(),
+                        criteria.size(),
+                        criteria.isNoOffset());
+
+        return entities.stream()
+                .map(entity -> bannerGroupMapper.toDomain(entity, List.of()))
+                .toList();
+    }
+
+    @Override
+    public long countByCriteria(BannerGroupSearchCriteria criteria) {
+        String bannerType = criteria.bannerType() != null ? criteria.bannerType().name() : null;
+
+        return queryDslRepository.countBannerGroups(
+                bannerType,
+                criteria.active(),
+                criteria.displayPeriodStart(),
+                criteria.displayPeriodEnd(),
+                criteria.titleKeyword());
     }
 }

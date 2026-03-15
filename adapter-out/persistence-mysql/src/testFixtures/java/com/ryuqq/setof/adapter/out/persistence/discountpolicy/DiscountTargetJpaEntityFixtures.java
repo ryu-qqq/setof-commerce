@@ -50,4 +50,27 @@ public final class DiscountTargetJpaEntityFixtures {
         return DiscountTargetJpaEntity.create(
                 null, discountPolicyId, TargetType.PRODUCT, targetId, true, now, now);
     }
+
+    /** ID가 있는 활성 PRODUCT 타입 대상 Entity (toDomain 변환 테스트용). */
+    public static DiscountTargetJpaEntity newActiveProductTarget(
+            Long id, long discountPolicyId, long targetId) {
+        Instant now = Instant.now();
+        return DiscountTargetJpaEntity.create(
+                id, discountPolicyId, TargetType.PRODUCT, targetId, true, now, now);
+    }
+
+    /** ID가 있는 비활성 PRODUCT 타입 대상 Entity (toDomain 변환 테스트용). */
+    public static DiscountTargetJpaEntity newInactiveProductTarget(Long id, long discountPolicyId) {
+        Instant now = Instant.now();
+        return DiscountTargetJpaEntity.create(
+                id, discountPolicyId, TargetType.PRODUCT, DEFAULT_TARGET_ID, false, now, now);
+    }
+
+    /** ID가 있는 활성 BRAND 타입 대상 Entity (toDomain 변환 테스트용). */
+    public static DiscountTargetJpaEntity newActiveBrandTarget(
+            Long id, long discountPolicyId, long targetId) {
+        Instant now = Instant.now();
+        return DiscountTargetJpaEntity.create(
+                id, discountPolicyId, TargetType.BRAND, targetId, true, now, now);
+    }
 }

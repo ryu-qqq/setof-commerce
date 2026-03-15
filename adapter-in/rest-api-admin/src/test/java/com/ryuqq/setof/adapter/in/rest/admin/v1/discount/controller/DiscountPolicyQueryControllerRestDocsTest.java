@@ -145,12 +145,26 @@ class DiscountPolicyQueryControllerRestDocsTest extends RestDocsTestSupport {
                                             fieldWithPath("data.updateOperator")
                                                     .type(JsonFieldType.STRING)
                                                     .description("수정자"),
-                                            fieldWithPath("response.status")
-                                                    .type(JsonFieldType.NUMBER)
-                                                    .description("응답 상태 코드"),
-                                            fieldWithPath("response.message")
+                                            fieldWithPath("data.active")
+                                                    .type(JsonFieldType.BOOLEAN)
+                                                    .description("활성화 여부 (편의 메서드)"),
+                                            fieldWithPath("data.discountDetails.rateDiscount")
+                                                    .type(JsonFieldType.BOOLEAN)
+                                                    .description("비율 할인 여부 (편의 메서드)"),
+                                            fieldWithPath("data.discountDetails.priceDiscount")
+                                                    .type(JsonFieldType.BOOLEAN)
+                                                    .description("금액 할인 여부 (편의 메서드)"),
+                                            fieldWithPath("data.discountDetails.withinPolicyPeriod")
+                                                    .type(JsonFieldType.BOOLEAN)
+                                                    .description("정책 기간 유효 여부 (편의 메서드)"),
+                                            fieldWithPath("timestamp")
                                                     .type(JsonFieldType.STRING)
-                                                    .description("응답 메시지"))));
+                                                    .description("응답 시각")
+                                                    .optional(),
+                                            fieldWithPath("requestId")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("요청 추적 ID")
+                                                    .optional())));
         }
     }
 
@@ -306,6 +320,21 @@ class DiscountPolicyQueryControllerRestDocsTest extends RestDocsTestSupport {
                                             fieldWithPath("data.items[].updateOperator")
                                                     .type(JsonFieldType.STRING)
                                                     .description("수정자"),
+                                            fieldWithPath("data.items[].active")
+                                                    .type(JsonFieldType.BOOLEAN)
+                                                    .description("활성화 여부 (편의 메서드)"),
+                                            fieldWithPath(
+                                                            "data.items[].discountDetails.rateDiscount")
+                                                    .type(JsonFieldType.BOOLEAN)
+                                                    .description("비율 할인 여부 (편의 메서드)"),
+                                            fieldWithPath(
+                                                            "data.items[].discountDetails.priceDiscount")
+                                                    .type(JsonFieldType.BOOLEAN)
+                                                    .description("금액 할인 여부 (편의 메서드)"),
+                                            fieldWithPath(
+                                                            "data.items[].discountDetails.withinPolicyPeriod")
+                                                    .type(JsonFieldType.BOOLEAN)
+                                                    .description("정책 기간 유효 여부 (편의 메서드)"),
                                             fieldWithPath("data.totalCount")
                                                     .type(JsonFieldType.NUMBER)
                                                     .description("전체 항목 수"),
@@ -315,12 +344,14 @@ class DiscountPolicyQueryControllerRestDocsTest extends RestDocsTestSupport {
                                             fieldWithPath("data.size")
                                                     .type(JsonFieldType.NUMBER)
                                                     .description("페이지 크기"),
-                                            fieldWithPath("response.status")
-                                                    .type(JsonFieldType.NUMBER)
-                                                    .description("응답 상태 코드"),
-                                            fieldWithPath("response.message")
+                                            fieldWithPath("timestamp")
                                                     .type(JsonFieldType.STRING)
-                                                    .description("응답 메시지"))));
+                                                    .description("응답 시각")
+                                                    .optional(),
+                                            fieldWithPath("requestId")
+                                                    .type(JsonFieldType.STRING)
+                                                    .description("요청 추적 ID")
+                                                    .optional())));
         }
 
         @Test

@@ -10,6 +10,9 @@ import com.ryuqq.setof.application.auth.dto.response.TokenPairResponse;
 import com.ryuqq.setof.application.auth.port.out.cache.RefreshTokenCacheCommandPort;
 import com.ryuqq.setof.application.auth.port.out.cache.RefreshTokenCacheQueryPort;
 import com.ryuqq.setof.application.auth.port.out.client.TokenProviderPort;
+import com.ryuqq.setof.application.discount.port.out.client.DiscountOutboxMessageClient;
+import com.ryuqq.setof.application.discount.port.out.command.LegacyProductGroupPriceCommandPort;
+import com.ryuqq.setof.application.discount.port.out.query.LegacyProductGroupPriceQueryPort;
 import com.ryuqq.setof.application.productgroup.port.out.query.LegacyProductGroupWebQueryPort;
 import com.ryuqq.setof.domain.auth.vo.RefreshTokenCacheKey;
 import java.util.Optional;
@@ -103,5 +106,44 @@ public class TestSecurityConfig {
     @ConditionalOnMissingBean(LegacyProductGroupWebQueryPort.class)
     public LegacyProductGroupWebQueryPort legacyProductGroupWebQueryPort() {
         return mock(LegacyProductGroupWebQueryPort.class);
+    }
+
+    /**
+     * 테스트용 LegacyProductGroupPriceCommandPort Mock.
+     *
+     * <p>레거시 product_group 가격 갱신 포트로, 테스트에서는 no-op으로 처리합니다.
+     *
+     * @return LegacyProductGroupPriceCommandPort Mock
+     */
+    @Bean
+    @ConditionalOnMissingBean(LegacyProductGroupPriceCommandPort.class)
+    public LegacyProductGroupPriceCommandPort legacyProductGroupPriceCommandPort() {
+        return mock(LegacyProductGroupPriceCommandPort.class);
+    }
+
+    /**
+     * 테스트용 LegacyProductGroupPriceQueryPort Mock.
+     *
+     * <p>레거시 product_group 가격 조회 포트로, 테스트에서는 빈 응답으로 처리합니다.
+     *
+     * @return LegacyProductGroupPriceQueryPort Mock
+     */
+    @Bean
+    @ConditionalOnMissingBean(LegacyProductGroupPriceQueryPort.class)
+    public LegacyProductGroupPriceQueryPort legacyProductGroupPriceQueryPort() {
+        return mock(LegacyProductGroupPriceQueryPort.class);
+    }
+
+    /**
+     * 테스트용 DiscountOutboxMessageClient Mock.
+     *
+     * <p>SQS 메시지 발행 클라이언트로, 테스트에서는 no-op으로 처리합니다.
+     *
+     * @return DiscountOutboxMessageClient Mock
+     */
+    @Bean
+    @ConditionalOnMissingBean(DiscountOutboxMessageClient.class)
+    public DiscountOutboxMessageClient discountOutboxMessageClient() {
+        return mock(DiscountOutboxMessageClient.class);
     }
 }

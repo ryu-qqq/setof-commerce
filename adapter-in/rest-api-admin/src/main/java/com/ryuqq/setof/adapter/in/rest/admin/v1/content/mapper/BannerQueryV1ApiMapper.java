@@ -1,7 +1,9 @@
 package com.ryuqq.setof.adapter.in.rest.admin.v1.content.mapper;
 
+import com.ryuqq.setof.adapter.in.rest.admin.v1.content.dto.request.SearchBannersV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.content.dto.response.BannerGroupV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.content.dto.response.BannerItemV1ApiResponse;
+import com.ryuqq.setof.application.banner.dto.query.BannerGroupSearchParams;
 import com.ryuqq.setof.domain.banner.aggregate.BannerGroup;
 import com.ryuqq.setof.domain.banner.entity.BannerSlide;
 import com.ryuqq.setof.domain.banner.vo.BannerType;
@@ -76,6 +78,59 @@ public class BannerQueryV1ApiMapper {
                 slide.displayOrder(),
                 toDisplayYn(slide.isActive()),
                 BannerItemV1ApiResponse.ImageSizeResponse.of(0.0, 0.0));
+    }
+
+    /**
+     * SearchBannersV1ApiRequest → BannerGroupSearchParams 변환.
+     *
+     * <p>변환 규칙:
+     *
+     * <ul>
+     *   <li>displayYn "Y" → active true, "N" → active false, null → null
+     *   <li>LocalDateTime (KST) → Instant
+     *   <li>page/size null → 기본값 (0, 20)
+     * </ul>
+     *
+     * @param request v1 검색 요청 DTO
+     * @return Application 검색 파라미터
+     */
+    public BannerGroupSearchParams toSearchParams(SearchBannersV1ApiRequest request) {
+        return new BannerGroupSearchParams(
+                request.bannerType(),
+                toActiveNullable(request.displayYn()),
+                toInstant(request.startDate()),
+                toInstant(request.endDate()),
+                resolveTitleKeyword(request.searchKeyword(), request.searchWord()),
+                request.lastDomainId(),
+                request.page() != null ? request.page() : 0,
+                request.size() != null ? request.size() : 20);
+    }
+
+    private Boolean toActiveNullable(String displayYn) {
+        if (displayYn == null || displayYn.isBlank()) {
+            return null;
+        }
+        return "Y".equalsIgnoreCase(displayYn);
+    }
+
+    private Instant toInstant(LocalDateTime ldt) {
+        if (ldt == null) {
+            return null;
+        }
+        return ldt.atZone(KST).toInstant();
+    }
+
+    /**
+     * searchKeyword가 BANNER_NAME일 때만 searchWord를 제목 검색어로 반환합니다. INSERT_OPERATOR/UPDATE_OPERATOR는 새
+     * 도메인에 없으므로 무시합니다.
+     */
+    private String resolveTitleKeyword(String searchKeyword, String searchWord) {
+        if ("BANNER_NAME".equalsIgnoreCase(searchKeyword)
+                && searchWord != null
+                && !searchWord.isBlank()) {
+            return searchWord;
+        }
+        return null;
     }
 
     private String toDisplayYn(boolean active) {

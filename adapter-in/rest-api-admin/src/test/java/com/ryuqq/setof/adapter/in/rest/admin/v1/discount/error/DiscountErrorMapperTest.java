@@ -3,6 +3,7 @@ package com.ryuqq.setof.adapter.in.rest.admin.v1.discount.error;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ryuqq.setof.adapter.in.rest.admin.common.mapper.ErrorMapper.MappedError;
+import com.ryuqq.setof.domain.banner.exception.BannerErrorCode;
 import com.ryuqq.setof.domain.common.exception.DomainException;
 import com.ryuqq.setof.domain.discount.exception.DiscountErrorCode;
 import com.ryuqq.setof.domain.discount.exception.DiscountException;
@@ -157,7 +158,8 @@ class DiscountErrorMapperTest {
             // given
             DiscountException exception =
                     new DiscountException(DiscountErrorCode.DISCOUNT_POLICY_NOT_FOUND);
-            String expectedCode = DiscountErrorCode.DISCOUNT_POLICY_NOT_FOUND.getCode().toLowerCase();
+            String expectedCode =
+                    DiscountErrorCode.DISCOUNT_POLICY_NOT_FOUND.getCode().toLowerCase();
 
             // when
             MappedError error = mapper.map(exception, Locale.KOREA);
@@ -181,31 +183,11 @@ class DiscountErrorMapperTest {
         }
     }
 
-    /**
-     * 테스트용 다른 도메인 예외 - DiscountException이 아닌 DomainException.
-     */
+    /** 테스트용 다른 도메인 예외 - DiscountException이 아닌 DomainException. */
     private static class OtherDomainException extends DomainException {
 
-        private static final com.ryuqq.setof.domain.common.exception.ErrorCode OTHER_CODE =
-                new com.ryuqq.setof.domain.common.exception.ErrorCode() {
-                    @Override
-                    public String getCode() {
-                        return "OTHER-001";
-                    }
-
-                    @Override
-                    public int getHttpStatus() {
-                        return 400;
-                    }
-
-                    @Override
-                    public String getMessage() {
-                        return "Other error";
-                    }
-                };
-
         public OtherDomainException() {
-            super(OTHER_CODE);
+            super(BannerErrorCode.BANNER_GROUP_NOT_FOUND, "other domain error");
         }
     }
 }

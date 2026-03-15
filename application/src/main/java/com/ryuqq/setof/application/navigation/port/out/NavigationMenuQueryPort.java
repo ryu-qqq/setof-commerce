@@ -1,6 +1,7 @@
 package com.ryuqq.setof.application.navigation.port.out;
 
 import com.ryuqq.setof.domain.navigation.aggregate.NavigationMenu;
+import com.ryuqq.setof.domain.navigation.query.NavigationMenuSearchCriteria;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,4 +29,12 @@ public interface NavigationMenuQueryPort {
      * @return NavigationMenu Optional
      */
     Optional<NavigationMenu> findById(long navigationMenuId);
+
+    /**
+     * 검색 조건으로 네비게이션 메뉴 목록을 조회합니다.
+     *
+     * @param criteria 검색 조건
+     * @return 네비게이션 메뉴 목록
+     */
+    List<NavigationMenu> findByCriteria(NavigationMenuSearchCriteria criteria);
 }

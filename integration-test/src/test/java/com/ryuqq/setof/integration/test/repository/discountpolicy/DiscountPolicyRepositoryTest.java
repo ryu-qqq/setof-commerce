@@ -166,8 +166,9 @@ class DiscountPolicyRepositoryTest extends RepositoryTestBase {
         @DisplayName("할인 타겟을 저장하고 ID를 반환합니다")
         void save_NewTarget_AssignsId() {
             // given
-            DiscountPolicyJpaEntity policy = discountPolicyJpaRepository.save(
-                    DiscountPolicyJpaEntityFixtures.newActiveRateEntity());
+            DiscountPolicyJpaEntity policy =
+                    discountPolicyJpaRepository.save(
+                            DiscountPolicyJpaEntityFixtures.newActiveRateEntity());
             flushAndClear();
 
             DiscountTargetJpaEntity targetEntity =
@@ -187,8 +188,9 @@ class DiscountPolicyRepositoryTest extends RepositoryTestBase {
         @DisplayName("여러 타입의 할인 타겟을 일괄 저장합니다")
         void saveAll_MultipleTargets_SavesAll() {
             // given
-            DiscountPolicyJpaEntity policy = discountPolicyJpaRepository.save(
-                    DiscountPolicyJpaEntityFixtures.newActiveRateEntity());
+            DiscountPolicyJpaEntity policy =
+                    discountPolicyJpaRepository.save(
+                            DiscountPolicyJpaEntityFixtures.newActiveRateEntity());
             flushAndClear();
 
             DiscountTargetJpaEntity productTarget =
@@ -213,8 +215,9 @@ class DiscountPolicyRepositoryTest extends RepositoryTestBase {
         @DisplayName("비활성 타겟을 저장합니다")
         void save_InactiveTarget_SavesWithActiveFalse() {
             // given
-            DiscountPolicyJpaEntity policy = discountPolicyJpaRepository.save(
-                    DiscountPolicyJpaEntityFixtures.newActiveRateEntity());
+            DiscountPolicyJpaEntity policy =
+                    discountPolicyJpaRepository.save(
+                            DiscountPolicyJpaEntityFixtures.newActiveRateEntity());
             flushAndClear();
 
             DiscountTargetJpaEntity targetEntity =

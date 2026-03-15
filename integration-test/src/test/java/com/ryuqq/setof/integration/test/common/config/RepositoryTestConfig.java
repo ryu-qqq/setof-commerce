@@ -45,6 +45,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
             "com.ryuqq.setof.adapter.out.persistence.navigation.repository",
             "com.ryuqq.setof.adapter.out.persistence.contentpage.condition",
             "com.ryuqq.setof.adapter.out.persistence.contentpage.repository",
+            "com.ryuqq.setof.adapter.out.persistence.discountpolicy.condition",
+            "com.ryuqq.setof.adapter.out.persistence.discountpolicy.repository",
             // ===== Legacy DB Adapters =====
             "com.ryuqq.setof.storage.legacy.brand.condition",
             "com.ryuqq.setof.storage.legacy.brand.repository",

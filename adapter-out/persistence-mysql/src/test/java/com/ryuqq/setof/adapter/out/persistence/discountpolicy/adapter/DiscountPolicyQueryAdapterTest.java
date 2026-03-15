@@ -71,8 +71,10 @@ class DiscountPolicyQueryAdapterTest {
             long targetId = 100L;
             List<Long> policyIds = List.of(1L, 2L);
 
-            DiscountPolicyJpaEntity entity1 = DiscountPolicyJpaEntityFixtures.activeRateEntity(1L);
-            DiscountPolicyJpaEntity entity2 = DiscountPolicyJpaEntityFixtures.activeRateEntity(2L);
+            DiscountPolicyJpaEntity entity1 =
+                    DiscountPolicyJpaEntityFixtures.newActiveRateEntityWithName("정책1");
+            DiscountPolicyJpaEntity entity2 =
+                    DiscountPolicyJpaEntityFixtures.newActiveRateEntityWithName("정책2");
             DiscountTargetJpaEntity targetEntity =
                     DiscountTargetJpaEntityFixtures.newActiveProductTarget(1L);
 
@@ -139,7 +141,7 @@ class DiscountPolicyQueryAdapterTest {
         void findById_WithExistingId_ReturnsDomain() {
             // given
             long id = 1L;
-            DiscountPolicyJpaEntity entity = DiscountPolicyJpaEntityFixtures.activeRateEntity(id);
+            DiscountPolicyJpaEntity entity = DiscountPolicyJpaEntityFixtures.newActiveRateEntity();
             DiscountTargetJpaEntity targetEntity =
                     DiscountTargetJpaEntityFixtures.newActiveProductTarget(id);
             DiscountPolicy domain = DiscountFixtures.activeRatePolicy(id);
@@ -198,7 +200,8 @@ class DiscountPolicyQueryAdapterTest {
                                     SortDirection.DESC,
                                     PageRequest.of(0, 10)));
 
-            DiscountPolicyJpaEntity entity = DiscountPolicyJpaEntityFixtures.activeRateEntity(1L);
+            DiscountPolicyJpaEntity entity =
+                    DiscountPolicyJpaEntityFixtures.existingActiveRateEntity(1L);
             DiscountPolicy domain = DiscountFixtures.activeRatePolicy(1L);
 
             given(
@@ -213,7 +216,8 @@ class DiscountPolicyQueryAdapterTest {
                                     ArgumentMatchers.anyLong(),
                                     ArgumentMatchers.anyInt()))
                     .willReturn(List.of(entity));
-            given(targetQueryDslRepository.findByPolicyIds(List.of(1L))).willReturn(List.of());
+            given(targetQueryDslRepository.findByPolicyIds(ArgumentMatchers.any()))
+                    .willReturn(List.of());
             given(mapper.toDomain(ArgumentMatchers.eq(entity), ArgumentMatchers.any()))
                     .willReturn(domain);
 

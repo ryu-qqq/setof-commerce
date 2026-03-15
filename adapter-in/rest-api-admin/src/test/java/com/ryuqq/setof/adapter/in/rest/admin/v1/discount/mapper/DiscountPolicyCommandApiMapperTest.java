@@ -279,7 +279,7 @@ class DiscountPolicyCommandApiMapperTest {
             UpdateDiscountPolicyStatusCommand command = mapper.toCommand(request);
 
             // then
-            assertThat(command.discountPolicyIds()).isEqualTo(List.of(1L, 2L, 3L));
+            assertThat(command.policyIds()).isEqualTo(List.of(1L, 2L, 3L));
             assertThat(command.active()).isTrue();
         }
 

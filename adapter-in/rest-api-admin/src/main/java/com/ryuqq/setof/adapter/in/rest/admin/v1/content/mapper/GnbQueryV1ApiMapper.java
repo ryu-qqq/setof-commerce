@@ -1,6 +1,8 @@
 package com.ryuqq.setof.adapter.in.rest.admin.v1.content.mapper;
 
+import com.ryuqq.setof.adapter.in.rest.admin.v1.content.dto.request.SearchGnbsV1ApiRequest;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.content.dto.response.GnbV1ApiResponse;
+import com.ryuqq.setof.application.navigation.dto.query.NavigationMenuSearchParams;
 import com.ryuqq.setof.domain.navigation.aggregate.NavigationMenu;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -49,6 +51,24 @@ public class GnbQueryV1ApiMapper {
                         toDisplayYn(menu.isActive()));
 
         return GnbV1ApiResponse.of(menu.id().value(), details);
+    }
+
+    /**
+     * SearchGnbsV1ApiRequest → NavigationMenuSearchParams 변환.
+     *
+     * @param request v1 GNB 검색 요청 DTO
+     * @return Application 검색 파라미터
+     */
+    public NavigationMenuSearchParams toSearchParams(SearchGnbsV1ApiRequest request) {
+        return new NavigationMenuSearchParams(
+                toInstant(request.startDate()), toInstant(request.endDate()));
+    }
+
+    private Instant toInstant(LocalDateTime ldt) {
+        if (ldt == null) {
+            return null;
+        }
+        return ldt.atZone(KST).toInstant();
     }
 
     private String toDisplayYn(boolean active) {

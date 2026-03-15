@@ -7,7 +7,10 @@ import com.ryuqq.setof.adapter.in.rest.admin.v1.content.dto.request.SearchBanner
 import com.ryuqq.setof.adapter.in.rest.admin.v1.content.dto.response.BannerGroupV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.content.dto.response.BannerItemV1ApiResponse;
 import com.ryuqq.setof.adapter.in.rest.admin.v1.content.mapper.BannerQueryV1ApiMapper;
+import com.ryuqq.setof.application.banner.dto.query.BannerGroupPageResult;
+import com.ryuqq.setof.application.banner.dto.query.BannerGroupSearchParams;
 import com.ryuqq.setof.application.banner.port.in.query.GetBannerGroupDetailUseCase;
+import com.ryuqq.setof.application.banner.port.in.query.SearchBannerGroupsUseCase;
 import com.ryuqq.setof.domain.banner.aggregate.BannerGroup;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -41,18 +44,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/content")
 public class BannerQueryV1Controller {
 
+    private final SearchBannerGroupsUseCase searchBannerGroupsUseCase;
     private final GetBannerGroupDetailUseCase getBannerGroupDetailUseCase;
     private final BannerQueryV1ApiMapper queryMapper;
 
     /**
      * BannerQueryV1Controller 생성자.
      *
+     * @param searchBannerGroupsUseCase 배너 그룹 검색 UseCase
      * @param getBannerGroupDetailUseCase 배너 그룹 상세 조회 UseCase
      * @param queryMapper 배너 Query API 매퍼
      */
     public BannerQueryV1Controller(
+            SearchBannerGroupsUseCase searchBannerGroupsUseCase,
             GetBannerGroupDetailUseCase getBannerGroupDetailUseCase,
             BannerQueryV1ApiMapper queryMapper) {
+        this.searchBannerGroupsUseCase = searchBannerGroupsUseCase;
         this.getBannerGroupDetailUseCase = getBannerGroupDetailUseCase;
         this.queryMapper = queryMapper;
     }
@@ -60,29 +67,39 @@ public class BannerQueryV1Controller {
     /**
      * 배너 그룹 목록 조회 API.
      *
-     * <p>TODO: SearchBannerGroupsUseCase 구현 후 연동. 현재는 검색/필터/페이징을 지원하는 Application UseCase가 없습니다.
+     * <p>배너 타입, 전시 여부, 전시 기간, 검색어 등으로 필터링하여 페이징 조회합니다.
      *
      * @param filter 검색 필터 및 페이징 요청 DTO
-     * @return 미구현 (UnsupportedOperationException)
+     * @return 배너 그룹 페이지 결과
      */
-    @Operation(
-            summary = "배너 그룹 목록 조회 (미구현)",
-            description = "TODO: SearchBannerGroupsUseCase 구현 후 연동 예정.")
+    @Operation(summary = "배너 그룹 목록 조회", description = "검색 조건으로 배너 그룹 목록을 페이징 조회합니다.")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
                 responseCode = "200",
                 description = "조회 성공"),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                responseCode = "501",
-                description = "미구현")
+                responseCode = "400",
+                description = "잘못된 요청")
     })
     @GetMapping("/banners")
     public ResponseEntity<V1ApiResponse<CustomPageableV1ApiResponse<BannerGroupV1ApiResponse>>>
             getBanners(@ModelAttribute SearchBannersV1ApiRequest filter) {
 
-        // TODO: SearchBannerGroupsUseCase 구현 후 연동
-        throw new UnsupportedOperationException(
-                "배너 그룹 목록 조회 UseCase가 아직 구현되지 않았습니다.");
+        BannerGroupSearchParams params = queryMapper.toSearchParams(filter);
+        BannerGroupPageResult pageResult = searchBannerGroupsUseCase.execute(params);
+
+        List<BannerGroupV1ApiResponse> items =
+                pageResult.items().stream().map(queryMapper::toBannerGroupResponse).toList();
+
+        CustomPageableV1ApiResponse<BannerGroupV1ApiResponse> pageResponse =
+                CustomPageableV1ApiResponse.of(
+                        items,
+                        pageResult.page(),
+                        pageResult.size(),
+                        pageResult.totalCount(),
+                        pageResult.lastDomainId());
+
+        return ResponseEntity.ok(V1ApiResponse.success(pageResponse));
     }
 
     /**

@@ -1,15 +1,19 @@
 package com.ryuqq.setof.application.discount.manager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.ryuqq.setof.application.discount.port.out.query.DiscountPolicyQueryPort;
 import com.ryuqq.setof.domain.discount.DiscountFixtures;
 import com.ryuqq.setof.domain.discount.aggregate.DiscountPolicy;
+import com.ryuqq.setof.domain.discount.exception.DiscountPolicyNotFoundException;
+import com.ryuqq.setof.domain.discount.query.DiscountPolicySearchCriteria;
 import com.ryuqq.setof.domain.discount.vo.DiscountTargetType;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -114,6 +118,154 @@ class DiscountPolicyReadManagerTest {
             // then
             assertThat(result).hasSize(1);
             then(policyQueryPort).should().findActiveByTarget(targetType, targetId);
+        }
+    }
+
+    @Nested
+    @DisplayName("getById() - ID로 할인 정책 단건 조회")
+    class GetByIdTest {
+
+        @Test
+        @DisplayName("존재하는 ID로 할인 정책을 조회한다")
+        void getById_ExistingId_ReturnsPolicy() {
+            // given
+            long policyId = 1L;
+            DiscountPolicy policy = DiscountFixtures.activeRatePolicy(policyId);
+
+            given(policyQueryPort.findById(policyId)).willReturn(Optional.of(policy));
+
+            // when
+            DiscountPolicy result = sut.getById(policyId);
+
+            // then
+            assertThat(result).isEqualTo(policy);
+            then(policyQueryPort).should().findById(policyId);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 ID로 조회하면 DiscountPolicyNotFoundException을 던진다")
+        void getById_NonExistingId_ThrowsDiscountPolicyNotFoundException() {
+            // given
+            long policyId = 999L;
+
+            given(policyQueryPort.findById(policyId)).willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> sut.getById(policyId))
+                    .isInstanceOf(DiscountPolicyNotFoundException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("findById() - ID로 할인 정책 Optional 조회")
+    class FindByIdTest {
+
+        @Test
+        @DisplayName("존재하는 ID로 Optional에 담긴 정책을 반환한다")
+        void findById_ExistingId_ReturnsPresentOptional() {
+            // given
+            long policyId = 1L;
+            DiscountPolicy policy = DiscountFixtures.activeRatePolicy(policyId);
+
+            given(policyQueryPort.findById(policyId)).willReturn(Optional.of(policy));
+
+            // when
+            Optional<DiscountPolicy> result = sut.findById(policyId);
+
+            // then
+            assertThat(result).isPresent();
+            assertThat(result.get()).isEqualTo(policy);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 ID로 빈 Optional을 반환한다")
+        void findById_NonExistingId_ReturnsEmptyOptional() {
+            // given
+            long policyId = 999L;
+
+            given(policyQueryPort.findById(policyId)).willReturn(Optional.empty());
+
+            // when
+            Optional<DiscountPolicy> result = sut.findById(policyId);
+
+            // then
+            assertThat(result).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("findByCriteria() - 검색 조건으로 정책 목록 조회")
+    class FindByCriteriaTest {
+
+        @Test
+        @DisplayName("검색 조건으로 정책 목록을 조회한다")
+        void findByCriteria_ValidCriteria_ReturnsPolicies() {
+            // given
+            DiscountPolicySearchCriteria criteria = DiscountPolicySearchCriteria.defaultCriteria();
+            List<DiscountPolicy> policies =
+                    List.of(
+                            DiscountFixtures.activeRatePolicy(1L),
+                            DiscountFixtures.activeFixedPolicy(2L));
+
+            given(policyQueryPort.findByCriteria(criteria)).willReturn(policies);
+
+            // when
+            List<DiscountPolicy> result = sut.findByCriteria(criteria);
+
+            // then
+            assertThat(result).hasSize(2);
+            then(policyQueryPort).should().findByCriteria(criteria);
+        }
+
+        @Test
+        @DisplayName("검색 결과가 없으면 빈 목록을 반환한다")
+        void findByCriteria_NoResults_ReturnsEmptyList() {
+            // given
+            DiscountPolicySearchCriteria criteria = DiscountPolicySearchCriteria.defaultCriteria();
+
+            given(policyQueryPort.findByCriteria(criteria)).willReturn(List.of());
+
+            // when
+            List<DiscountPolicy> result = sut.findByCriteria(criteria);
+
+            // then
+            assertThat(result).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("countByCriteria() - 검색 조건으로 정책 총 건수 조회")
+    class CountByCriteriaTest {
+
+        @Test
+        @DisplayName("검색 조건에 맞는 총 건수를 반환한다")
+        void countByCriteria_ValidCriteria_ReturnsCount() {
+            // given
+            DiscountPolicySearchCriteria criteria = DiscountPolicySearchCriteria.defaultCriteria();
+
+            given(policyQueryPort.countByCriteria(criteria)).willReturn(5L);
+
+            // when
+            long result = sut.countByCriteria(criteria);
+
+            // then
+            assertThat(result).isEqualTo(5L);
+            then(policyQueryPort).should().countByCriteria(criteria);
+        }
+
+        @Test
+        @DisplayName("검색 결과가 없으면 0을 반환한다")
+        void countByCriteria_NoResults_ReturnsZero() {
+            // given
+            DiscountPolicySearchCriteria criteria = DiscountPolicySearchCriteria.defaultCriteria();
+
+            given(policyQueryPort.countByCriteria(criteria)).willReturn(0L);
+
+            // when
+            long result = sut.countByCriteria(criteria);
+
+            // then
+            assertThat(result).isZero();
         }
     }
 

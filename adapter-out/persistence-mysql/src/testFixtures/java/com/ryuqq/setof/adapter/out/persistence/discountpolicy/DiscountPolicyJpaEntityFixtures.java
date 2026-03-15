@@ -152,6 +152,37 @@ public final class DiscountPolicyJpaEntityFixtures {
                 now);
     }
 
+    /** ID가 있는 활성 RATE 타입 할인 정책 Entity (toDomain 변환 테스트용). */
+    public static DiscountPolicyJpaEntity existingActiveRateEntity(Long id) {
+        Instant now = Instant.now();
+        Instant startAt = now.minus(1, ChronoUnit.DAYS);
+        Instant endAt = now.plus(30, ChronoUnit.DAYS);
+
+        return DiscountPolicyJpaEntity.create(
+                id,
+                DEFAULT_NAME,
+                DEFAULT_DESCRIPTION,
+                DiscountMethod.RATE,
+                DEFAULT_DISCOUNT_RATE,
+                null,
+                DEFAULT_MAX_DISCOUNT_AMOUNT,
+                true,
+                null,
+                DEFAULT_APPLICATION_TYPE,
+                DEFAULT_PUBLISHER_TYPE,
+                null,
+                DEFAULT_STACKING_GROUP,
+                DEFAULT_PRIORITY,
+                startAt,
+                endAt,
+                0,
+                0,
+                true,
+                null,
+                now,
+                now);
+    }
+
     /** SELLER 발행자 타입의 새 활성 할인 정책 Entity (ID null). */
     public static DiscountPolicyJpaEntity newActiveSellerEntity() {
         Instant now = Instant.now();

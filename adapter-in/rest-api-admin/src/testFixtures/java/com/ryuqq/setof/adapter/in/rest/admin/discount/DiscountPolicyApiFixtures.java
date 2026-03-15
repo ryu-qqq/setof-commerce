@@ -81,10 +81,10 @@ public final class DiscountPolicyApiFixtures {
                 DEFAULT_MAX_DISCOUNT_PRICE,
                 "N",
                 0.0,
-                5000.0,
+                50.0,
                 DEFAULT_START_DATE,
                 DEFAULT_END_DATE,
-                "5000원 할인",
+                "정액 할인",
                 DEFAULT_PRIORITY,
                 "Y");
     }

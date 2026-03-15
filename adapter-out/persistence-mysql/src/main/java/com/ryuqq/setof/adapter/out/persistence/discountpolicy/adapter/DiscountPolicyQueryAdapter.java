@@ -142,9 +142,13 @@ public class DiscountPolicyQueryAdapter implements DiscountPolicyQueryPort {
 
     private DiscountPolicyJpaEntity.ApplicationType toEntityApplicationType(
             ApplicationType domain) {
-        return domain != null
-                ? DiscountPolicyJpaEntity.ApplicationType.valueOf(domain.name())
-                : null;
+        if (domain == null) {
+            return null;
+        }
+        return switch (domain) {
+            case INSTANT -> DiscountPolicyJpaEntity.ApplicationType.IMMEDIATE;
+            case COUPON -> DiscountPolicyJpaEntity.ApplicationType.COUPON;
+        };
     }
 
     private DiscountPolicyJpaEntity.PublisherType toEntityPublisherType(PublisherType domain) {

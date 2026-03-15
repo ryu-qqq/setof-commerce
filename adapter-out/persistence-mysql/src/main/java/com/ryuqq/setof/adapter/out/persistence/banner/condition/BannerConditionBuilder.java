@@ -66,4 +66,31 @@ public class BannerConditionBuilder {
                 .loe(now)
                 .and(bannerSlideJpaEntity.displayEndAt.goe(now));
     }
+
+    /** 배너 그룹 활성 여부 nullable 조건 (null이면 조건 없음) */
+    public BooleanExpression bannerGroupActiveEq(Boolean active) {
+        return active != null ? bannerGroupJpaEntity.active.eq(active) : null;
+    }
+
+    /** 배너 그룹 전시 기간 시작일 이후 조건 */
+    public BooleanExpression bannerGroupDisplayStartAfter(Instant startDate) {
+        return startDate != null ? bannerGroupJpaEntity.displayStartAt.goe(startDate) : null;
+    }
+
+    /** 배너 그룹 전시 기간 종료일 이전 조건 */
+    public BooleanExpression bannerGroupDisplayEndBefore(Instant endDate) {
+        return endDate != null ? bannerGroupJpaEntity.displayEndAt.loe(endDate) : null;
+    }
+
+    /** 배너 그룹 제목 포함 검색 */
+    public BooleanExpression bannerGroupTitleContains(String keyword) {
+        return keyword != null && !keyword.isBlank()
+                ? bannerGroupJpaEntity.title.containsIgnoreCase(keyword)
+                : null;
+    }
+
+    /** 배너 그룹 ID 미만 조건 (No-Offset 페이징) */
+    public BooleanExpression bannerGroupIdLt(Long lastDomainId) {
+        return lastDomainId != null ? bannerGroupJpaEntity.id.lt(lastDomainId) : null;
+    }
 }

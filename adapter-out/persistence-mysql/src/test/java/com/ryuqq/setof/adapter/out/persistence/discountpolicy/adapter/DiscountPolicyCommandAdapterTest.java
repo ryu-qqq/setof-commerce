@@ -54,9 +54,10 @@ class DiscountPolicyCommandAdapterTest {
         void persist_WithValidDomain_SavesAndReturnsId() {
             // given
             DiscountPolicy domain = DiscountFixtures.newRateInstantPolicy();
-            DiscountPolicyJpaEntity entityToSave = DiscountPolicyJpaEntityFixtures.newRateEntity();
+            DiscountPolicyJpaEntity entityToSave =
+                    DiscountPolicyJpaEntityFixtures.newActiveRateEntity();
             DiscountPolicyJpaEntity savedEntity =
-                    DiscountPolicyJpaEntityFixtures.activeRateEntity(100L);
+                    DiscountPolicyJpaEntityFixtures.existingActiveRateEntity(100L);
 
             given(mapper.toEntity(domain)).willReturn(entityToSave);
             given(jpaRepository.save(entityToSave)).willReturn(savedEntity);
@@ -75,10 +76,13 @@ class DiscountPolicyCommandAdapterTest {
         void persist_CallsMapperOnce() {
             // given
             DiscountPolicy domain = DiscountFixtures.newRateInstantPolicy();
-            DiscountPolicyJpaEntity entity = DiscountPolicyJpaEntityFixtures.activeRateEntity();
+            DiscountPolicyJpaEntity entityToSave =
+                    DiscountPolicyJpaEntityFixtures.newActiveRateEntity();
+            DiscountPolicyJpaEntity savedEntity =
+                    DiscountPolicyJpaEntityFixtures.existingActiveRateEntity(1L);
 
-            given(mapper.toEntity(domain)).willReturn(entity);
-            given(jpaRepository.save(entity)).willReturn(entity);
+            given(mapper.toEntity(domain)).willReturn(entityToSave);
+            given(jpaRepository.save(entityToSave)).willReturn(savedEntity);
 
             // when
             commandAdapter.persist(domain);
@@ -92,16 +96,19 @@ class DiscountPolicyCommandAdapterTest {
         void persist_CallsRepositorySaveOnce() {
             // given
             DiscountPolicy domain = DiscountFixtures.newRateInstantPolicy();
-            DiscountPolicyJpaEntity entity = DiscountPolicyJpaEntityFixtures.activeRateEntity();
+            DiscountPolicyJpaEntity entityToSave =
+                    DiscountPolicyJpaEntityFixtures.newActiveRateEntity();
+            DiscountPolicyJpaEntity savedEntity =
+                    DiscountPolicyJpaEntityFixtures.existingActiveRateEntity(1L);
 
-            given(mapper.toEntity(domain)).willReturn(entity);
-            given(jpaRepository.save(entity)).willReturn(entity);
+            given(mapper.toEntity(domain)).willReturn(entityToSave);
+            given(jpaRepository.save(entityToSave)).willReturn(savedEntity);
 
             // when
             commandAdapter.persist(domain);
 
             // then
-            then(jpaRepository).should(times(1)).save(entity);
+            then(jpaRepository).should(times(1)).save(entityToSave);
         }
     }
 }

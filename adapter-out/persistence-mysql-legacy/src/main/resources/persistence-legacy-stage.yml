@@ -7,10 +7,22 @@
 # 같은 RDS 인스턴스의 다른 스키마를 사용합니다.
 # @since 1.1.0
 # ============================================================
+#
+# 전환 현황 (Stage):
+#   [새 DB] seller, category, brand, faq, productgroup, member,
+#           refundaccount, shippingaddress, wishlist, banner,
+#           navigation, content, cart
+#   [새 DB - member 종속] memberauth, memberconsent, mileage
+#           → member.enabled=false 시 자동 전환 (코드에서 persistence.member.enabled 참조)
+#   [새 DB - 레거시 어댑터 없음] discount, discountoutbox
+#           → 레거시 분기 없이 항상 새 DB 사용
+#
+# ============================================================
 
 persistence:
   legacy:
     enabled: true
+    # --- 독립 전환 도메인 ---
     seller:
       enabled: false
     category:
@@ -34,6 +46,8 @@ persistence:
     navigation:
       enabled: false
     content:
+      enabled: false
+    cart:
       enabled: false
 
 datasource:

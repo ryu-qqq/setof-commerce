@@ -36,7 +36,8 @@ class DiscountOutboxValidatorTest {
             long targetId = 1L;
 
             given(outboxReadManager.existsPendingForTarget(targetType, targetId)).willReturn(false);
-            given(outboxReadManager.existsPublishedForTarget(targetType, targetId)).willReturn(false);
+            given(outboxReadManager.existsPublishedForTarget(targetType, targetId))
+                    .willReturn(false);
 
             // when
             boolean result = sut.canCreateOutbox(targetType, targetId);
@@ -71,7 +72,8 @@ class DiscountOutboxValidatorTest {
             long targetId = 10L;
 
             given(outboxReadManager.existsPendingForTarget(targetType, targetId)).willReturn(false);
-            given(outboxReadManager.existsPublishedForTarget(targetType, targetId)).willReturn(true);
+            given(outboxReadManager.existsPublishedForTarget(targetType, targetId))
+                    .willReturn(true);
 
             // when
             boolean result = sut.canCreateOutbox(targetType, targetId);
@@ -88,7 +90,8 @@ class DiscountOutboxValidatorTest {
             long targetId = 5L;
 
             given(outboxReadManager.existsPendingForTarget(targetType, targetId)).willReturn(true);
-            given(outboxReadManager.existsPublishedForTarget(targetType, targetId)).willReturn(true);
+            given(outboxReadManager.existsPublishedForTarget(targetType, targetId))
+                    .willReturn(true);
 
             // when
             boolean result = sut.canCreateOutbox(targetType, targetId);
@@ -105,7 +108,8 @@ class DiscountOutboxValidatorTest {
             long targetId = 20L;
 
             given(outboxReadManager.existsPendingForTarget(targetType, targetId)).willReturn(false);
-            given(outboxReadManager.existsPublishedForTarget(targetType, targetId)).willReturn(false);
+            given(outboxReadManager.existsPublishedForTarget(targetType, targetId))
+                    .willReturn(false);
 
             // when
             boolean result = sut.canCreateOutbox(targetType, targetId);

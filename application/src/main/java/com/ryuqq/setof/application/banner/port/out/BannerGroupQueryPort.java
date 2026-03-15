@@ -1,6 +1,8 @@
 package com.ryuqq.setof.application.banner.port.out;
 
 import com.ryuqq.setof.domain.banner.aggregate.BannerGroup;
+import com.ryuqq.setof.domain.banner.query.BannerGroupSearchCriteria;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -21,4 +23,20 @@ public interface BannerGroupQueryPort {
      * @return 배너 그룹 (없으면 empty)
      */
     Optional<BannerGroup> findById(long bannerGroupId);
+
+    /**
+     * 검색 조건으로 배너 그룹 목록을 조회합니다.
+     *
+     * @param criteria 검색 조건
+     * @return 배너 그룹 목록
+     */
+    List<BannerGroup> findByCriteria(BannerGroupSearchCriteria criteria);
+
+    /**
+     * 검색 조건에 해당하는 배너 그룹 수를 반환합니다.
+     *
+     * @param criteria 검색 조건
+     * @return 배너 그룹 수
+     */
+    long countByCriteria(BannerGroupSearchCriteria criteria);
 }

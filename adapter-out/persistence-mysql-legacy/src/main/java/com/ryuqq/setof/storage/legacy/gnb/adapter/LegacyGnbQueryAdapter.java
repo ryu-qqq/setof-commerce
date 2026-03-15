@@ -2,6 +2,7 @@ package com.ryuqq.setof.storage.legacy.gnb.adapter;
 
 import com.ryuqq.setof.application.navigation.port.out.NavigationMenuQueryPort;
 import com.ryuqq.setof.domain.navigation.aggregate.NavigationMenu;
+import com.ryuqq.setof.domain.navigation.query.NavigationMenuSearchCriteria;
 import com.ryuqq.setof.storage.legacy.gnb.entity.LegacyGnbEntity;
 import com.ryuqq.setof.storage.legacy.gnb.mapper.LegacyGnbMapper;
 import com.ryuqq.setof.storage.legacy.gnb.repository.LegacyGnbQueryDslRepository;
@@ -41,5 +42,10 @@ public class LegacyGnbQueryAdapter implements NavigationMenuQueryPort {
     public List<NavigationMenu> fetchNavigationMenus() {
         List<LegacyGnbEntity> entities = repository.fetchGnbs();
         return mapper.toDomains(entities);
+    }
+
+    @Override
+    public List<NavigationMenu> findByCriteria(NavigationMenuSearchCriteria criteria) {
+        return List.of();
     }
 }

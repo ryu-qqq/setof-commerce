@@ -5,6 +5,7 @@ import static com.ryuqq.setof.adapter.out.persistence.navigation.entity.QNavigat
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ryuqq.setof.adapter.out.persistence.navigation.condition.NavigationMenuConditionBuilder;
 import com.ryuqq.setof.adapter.out.persistence.navigation.entity.NavigationMenuJpaEntity;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
@@ -60,6 +61,26 @@ public class NavigationMenuQueryDslRepository {
                         conditionBuilder.activeEq(true),
                         conditionBuilder.notDeleted(),
                         conditionBuilder.displayPeriodBetween())
+                .orderBy(navigationMenuJpaEntity.displayOrder.asc())
+                .fetch();
+    }
+
+    /**
+     * 검색 조건으로 네비게이션 메뉴 목록 조회.
+     *
+     * @param displayStartAfter 전시 시작일 이후 (nullable)
+     * @param displayEndBefore 전시 종료일 이전 (nullable)
+     * @return NavigationMenuJpaEntity 목록
+     */
+    public List<NavigationMenuJpaEntity> searchMenus(
+            Instant displayStartAfter, Instant displayEndBefore) {
+
+        return queryFactory
+                .selectFrom(navigationMenuJpaEntity)
+                .where(
+                        conditionBuilder.notDeleted(),
+                        conditionBuilder.displayStartAfter(displayStartAfter),
+                        conditionBuilder.displayEndBefore(displayEndBefore))
                 .orderBy(navigationMenuJpaEntity.displayOrder.asc())
                 .fetch();
     }

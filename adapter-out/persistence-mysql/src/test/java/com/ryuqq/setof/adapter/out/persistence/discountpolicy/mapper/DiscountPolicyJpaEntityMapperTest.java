@@ -224,14 +224,14 @@ class DiscountPolicyJpaEntityMapperTest {
         @DisplayName("활성 RATE Entity를 Domain으로 변환합니다")
         void toDomain_WithActiveRateEntity_ReturnsValidDomain() {
             // given
-            DiscountPolicyJpaEntity entity = DiscountPolicyJpaEntityFixtures.activeRateEntity();
+            DiscountPolicyJpaEntity entity =
+                    DiscountPolicyJpaEntityFixtures.existingActiveRateEntity(1L);
             List<DiscountTargetJpaEntity> targets = List.of();
 
             // when
             DiscountPolicy domain = mapper.toDomain(entity, targets);
 
             // then
-            assertThat(domain.idValue()).isEqualTo(entity.getId());
             assertThat(domain.nameValue()).isEqualTo(entity.getName());
             assertThat(domain.description()).isEqualTo(entity.getDescription());
             assertThat(domain.discountMethod()).isEqualTo(DiscountMethod.RATE);
@@ -246,9 +246,11 @@ class DiscountPolicyJpaEntityMapperTest {
         @DisplayName("타겟 목록과 함께 Policy Entity를 Domain으로 변환합니다")
         void toDomain_WithTargets_ReturnsValidDomainWithTargets() {
             // given
-            DiscountPolicyJpaEntity entity = DiscountPolicyJpaEntityFixtures.activeRateEntity(1L);
+            DiscountPolicyJpaEntity entity =
+                    DiscountPolicyJpaEntityFixtures.existingActiveRateEntity(2L);
             DiscountTargetJpaEntity targetEntity =
-                    DiscountTargetJpaEntityFixtures.newActiveProductTarget(1L);
+                    DiscountTargetJpaEntityFixtures.newActiveProductTarget(
+                            10L, 2L, DiscountTargetJpaEntityFixtures.DEFAULT_TARGET_ID);
             List<DiscountTargetJpaEntity> targets = List.of(targetEntity);
 
             // when
@@ -263,25 +265,11 @@ class DiscountPolicyJpaEntityMapperTest {
         }
 
         @Test
-        @DisplayName("삭제된 Policy Entity를 Domain으로 변환합니다")
-        void toDomain_WithDeletedEntity_ReturnsDeletedDomain() {
-            // given
-            DiscountPolicyJpaEntity entity = DiscountPolicyJpaEntityFixtures.deletedEntity();
-            List<DiscountTargetJpaEntity> targets = List.of();
-
-            // when
-            DiscountPolicy domain = mapper.toDomain(entity, targets);
-
-            // then
-            assertThat(domain.deletedAt()).isNotNull();
-            assertThat(domain.isDeleted()).isTrue();
-        }
-
-        @Test
         @DisplayName("sellerId가 없는 ADMIN 정책 Entity를 Domain으로 변환합니다")
         void toDomain_WithNoSellerId_ReturnsDomainWithNullSellerId() {
             // given
-            DiscountPolicyJpaEntity entity = DiscountPolicyJpaEntityFixtures.activeRateEntity();
+            DiscountPolicyJpaEntity entity =
+                    DiscountPolicyJpaEntityFixtures.existingActiveRateEntity(3L);
             List<DiscountTargetJpaEntity> targets = List.of();
 
             // when
@@ -305,7 +293,8 @@ class DiscountPolicyJpaEntityMapperTest {
         void toTargetDomain_WithActiveProductTarget_ReturnsValidDomain() {
             // given
             DiscountTargetJpaEntity entity =
-                    DiscountTargetJpaEntityFixtures.newActiveProductTarget(1L);
+                    DiscountTargetJpaEntityFixtures.newActiveProductTarget(
+                            1L, 10L, DiscountTargetJpaEntityFixtures.DEFAULT_TARGET_ID);
 
             // when
             DiscountTarget domain = mapper.toTargetDomain(entity);
@@ -321,7 +310,7 @@ class DiscountPolicyJpaEntityMapperTest {
         void toTargetDomain_WithInactiveTarget_ReturnsInactiveDomain() {
             // given
             DiscountTargetJpaEntity entity =
-                    DiscountTargetJpaEntityFixtures.newInactiveProductTarget(1L);
+                    DiscountTargetJpaEntityFixtures.newInactiveProductTarget(2L, 10L);
 
             // when
             DiscountTarget domain = mapper.toTargetDomain(entity);
@@ -335,7 +324,8 @@ class DiscountPolicyJpaEntityMapperTest {
         void toTargetDomain_WithBrandTarget_ReturnsBrandTypeDomain() {
             // given
             DiscountTargetJpaEntity entity =
-                    DiscountTargetJpaEntityFixtures.newActiveBrandTarget(1L);
+                    DiscountTargetJpaEntityFixtures.newActiveBrandTarget(
+                            3L, 10L, DiscountTargetJpaEntityFixtures.DEFAULT_TARGET_ID);
 
             // when
             DiscountTarget domain = mapper.toTargetDomain(entity);

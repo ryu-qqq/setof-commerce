@@ -4,6 +4,8 @@ import com.ryuqq.setof.application.banner.port.out.BannerGroupQueryPort;
 import com.ryuqq.setof.domain.banner.aggregate.BannerGroup;
 import com.ryuqq.setof.domain.banner.exception.BannerErrorCode;
 import com.ryuqq.setof.domain.banner.exception.BannerException;
+import com.ryuqq.setof.domain.banner.query.BannerGroupSearchCriteria;
+import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,5 +42,27 @@ public class BannerGroupReadManager {
                                 new BannerException(
                                         BannerErrorCode.BANNER_GROUP_NOT_FOUND,
                                         "배너 그룹을 찾을 수 없습니다. bannerGroupId=" + bannerGroupId));
+    }
+
+    /**
+     * 검색 조건으로 배너 그룹 목록을 조회합니다.
+     *
+     * @param criteria 검색 조건
+     * @return 배너 그룹 목록
+     */
+    @Transactional(readOnly = true)
+    public List<BannerGroup> findByCriteria(BannerGroupSearchCriteria criteria) {
+        return queryPort.findByCriteria(criteria);
+    }
+
+    /**
+     * 검색 조건에 해당하는 배너 그룹 수를 반환합니다.
+     *
+     * @param criteria 검색 조건
+     * @return 배너 그룹 수
+     */
+    @Transactional(readOnly = true)
+    public long countByCriteria(BannerGroupSearchCriteria criteria) {
+        return queryPort.countByCriteria(criteria);
     }
 }

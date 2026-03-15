@@ -154,12 +154,18 @@ public class DiscountPolicyJpaEntityMapper {
 
     private DiscountPolicyJpaEntity.ApplicationType toEntityApplicationType(
             ApplicationType domain) {
-        return DiscountPolicyJpaEntity.ApplicationType.valueOf(domain.name());
+        return switch (domain) {
+            case INSTANT -> DiscountPolicyJpaEntity.ApplicationType.IMMEDIATE;
+            case COUPON -> DiscountPolicyJpaEntity.ApplicationType.COUPON;
+        };
     }
 
     private ApplicationType toDomainApplicationType(
             DiscountPolicyJpaEntity.ApplicationType entity) {
-        return ApplicationType.valueOf(entity.name());
+        return switch (entity) {
+            case IMMEDIATE -> ApplicationType.INSTANT;
+            case COUPON -> ApplicationType.COUPON;
+        };
     }
 
     private DiscountPolicyJpaEntity.PublisherType toEntityPublisherType(PublisherType domain) {

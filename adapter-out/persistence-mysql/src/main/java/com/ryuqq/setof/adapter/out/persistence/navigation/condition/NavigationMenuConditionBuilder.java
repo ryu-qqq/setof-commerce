@@ -39,4 +39,14 @@ public class NavigationMenuConditionBuilder {
                 .loe(now)
                 .and(navigationMenuJpaEntity.displayEndAt.goe(now));
     }
+
+    /** 전시 기간 시작일 이후 조건 */
+    public BooleanExpression displayStartAfter(Instant startDate) {
+        return startDate != null ? navigationMenuJpaEntity.displayStartAt.goe(startDate) : null;
+    }
+
+    /** 전시 기간 종료일 이전 조건 */
+    public BooleanExpression displayEndBefore(Instant endDate) {
+        return endDate != null ? navigationMenuJpaEntity.displayEndAt.loe(endDate) : null;
+    }
 }

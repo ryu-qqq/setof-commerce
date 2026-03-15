@@ -117,4 +117,117 @@ class BannerConditionBuilderTest {
             assertThat(result).isNotNull();
         }
     }
+
+    @Nested
+    @DisplayName("bannerGroupActiveEq(Boolean) nullable 메서드 테스트")
+    class BannerGroupActiveEqNullableTest {
+
+        @Test
+        @DisplayName("true 입력 시 BooleanExpression을 반환합니다")
+        void bannerGroupActiveEq_WithTrue_ReturnsBooleanExpression() {
+            BooleanExpression result = conditionBuilder.bannerGroupActiveEq(Boolean.TRUE);
+            assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("false 입력 시 BooleanExpression을 반환합니다")
+        void bannerGroupActiveEq_WithFalse_ReturnsBooleanExpression() {
+            BooleanExpression result = conditionBuilder.bannerGroupActiveEq(Boolean.FALSE);
+            assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("null 입력 시 null을 반환합니다")
+        void bannerGroupActiveEq_WithNull_ReturnsNull() {
+            BooleanExpression result = conditionBuilder.bannerGroupActiveEq((Boolean) null);
+            assertThat(result).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("bannerGroupDisplayStartAfter 메서드 테스트")
+    class BannerGroupDisplayStartAfterTest {
+
+        @Test
+        @DisplayName("유효한 시작일 입력 시 BooleanExpression을 반환합니다")
+        void bannerGroupDisplayStartAfter_WithValidDate_ReturnsBooleanExpression() {
+            BooleanExpression result =
+                    conditionBuilder.bannerGroupDisplayStartAfter(
+                            java.time.Instant.now().minusSeconds(3600));
+            assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("null 입력 시 null을 반환합니다")
+        void bannerGroupDisplayStartAfter_WithNull_ReturnsNull() {
+            BooleanExpression result = conditionBuilder.bannerGroupDisplayStartAfter(null);
+            assertThat(result).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("bannerGroupDisplayEndBefore 메서드 테스트")
+    class BannerGroupDisplayEndBeforeTest {
+
+        @Test
+        @DisplayName("유효한 종료일 입력 시 BooleanExpression을 반환합니다")
+        void bannerGroupDisplayEndBefore_WithValidDate_ReturnsBooleanExpression() {
+            BooleanExpression result =
+                    conditionBuilder.bannerGroupDisplayEndBefore(
+                            java.time.Instant.now().plusSeconds(86400));
+            assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("null 입력 시 null을 반환합니다")
+        void bannerGroupDisplayEndBefore_WithNull_ReturnsNull() {
+            BooleanExpression result = conditionBuilder.bannerGroupDisplayEndBefore(null);
+            assertThat(result).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("bannerGroupTitleContains 메서드 테스트")
+    class BannerGroupTitleContainsTest {
+
+        @Test
+        @DisplayName("유효한 검색어 입력 시 BooleanExpression을 반환합니다")
+        void bannerGroupTitleContains_WithValidKeyword_ReturnsBooleanExpression() {
+            BooleanExpression result = conditionBuilder.bannerGroupTitleContains("테스트");
+            assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("null 입력 시 null을 반환합니다")
+        void bannerGroupTitleContains_WithNull_ReturnsNull() {
+            BooleanExpression result = conditionBuilder.bannerGroupTitleContains(null);
+            assertThat(result).isNull();
+        }
+
+        @Test
+        @DisplayName("빈 문자열 입력 시 null을 반환합니다")
+        void bannerGroupTitleContains_WithBlank_ReturnsNull() {
+            BooleanExpression result = conditionBuilder.bannerGroupTitleContains("   ");
+            assertThat(result).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("bannerGroupIdLt 메서드 테스트")
+    class BannerGroupIdLtTest {
+
+        @Test
+        @DisplayName("유효한 ID 입력 시 BooleanExpression을 반환합니다")
+        void bannerGroupIdLt_WithValidId_ReturnsBooleanExpression() {
+            BooleanExpression result = conditionBuilder.bannerGroupIdLt(100L);
+            assertThat(result).isNotNull();
+        }
+
+        @Test
+        @DisplayName("null 입력 시 null을 반환합니다 (No-Offset 미적용)")
+        void bannerGroupIdLt_WithNull_ReturnsNull() {
+            BooleanExpression result = conditionBuilder.bannerGroupIdLt(null);
+            assertThat(result).isNull();
+        }
+    }
 }
