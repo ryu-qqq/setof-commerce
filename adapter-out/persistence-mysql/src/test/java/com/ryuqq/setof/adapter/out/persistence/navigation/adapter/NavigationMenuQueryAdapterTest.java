@@ -8,10 +8,10 @@ import com.ryuqq.setof.adapter.out.persistence.navigation.NavigationMenuJpaEntit
 import com.ryuqq.setof.adapter.out.persistence.navigation.entity.NavigationMenuJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.navigation.mapper.NavigationMenuJpaEntityMapper;
 import com.ryuqq.setof.adapter.out.persistence.navigation.repository.NavigationMenuQueryDslRepository;
+import com.ryuqq.setof.domain.common.vo.QueryContext;
 import com.ryuqq.setof.domain.navigation.aggregate.NavigationMenu;
 import com.ryuqq.setof.domain.navigation.query.NavigationMenuSearchCriteria;
 import com.ryuqq.setof.domain.navigation.query.NavigationMenuSortKey;
-import com.ryuqq.setof.domain.common.vo.QueryContext;
 import com.setof.commerce.domain.navigation.NavigationFixtures;
 import java.time.Instant;
 import java.util.List;
@@ -170,7 +170,9 @@ class NavigationMenuQueryAdapterTest {
             Instant endBefore = Instant.now().plusSeconds(86400);
             NavigationMenuSearchCriteria criteria =
                     NavigationMenuSearchCriteria.of(
-                            startAfter, endBefore, QueryContext.defaultOf(NavigationMenuSortKey.CREATED_AT));
+                            startAfter,
+                            endBefore,
+                            QueryContext.defaultOf(NavigationMenuSortKey.CREATED_AT));
 
             NavigationMenuJpaEntity entity1 = NavigationMenuJpaEntityFixtures.activeEntity(1L);
             NavigationMenuJpaEntity entity2 = NavigationMenuJpaEntityFixtures.activeEntity(2L);

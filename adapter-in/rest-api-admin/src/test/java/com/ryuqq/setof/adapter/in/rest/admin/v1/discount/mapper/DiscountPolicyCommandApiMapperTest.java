@@ -96,8 +96,8 @@ class DiscountPolicyCommandApiMapperTest {
         }
 
         @Test
-        @DisplayName("issueType PRODUCT를 targetType PRODUCT_GROUP으로 변환한다")
-        void toCommand_IssueTypeProduct_ToProductGroup() {
+        @DisplayName("issueType PRODUCT를 targetType PRODUCT로 변환한다")
+        void toCommand_IssueTypeProduct_ToProduct() {
             // given
             CreateDiscountV1ApiRequest request = DiscountPolicyApiFixtures.createRequest();
 
@@ -106,7 +106,7 @@ class DiscountPolicyCommandApiMapperTest {
 
             // then
             assertThat(command.targets()).hasSize(1);
-            assertThat(command.targets().get(0).targetType()).isEqualTo("PRODUCT_GROUP");
+            assertThat(command.targets().get(0).targetType()).isEqualTo("PRODUCT");
         }
 
         @Test
@@ -138,8 +138,8 @@ class DiscountPolicyCommandApiMapperTest {
         }
 
         @Test
-        @DisplayName("applicationType은 IMMEDIATE로 고정 변환한다")
-        void toCommand_ApplicationType_FixedToImmediate() {
+        @DisplayName("applicationType은 INSTANT로 고정 변환한다")
+        void toCommand_ApplicationType_FixedToInstant() {
             // given
             CreateDiscountV1ApiRequest request = DiscountPolicyApiFixtures.createRequest();
 
@@ -147,7 +147,7 @@ class DiscountPolicyCommandApiMapperTest {
             CreateDiscountPolicyCommand command = mapper.toCommand(request);
 
             // then
-            assertThat(command.applicationType()).isEqualTo("IMMEDIATE");
+            assertThat(command.applicationType()).isEqualTo("INSTANT");
         }
 
         @Test
@@ -317,8 +317,8 @@ class DiscountPolicyCommandApiMapperTest {
     class ToModifyTargetsCommandTest {
 
         @Test
-        @DisplayName("PRODUCT issueType을 PRODUCT_GROUP targetType으로 변환한다")
-        void toCommand_ProductIssueType_ToProductGroup() {
+        @DisplayName("PRODUCT issueType을 PRODUCT targetType으로 변환한다")
+        void toCommand_ProductIssueType_ToProduct() {
             // given
             long policyId = 1L;
             CreateDiscountTargetV1ApiRequest request =
@@ -329,7 +329,7 @@ class DiscountPolicyCommandApiMapperTest {
 
             // then
             assertThat(command.discountPolicyId()).isEqualTo(policyId);
-            assertThat(command.targetType()).isEqualTo("PRODUCT_GROUP");
+            assertThat(command.targetType()).isEqualTo("PRODUCT");
             assertThat(command.targetIds()).isEqualTo(List.of(101L, 102L, 103L));
         }
 
@@ -395,7 +395,7 @@ class DiscountPolicyCommandApiMapperTest {
 
             // then
             assertThat(commands.get(0).discountMethod()).isEqualTo("RATE");
-            assertThat(commands.get(0).applicationType()).isEqualTo("IMMEDIATE");
+            assertThat(commands.get(0).applicationType()).isEqualTo("INSTANT");
         }
 
         @Test
@@ -480,8 +480,8 @@ class DiscountPolicyCommandApiMapperTest {
         }
 
         @Test
-        @DisplayName("targets의 첫 번째 PRODUCT_GROUP을 issueType PRODUCT로 역변환한다")
-        void toResponse_TargetProductGroup_ToIssueTypeProduct() {
+        @DisplayName("targets의 첫 번째 PRODUCT targetType을 issueType PRODUCT로 역변환한다")
+        void toResponse_TargetProduct_ToIssueTypeProduct() {
             // given
             DiscountPolicyResult result = DiscountPolicyApiFixtures.discountPolicyResult(1L);
 

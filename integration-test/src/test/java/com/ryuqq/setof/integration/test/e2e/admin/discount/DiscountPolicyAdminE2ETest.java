@@ -84,14 +84,15 @@ class DiscountPolicyAdminE2ETest extends AdminE2ETestBase {
         }
 
         @Test
-        @DisplayName("존재하지 않는 정책 조회 시 404 에러 반환")
-        void shouldReturn404WhenPolicyNotFound() {
+        @DisplayName("존재하지 않는 정책 조회 시 V1 레거시 호환 - HTTP 200 + data null 반환")
+        void shouldReturn200WithNullDataWhenPolicyNotFound() {
             // when & then
+            // V1 레거시 호환: 404는 HTTP 200으로 응답하고 body에 data=null을 포함
             givenAdmin()
                     .when()
                     .get(BASE_SINGLE_PATH + "/999999")
                     .then()
-                    .statusCode(HttpStatus.NOT_FOUND.value());
+                    .statusCode(HttpStatus.OK.value());
         }
     }
 
@@ -394,18 +395,19 @@ class DiscountPolicyAdminE2ETest extends AdminE2ETestBase {
         }
 
         @Test
-        @DisplayName("존재하지 않는 정책 수정 시 404 에러 반환")
-        void shouldReturn404WhenPolicyNotFound() {
+        @DisplayName("존재하지 않는 정책 수정 시 V1 레거시 호환 - HTTP 200 + data null 반환")
+        void shouldReturn200WithNullDataWhenPolicyNotFound() {
             // given
             Map<String, Object> request = createUpdateRateDiscountRequest("수정 정책명", 15.0);
 
             // when & then
+            // V1 레거시 호환: 404는 HTTP 200으로 응답하고 body에 data=null을 포함
             givenAdmin()
                     .body(request)
                     .when()
                     .put(BASE_SINGLE_PATH + "/999999")
                     .then()
-                    .statusCode(HttpStatus.NOT_FOUND.value());
+                    .statusCode(HttpStatus.OK.value());
         }
 
         @Test
@@ -992,7 +994,12 @@ class DiscountPolicyAdminE2ETest extends AdminE2ETestBase {
         return request;
     }
 
-    /** FIXED_AMOUNT(PRICE) 타입 할인 정책 생성 요청 Map 생성. */
+    /**
+     * FIXED_AMOUNT(PRICE) 타입 할인 정책 생성 요청 Map 생성.
+     *
+     * <p>PRICE 타입에서도 discountRatio 필드는 @DecimalMax(100.0) 제약이 적용되므로 0.0으로 설정. 실제 할인 금액은 매퍼 레이어에서
+     * discountAmount로 변환된다.
+     */
     private Map<String, Object> createFixedAmountDiscountRequest(String policyName) {
         Map<String, Object> discountDetails = new HashMap<>();
         discountDetails.put("discountPolicyName", policyName);
@@ -1003,7 +1010,7 @@ class DiscountPolicyAdminE2ETest extends AdminE2ETestBase {
         discountDetails.put("maxDiscountPrice", 0);
         discountDetails.put("shareYn", "N");
         discountDetails.put("shareRatio", 0.0);
-        discountDetails.put("discountRatio", 5000.0);
+        discountDetails.put("discountRatio", 50.0);
         discountDetails.put("policyStartDate", "2026-01-01 00:00:00");
         discountDetails.put("policyEndDate", "2026-12-31 23:59:59");
         discountDetails.put("memo", "고정금액 할인 메모");

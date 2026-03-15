@@ -214,7 +214,7 @@ public final class DiscountPolicyApiFixtures {
     // ===== Application Result Fixtures =====
 
     public static DiscountTargetResult discountTargetResult(Long id) {
-        return new DiscountTargetResult(id, "PRODUCT_GROUP", 101L);
+        return new DiscountTargetResult(id, "PRODUCT", 101L);
     }
 
     public static DiscountPolicyResult discountPolicyResult() {

@@ -29,6 +29,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -100,6 +101,26 @@ public class V1GlobalExceptionHandler {
                                 HttpStatus.BAD_REQUEST,
                                 ex.getClass().getSimpleName(),
                                 errorMessage));
+    }
+
+    // ======= 400 - Method-level validation (List<@Valid ...> 파라미터) =======
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<V1ErrorResponse> handleHandlerMethodValidation(
+            HandlerMethodValidationException ex, HttpServletRequest req) {
+        String errorMessage =
+                ex.getAllValidationResults().stream()
+                        .flatMap(r -> r.getResolvableErrors().stream())
+                        .map(e -> e.getDefaultMessage())
+                        .collect(Collectors.joining(" "));
+
+        String msg = errorMessage.isBlank() ? "요청 데이터 검증에 실패했습니다." : errorMessage;
+
+        log.warn("V1 HandlerMethodValidation: path={}, message={}", req.getRequestURI(), msg);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(
+                        V1ErrorResponse.of(
+                                HttpStatus.BAD_REQUEST, ex.getClass().getSimpleName(), msg));
     }
 
     // ======= 400 - Method-level validation (@Validated on params) =======

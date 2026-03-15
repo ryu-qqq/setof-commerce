@@ -72,7 +72,7 @@ public class DiscountPolicyCommandApiMapper {
                 (int) details.maxDiscountPrice(),
                 details.hasDiscountLimit(),
                 null,
-                "IMMEDIATE",
+                "INSTANT",
                 details.publisherType(),
                 null,
                 toStackingGroup(details.publisherType()),
@@ -225,7 +225,7 @@ public class DiscountPolicyCommandApiMapper {
                 (int) details.maxDiscountPrice(),
                 details.hasDiscountLimit(),
                 null,
-                "IMMEDIATE",
+                "INSTANT",
                 details.publisherType(),
                 null,
                 toStackingGroup(details.publisherType()),
@@ -265,26 +265,26 @@ public class DiscountPolicyCommandApiMapper {
     /**
      * 레거시 issueType → 새 시스템 targetType 변환.
      *
+     * <p>DiscountTargetType enum: PRODUCT, CATEGORY, BRAND, SELLER. 레거시 IssueType.PRODUCT →
+     * DiscountTargetType.PRODUCT (동일).
+     *
      * @param legacyIssueType 레거시 적용 대상 유형 ("PRODUCT" / "SELLER" / "BRAND")
-     * @return 새 시스템 대상 유형 ("PRODUCT_GROUP" / "SELLER" / "BRAND")
+     * @return 새 시스템 대상 유형 ("PRODUCT" / "SELLER" / "BRAND")
      */
     private String toTargetType(String legacyIssueType) {
-        if ("PRODUCT".equalsIgnoreCase(legacyIssueType)) {
-            return "PRODUCT_GROUP";
-        }
         return legacyIssueType;
     }
 
     /**
      * 새 시스템 targetType → 레거시 issueType 역변환.
      *
-     * @param newTargetType 새 시스템 대상 유형 ("PRODUCT_GROUP" / "SELLER" / "BRAND")
+     * <p>DiscountTargetType enum: PRODUCT, CATEGORY, BRAND, SELLER. DiscountTargetType.PRODUCT →
+     * 레거시 IssueType.PRODUCT (동일).
+     *
+     * @param newTargetType 새 시스템 대상 유형 ("PRODUCT" / "SELLER" / "BRAND")
      * @return 레거시 적용 대상 유형 ("PRODUCT" / "SELLER" / "BRAND")
      */
     private String toIssueType(String newTargetType) {
-        if ("PRODUCT_GROUP".equalsIgnoreCase(newTargetType)) {
-            return "PRODUCT";
-        }
         return newTargetType;
     }
 

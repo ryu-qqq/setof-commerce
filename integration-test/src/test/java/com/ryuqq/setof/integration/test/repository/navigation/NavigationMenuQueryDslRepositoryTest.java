@@ -138,6 +138,212 @@ class NavigationMenuQueryDslRepositoryTest extends RepositoryTestBase {
         }
     }
 
+    @Nested
+    @DisplayName("findById 테스트")
+    class FindByIdTest {
+
+        @Test
+        @DisplayName("존재하는 ID로 조회 시 메뉴를 반환합니다")
+        void shouldFindById() {
+            // given
+            NavigationMenuJpaEntity entity =
+                    jpaRepository.save(NavigationMenuJpaEntityFixtures.newEntity());
+            flushAndClear();
+
+            // when
+            java.util.Optional<NavigationMenuJpaEntity> result =
+                    queryDslRepository.findById(entity.getId());
+
+            // then
+            assertThat(result).isPresent();
+            assertThat(result.get().getId()).isEqualTo(entity.getId());
+        }
+
+        @Test
+        @DisplayName("삭제된 메뉴는 조회되지 않습니다 (Soft Delete)")
+        void shouldNotFindDeletedMenu() {
+            // given
+            NavigationMenuJpaEntity deleted = jpaRepository.save(createDeletedMenu());
+            flushAndClear();
+
+            // when
+            java.util.Optional<NavigationMenuJpaEntity> result =
+                    queryDslRepository.findById(deleted.getId());
+
+            // then
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 ID로 조회 시 빈 Optional을 반환합니다")
+        void shouldReturnEmptyWhenNotFound() {
+            // when
+            java.util.Optional<NavigationMenuJpaEntity> result =
+                    queryDslRepository.findById(999999L);
+
+            // then
+            assertThat(result).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("searchMenus 테스트")
+    class SearchMenusTest {
+
+        @Test
+        @DisplayName("삭제된 메뉴는 검색 결과에서 제외됩니다")
+        void shouldExcludeDeletedMenus() {
+            // given
+            NavigationMenuJpaEntity active =
+                    jpaRepository.save(NavigationMenuJpaEntityFixtures.newEntity());
+            NavigationMenuJpaEntity deleted = jpaRepository.save(createDeletedMenu());
+            flushAndClear();
+
+            // when
+            List<NavigationMenuJpaEntity> result = queryDslRepository.searchMenus(null, null);
+
+            // then
+            List<Long> ids = result.stream().map(NavigationMenuJpaEntity::getId).toList();
+            assertThat(ids).contains(active.getId());
+            assertThat(ids).doesNotContain(deleted.getId());
+        }
+
+        @Test
+        @DisplayName("비활성 메뉴도 검색 결과에 포함됩니다 (searchMenus는 active 조건 없음)")
+        void shouldIncludeInactiveMenus() {
+            // given
+            NavigationMenuJpaEntity active =
+                    jpaRepository.save(NavigationMenuJpaEntityFixtures.newEntity());
+            NavigationMenuJpaEntity inactive = jpaRepository.save(createInactiveMenu());
+            flushAndClear();
+
+            // when
+            List<NavigationMenuJpaEntity> result = queryDslRepository.searchMenus(null, null);
+
+            // then
+            List<Long> ids = result.stream().map(NavigationMenuJpaEntity::getId).toList();
+            assertThat(ids).contains(active.getId(), inactive.getId());
+        }
+
+        @Test
+        @DisplayName("displayStartAfter 조건으로 특정 기간 이후 시작 메뉴만 조회합니다")
+        void shouldFilterByDisplayStartAfter() {
+            // given
+            Instant now = Instant.now();
+            // 과거에 시작한 메뉴
+            NavigationMenuJpaEntity pastStartMenu =
+                    jpaRepository.save(
+                            NavigationMenuJpaEntity.create(
+                                    null,
+                                    "과거시작",
+                                    NavigationMenuJpaEntityFixtures.DEFAULT_LINK_URL,
+                                    1,
+                                    now.minusSeconds(7200),
+                                    now.plusSeconds(86400),
+                                    true,
+                                    now,
+                                    now,
+                                    null));
+            // 최근에 시작한 메뉴
+            NavigationMenuJpaEntity recentStartMenu =
+                    jpaRepository.save(
+                            NavigationMenuJpaEntity.create(
+                                    null,
+                                    "최근시작",
+                                    NavigationMenuJpaEntityFixtures.DEFAULT_LINK_URL,
+                                    2,
+                                    now.minusSeconds(1800),
+                                    now.plusSeconds(86400),
+                                    true,
+                                    now,
+                                    now,
+                                    null));
+            flushAndClear();
+
+            // when - 1시간 전 이후에 시작한 메뉴만
+            List<NavigationMenuJpaEntity> result =
+                    queryDslRepository.searchMenus(now.minusSeconds(3600), null);
+
+            // then
+            List<Long> ids = result.stream().map(NavigationMenuJpaEntity::getId).toList();
+            assertThat(ids).contains(recentStartMenu.getId());
+            assertThat(ids).doesNotContain(pastStartMenu.getId());
+        }
+
+        @Test
+        @DisplayName("displayEndBefore 조건으로 특정 기간 이전 종료 메뉴만 조회합니다")
+        void shouldFilterByDisplayEndBefore() {
+            // given
+            Instant now = Instant.now();
+            // 곧 종료되는 메뉴 (1시간 후 종료)
+            NavigationMenuJpaEntity soonEndMenu =
+                    jpaRepository.save(
+                            NavigationMenuJpaEntity.create(
+                                    null,
+                                    "곧종료",
+                                    NavigationMenuJpaEntityFixtures.DEFAULT_LINK_URL,
+                                    1,
+                                    now.minusSeconds(3600),
+                                    now.plusSeconds(3600),
+                                    true,
+                                    now,
+                                    now,
+                                    null));
+            // 나중에 종료되는 메뉴 (1일 후 종료)
+            NavigationMenuJpaEntity lateEndMenu =
+                    jpaRepository.save(
+                            NavigationMenuJpaEntity.create(
+                                    null,
+                                    "나중종료",
+                                    NavigationMenuJpaEntityFixtures.DEFAULT_LINK_URL,
+                                    2,
+                                    now.minusSeconds(3600),
+                                    now.plusSeconds(86400),
+                                    true,
+                                    now,
+                                    now,
+                                    null));
+            flushAndClear();
+
+            // when - 12시간 이전에 종료되는 메뉴만
+            List<NavigationMenuJpaEntity> result =
+                    queryDslRepository.searchMenus(null, now.plusSeconds(43200));
+
+            // then
+            List<Long> ids = result.stream().map(NavigationMenuJpaEntity::getId).toList();
+            assertThat(ids).contains(soonEndMenu.getId());
+            assertThat(ids).doesNotContain(lateEndMenu.getId());
+        }
+
+        @Test
+        @DisplayName("결과는 displayOrder 오름차순으로 정렬됩니다")
+        void shouldReturnMenusOrderedByDisplayOrder() {
+            // given
+            jpaRepository.save(createMenuWithOrder("세번째", 3));
+            jpaRepository.save(createMenuWithOrder("첫번째", 1));
+            jpaRepository.save(createMenuWithOrder("두번째", 2));
+            flushAndClear();
+
+            // when
+            List<NavigationMenuJpaEntity> result = queryDslRepository.searchMenus(null, null);
+
+            // then
+            List<Integer> orders =
+                    result.stream().map(NavigationMenuJpaEntity::getDisplayOrder).toList();
+            assertThat(orders).isSortedAccordingTo(Integer::compareTo);
+        }
+
+        @Test
+        @DisplayName("데이터가 없으면 빈 목록을 반환합니다")
+        void shouldReturnEmptyListWhenNoData() {
+            // when
+            List<NavigationMenuJpaEntity> result = queryDslRepository.searchMenus(null, null);
+
+            // then
+            assertThat(result).isEmpty();
+        }
+    }
+
     // ========================================================================
     // Helper Methods
     // ========================================================================

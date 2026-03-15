@@ -1,6 +1,5 @@
 package com.ryuqq.setof.integration.test.e2e.admin.banner;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -60,11 +59,9 @@ class BannerGroupAdminE2ETest extends AdminE2ETestBase {
         @DisplayName("전체 배너 그룹 목록을 페이징 조회한다")
         void shouldSearchAllBannerGroups() {
             // given
-            bannerGroupJpaRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
-            bannerGroupJpaRepository.save(
-                    createActiveGroupEntity(null, "CATEGORY", "카테고리 배너"));
-            bannerGroupJpaRepository.save(
-                    createActiveGroupEntity(null, "MY_PAGE", "마이페이지 배너"));
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "RECOMMEND", "추천 배너"));
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "CATEGORY", "카테고리 배너"));
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "MY_PAGE", "마이페이지 배너"));
 
             // when & then
             givenAdmin()
@@ -84,12 +81,9 @@ class BannerGroupAdminE2ETest extends AdminE2ETestBase {
         @DisplayName("배너 타입으로 필터링 조회한다")
         void shouldSearchByBannerType() {
             // given
-            bannerGroupJpaRepository.save(
-                    createActiveGroupEntity(null, "CATEGORY", "카테고리 배너"));
-            bannerGroupJpaRepository.save(
-                    createActiveGroupEntity(null, "MY_PAGE", "마이페이지 배너"));
-            bannerGroupJpaRepository.save(
-                    createActiveGroupEntity(null, "RECOMMEND", "추천 배너"));
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "CATEGORY", "카테고리 배너"));
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "MY_PAGE", "마이페이지 배너"));
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "RECOMMEND", "추천 배너"));
 
             // when & then - CATEGORY 타입만 조회
             givenAdmin()
@@ -109,11 +103,9 @@ class BannerGroupAdminE2ETest extends AdminE2ETestBase {
         @DisplayName("전시 여부(Y)로 필터링 조회한다")
         void shouldSearchByDisplayYnY() {
             // given - 활성 2개, 비활성 1개
-            bannerGroupJpaRepository.save(
-                    createActiveGroupEntity(null, "CATEGORY", "활성 카테고리 배너"));
-            bannerGroupJpaRepository.save(
-                    createActiveGroupEntity(null, "MY_PAGE", "활성 마이페이지 배너"));
-            bannerGroupJpaRepository.save(BannerJpaEntityFixtures.inactiveGroupEntity());
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "CATEGORY", "활성 카테고리 배너"));
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "MY_PAGE", "활성 마이페이지 배너"));
+            bannerGroupJpaRepository.save(createInactiveGroupEntity(null, "LOGIN", "비활성 배너"));
 
             // when & then - 전시 여부 Y (활성) 만 조회
             givenAdmin()
@@ -132,9 +124,8 @@ class BannerGroupAdminE2ETest extends AdminE2ETestBase {
         @DisplayName("전시 여부(N)로 필터링 조회한다")
         void shouldSearchByDisplayYnN() {
             // given - 활성 1개, 비활성 2개
-            bannerGroupJpaRepository.save(
-                    createActiveGroupEntity(null, "CATEGORY", "활성 배너"));
-            bannerGroupJpaRepository.save(BannerJpaEntityFixtures.inactiveGroupEntity());
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "CATEGORY", "활성 배너"));
+            bannerGroupJpaRepository.save(createInactiveGroupEntity(null, "LOGIN", "비활성 로그인 배너"));
             bannerGroupJpaRepository.save(
                     createInactiveGroupEntity(null, "RECOMMEND", "비활성 추천 배너"));
 
@@ -155,10 +146,8 @@ class BannerGroupAdminE2ETest extends AdminE2ETestBase {
         @DisplayName("배너 이름으로 키워드 검색한다")
         void shouldSearchByBannerName() {
             // given
-            bannerGroupJpaRepository.save(
-                    createActiveGroupEntity(null, "CATEGORY", "봄 시즌 배너"));
-            bannerGroupJpaRepository.save(
-                    createActiveGroupEntity(null, "MY_PAGE", "여름 이벤트 배너"));
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "CATEGORY", "봄 시즌 배너"));
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "MY_PAGE", "여름 이벤트 배너"));
             bannerGroupJpaRepository.save(
                     createActiveGroupEntity(null, "RECOMMEND", "가을 추천 상품 배너"));
 
@@ -181,8 +170,7 @@ class BannerGroupAdminE2ETest extends AdminE2ETestBase {
         void shouldPaginateCorrectly() {
             // given - 5개 생성
             for (int i = 1; i <= 5; i++) {
-                bannerGroupJpaRepository.save(
-                        createActiveGroupEntity(null, "CATEGORY", "배너 " + i));
+                bannerGroupJpaRepository.save(createActiveGroupEntity(null, "CATEGORY", "배너 " + i));
             }
 
             // when & then - page=0, size=2 로 조회 시 2개만 반환
@@ -204,8 +192,7 @@ class BannerGroupAdminE2ETest extends AdminE2ETestBase {
         void shouldReturnSecondPage() {
             // given - 5개 생성
             for (int i = 1; i <= 5; i++) {
-                bannerGroupJpaRepository.save(
-                        createActiveGroupEntity(null, "CATEGORY", "배너 " + i));
+                bannerGroupJpaRepository.save(createActiveGroupEntity(null, "CATEGORY", "배너 " + i));
             }
 
             // when & then - page=1, size=3 → 2개 반환
@@ -240,8 +227,7 @@ class BannerGroupAdminE2ETest extends AdminE2ETestBase {
         @DisplayName("조회 결과에 필수 응답 필드가 포함된다")
         void shouldContainRequiredResponseFields() {
             // given
-            bannerGroupJpaRepository.save(
-                    createActiveGroupEntity(null, "RECOMMEND", "추천 배너"));
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "RECOMMEND", "추천 배너"));
 
             // when & then
             givenAdmin()
@@ -296,10 +282,8 @@ class BannerGroupAdminE2ETest extends AdminE2ETestBase {
             BannerGroupJpaEntity first =
                     bannerGroupJpaRepository.save(
                             createActiveGroupEntity(null, "CATEGORY", "첫번째 배너"));
-            bannerGroupJpaRepository.save(
-                    createActiveGroupEntity(null, "MY_PAGE", "두번째 배너"));
-            bannerGroupJpaRepository.save(
-                    createActiveGroupEntity(null, "RECOMMEND", "세번째 배너"));
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "MY_PAGE", "두번째 배너"));
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "RECOMMEND", "세번째 배너"));
 
             // when & then - 첫번째 이후부터 조회
             givenAdmin()
@@ -323,8 +307,7 @@ class BannerGroupAdminE2ETest extends AdminE2ETestBase {
         void shouldReturnBannerItems() {
             // given
             BannerGroupJpaEntity group =
-                    bannerGroupJpaRepository.save(
-                            BannerJpaEntityFixtures.activeGroupEntity(null));
+                    bannerGroupJpaRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
             bannerSlideJpaRepository.save(
                     BannerJpaEntityFixtures.activeSlideEntity(null, group.getId()));
             bannerSlideJpaRepository.save(
@@ -351,8 +334,7 @@ class BannerGroupAdminE2ETest extends AdminE2ETestBase {
         void shouldReturnEmptyListWhenNoSlides() {
             // given - 슬라이드 없이 그룹만 생성
             BannerGroupJpaEntity group =
-                    bannerGroupJpaRepository.save(
-                            BannerJpaEntityFixtures.activeGroupEntity(null));
+                    bannerGroupJpaRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
 
             // when & then
             givenAdmin()
@@ -382,13 +364,11 @@ class BannerGroupAdminE2ETest extends AdminE2ETestBase {
         void shouldReturnAllSlidesIncludingInactive() {
             // given
             BannerGroupJpaEntity group =
-                    bannerGroupJpaRepository.save(
-                            BannerJpaEntityFixtures.activeGroupEntity(null));
+                    bannerGroupJpaRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
             bannerSlideJpaRepository.save(
                     BannerJpaEntityFixtures.activeSlideEntity(null, group.getId()));
             // 비활성 슬라이드 추가
-            bannerSlideJpaRepository.save(
-                    createInactiveSlideEntity(group.getId(), "비활성 슬라이드"));
+            bannerSlideJpaRepository.save(createInactiveSlideEntity(group.getId(), "비활성 슬라이드"));
 
             // when & then - Admin에서는 비활성 포함 전체 조회
             givenAdmin()
@@ -404,8 +384,7 @@ class BannerGroupAdminE2ETest extends AdminE2ETestBase {
         void shouldContainImageSizeInResponse() {
             // given
             BannerGroupJpaEntity group =
-                    bannerGroupJpaRepository.save(
-                            BannerJpaEntityFixtures.activeGroupEntity(null));
+                    bannerGroupJpaRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
             bannerSlideJpaRepository.save(
                     BannerJpaEntityFixtures.activeSlideEntity(null, group.getId()));
 
@@ -478,10 +457,8 @@ class BannerGroupAdminE2ETest extends AdminE2ETestBase {
             BannerGroupJpaEntity myPageGroup =
                     bannerGroupJpaRepository.save(
                             createActiveGroupEntity(null, "MY_PAGE", "마이페이지 배너"));
-            bannerGroupJpaRepository.save(
-                    createActiveGroupEntity(null, "CART", "장바구니 배너"));
-            bannerGroupJpaRepository.save(
-                    createActiveGroupEntity(null, "LOGIN", "로그인 배너"));
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "CART", "장바구니 배너"));
+            bannerGroupJpaRepository.save(createActiveGroupEntity(null, "LOGIN", "로그인 배너"));
 
             bannerSlideJpaRepository.save(
                     BannerJpaEntityFixtures.activeSlideEntity(null, myPageGroup.getId()));

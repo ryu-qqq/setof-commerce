@@ -1,7 +1,9 @@
 package com.ryuqq.setof.application.contentpage.port.out;
 
 import com.ryuqq.setof.domain.contentpage.aggregate.ContentPage;
+import com.ryuqq.setof.domain.contentpage.query.ContentPageListSearchCriteria;
 import com.ryuqq.setof.domain.contentpage.query.ContentPageSearchCriteria;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -37,4 +39,20 @@ public interface ContentPageQueryPort {
      * @return ContentPage Optional
      */
     Optional<ContentPage> fetchContentPage(ContentPageSearchCriteria criteria);
+
+    /**
+     * 검색 조건에 해당하는 콘텐츠 페이지 목록 조회.
+     *
+     * @param criteria 목록 검색 조건
+     * @return 콘텐츠 페이지 목록
+     */
+    List<ContentPage> findByCriteria(ContentPageListSearchCriteria criteria);
+
+    /**
+     * 검색 조건에 해당하는 콘텐츠 페이지 수.
+     *
+     * @param criteria 목록 검색 조건
+     * @return 콘텐츠 페이지 수
+     */
+    long countByCriteria(ContentPageListSearchCriteria criteria);
 }

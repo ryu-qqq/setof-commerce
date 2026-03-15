@@ -201,6 +201,338 @@ class BannerQueryDslRepositoryTest extends RepositoryTestBase {
         }
     }
 
+    @Nested
+    @DisplayName("findBannerGroupById 테스트")
+    class FindBannerGroupByIdTest {
+
+        @Test
+        @DisplayName("존재하는 배너 그룹 ID로 조회 성공")
+        void shouldFindBannerGroupById() {
+            // given
+            BannerGroupJpaEntity group =
+                    groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            flushAndClear();
+
+            // when
+            BannerGroupJpaEntity result = queryDslRepository.findBannerGroupById(group.getId());
+
+            // then
+            assertThat(result).isNotNull();
+            assertThat(result.getId()).isEqualTo(group.getId());
+            assertThat(result.getTitle()).isEqualTo(BannerJpaEntityFixtures.DEFAULT_TITLE);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 ID로 조회 시 null을 반환합니다")
+        void shouldReturnNullWhenNotFound() {
+            // when
+            BannerGroupJpaEntity result = queryDslRepository.findBannerGroupById(999999L);
+
+            // then
+            assertThat(result).isNull();
+        }
+    }
+
+    @Nested
+    @DisplayName("findSlidesByGroupId 테스트")
+    class FindSlidesByGroupIdTest {
+
+        @Test
+        @DisplayName("배너 그룹에 속한 슬라이드 목록을 displayOrder 오름차순으로 반환합니다")
+        void shouldFindSlidesByGroupIdOrderedByDisplayOrder() {
+            // given
+            BannerGroupJpaEntity group =
+                    groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            BannerSlideJpaEntity slide3 =
+                    slideRepository.save(createSlideWithOrder(group.getId(), 3));
+            BannerSlideJpaEntity slide1 =
+                    slideRepository.save(createSlideWithOrder(group.getId(), 1));
+            BannerSlideJpaEntity slide2 =
+                    slideRepository.save(createSlideWithOrder(group.getId(), 2));
+            flushAndClear();
+
+            // when
+            List<BannerSlideJpaEntity> result =
+                    queryDslRepository.findSlidesByGroupId(group.getId());
+
+            // then
+            assertThat(result).hasSize(3);
+            List<Integer> orders =
+                    result.stream().map(BannerSlideJpaEntity::getDisplayOrder).toList();
+            assertThat(orders).isSortedAccordingTo(Integer::compareTo);
+        }
+
+        @Test
+        @DisplayName("다른 그룹의 슬라이드는 조회되지 않습니다")
+        void shouldNotFetchSlidesFromOtherGroup() {
+            // given
+            BannerGroupJpaEntity group1 =
+                    groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            BannerGroupJpaEntity group2 =
+                    groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            slideRepository.save(BannerJpaEntityFixtures.newSlideEntity(group1.getId()));
+            BannerSlideJpaEntity slide2 =
+                    slideRepository.save(BannerJpaEntityFixtures.newSlideEntity(group2.getId()));
+            flushAndClear();
+
+            // when
+            List<BannerSlideJpaEntity> result =
+                    queryDslRepository.findSlidesByGroupId(group1.getId());
+
+            // then
+            List<Long> slideIds = result.stream().map(BannerSlideJpaEntity::getId).toList();
+            assertThat(slideIds).doesNotContain(slide2.getId());
+        }
+
+        @Test
+        @DisplayName("슬라이드가 없는 그룹은 빈 목록을 반환합니다")
+        void shouldReturnEmptyListWhenNoSlides() {
+            // given
+            BannerGroupJpaEntity group =
+                    groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            flushAndClear();
+
+            // when
+            List<BannerSlideJpaEntity> result =
+                    queryDslRepository.findSlidesByGroupId(group.getId());
+
+            // then
+            assertThat(result).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("searchBannerGroups 테스트")
+    class SearchBannerGroupsTest {
+
+        @Test
+        @DisplayName("전체 조회 시 삭제된 배너 그룹은 제외됩니다")
+        void shouldExcludeDeletedGroupsFromSearch() {
+            // given
+            BannerGroupJpaEntity active =
+                    groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            BannerGroupJpaEntity deleted = groupRepository.save(createDeletedGroup());
+            flushAndClear();
+
+            // when
+            List<BannerGroupJpaEntity> result =
+                    queryDslRepository.searchBannerGroups(
+                            null, null, null, null, null, null, 0, 20, false);
+
+            // then
+            List<Long> ids = result.stream().map(BannerGroupJpaEntity::getId).toList();
+            assertThat(ids).contains(active.getId());
+            assertThat(ids).doesNotContain(deleted.getId());
+        }
+
+        @Test
+        @DisplayName("active=true 조건으로 활성 그룹만 조회합니다")
+        void shouldFilterByActiveStatus() {
+            // given
+            BannerGroupJpaEntity activeGroup =
+                    groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            BannerGroupJpaEntity inactiveGroup = groupRepository.save(createInactiveGroup());
+            flushAndClear();
+
+            // when
+            List<BannerGroupJpaEntity> result =
+                    queryDslRepository.searchBannerGroups(
+                            null, true, null, null, null, null, 0, 20, false);
+
+            // then
+            List<Long> ids = result.stream().map(BannerGroupJpaEntity::getId).toList();
+            assertThat(ids).contains(activeGroup.getId());
+            assertThat(ids).doesNotContain(inactiveGroup.getId());
+        }
+
+        @Test
+        @DisplayName("배너 타입 조건으로 특정 타입의 그룹만 조회합니다")
+        void shouldFilterByBannerType() {
+            // given
+            groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            Instant now = Instant.now();
+            BannerGroupJpaEntity otherTypeGroup =
+                    groupRepository.save(
+                            BannerGroupJpaEntity.create(
+                                    null,
+                                    "다른타입그룹",
+                                    "CATEGORY",
+                                    now.minusSeconds(3600),
+                                    now.plusSeconds(86400),
+                                    true,
+                                    now,
+                                    now,
+                                    null));
+            flushAndClear();
+
+            // when
+            List<BannerGroupJpaEntity> result =
+                    queryDslRepository.searchBannerGroups(
+                            "CATEGORY", null, null, null, null, null, 0, 20, false);
+
+            // then
+            List<Long> ids = result.stream().map(BannerGroupJpaEntity::getId).toList();
+            assertThat(ids).containsExactly(otherTypeGroup.getId());
+        }
+
+        @Test
+        @DisplayName("제목 검색어로 포함 검색합니다")
+        void shouldFilterByTitleKeyword() {
+            // given
+            groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            Instant now = Instant.now();
+            BannerGroupJpaEntity specificGroup =
+                    groupRepository.save(
+                            BannerGroupJpaEntity.create(
+                                    null,
+                                    "특정검색어포함제목",
+                                    BannerJpaEntityFixtures.DEFAULT_BANNER_TYPE,
+                                    now.minusSeconds(3600),
+                                    now.plusSeconds(86400),
+                                    true,
+                                    now,
+                                    now,
+                                    null));
+            flushAndClear();
+
+            // when
+            List<BannerGroupJpaEntity> result =
+                    queryDslRepository.searchBannerGroups(
+                            null, null, null, null, "특정검색어", null, 0, 20, false);
+
+            // then
+            List<Long> ids = result.stream().map(BannerGroupJpaEntity::getId).toList();
+            assertThat(ids).containsExactly(specificGroup.getId());
+        }
+
+        @Test
+        @DisplayName("No-Offset 페이징: lastDomainId 미만의 ID를 가진 그룹만 반환합니다")
+        void shouldApplyNoOffsetPaging() {
+            // given
+            Instant now = Instant.now();
+            BannerGroupJpaEntity group1 =
+                    groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            BannerGroupJpaEntity group2 =
+                    groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            BannerGroupJpaEntity group3 =
+                    groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            flushAndClear();
+
+            // when - group3의 ID 미만인 것들만 조회
+            List<BannerGroupJpaEntity> result =
+                    queryDslRepository.searchBannerGroups(
+                            null, null, null, null, null, group3.getId(), 0, 20, true);
+
+            // then
+            List<Long> ids = result.stream().map(BannerGroupJpaEntity::getId).toList();
+            assertThat(ids).doesNotContain(group3.getId());
+            assertThat(ids).contains(group1.getId(), group2.getId());
+        }
+
+        @Test
+        @DisplayName("Offset 페이징으로 크기를 제한합니다")
+        void shouldApplyOffsetPaging() {
+            // given
+            groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            flushAndClear();
+
+            // when
+            List<BannerGroupJpaEntity> result =
+                    queryDslRepository.searchBannerGroups(
+                            null, null, null, null, null, null, 0, 2, false);
+
+            // then
+            assertThat(result).hasSize(2);
+        }
+
+        @Test
+        @DisplayName("결과가 없으면 빈 목록을 반환합니다")
+        void shouldReturnEmptyListWhenNoMatch() {
+            // when
+            List<BannerGroupJpaEntity> result =
+                    queryDslRepository.searchBannerGroups(
+                            null, null, null, null, "존재하지않는제목", null, 0, 20, false);
+
+            // then
+            assertThat(result).isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("countBannerGroups 테스트")
+    class CountBannerGroupsTest {
+
+        @Test
+        @DisplayName("삭제된 그룹을 제외하고 카운트합니다")
+        void shouldCountExcludingDeletedGroups() {
+            // given
+            groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            groupRepository.save(createDeletedGroup());
+            flushAndClear();
+
+            // when
+            long count = queryDslRepository.countBannerGroups(null, null, null, null, null);
+
+            // then
+            assertThat(count).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("active=true 조건으로 활성 그룹만 카운트합니다")
+        void shouldCountByActiveStatus() {
+            // given
+            groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            groupRepository.save(createInactiveGroup());
+            flushAndClear();
+
+            // when
+            long count = queryDslRepository.countBannerGroups(null, true, null, null, null);
+
+            // then
+            assertThat(count).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("제목 키워드 조건으로 카운트합니다")
+        void shouldCountByTitleKeyword() {
+            // given
+            groupRepository.save(BannerJpaEntityFixtures.activeGroupEntity(null));
+            Instant now = Instant.now();
+            groupRepository.save(
+                    BannerGroupJpaEntity.create(
+                            null,
+                            "특이한제목",
+                            BannerJpaEntityFixtures.DEFAULT_BANNER_TYPE,
+                            now.minusSeconds(3600),
+                            now.plusSeconds(86400),
+                            true,
+                            now,
+                            now,
+                            null));
+            flushAndClear();
+
+            // when
+            long count = queryDslRepository.countBannerGroups(null, null, null, null, "특이한제목");
+
+            // then
+            assertThat(count).isEqualTo(1);
+        }
+
+        @Test
+        @DisplayName("데이터가 없으면 0을 반환합니다")
+        void shouldReturnZeroWhenNoData() {
+            // when
+            long count = queryDslRepository.countBannerGroups(null, null, null, null, null);
+
+            // then
+            assertThat(count).isZero();
+        }
+    }
+
     // ========================================================================
     // Helper Methods
     // ========================================================================
