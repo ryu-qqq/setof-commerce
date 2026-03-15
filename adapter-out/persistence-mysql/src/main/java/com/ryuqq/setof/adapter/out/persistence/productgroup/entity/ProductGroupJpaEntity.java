@@ -62,12 +62,6 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity implements Persis
     @Column(name = "current_price", nullable = false)
     private int currentPrice;
 
-    @Column(name = "sale_price", nullable = false)
-    private int salePrice;
-
-    @Column(name = "discount_rate", nullable = false)
-    private int discountRate;
-
     @Column(name = "status", nullable = false, length = 50)
     private String status;
 
@@ -92,8 +86,6 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity implements Persis
             String optionType,
             int regularPrice,
             int currentPrice,
-            int salePrice,
-            int discountRate,
             String status,
             Instant createdAt,
             Instant updatedAt,
@@ -109,8 +101,6 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity implements Persis
         this.optionType = optionType;
         this.regularPrice = regularPrice;
         this.currentPrice = currentPrice;
-        this.salePrice = salePrice;
-        this.discountRate = discountRate;
         this.status = status;
     }
 
@@ -125,8 +115,6 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity implements Persis
             String optionType,
             int regularPrice,
             int currentPrice,
-            int salePrice,
-            int discountRate,
             String status,
             Instant createdAt,
             Instant updatedAt,
@@ -143,8 +131,6 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity implements Persis
                         optionType,
                         regularPrice,
                         currentPrice,
-                        salePrice,
-                        discountRate,
                         status,
                         createdAt,
                         updatedAt,
@@ -191,14 +177,6 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity implements Persis
 
     public int getCurrentPrice() {
         return currentPrice;
-    }
-
-    public int getSalePrice() {
-        return salePrice;
-    }
-
-    public int getDiscountRate() {
-        return discountRate;
     }
 
     public String getStatus() {

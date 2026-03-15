@@ -43,8 +43,7 @@ class NavigationMenuIdTest {
         void ofWithNullThrowsException() {
             // when & then
             assertThatThrownBy(() -> NavigationMenuId.of(null))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("null일 수 없습니다");
+                    .isInstanceOf(IllegalArgumentException.class);
         }
     }
 

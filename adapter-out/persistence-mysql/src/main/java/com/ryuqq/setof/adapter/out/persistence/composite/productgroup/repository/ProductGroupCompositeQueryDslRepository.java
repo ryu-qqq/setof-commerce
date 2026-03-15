@@ -16,6 +16,7 @@ import com.ryuqq.setof.adapter.out.persistence.productgroup.entity.QSellerOption
 import com.ryuqq.setof.adapter.out.persistence.productgroupdescription.entity.QDescriptionImageJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.productgroupdescription.entity.QProductGroupDescriptionJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.productgroupimage.entity.QProductGroupImageJpaEntity;
+import com.ryuqq.setof.adapter.out.persistence.productgroupprice.entity.QProductGroupPriceJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.productnotice.entity.QProductNoticeEntryJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.productnotice.entity.QProductNoticeJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.refundpolicy.entity.QRefundPolicyJpaEntity;
@@ -76,6 +77,8 @@ public class ProductGroupCompositeQueryDslRepository {
             QProductNoticeEntryJpaEntity.productNoticeEntryJpaEntity;
     private static final QDescriptionImageJpaEntity descriptionImage =
             QDescriptionImageJpaEntity.descriptionImageJpaEntity;
+    private static final QProductGroupPriceJpaEntity pgPrice =
+            QProductGroupPriceJpaEntity.productGroupPriceJpaEntity;
 
     private final JPAQueryFactory queryFactory;
     private final ProductGroupCompositeConditionBuilder conditionBuilder;
@@ -112,8 +115,8 @@ public class ProductGroupCompositeQueryDslRepository {
                                 pg.status,
                                 pg.regularPrice,
                                 pg.currentPrice,
-                                pg.salePrice,
-                                pg.discountRate,
+                                pgPrice.salePrice,
+                                pgPrice.discountRate,
                                 pg.createdAt,
                                 pg.updatedAt)
                         .from(pg)
@@ -123,6 +126,8 @@ public class ProductGroupCompositeQueryDslRepository {
                         .on(pg.brandId.eq(brand.id))
                         .leftJoin(category)
                         .on(pg.categoryId.eq(category.id))
+                        .leftJoin(pgPrice)
+                        .on(pgPrice.productGroupId.eq(pg.id))
                         .where(
                                 conditionBuilder.idEq(productGroupId),
                                 conditionBuilder.statusNotDeleted())
@@ -162,8 +167,8 @@ public class ProductGroupCompositeQueryDslRepository {
                                 pg.status,
                                 pg.regularPrice,
                                 pg.currentPrice,
-                                pg.salePrice,
-                                pg.discountRate,
+                                pgPrice.salePrice,
+                                pgPrice.discountRate,
                                 pg.createdAt,
                                 pg.updatedAt)
                         .from(pg)
@@ -173,6 +178,8 @@ public class ProductGroupCompositeQueryDslRepository {
                         .on(pg.brandId.eq(brand.id))
                         .leftJoin(category)
                         .on(pg.categoryId.eq(category.id))
+                        .leftJoin(pgPrice)
+                        .on(pgPrice.productGroupId.eq(pg.id))
                         .where(
                                 conditionBuilder.idIn(criteria.productGroupIds()),
                                 conditionBuilder.sellerIdIn(criteria.sellerIds()),
@@ -869,8 +876,8 @@ public class ProductGroupCompositeQueryDslRepository {
             case UPDATED_AT -> isAsc ? pg.updatedAt.asc() : pg.updatedAt.desc();
             case NAME -> isAsc ? pg.productGroupName.asc() : pg.productGroupName.desc();
             case CURRENT_PRICE -> isAsc ? pg.currentPrice.asc() : pg.currentPrice.desc();
-            case SALE_PRICE -> isAsc ? pg.salePrice.asc() : pg.salePrice.desc();
-            case DISCOUNT_RATE -> isAsc ? pg.discountRate.asc() : pg.discountRate.desc();
+            case SALE_PRICE -> isAsc ? pgPrice.salePrice.asc() : pgPrice.salePrice.desc();
+            case DISCOUNT_RATE -> isAsc ? pgPrice.discountRate.asc() : pgPrice.discountRate.desc();
             default -> isAsc ? pg.createdAt.asc() : pg.createdAt.desc();
         };
     }
@@ -898,8 +905,8 @@ public class ProductGroupCompositeQueryDslRepository {
                 productCount,
                 safeInt(row.get(pg.regularPrice)),
                 safeInt(row.get(pg.currentPrice)),
-                safeInt(row.get(pg.salePrice)),
-                safeInt(row.get(pg.discountRate)),
+                safeInt(row.get(pgPrice.salePrice)),
+                safeInt(row.get(pgPrice.discountRate)),
                 row.get(pg.createdAt),
                 row.get(pg.updatedAt));
     }

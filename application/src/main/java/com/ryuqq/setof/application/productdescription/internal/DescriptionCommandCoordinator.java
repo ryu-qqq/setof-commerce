@@ -6,6 +6,7 @@ import com.ryuqq.setof.application.productdescription.factory.ProductGroupDescri
 import com.ryuqq.setof.application.productdescription.manager.ProductGroupDescriptionReadManager;
 import com.ryuqq.setof.domain.productdescription.aggregate.DescriptionImage;
 import com.ryuqq.setof.domain.productdescription.aggregate.ProductGroupDescription;
+import com.ryuqq.setof.domain.productdescription.vo.DescriptionHtml;
 import com.ryuqq.setof.domain.productdescription.vo.DescriptionUpdateData;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import java.util.List;
@@ -45,7 +46,9 @@ public class DescriptionCommandCoordinator {
     @Transactional
     public Long register(RegisterProductGroupDescriptionCommand command) {
         ProductGroupDescription description = factory.createNewDescription(command);
-        List<DescriptionImage> images = factory.createNewImages(command.descriptionImages());
+        DescriptionHtml content = DescriptionHtml.of(command.content());
+        List<DescriptionImage> images =
+                factory.createNewImages(command.descriptionImages(), content);
         return facade.persistDescriptionWithImages(description, images);
     }
 

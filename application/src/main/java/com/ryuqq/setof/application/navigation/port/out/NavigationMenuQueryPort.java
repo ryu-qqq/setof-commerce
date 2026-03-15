@@ -2,6 +2,7 @@ package com.ryuqq.setof.application.navigation.port.out;
 
 import com.ryuqq.setof.domain.navigation.aggregate.NavigationMenu;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * NavigationMenuQueryPort - 네비게이션 메뉴 조회 출력 포트.
@@ -19,4 +20,12 @@ public interface NavigationMenuQueryPort {
      * @return NavigationMenu 목록
      */
     List<NavigationMenu> fetchNavigationMenus();
+
+    /**
+     * 네비게이션 메뉴 단건 조회.
+     *
+     * @param navigationMenuId 네비게이션 메뉴 ID
+     * @return NavigationMenu Optional
+     */
+    Optional<NavigationMenu> findById(long navigationMenuId);
 }

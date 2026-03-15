@@ -7,7 +7,9 @@ import java.time.Instant;
 import org.springframework.stereotype.Component;
 
 /**
- * 할인 아웃박스 저장 매니저.
+ * DiscountOutboxCommandManager - 할인 아웃박스 저장 매니저.
+ *
+ * <p>순수 Command(저장) 역할만 수행합니다. 중복 검증은 DiscountOutboxValidator에서 처리합니다.
  *
  * @author ryu-qqq
  * @since 1.1.0

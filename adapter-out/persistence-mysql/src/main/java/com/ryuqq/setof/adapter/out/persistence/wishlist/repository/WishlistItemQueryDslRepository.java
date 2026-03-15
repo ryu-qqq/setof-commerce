@@ -3,6 +3,7 @@ package com.ryuqq.setof.adapter.out.persistence.wishlist.repository;
 import static com.ryuqq.setof.adapter.out.persistence.brand.entity.QBrandJpaEntity.brandJpaEntity;
 import static com.ryuqq.setof.adapter.out.persistence.productgroup.entity.QProductGroupJpaEntity.productGroupJpaEntity;
 import static com.ryuqq.setof.adapter.out.persistence.productgroupimage.entity.QProductGroupImageJpaEntity.productGroupImageJpaEntity;
+import static com.ryuqq.setof.adapter.out.persistence.productgroupprice.entity.QProductGroupPriceJpaEntity.productGroupPriceJpaEntity;
 import static com.ryuqq.setof.adapter.out.persistence.wishlist.entity.QWishlistItemJpaEntity.wishlistItemJpaEntity;
 
 import com.querydsl.core.types.Projections;
@@ -99,7 +100,7 @@ public class WishlistItemQueryDslRepository {
                                 productGroupImageJpaEntity.imageUrl,
                                 productGroupJpaEntity.regularPrice,
                                 productGroupJpaEntity.currentPrice,
-                                productGroupJpaEntity.discountRate,
+                                productGroupPriceJpaEntity.discountRate,
                                 productGroupJpaEntity.status,
                                 brandJpaEntity.displayed,
                                 wishlistItemJpaEntity.createdAt))
@@ -113,6 +114,8 @@ public class WishlistItemQueryDslRepository {
                         productGroupImageJpaEntity.deletedAt.isNull())
                 .innerJoin(brandJpaEntity)
                 .on(brandJpaEntity.id.eq(productGroupJpaEntity.brandId))
+                .leftJoin(productGroupPriceJpaEntity)
+                .on(productGroupPriceJpaEntity.productGroupId.eq(productGroupJpaEntity.id))
                 .where(
                         conditionBuilder.legacyMemberIdEq(criteria.memberId().value()),
                         conditionBuilder.notDeleted(),

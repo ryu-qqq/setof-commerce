@@ -249,13 +249,25 @@ public final class BannerFixtures {
     }
 
     // ===== BannerGroupUpdateData Fixtures =====
+    public static List<BannerGroupUpdateData.SlideEntry> defaultSlideEntries() {
+        return List.of(
+                new BannerGroupUpdateData.SlideEntry(
+                        null,
+                        DEFAULT_SLIDE_TITLE,
+                        DEFAULT_IMAGE_URL,
+                        DEFAULT_LINK_URL,
+                        1,
+                        defaultDisplayPeriod(),
+                        true));
+    }
+
     public static BannerGroupUpdateData defaultBannerGroupUpdateData() {
         return new BannerGroupUpdateData(
                 "수정된 배너 그룹",
                 BannerType.CATEGORY,
                 defaultDisplayPeriod(),
                 false,
-                defaultSlides(),
+                defaultSlideEntries(),
                 CommonVoFixtures.now());
     }
 
@@ -266,7 +278,89 @@ public final class BannerFixtures {
                 bannerType,
                 defaultDisplayPeriod(),
                 active,
-                defaultSlides(),
+                defaultSlideEntries(),
                 CommonVoFixtures.now());
+    }
+
+    // ===== Diff 시나리오용 SlideEntry Fixtures =====
+
+    /** slideId == null → 신규 슬라이드만 있는 엔트리. */
+    public static List<BannerGroupUpdateData.SlideEntry> newOnlySlideEntries() {
+        return List.of(
+                new BannerGroupUpdateData.SlideEntry(
+                        null,
+                        "신규 슬라이드 1",
+                        DEFAULT_IMAGE_URL,
+                        DEFAULT_LINK_URL,
+                        1,
+                        defaultDisplayPeriod(),
+                        true),
+                new BannerGroupUpdateData.SlideEntry(
+                        null,
+                        "신규 슬라이드 2",
+                        DEFAULT_IMAGE_URL,
+                        DEFAULT_LINK_URL,
+                        2,
+                        defaultDisplayPeriod(),
+                        true));
+    }
+
+    /** 기존 슬라이드 ID(1L)를 포함하는 수정 엔트리. */
+    public static List<BannerGroupUpdateData.SlideEntry> updateExistingSlideEntries(Long slideId) {
+        return List.of(
+                new BannerGroupUpdateData.SlideEntry(
+                        slideId,
+                        "수정된 슬라이드",
+                        "https://example.com/updated-image.png",
+                        "https://example.com/updated-link",
+                        5,
+                        defaultDisplayPeriod(),
+                        false));
+    }
+
+    /** 신규 추가 + 기존 수정 + 기존 삭제(요청에 없음)를 모두 포함하는 혼합 엔트리. */
+    public static List<BannerGroupUpdateData.SlideEntry> mixedSlideEntries(Long existingSlideId) {
+        return List.of(
+                new BannerGroupUpdateData.SlideEntry(
+                        existingSlideId,
+                        "수정된 기존 슬라이드",
+                        "https://example.com/modified.png",
+                        "https://example.com/modified-link",
+                        2,
+                        defaultDisplayPeriod(),
+                        true),
+                new BannerGroupUpdateData.SlideEntry(
+                        null,
+                        "신규 추가 슬라이드",
+                        DEFAULT_IMAGE_URL,
+                        DEFAULT_LINK_URL,
+                        3,
+                        defaultDisplayPeriod(),
+                        true));
+    }
+
+    /** 빈 엔트리 목록 - 모든 기존 슬라이드 삭제 시나리오. */
+    public static List<BannerGroupUpdateData.SlideEntry> emptySlideEntries() {
+        return List.of();
+    }
+
+    /**
+     * 기존 슬라이드 2개를 포함한 배너 그룹 (Diff 테스트용).
+     *
+     * <p>slideId 10L, 20L을 가진 슬라이드를 포함합니다.
+     */
+    public static BannerGroup activeBannerGroupWithSlides(Long slideId1, Long slideId2) {
+        List<BannerSlide> slides =
+                List.of(activeBannerSlide(slideId1), activeBannerSlide(slideId2));
+        return BannerGroup.reconstitute(
+                BannerGroupId.of(1L),
+                DEFAULT_TITLE,
+                DEFAULT_BANNER_TYPE,
+                defaultDisplayPeriod(),
+                true,
+                DeletionStatus.active(),
+                slides,
+                CommonVoFixtures.yesterday(),
+                CommonVoFixtures.yesterday());
     }
 }

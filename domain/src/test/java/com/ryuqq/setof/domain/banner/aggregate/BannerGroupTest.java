@@ -3,6 +3,7 @@ package com.ryuqq.setof.domain.banner.aggregate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ryuqq.setof.domain.banner.entity.BannerSlide;
+import com.ryuqq.setof.domain.banner.vo.BannerSlideDiff;
 import com.ryuqq.setof.domain.banner.vo.BannerType;
 import com.ryuqq.setof.domain.common.CommonVoFixtures;
 import com.setof.commerce.domain.banner.BannerFixtures;
@@ -125,17 +126,31 @@ class BannerGroupTest {
         void updateReplacesSlides() {
             // given
             var bannerGroup = BannerFixtures.activeBannerGroup();
-            List<BannerSlide> newSlides =
+            var slideEntries =
                     List.of(
-                            BannerFixtures.newBannerSlide("새 슬라이드 1", 1),
-                            BannerFixtures.newBannerSlide("새 슬라이드 2", 2));
+                            new BannerGroupUpdateData.SlideEntry(
+                                    null,
+                                    "새 슬라이드 1",
+                                    "img1.jpg",
+                                    "link1",
+                                    1,
+                                    BannerFixtures.defaultDisplayPeriod(),
+                                    true),
+                            new BannerGroupUpdateData.SlideEntry(
+                                    null,
+                                    "새 슬라이드 2",
+                                    "img2.jpg",
+                                    "link2",
+                                    2,
+                                    BannerFixtures.defaultDisplayPeriod(),
+                                    true));
             var updateData =
                     new BannerGroupUpdateData(
                             "수정된 배너 그룹",
                             BannerType.CATEGORY,
                             BannerFixtures.defaultDisplayPeriod(),
                             true,
-                            newSlides,
+                            slideEntries,
                             CommonVoFixtures.now());
 
             // when
@@ -143,6 +158,180 @@ class BannerGroupTest {
 
             // then
             assertThat(bannerGroup.slides()).hasSize(2);
+        }
+    }
+
+    @Nested
+    @DisplayName("update() Diff 패턴 - 슬라이드 변경 비교")
+    class UpdateDiffTest {
+
+        @Test
+        @DisplayName("slideId가 null인 엔트리만 있으면 모두 added에 존재한다")
+        void onlyNewSlideEntriesGoToAdded() {
+            // given
+            var bannerGroup = BannerFixtures.activeBannerGroup();
+            var updateData =
+                    new BannerGroupUpdateData(
+                            BannerFixtures.DEFAULT_TITLE,
+                            BannerFixtures.DEFAULT_BANNER_TYPE,
+                            BannerFixtures.defaultDisplayPeriod(),
+                            true,
+                            BannerFixtures.newOnlySlideEntries(),
+                            CommonVoFixtures.now());
+
+            // when
+            BannerSlideDiff diff = bannerGroup.update(updateData);
+
+            // then
+            assertThat(diff.added()).hasSize(2);
+            assertThat(diff.retained()).isEmpty();
+            assertThat(diff.removed()).hasSize(1);
+            diff.added().forEach(slide -> assertThat(slide.id().isNew()).isTrue());
+        }
+
+        @Test
+        @DisplayName("기존 슬라이드 ID를 포함한 엔트리는 retained에 존재하고 속성이 수정된다")
+        void existingSlideIdEntryGoesToRetainedWithUpdatedAttributes() {
+            // given
+            Long existingSlideId = 10L;
+            var bannerGroup = BannerFixtures.activeBannerGroupWithSlides(existingSlideId, 20L);
+            var updateData =
+                    new BannerGroupUpdateData(
+                            BannerFixtures.DEFAULT_TITLE,
+                            BannerFixtures.DEFAULT_BANNER_TYPE,
+                            BannerFixtures.defaultDisplayPeriod(),
+                            true,
+                            BannerFixtures.updateExistingSlideEntries(existingSlideId),
+                            CommonVoFixtures.now());
+
+            // when
+            BannerSlideDiff diff = bannerGroup.update(updateData);
+
+            // then
+            assertThat(diff.retained()).hasSize(1);
+            assertThat(diff.removed()).hasSize(1);
+            assertThat(diff.added()).isEmpty();
+
+            BannerSlide retainedSlide = diff.retained().get(0);
+            assertThat(retainedSlide.idValue()).isEqualTo(existingSlideId);
+            assertThat(retainedSlide.title()).isEqualTo("수정된 슬라이드");
+            assertThat(retainedSlide.imageUrl()).isEqualTo("https://example.com/updated-image.png");
+            assertThat(retainedSlide.displayOrder()).isEqualTo(5);
+            assertThat(retainedSlide.isActive()).isFalse();
+        }
+
+        @Test
+        @DisplayName("요청에 없는 기존 슬라이드 ID는 removed에 존재하고 soft delete 상태이다")
+        void existingSlideNotInRequestGoesToRemovedWithSoftDelete() {
+            // given
+            Long keepSlideId = 10L;
+            Long deleteSlideId = 20L;
+            var bannerGroup =
+                    BannerFixtures.activeBannerGroupWithSlides(keepSlideId, deleteSlideId);
+            var updateData =
+                    new BannerGroupUpdateData(
+                            BannerFixtures.DEFAULT_TITLE,
+                            BannerFixtures.DEFAULT_BANNER_TYPE,
+                            BannerFixtures.defaultDisplayPeriod(),
+                            true,
+                            BannerFixtures.updateExistingSlideEntries(keepSlideId),
+                            CommonVoFixtures.now());
+
+            // when
+            BannerSlideDiff diff = bannerGroup.update(updateData);
+
+            // then
+            assertThat(diff.removed()).hasSize(1);
+            BannerSlide removedSlide = diff.removed().get(0);
+            assertThat(removedSlide.idValue()).isEqualTo(deleteSlideId);
+            assertThat(removedSlide.isDeleted()).isTrue();
+            assertThat(removedSlide.isActive()).isFalse();
+            assertThat(removedSlide.deletionStatus().deletedAt()).isNotNull();
+        }
+
+        @Test
+        @DisplayName("신규 추가 + 기존 수정 + 기존 삭제가 동시에 처리된다")
+        void mixedScenarioHandlesAllThreeOperationsSimultaneously() {
+            // given
+            Long retainSlideId = 10L;
+            Long deleteSlideId = 20L;
+            var bannerGroup =
+                    BannerFixtures.activeBannerGroupWithSlides(retainSlideId, deleteSlideId);
+            var updateData =
+                    new BannerGroupUpdateData(
+                            "혼합 수정 배너",
+                            BannerType.CATEGORY,
+                            BannerFixtures.defaultDisplayPeriod(),
+                            false,
+                            BannerFixtures.mixedSlideEntries(retainSlideId),
+                            CommonVoFixtures.now());
+
+            // when
+            BannerSlideDiff diff = bannerGroup.update(updateData);
+
+            // then
+            assertThat(diff.added()).hasSize(1);
+            assertThat(diff.retained()).hasSize(1);
+            assertThat(diff.removed()).hasSize(1);
+
+            assertThat(diff.added().get(0).id().isNew()).isTrue();
+            assertThat(diff.retained().get(0).idValue()).isEqualTo(retainSlideId);
+            assertThat(diff.retained().get(0).title()).isEqualTo("수정된 기존 슬라이드");
+            assertThat(diff.removed().get(0).idValue()).isEqualTo(deleteSlideId);
+            assertThat(diff.removed().get(0).isDeleted()).isTrue();
+
+            assertThat(bannerGroup.title()).isEqualTo("혼합 수정 배너");
+            assertThat(bannerGroup.isActive()).isFalse();
+        }
+
+        @Test
+        @DisplayName("빈 엔트리 목록으로 수정하면 모든 기존 슬라이드가 removed 처리된다")
+        void emptyEntriesRemoveAllExistingSlides() {
+            // given
+            var bannerGroup = BannerFixtures.activeBannerGroupWithSlides(10L, 20L);
+            var updateData =
+                    new BannerGroupUpdateData(
+                            BannerFixtures.DEFAULT_TITLE,
+                            BannerFixtures.DEFAULT_BANNER_TYPE,
+                            BannerFixtures.defaultDisplayPeriod(),
+                            true,
+                            BannerFixtures.emptySlideEntries(),
+                            CommonVoFixtures.now());
+
+            // when
+            BannerSlideDiff diff = bannerGroup.update(updateData);
+
+            // then
+            assertThat(diff.removed()).hasSize(2);
+            assertThat(diff.added()).isEmpty();
+            assertThat(diff.retained()).isEmpty();
+            diff.removed().forEach(slide -> assertThat(slide.isDeleted()).isTrue());
+            assertThat(bannerGroup.slides()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("update() 후 bannerGroup.slides()는 retained + added만 포함한다")
+        void afterUpdateSlidesContainsOnlyRetainedAndAdded() {
+            // given
+            Long retainSlideId = 10L;
+            Long deleteSlideId = 20L;
+            var bannerGroup =
+                    BannerFixtures.activeBannerGroupWithSlides(retainSlideId, deleteSlideId);
+            var updateData =
+                    new BannerGroupUpdateData(
+                            BannerFixtures.DEFAULT_TITLE,
+                            BannerFixtures.DEFAULT_BANNER_TYPE,
+                            BannerFixtures.defaultDisplayPeriod(),
+                            true,
+                            BannerFixtures.mixedSlideEntries(retainSlideId),
+                            CommonVoFixtures.now());
+
+            // when
+            BannerSlideDiff diff = bannerGroup.update(updateData);
+
+            // then
+            int expectedSize = diff.retained().size() + diff.added().size();
+            assertThat(bannerGroup.slides()).hasSize(expectedSize);
         }
     }
 

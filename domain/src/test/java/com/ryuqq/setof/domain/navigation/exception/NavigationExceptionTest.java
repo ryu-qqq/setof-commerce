@@ -35,10 +35,10 @@ class NavigationExceptionTest {
             // when
             NavigationException exception =
                     new NavigationException(
-                            NavigationErrorCode.NAVIGATION_MENU_NOT_FOUND, "ID 100 메뉴 없음");
+                            NavigationErrorCode.NAVIGATION_MENU_NOT_FOUND, "ID 100 네비게이션 메뉴 없음");
 
             // then
-            assertThat(exception.getMessage()).isEqualTo("ID 100 메뉴 없음");
+            assertThat(exception.getMessage()).isEqualTo("ID 100 네비게이션 메뉴 없음");
             assertThat(exception.code()).isEqualTo("NAV-001");
         }
 

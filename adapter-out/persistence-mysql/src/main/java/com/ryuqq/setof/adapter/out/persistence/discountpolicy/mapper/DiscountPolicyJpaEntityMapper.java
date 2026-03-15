@@ -128,7 +128,13 @@ public class DiscountPolicyJpaEntityMapper {
                 entity.getUpdatedAt());
     }
 
-    private DiscountTarget toTargetDomain(DiscountTargetJpaEntity entity) {
+    /**
+     * Entity → Domain 변환 (DiscountTarget 단건).
+     *
+     * @param entity DiscountTargetJpaEntity
+     * @return DiscountTarget 도메인 객체
+     */
+    public DiscountTarget toTargetDomain(DiscountTargetJpaEntity entity) {
         return DiscountTarget.reconstitute(
                 DiscountTargetId.of(entity.getId()),
                 toDomainTargetType(entity.getTargetType()),

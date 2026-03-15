@@ -12,6 +12,7 @@ import com.ryuqq.setof.domain.discount.vo.DiscountMethod;
 import com.ryuqq.setof.domain.discount.vo.DiscountPeriod;
 import com.ryuqq.setof.domain.discount.vo.DiscountPolicyName;
 import com.ryuqq.setof.domain.discount.vo.DiscountRate;
+import com.ryuqq.setof.domain.discount.vo.DiscountTargetDiff;
 import com.ryuqq.setof.domain.discount.vo.DiscountTargetType;
 import com.ryuqq.setof.domain.discount.vo.Priority;
 import com.ryuqq.setof.domain.discount.vo.PublisherType;
@@ -350,6 +351,59 @@ public class DiscountPolicy {
                             t.deactivate();
                             this.updatedAt = now;
                         });
+    }
+
+    /**
+     * 할인 대상 전체 교체 (Diff 패턴).
+     *
+     * <p>요청된 타겟 목록을 기존 활성 타겟과 비교하여 added/removed/retained으로 분류합니다.
+     *
+     * <ul>
+     *   <li>요청에 있으나 기존에 없음 → added (신규 생성)
+     *   <li>기존에 있으나 요청에 없음 → removed (비활성화)
+     *   <li>기존에 있고 요청에도 있음 → retained (유지)
+     * </ul>
+     *
+     * @param targetType 대상 유형
+     * @param targetIds 새로 교체할 대상 ID 목록
+     * @param now 변경 시각
+     * @return DiscountTargetDiff 변경 비교 결과
+     */
+    public DiscountTargetDiff replaceTargets(
+            DiscountTargetType targetType, List<Long> targetIds, Instant now) {
+
+        List<DiscountTarget> added = new ArrayList<>();
+        List<DiscountTarget> removed = new ArrayList<>();
+        List<DiscountTarget> retained = new ArrayList<>();
+
+        java.util.Set<Long> requestedIds = new java.util.HashSet<>(targetIds);
+
+        // 기존 활성 타겟 분류: retained vs removed
+        for (DiscountTarget existing : targets) {
+            if (!existing.isActive()) {
+                continue;
+            }
+            if (existing.targetType() == targetType && requestedIds.contains(existing.targetId())) {
+                retained.add(existing);
+                requestedIds.remove(existing.targetId());
+            } else if (existing.targetType() == targetType) {
+                existing.deactivate();
+                removed.add(existing);
+            }
+        }
+
+        // 남은 requestedIds → added
+        for (Long targetId : requestedIds) {
+            DiscountTarget newTarget = DiscountTarget.forNew(targetType, targetId);
+            targets.add(newTarget);
+            added.add(newTarget);
+        }
+
+        if (!added.isEmpty() || !removed.isEmpty()) {
+            this.updatedAt = now;
+        }
+
+        return DiscountTargetDiff.of(added, removed, retained, now);
     }
 
     // ========== Discount Calculation ==========

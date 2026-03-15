@@ -4,11 +4,13 @@ import com.ryuqq.setof.domain.common.CommonVoFixtures;
 import com.ryuqq.setof.domain.common.vo.Money;
 import com.ryuqq.setof.domain.discount.aggregate.Coupon;
 import com.ryuqq.setof.domain.discount.aggregate.CouponUpdateData;
+import com.ryuqq.setof.domain.discount.aggregate.DiscountOutbox;
 import com.ryuqq.setof.domain.discount.aggregate.DiscountPolicy;
 import com.ryuqq.setof.domain.discount.aggregate.DiscountPolicyUpdateData;
 import com.ryuqq.setof.domain.discount.aggregate.DiscountTarget;
 import com.ryuqq.setof.domain.discount.aggregate.IssuedCoupon;
 import com.ryuqq.setof.domain.discount.id.CouponId;
+import com.ryuqq.setof.domain.discount.id.DiscountOutboxId;
 import com.ryuqq.setof.domain.discount.id.DiscountPolicyId;
 import com.ryuqq.setof.domain.discount.id.DiscountTargetId;
 import com.ryuqq.setof.domain.discount.id.IssuedCouponId;
@@ -24,6 +26,8 @@ import com.ryuqq.setof.domain.discount.vo.DiscountPolicyName;
 import com.ryuqq.setof.domain.discount.vo.DiscountRate;
 import com.ryuqq.setof.domain.discount.vo.DiscountTargetType;
 import com.ryuqq.setof.domain.discount.vo.IssuanceLimit;
+import com.ryuqq.setof.domain.discount.vo.OutboxStatus;
+import com.ryuqq.setof.domain.discount.vo.OutboxTargetKey;
 import com.ryuqq.setof.domain.discount.vo.Priority;
 import com.ryuqq.setof.domain.discount.vo.PublisherType;
 import com.ryuqq.setof.domain.discount.vo.StackingGroup;
@@ -535,6 +539,74 @@ public final class DiscountFixtures {
 
     public static IssuanceLimit defaultIssuanceLimit() {
         return IssuanceLimit.of(DEFAULT_TOTAL_COUNT, DEFAULT_PER_USER_COUNT);
+    }
+
+    // ===== DiscountOutbox Fixtures =====
+
+    /** 신규 BRAND 타입 아웃박스 (PENDING 상태) */
+    public static DiscountOutbox newBrandOutbox() {
+        return DiscountOutbox.forNew(DiscountTargetType.BRAND, 100L, CommonVoFixtures.now());
+    }
+
+    /** 신규 SELLER 타입 아웃박스 (PENDING 상태) */
+    public static DiscountOutbox newSellerOutbox() {
+        return DiscountOutbox.forNew(DiscountTargetType.SELLER, 50L, CommonVoFixtures.now());
+    }
+
+    /** 영속성 복원 - PENDING 상태 아웃박스 */
+    public static DiscountOutbox pendingOutbox() {
+        return pendingOutbox(1L);
+    }
+
+    public static DiscountOutbox pendingOutbox(Long id) {
+        return DiscountOutbox.reconstitute(
+                DiscountOutboxId.of(id),
+                OutboxTargetKey.of(DiscountTargetType.BRAND, 100L),
+                OutboxStatus.PENDING,
+                0,
+                null,
+                null,
+                CommonVoFixtures.yesterday(),
+                CommonVoFixtures.yesterday());
+    }
+
+    /** 영속성 복원 - PUBLISHED 상태 아웃박스 */
+    public static DiscountOutbox publishedOutbox() {
+        return DiscountOutbox.reconstitute(
+                DiscountOutboxId.of(2L),
+                OutboxTargetKey.of(DiscountTargetType.BRAND, 100L),
+                OutboxStatus.PUBLISHED,
+                0,
+                "{\"targetType\":\"BRAND\",\"targetId\":100}",
+                null,
+                CommonVoFixtures.yesterday(),
+                CommonVoFixtures.yesterday());
+    }
+
+    /** 영속성 복원 - COMPLETED 상태 아웃박스 */
+    public static DiscountOutbox completedOutbox() {
+        return DiscountOutbox.reconstitute(
+                DiscountOutboxId.of(3L),
+                OutboxTargetKey.of(DiscountTargetType.SELLER, 50L),
+                OutboxStatus.COMPLETED,
+                0,
+                "{\"targetType\":\"SELLER\",\"targetId\":50}",
+                null,
+                CommonVoFixtures.yesterday(),
+                CommonVoFixtures.yesterday());
+    }
+
+    /** 영속성 복원 - FAILED 상태 아웃박스 (최대 재시도 소진) */
+    public static DiscountOutbox failedOutbox() {
+        return DiscountOutbox.reconstitute(
+                DiscountOutboxId.of(4L),
+                OutboxTargetKey.of(DiscountTargetType.CATEGORY, 200L),
+                OutboxStatus.FAILED,
+                3,
+                null,
+                "처리 실패",
+                CommonVoFixtures.yesterday(),
+                CommonVoFixtures.yesterday());
     }
 
     // ===== UpdateData Fixtures =====

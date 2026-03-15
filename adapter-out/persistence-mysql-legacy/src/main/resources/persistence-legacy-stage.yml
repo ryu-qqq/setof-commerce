@@ -34,7 +34,7 @@ persistence:
     navigation:
       enabled: false
     content:
-      enabled: true
+      enabled: false
 
 datasource:
   legacy:

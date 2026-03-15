@@ -10,6 +10,7 @@ import com.ryuqq.setof.domain.productdescription.vo.DescriptionHtml;
 import com.ryuqq.setof.domain.productdescription.vo.DescriptionUpdateData;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -47,38 +48,54 @@ public class ProductGroupDescriptionCommandFactory {
     /**
      * 등록 커맨드의 이미지 목록으로부터 DescriptionImage 도메인 객체 목록을 생성합니다.
      *
+     * <p>커맨드에 이미지가 없으면 content HTML에서 img 태그를 추출하여 자동 생성합니다.
+     *
      * @param imageCommands 이미지 커맨드 목록
+     * @param content 상세설명 HTML (이미지 자동 추출용)
      * @return DescriptionImage 도메인 객체 목록
      */
-    public List<DescriptionImage> createNewImages(List<DescriptionImageCommand> imageCommands) {
-        if (imageCommands == null || imageCommands.isEmpty()) {
-            return List.of();
+    public List<DescriptionImage> createNewImages(
+            List<DescriptionImageCommand> imageCommands, DescriptionHtml content) {
+        if (imageCommands != null && !imageCommands.isEmpty()) {
+            return imageCommands.stream()
+                    .map(cmd -> DescriptionImage.forNew(cmd.imageUrl(), cmd.sortOrder()))
+                    .toList();
         }
-        return imageCommands.stream()
-                .map(cmd -> DescriptionImage.forNew(cmd.imageUrl(), cmd.sortOrder()))
-                .toList();
+        return extractImagesFromContent(content);
     }
 
     /**
      * 수정 커맨드로부터 DescriptionUpdateData를 생성합니다.
+     *
+     * <p>커맨드에 이미지가 없으면 content HTML에서 img 태그를 추출하여 자동 생성합니다.
      *
      * @param command 수정 커맨드
      * @return DescriptionUpdateData 인스턴스
      */
     public DescriptionUpdateData createUpdateData(UpdateProductGroupDescriptionCommand command) {
         Instant now = timeProvider.now();
-        List<DescriptionImage> newImages = createUpdateImages(command.descriptionImages());
-        return DescriptionUpdateData.of(
-                DescriptionHtml.of(command.content()), null, newImages, now);
+        DescriptionHtml content = DescriptionHtml.of(command.content());
+        List<DescriptionImage> newImages = createUpdateImages(command.descriptionImages(), content);
+        return DescriptionUpdateData.of(content, null, newImages, now);
     }
 
     private List<DescriptionImage> createUpdateImages(
-            List<UpdateProductGroupDescriptionCommand.DescriptionImageCommand> imageCommands) {
-        if (imageCommands == null || imageCommands.isEmpty()) {
-            return List.of();
+            List<UpdateProductGroupDescriptionCommand.DescriptionImageCommand> imageCommands,
+            DescriptionHtml content) {
+        if (imageCommands != null && !imageCommands.isEmpty()) {
+            return imageCommands.stream()
+                    .map(cmd -> DescriptionImage.forNew(cmd.imageUrl(), cmd.sortOrder()))
+                    .toList();
         }
-        return imageCommands.stream()
-                .map(cmd -> DescriptionImage.forNew(cmd.imageUrl(), cmd.sortOrder()))
-                .toList();
+        return extractImagesFromContent(content);
+    }
+
+    private List<DescriptionImage> extractImagesFromContent(DescriptionHtml content) {
+        List<String> urls = content.extractImageUrls();
+        List<DescriptionImage> images = new ArrayList<>();
+        for (int i = 0; i < urls.size(); i++) {
+            images.add(DescriptionImage.forNew(urls.get(i), i));
+        }
+        return images;
     }
 }

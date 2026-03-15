@@ -5,6 +5,7 @@ import static com.ryuqq.setof.adapter.out.persistence.banner.entity.QBannerSlide
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ryuqq.setof.adapter.out.persistence.banner.condition.BannerConditionBuilder;
+import com.ryuqq.setof.adapter.out.persistence.banner.entity.BannerGroupJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.banner.entity.BannerSlideJpaEntity;
 import java.util.List;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Repository;
  * <p>PER-REP-002: 모든 조회 로직은 QueryDslRepository에서 처리.
  *
  * <p>PER-REP-004: ConditionBuilder를 사용하여 동적 쿼리 구성.
+ *
+ * <p>PER-REP-005: 그룹 ID 기반 단건 조회 및 슬라이드 목록 조회 메서드 제공.
  *
  * @author ryu-qqq
  * @since 1.1.0
@@ -53,6 +56,33 @@ public class BannerSlideQueryDslRepository {
                         conditionBuilder.bannerSlideActiveEq(true),
                         conditionBuilder.bannerSlideNotDeleted(),
                         conditionBuilder.bannerSlideDisplayPeriodBetween())
+                .orderBy(bannerSlideJpaEntity.displayOrder.asc())
+                .fetch();
+    }
+
+    /**
+     * ID로 배너 그룹 단건 조회.
+     *
+     * @param id 배너 그룹 ID
+     * @return BannerGroupJpaEntity (없으면 null)
+     */
+    public BannerGroupJpaEntity findBannerGroupById(long id) {
+        return queryFactory
+                .selectFrom(bannerGroupJpaEntity)
+                .where(bannerGroupJpaEntity.id.eq(id))
+                .fetchOne();
+    }
+
+    /**
+     * 배너 그룹 ID에 속한 슬라이드 목록 조회 (displayOrder 오름차순).
+     *
+     * @param bannerGroupId 배너 그룹 ID
+     * @return BannerSlideJpaEntity 목록
+     */
+    public List<BannerSlideJpaEntity> findSlidesByGroupId(long bannerGroupId) {
+        return queryFactory
+                .selectFrom(bannerSlideJpaEntity)
+                .where(bannerSlideJpaEntity.bannerGroupId.eq(bannerGroupId))
                 .orderBy(bannerSlideJpaEntity.displayOrder.asc())
                 .fetch();
     }

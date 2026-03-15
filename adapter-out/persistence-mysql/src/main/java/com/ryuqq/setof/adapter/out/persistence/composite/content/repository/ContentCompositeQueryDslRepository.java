@@ -9,6 +9,7 @@ import com.ryuqq.setof.adapter.out.persistence.composite.content.dto.FixedProduc
 import com.ryuqq.setof.adapter.out.persistence.displaycomponent.entity.QComponentFixedProductJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.entity.QProductGroupJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.productgroupimage.entity.QProductGroupImageJpaEntity;
+import com.ryuqq.setof.adapter.out.persistence.productgroupprice.entity.QProductGroupPriceJpaEntity;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,8 @@ public class ContentCompositeQueryDslRepository {
     private static final QBrandJpaEntity brand = QBrandJpaEntity.brandJpaEntity;
     private static final QProductGroupImageJpaEntity pgImage =
             QProductGroupImageJpaEntity.productGroupImageJpaEntity;
+    private static final QProductGroupPriceJpaEntity pgPrice =
+            QProductGroupPriceJpaEntity.productGroupPriceJpaEntity;
 
     private final JPAQueryFactory queryFactory;
     private final ContentCompositeConditionBuilder conditionBuilder;
@@ -44,7 +47,8 @@ public class ContentCompositeQueryDslRepository {
     /**
      * FIXED 상품 JOIN 조회.
      *
-     * <p>component_fixed_product LEFT JOIN product_groups LEFT JOIN brand.
+     * <p>component_fixed_product LEFT JOIN product_groups LEFT JOIN brand LEFT JOIN
+     * product_group_prices.
      *
      * @param componentIds 컴포넌트 ID 목록
      * @return FIXED 상품 DTO 목록 (displayOrder ASC)
@@ -68,13 +72,15 @@ public class ContentCompositeQueryDslRepository {
                                 brand.brandName,
                                 pg.regularPrice,
                                 pg.currentPrice,
-                                pg.salePrice,
+                                pgPrice.salePrice,
                                 pg.createdAt)
                         .from(cfp)
                         .leftJoin(pg)
                         .on(cfp.productGroupId.eq(pg.id))
                         .leftJoin(brand)
                         .on(pg.brandId.eq(brand.id))
+                        .leftJoin(pgPrice)
+                        .on(pgPrice.productGroupId.eq(pg.id))
                         .where(
                                 conditionBuilder.componentIdIn(componentIds),
                                 conditionBuilder.fixedProductNotDeleted())
@@ -98,7 +104,8 @@ public class ContentCompositeQueryDslRepository {
     /**
      * AUTO 상품 JOIN 조회.
      *
-     * <p>product_groups LEFT JOIN brand. categoryIds/brandIds 기반 동적 필터링.
+     * <p>product_groups LEFT JOIN brand LEFT JOIN product_group_prices. categoryIds/brandIds 기반 동적
+     * 필터링.
      *
      * @param categoryIds 카테고리 ID 목록 (빈 리스트이면 미지정)
      * @param brandIds 브랜드 ID 목록 (빈 리스트이면 미지정)
@@ -118,11 +125,13 @@ public class ContentCompositeQueryDslRepository {
                                 brand.brandName,
                                 pg.regularPrice,
                                 pg.currentPrice,
-                                pg.salePrice,
+                                pgPrice.salePrice,
                                 pg.createdAt)
                         .from(pg)
                         .leftJoin(brand)
                         .on(pg.brandId.eq(brand.id))
+                        .leftJoin(pgPrice)
+                        .on(pgPrice.productGroupId.eq(pg.id))
                         .where(
                                 conditionBuilder.categoryIdIn(categoryIds),
                                 conditionBuilder.brandIdIn(brandIds),
@@ -175,7 +184,7 @@ public class ContentCompositeQueryDslRepository {
                 r.get(brand.brandName) != null ? r.get(brand.brandName) : "",
                 safeInt(r.get(pg.regularPrice)),
                 safeInt(r.get(pg.currentPrice)),
-                safeInt(r.get(pg.salePrice)),
+                safeInt(r.get(pgPrice.salePrice)),
                 r.get(pg.createdAt),
                 imageMap.getOrDefault(pgId, ""));
     }
@@ -190,7 +199,7 @@ public class ContentCompositeQueryDslRepository {
                 r.get(brand.brandName) != null ? r.get(brand.brandName) : "",
                 safeInt(r.get(pg.regularPrice)),
                 safeInt(r.get(pg.currentPrice)),
-                safeInt(r.get(pg.salePrice)),
+                safeInt(r.get(pgPrice.salePrice)),
                 r.get(pg.createdAt),
                 imageMap.getOrDefault(pgId, ""));
     }

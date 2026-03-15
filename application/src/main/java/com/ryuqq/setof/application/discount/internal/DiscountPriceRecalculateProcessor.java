@@ -2,8 +2,8 @@ package com.ryuqq.setof.application.discount.internal;
 
 import com.ryuqq.setof.application.discount.factory.ProductGroupPriceUpdateFactory;
 import com.ryuqq.setof.application.discount.manager.DiscountPolicyReadManager;
-import com.ryuqq.setof.application.discount.manager.LegacyProductGroupPriceCommandManager;
-import com.ryuqq.setof.application.discount.manager.LegacyProductGroupPriceReadManager;
+import com.ryuqq.setof.application.discount.manager.ProductGroupPriceCommandManager;
+import com.ryuqq.setof.application.discount.manager.ProductGroupPriceReadManager;
 import com.ryuqq.setof.application.discount.port.out.query.LegacyProductGroupPriceQueryPort.ProductGroupPriceRow;
 import com.ryuqq.setof.domain.discount.aggregate.DiscountPolicy;
 import com.ryuqq.setof.domain.discount.dto.ProductGroupPriceUpdateData;
@@ -29,14 +29,14 @@ public class DiscountPriceRecalculateProcessor {
     private static final Logger log =
             LoggerFactory.getLogger(DiscountPriceRecalculateProcessor.class);
 
-    private final LegacyProductGroupPriceReadManager priceReadManager;
-    private final LegacyProductGroupPriceCommandManager priceCommandManager;
+    private final ProductGroupPriceReadManager priceReadManager;
+    private final ProductGroupPriceCommandManager priceCommandManager;
     private final DiscountPolicyReadManager policyReadManager;
     private final ProductGroupPriceUpdateFactory priceUpdateFactory;
 
     public DiscountPriceRecalculateProcessor(
-            LegacyProductGroupPriceReadManager priceReadManager,
-            LegacyProductGroupPriceCommandManager priceCommandManager,
+            ProductGroupPriceReadManager priceReadManager,
+            ProductGroupPriceCommandManager priceCommandManager,
             DiscountPolicyReadManager policyReadManager,
             ProductGroupPriceUpdateFactory priceUpdateFactory) {
         this.priceReadManager = priceReadManager;

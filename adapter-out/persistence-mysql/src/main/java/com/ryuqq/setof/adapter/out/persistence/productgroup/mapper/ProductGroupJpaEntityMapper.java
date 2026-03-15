@@ -65,8 +65,6 @@ public class ProductGroupJpaEntityMapper {
                 domain.optionType().name(),
                 domain.regularPriceValue(),
                 domain.currentPriceValue(),
-                domain.salePriceValue(),
-                domain.discountRate(),
                 domain.status().name(),
                 domain.createdAt(),
                 domain.updatedAt(),
@@ -136,9 +134,10 @@ public class ProductGroupJpaEntityMapper {
     }
 
     /**
-     * Entity 조합 → ProductGroup Domain 변환.
+     * Entity 조합 → ProductGroup Domain 변환 (salePrice 지정).
      *
      * @param entity ProductGroupJpaEntity
+     * @param salePrice product_group_prices에서 조회한 판매가
      * @param imageEntities 이미지 엔티티 목록
      * @param groupEntities 옵션 그룹 엔티티 목록
      * @param valueEntities 옵션 값 엔티티 목록
@@ -146,6 +145,7 @@ public class ProductGroupJpaEntityMapper {
      */
     public ProductGroup toDomain(
             ProductGroupJpaEntity entity,
+            int salePrice,
             List<ProductGroupImageJpaEntity> imageEntities,
             List<SellerOptionGroupJpaEntity> groupEntities,
             List<SellerOptionValueJpaEntity> valueEntities) {
@@ -178,8 +178,6 @@ public class ProductGroupJpaEntityMapper {
                                 })
                         .toList();
 
-        Money salePrice = Money.of(entity.getSalePrice());
-
         return ProductGroup.reconstitute(
                 ProductGroupId.of(entity.getId()),
                 SellerId.of(entity.getSellerId()),
@@ -191,12 +189,29 @@ public class ProductGroupJpaEntityMapper {
                 OptionType.valueOf(entity.getOptionType()),
                 Money.of(entity.getRegularPrice()),
                 Money.of(entity.getCurrentPrice()),
-                salePrice,
+                Money.of(salePrice),
                 ProductGroupStatus.valueOf(entity.getStatus()),
                 images,
                 optionGroups,
                 entity.getCreatedAt(),
                 entity.getUpdatedAt());
+    }
+
+    /**
+     * Entity 조합 → ProductGroup Domain 변환 (하위 호환 - salePrice = 0).
+     *
+     * @param entity ProductGroupJpaEntity
+     * @param imageEntities 이미지 엔티티 목록
+     * @param groupEntities 옵션 그룹 엔티티 목록
+     * @param valueEntities 옵션 값 엔티티 목록
+     * @return ProductGroup 도메인 객체
+     */
+    public ProductGroup toDomain(
+            ProductGroupJpaEntity entity,
+            List<ProductGroupImageJpaEntity> imageEntities,
+            List<SellerOptionGroupJpaEntity> groupEntities,
+            List<SellerOptionValueJpaEntity> valueEntities) {
+        return toDomain(entity, 0, imageEntities, groupEntities, valueEntities);
     }
 
     /**

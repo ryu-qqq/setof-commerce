@@ -5,6 +5,7 @@ import com.ryuqq.setof.adapter.out.persistence.navigation.repository.NavigationM
 import com.ryuqq.setof.application.navigation.port.out.NavigationMenuQueryPort;
 import com.ryuqq.setof.domain.navigation.aggregate.NavigationMenu;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -53,6 +54,11 @@ public class NavigationMenuQueryAdapter implements NavigationMenuQueryPort {
      *
      * @return NavigationMenu 목록
      */
+    @Override
+    public Optional<NavigationMenu> findById(long navigationMenuId) {
+        return queryDslRepository.findById(navigationMenuId).map(mapper::toDomain);
+    }
+
     @Override
     public List<NavigationMenu> fetchNavigationMenus() {
         return queryDslRepository.fetchDisplayMenus().stream().map(mapper::toDomain).toList();

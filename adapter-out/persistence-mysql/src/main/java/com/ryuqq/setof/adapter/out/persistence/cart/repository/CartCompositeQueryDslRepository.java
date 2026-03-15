@@ -9,6 +9,7 @@ import static com.ryuqq.setof.adapter.out.persistence.productgroup.entity.QProdu
 import static com.ryuqq.setof.adapter.out.persistence.productgroup.entity.QSellerOptionGroupJpaEntity.sellerOptionGroupJpaEntity;
 import static com.ryuqq.setof.adapter.out.persistence.productgroup.entity.QSellerOptionValueJpaEntity.sellerOptionValueJpaEntity;
 import static com.ryuqq.setof.adapter.out.persistence.productgroupimage.entity.QProductGroupImageJpaEntity.productGroupImageJpaEntity;
+import static com.ryuqq.setof.adapter.out.persistence.productgroupprice.entity.QProductGroupPriceJpaEntity.productGroupPriceJpaEntity;
 import static com.ryuqq.setof.adapter.out.persistence.seller.entity.QSellerJpaEntity.sellerJpaEntity;
 
 import com.querydsl.core.types.Projections;
@@ -80,8 +81,8 @@ public class CartCompositeQueryDslRepository {
                                         productJpaEntity.id,
                                         productGroupJpaEntity.regularPrice,
                                         productGroupJpaEntity.currentPrice,
-                                        productGroupJpaEntity.salePrice,
-                                        productGroupJpaEntity.discountRate,
+                                        productGroupPriceJpaEntity.salePrice,
+                                        productGroupPriceJpaEntity.discountRate,
                                         cartItemJpaEntity.quantity,
                                         productJpaEntity.stockQuantity,
                                         productGroupImageJpaEntity.imageUrl,
@@ -108,6 +109,8 @@ public class CartCompositeQueryDslRepository {
                         .on(brandJpaEntity.id.eq(productGroupJpaEntity.brandId))
                         .innerJoin(categoryJpaEntity)
                         .on(categoryJpaEntity.id.eq(productGroupJpaEntity.categoryId))
+                        .leftJoin(productGroupPriceJpaEntity)
+                        .on(productGroupPriceJpaEntity.productGroupId.eq(productGroupJpaEntity.id))
                         .leftJoin(productOptionMappingJpaEntity)
                         .on(
                                 productOptionMappingJpaEntity.productId.eq(

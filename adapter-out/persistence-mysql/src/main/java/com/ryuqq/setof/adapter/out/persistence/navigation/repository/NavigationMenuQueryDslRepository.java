@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ryuqq.setof.adapter.out.persistence.navigation.condition.NavigationMenuConditionBuilder;
 import com.ryuqq.setof.adapter.out.persistence.navigation.entity.NavigationMenuJpaEntity;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -37,6 +38,21 @@ public class NavigationMenuQueryDslRepository {
      *
      * @return NavigationMenuJpaEntity 목록
      */
+    /**
+     * ID로 네비게이션 메뉴 단건 조회.
+     *
+     * @param id 네비게이션 메뉴 ID
+     * @return NavigationMenuJpaEntity Optional
+     */
+    public Optional<NavigationMenuJpaEntity> findById(long id) {
+        NavigationMenuJpaEntity entity =
+                queryFactory
+                        .selectFrom(navigationMenuJpaEntity)
+                        .where(navigationMenuJpaEntity.id.eq(id), conditionBuilder.notDeleted())
+                        .fetchFirst();
+        return Optional.ofNullable(entity);
+    }
+
     public List<NavigationMenuJpaEntity> fetchDisplayMenus() {
         return queryFactory
                 .selectFrom(navigationMenuJpaEntity)

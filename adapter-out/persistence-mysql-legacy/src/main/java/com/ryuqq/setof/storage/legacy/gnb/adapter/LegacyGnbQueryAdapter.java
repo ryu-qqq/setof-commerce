@@ -6,6 +6,7 @@ import com.ryuqq.setof.storage.legacy.gnb.entity.LegacyGnbEntity;
 import com.ryuqq.setof.storage.legacy.gnb.mapper.LegacyGnbMapper;
 import com.ryuqq.setof.storage.legacy.gnb.repository.LegacyGnbQueryDslRepository;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +30,11 @@ public class LegacyGnbQueryAdapter implements NavigationMenuQueryPort {
     public LegacyGnbQueryAdapter(LegacyGnbQueryDslRepository repository, LegacyGnbMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
+    }
+
+    @Override
+    public Optional<NavigationMenu> findById(long navigationMenuId) {
+        return Optional.empty();
     }
 
     @Override

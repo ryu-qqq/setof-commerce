@@ -54,12 +54,12 @@ public class ProductGroupCommandAdapter implements ProductGroupCommandPort {
                     .createNativeQuery(
                             "INSERT INTO product_groups (id, seller_id, brand_id, category_id,"
                                     + " shipping_policy_id, refund_policy_id, product_group_name,"
-                                    + " option_type, regular_price, current_price, sale_price,"
-                                    + " discount_rate, status, created_at, updated_at, deleted_at)"
+                                    + " option_type, regular_price, current_price,"
+                                    + " status, created_at, updated_at, deleted_at)"
                                     + " VALUES (:id, :sellerId, :brandId, :categoryId,"
                                     + " :shippingPolicyId, :refundPolicyId, :productGroupName,"
-                                    + " :optionType, :regularPrice, :currentPrice, :salePrice,"
-                                    + " :discountRate, :status, :createdAt, :updatedAt, :deletedAt)"
+                                    + " :optionType, :regularPrice, :currentPrice,"
+                                    + " :status, :createdAt, :updatedAt, :deletedAt)"
                                     + " ON DUPLICATE KEY UPDATE"
                                     + " seller_id = VALUES(seller_id),"
                                     + " brand_id = VALUES(brand_id),"
@@ -70,8 +70,6 @@ public class ProductGroupCommandAdapter implements ProductGroupCommandPort {
                                     + " option_type = VALUES(option_type),"
                                     + " regular_price = VALUES(regular_price),"
                                     + " current_price = VALUES(current_price),"
-                                    + " sale_price = VALUES(sale_price),"
-                                    + " discount_rate = VALUES(discount_rate),"
                                     + " status = VALUES(status),"
                                     + " updated_at = VALUES(updated_at),"
                                     + " deleted_at = VALUES(deleted_at)")
@@ -85,8 +83,6 @@ public class ProductGroupCommandAdapter implements ProductGroupCommandPort {
                     .setParameter("optionType", entity.getOptionType())
                     .setParameter("regularPrice", entity.getRegularPrice())
                     .setParameter("currentPrice", entity.getCurrentPrice())
-                    .setParameter("salePrice", entity.getSalePrice())
-                    .setParameter("discountRate", entity.getDiscountRate())
                     .setParameter("status", entity.getStatus())
                     .setParameter("createdAt", entity.getCreatedAt())
                     .setParameter("updatedAt", entity.getUpdatedAt())

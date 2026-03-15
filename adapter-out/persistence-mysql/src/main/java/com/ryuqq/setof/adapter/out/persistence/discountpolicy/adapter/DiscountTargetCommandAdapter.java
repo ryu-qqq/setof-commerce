@@ -43,4 +43,17 @@ public class DiscountTargetCommandAdapter implements DiscountTargetCommandPort {
                         .toList();
         jpaRepository.saveAll(entities);
     }
+
+    @Override
+    public void updateAll(long discountPolicyId, List<DiscountTarget> targets) {
+        if (targets.isEmpty()) {
+            return;
+        }
+        Instant now = Instant.now();
+        List<DiscountTargetJpaEntity> entities =
+                targets.stream()
+                        .map(target -> mapper.toTargetEntity(target, discountPolicyId, now))
+                        .toList();
+        jpaRepository.saveAll(entities);
+    }
 }

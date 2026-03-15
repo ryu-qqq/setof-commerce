@@ -69,7 +69,6 @@ class ProductGroupJpaEntityMapperTest {
             assertThat(entity.getOptionType()).isEqualTo(domain.optionType().name());
             assertThat(entity.getRegularPrice()).isEqualTo(domain.regularPriceValue());
             assertThat(entity.getCurrentPrice()).isEqualTo(domain.currentPriceValue());
-            assertThat(entity.getSalePrice()).isEqualTo(domain.salePriceValue());
             assertThat(entity.getStatus()).isEqualTo(domain.status().name());
             assertThat(entity.getDeletedAt()).isNull();
         }
@@ -233,7 +232,6 @@ class ProductGroupJpaEntityMapperTest {
             assertThat(domain.optionType().name()).isEqualTo(entity.getOptionType());
             assertThat(domain.regularPriceValue()).isEqualTo(entity.getRegularPrice());
             assertThat(domain.currentPriceValue()).isEqualTo(entity.getCurrentPrice());
-            assertThat(domain.salePriceValue()).isEqualTo(entity.getSalePrice());
             assertThat(domain.status().name()).isEqualTo(entity.getStatus());
         }
 
@@ -379,7 +377,6 @@ class ProductGroupJpaEntityMapperTest {
             assertThat(converted.getOptionType()).isEqualTo(original.getOptionType());
             assertThat(converted.getRegularPrice()).isEqualTo(original.getRegularPrice());
             assertThat(converted.getCurrentPrice()).isEqualTo(original.getCurrentPrice());
-            assertThat(converted.getSalePrice()).isEqualTo(original.getSalePrice());
             assertThat(converted.getStatus()).isEqualTo(original.getStatus());
         }
     }

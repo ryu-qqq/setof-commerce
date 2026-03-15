@@ -3,9 +3,12 @@ package com.ryuqq.setof.adapter.out.persistence.discountpolicy.repository;
 import static com.ryuqq.setof.adapter.out.persistence.discountpolicy.entity.QDiscountPolicyJpaEntity.discountPolicyJpaEntity;
 import static com.ryuqq.setof.adapter.out.persistence.discountpolicy.entity.QDiscountTargetJpaEntity.discountTargetJpaEntity;
 
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.ryuqq.setof.adapter.out.persistence.discountpolicy.condition.DiscountPolicyConditionBuilder;
 import com.ryuqq.setof.adapter.out.persistence.discountpolicy.entity.DiscountPolicyJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.discountpolicy.entity.DiscountTargetJpaEntity;
+import com.ryuqq.setof.domain.discount.query.DiscountPolicySortKey;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -23,9 +26,12 @@ import org.springframework.stereotype.Repository;
 public class DiscountPolicyQueryDslRepository {
 
     private final JPAQueryFactory queryFactory;
+    private final DiscountPolicyConditionBuilder conditionBuilder;
 
-    public DiscountPolicyQueryDslRepository(JPAQueryFactory queryFactory) {
+    public DiscountPolicyQueryDslRepository(
+            JPAQueryFactory queryFactory, DiscountPolicyConditionBuilder conditionBuilder) {
         this.queryFactory = queryFactory;
+        this.conditionBuilder = conditionBuilder;
     }
 
     /**
@@ -115,5 +121,96 @@ public class DiscountPolicyQueryDslRepository {
                 .selectFrom(discountTargetJpaEntity)
                 .where(discountTargetJpaEntity.discountPolicyId.in(policyIds))
                 .fetch();
+    }
+
+    /**
+     * 검색 조건으로 할인 정책 목록 조회 (페이징).
+     *
+     * @param applicationType 적용 방식 필터
+     * @param publisherType 발행 주체 필터
+     * @param stackingGroup 스태킹 그룹 필터
+     * @param sellerId 셀러 ID 필터
+     * @param activeOnly 활성 전용 여부
+     * @param sortKey 정렬 키
+     * @param ascending 오름차순 여부
+     * @param offset 오프셋
+     * @param limit 페이지 크기
+     * @return entity 목록
+     */
+    public List<DiscountPolicyJpaEntity> findByCriteria(
+            DiscountPolicyJpaEntity.ApplicationType applicationType,
+            DiscountPolicyJpaEntity.PublisherType publisherType,
+            DiscountPolicyJpaEntity.StackingGroup stackingGroup,
+            Long sellerId,
+            boolean activeOnly,
+            DiscountPolicySortKey sortKey,
+            boolean ascending,
+            long offset,
+            int limit) {
+        return queryFactory
+                .selectFrom(discountPolicyJpaEntity)
+                .where(
+                        conditionBuilder.applicationTypeEq(applicationType),
+                        conditionBuilder.publisherTypeEq(publisherType),
+                        conditionBuilder.stackingGroupEq(stackingGroup),
+                        conditionBuilder.sellerIdEq(sellerId),
+                        activeOnly ? conditionBuilder.activeEq(true) : null,
+                        conditionBuilder.notDeleted())
+                .orderBy(toOrderSpecifier(sortKey, ascending))
+                .offset(offset)
+                .limit(limit)
+                .fetch();
+    }
+
+    /**
+     * 검색 조건으로 할인 정책 총 건수 조회.
+     *
+     * @param applicationType 적용 방식 필터
+     * @param publisherType 발행 주체 필터
+     * @param stackingGroup 스태킹 그룹 필터
+     * @param sellerId 셀러 ID 필터
+     * @param activeOnly 활성 전용 여부
+     * @return 총 건수
+     */
+    public long countByCriteria(
+            DiscountPolicyJpaEntity.ApplicationType applicationType,
+            DiscountPolicyJpaEntity.PublisherType publisherType,
+            DiscountPolicyJpaEntity.StackingGroup stackingGroup,
+            Long sellerId,
+            boolean activeOnly) {
+        Long count =
+                queryFactory
+                        .select(discountPolicyJpaEntity.count())
+                        .from(discountPolicyJpaEntity)
+                        .where(
+                                conditionBuilder.applicationTypeEq(applicationType),
+                                conditionBuilder.publisherTypeEq(publisherType),
+                                conditionBuilder.stackingGroupEq(stackingGroup),
+                                conditionBuilder.sellerIdEq(sellerId),
+                                activeOnly ? conditionBuilder.activeEq(true) : null,
+                                conditionBuilder.notDeleted())
+                        .fetchOne();
+        return count != null ? count : 0L;
+    }
+
+    private OrderSpecifier<?> toOrderSpecifier(DiscountPolicySortKey sortKey, boolean ascending) {
+        return switch (sortKey) {
+            case CREATED_AT ->
+                    ascending
+                            ? discountPolicyJpaEntity.createdAt.asc()
+                            : discountPolicyJpaEntity.createdAt.desc();
+            case NAME ->
+                    ascending
+                            ? discountPolicyJpaEntity.name.asc()
+                            : discountPolicyJpaEntity.name.desc();
+            case PRIORITY ->
+                    ascending
+                            ? discountPolicyJpaEntity.priority.asc()
+                            : discountPolicyJpaEntity.priority.desc();
+            case START_AT ->
+                    ascending
+                            ? discountPolicyJpaEntity.startAt.asc()
+                            : discountPolicyJpaEntity.startAt.desc();
+        };
     }
 }

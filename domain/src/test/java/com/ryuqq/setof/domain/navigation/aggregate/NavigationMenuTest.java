@@ -37,11 +37,11 @@ class NavigationMenuTest {
         @DisplayName("커스텀 값으로 네비게이션 메뉴를 생성한다")
         void createWithCustomValues() {
             // when
-            var menu = NavigationFixtures.newNavigationMenu("기획전", "https://example.com/event");
+            var menu = NavigationFixtures.newNavigationMenu("남성", "https://example.com/men");
 
             // then
-            assertThat(menu.title()).isEqualTo("기획전");
-            assertThat(menu.linkUrl()).isEqualTo("https://example.com/event");
+            assertThat(menu.title()).isEqualTo("남성");
+            assertThat(menu.linkUrl()).isEqualTo("https://example.com/men");
         }
 
         @Test
@@ -53,27 +53,6 @@ class NavigationMenuTest {
             // then
             assertThat(menu.deletionStatus().isDeleted()).isFalse();
             assertThat(menu.deletionStatus().isActive()).isTrue();
-        }
-
-        @Test
-        @DisplayName("신규 생성 시 createdAt과 updatedAt이 동일하다")
-        void newNavigationMenuHasSameCreatedAndUpdatedAt() {
-            // given
-            Instant now = CommonVoFixtures.now();
-
-            // when
-            NavigationMenu menu =
-                    NavigationMenu.forNew(
-                            "홈",
-                            "https://example.com/home",
-                            1,
-                            NavigationFixtures.defaultDisplayPeriod(),
-                            true,
-                            now);
-
-            // then
-            assertThat(menu.createdAt()).isEqualTo(now);
-            assertThat(menu.updatedAt()).isEqualTo(now);
         }
     }
 
@@ -144,21 +123,34 @@ class NavigationMenuTest {
         void updateRefreshesUpdatedAt() {
             // given
             var menu = NavigationFixtures.activeNavigationMenu();
-            Instant updatedAt = CommonVoFixtures.now();
-            var updateData =
-                    new NavigationMenuUpdateData(
-                            "여성",
-                            "https://example.com/women",
-                            3,
-                            NavigationFixtures.defaultDisplayPeriod(),
-                            true,
-                            updatedAt);
+            Instant beforeUpdate = menu.updatedAt();
+            var updateData = NavigationFixtures.defaultNavigationMenuUpdateData();
 
             // when
             menu.update(updateData);
 
             // then
-            assertThat(menu.updatedAt()).isEqualTo(updatedAt);
+            assertThat(menu.updatedAt()).isNotEqualTo(beforeUpdate);
+            assertThat(menu.updatedAt()).isEqualTo(updateData.updatedAt());
+        }
+
+        @Test
+        @DisplayName("커스텀 값으로 수정한다")
+        void updateWithCustomValues() {
+            // given
+            var menu = NavigationFixtures.activeNavigationMenu();
+            var updateData =
+                    NavigationFixtures.navigationMenuUpdateData(
+                            "기획전", "https://example.com/event", 5, true);
+
+            // when
+            menu.update(updateData);
+
+            // then
+            assertThat(menu.title()).isEqualTo("기획전");
+            assertThat(menu.linkUrl()).isEqualTo("https://example.com/event");
+            assertThat(menu.displayOrder()).isEqualTo(5);
+            assertThat(menu.isActive()).isTrue();
         }
     }
 

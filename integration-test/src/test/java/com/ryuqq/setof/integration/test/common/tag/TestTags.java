@@ -141,6 +141,9 @@ public final class TestTags {
     /** 이미지 Variant 관련 테스트 */
     public static final String IMAGE_VARIANT = "image-variant";
 
+    /** 할인 정책 관련 테스트 */
+    public static final String DISCOUNT = "discount";
+
     // ========================================
     // Migration Tags (마이그레이션 태그)
     // ========================================
