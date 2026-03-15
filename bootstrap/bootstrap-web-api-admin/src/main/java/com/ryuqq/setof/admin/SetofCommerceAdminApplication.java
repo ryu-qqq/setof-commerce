@@ -49,6 +49,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
             "com.ryuqq.setof.application.refundpolicy",
             "com.ryuqq.setof.application.seller",
             "com.ryuqq.setof.application.selleroption",
+            "com.ryuqq.setof.application.imagevariant",
             "com.ryuqq.setof.application.shippingpolicy",
             "com.ryuqq.setof.adapter.in.rest.admin",
             "com.ryuqq.setof.adapter.out.persistence",
