@@ -80,7 +80,7 @@ public class DiscountPolicyCommandApiMapper {
                 toInstant(details.policyStartDate()),
                 toInstant(details.policyEndDate()),
                 0,
-                List.of(new TargetItem(toTargetType(details.issueType()), 0L)));
+                List.of());
     }
 
     /**
@@ -216,6 +216,11 @@ public class DiscountPolicyCommandApiMapper {
     private CreateDiscountPolicyCommand toCommandFromExcel(
             CreateDiscountFromExcelV1ApiRequest request) {
         DiscountDetailsV1ApiRequest details = request.discountDetails();
+        String targetType = toTargetType(details.issueType());
+        List<TargetItem> targets =
+                request.targetIds().stream()
+                        .map(id -> new TargetItem(targetType, id))
+                        .toList();
         return new CreateDiscountPolicyCommand(
                 details.discountPolicyName(),
                 details.memo(),
@@ -233,7 +238,7 @@ public class DiscountPolicyCommandApiMapper {
                 toInstant(details.policyStartDate()),
                 toInstant(details.policyEndDate()),
                 0,
-                List.of(new TargetItem(toTargetType(details.issueType()), 0L)));
+                targets);
     }
 
     /**
