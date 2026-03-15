@@ -98,7 +98,18 @@ public class ProductCommandAdapter implements ProductCommandPort {
                                 + " status, sort_order, created_at, updated_at)"
                                 + " VALUES (:id, :productGroupId, :skuCode, :regularPrice,"
                                 + " :currentPrice, :salePrice, :discountRate, :stockQuantity,"
-                                + " :status, :sortOrder, :createdAt, :updatedAt)")
+                                + " :status, :sortOrder, :createdAt, :updatedAt)"
+                                + " ON DUPLICATE KEY UPDATE"
+                                + " product_group_id = VALUES(product_group_id),"
+                                + " sku_code = VALUES(sku_code),"
+                                + " regular_price = VALUES(regular_price),"
+                                + " current_price = VALUES(current_price),"
+                                + " sale_price = VALUES(sale_price),"
+                                + " discount_rate = VALUES(discount_rate),"
+                                + " stock_quantity = VALUES(stock_quantity),"
+                                + " status = VALUES(status),"
+                                + " sort_order = VALUES(sort_order),"
+                                + " updated_at = VALUES(updated_at)")
                 .setParameter("id", entity.getId())
                 .setParameter("productGroupId", entity.getProductGroupId())
                 .setParameter("skuCode", entity.getSkuCode())
