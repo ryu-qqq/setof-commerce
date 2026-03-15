@@ -4,15 +4,16 @@ import com.ryuqq.setof.application.legacy.mileage.dto.response.LegacyMileageHist
 import com.ryuqq.setof.application.legacy.mileage.dto.response.LegacyMileagePageResult;
 import com.ryuqq.setof.application.legacy.mileage.dto.response.LegacyUserMileageResult;
 import com.ryuqq.setof.application.mileage.dto.response.MileageHistoryItemResult;
-import com.ryuqq.setof.application.mileage.dto.response.MileageSummaryResult;
 import com.ryuqq.setof.application.mileage.port.out.query.MileageCompositeQueryPort;
 import com.ryuqq.setof.domain.legacy.mileage.dto.query.LegacyMileageHistorySearchCondition;
 import com.ryuqq.setof.domain.mileage.query.MileageHistorySearchCriteria;
+import com.ryuqq.setof.domain.mileage.vo.MileageSummary;
 import com.ryuqq.setof.storage.legacy.composite.mileage.dto.LegacyWebMileageHistoryQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.mileage.dto.LegacyWebUserMileageQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.mileage.mapper.LegacyWebMileageMapper;
 import com.ryuqq.setof.storage.legacy.composite.mileage.repository.LegacyWebMileageCompositeQueryDslRepository;
 import java.util.List;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Component;
  * @since 1.1.0
  */
 @Component
+@ConditionalOnProperty(name = "persistence.member.enabled", havingValue = "true")
 public class LegacyWebMileageCompositeQueryAdapter implements MileageCompositeQueryPort {
 
     private final LegacyWebMileageCompositeQueryDslRepository repository;
@@ -54,9 +56,9 @@ public class LegacyWebMileageCompositeQueryAdapter implements MileageCompositeQu
     }
 
     @Override
-    public MileageSummaryResult fetchMileageSummary(long userId) {
+    public MileageSummary fetchMileageSummary(long userId) {
         List<LegacyWebUserMileageQueryDto> mileageDtos = repository.fetchUserMileages(userId);
-        return mapper.toSummaryResult(userId, mileageDtos);
+        return mapper.toMileageSummary(mileageDtos);
     }
 
     // ========== 레거시 API (기존 호환 유지) ==========

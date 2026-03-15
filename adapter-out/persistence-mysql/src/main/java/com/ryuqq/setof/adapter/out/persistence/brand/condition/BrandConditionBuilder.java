@@ -46,7 +46,10 @@ public class BrandConditionBuilder {
             return null;
         }
         if (searchField == null) {
-            return brandJpaEntity.brandName.containsIgnoreCase(searchWord);
+            return brandJpaEntity
+                    .displayKoreanName
+                    .containsIgnoreCase(searchWord)
+                    .or(brandJpaEntity.displayEnglishName.containsIgnoreCase(searchWord));
         }
         return switch (searchField) {
             case BRAND_NAME -> brandJpaEntity.brandName.containsIgnoreCase(searchWord);

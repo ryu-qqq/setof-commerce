@@ -18,9 +18,9 @@ class ProductThumbnailSnapshotTest {
     /** 가격 기준으로 구분되는 스냅샷 목록 (현재가: 5000, 7000, 9000). */
     private List<ProductThumbnailSnapshot> threeAutoSnapshots() {
         return List.of(
-                ContentPageFixtures.snapshotWithDetails(10L, 10000, 9000, 10, 4.0, 100L, 0.5),
-                ContentPageFixtures.snapshotWithDetails(20L, 10000, 5000, 50, 4.8, 300L, 0.9),
-                ContentPageFixtures.snapshotWithDetails(30L, 10000, 7000, 30, 4.2, 200L, 0.7));
+                ContentPageFixtures.snapshotWithDetails(10L, 10000, 9000, 10),
+                ContentPageFixtures.snapshotWithDetails(20L, 10000, 5000, 50),
+                ContentPageFixtures.snapshotWithDetails(30L, 10000, 7000, 30));
     }
 
     @Nested

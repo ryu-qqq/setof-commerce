@@ -40,13 +40,13 @@ class LoginServiceTest {
         void execute_ValidCommand_ReturnsLoginResult() {
             // given
             LoginCommand command = AuthCommandFixtures.loginCommand();
-            long legacyMemberId = 1L;
+            long memberId = 1L;
             LoginResult expectedResult = AuthResponseFixtures.loginResultSuccess();
 
             given(loginValidator.validate(command.identifier(), command.password()))
                     .willReturn(member);
-            given(member.legacyMemberIdValue()).willReturn(legacyMemberId);
-            given(tokenCommandFacade.issueLoginResult(legacyMemberId)).willReturn(expectedResult);
+            given(member.idValue()).willReturn(memberId);
+            given(tokenCommandFacade.issueLoginResult(memberId)).willReturn(expectedResult);
 
             // when
             LoginResult result = sut.execute(command);
@@ -55,8 +55,8 @@ class LoginServiceTest {
             assertThat(result).isEqualTo(expectedResult);
             assertThat(result.isSuccess()).isTrue();
             then(loginValidator).should().validate(command.identifier(), command.password());
-            then(member).should().legacyMemberIdValue();
-            then(tokenCommandFacade).should().issueLoginResult(legacyMemberId);
+            then(member).should().idValue();
+            then(tokenCommandFacade).should().issueLoginResult(memberId);
         }
 
         @Test
@@ -64,13 +64,13 @@ class LoginServiceTest {
         void execute_DifferentIdentifier_CallsLoginValidator() {
             // given
             LoginCommand command = AuthCommandFixtures.loginCommand("010-9999-8888", "otherPass");
-            long legacyMemberId = 2L;
+            long memberId = 2L;
             LoginResult expectedResult = AuthResponseFixtures.loginResultSuccess("2");
 
             given(loginValidator.validate(command.identifier(), command.password()))
                     .willReturn(member);
-            given(member.legacyMemberIdValue()).willReturn(legacyMemberId);
-            given(tokenCommandFacade.issueLoginResult(legacyMemberId)).willReturn(expectedResult);
+            given(member.idValue()).willReturn(memberId);
+            given(tokenCommandFacade.issueLoginResult(memberId)).willReturn(expectedResult);
 
             // when
             LoginResult result = sut.execute(command);
@@ -78,7 +78,7 @@ class LoginServiceTest {
             // then
             assertThat(result).isEqualTo(expectedResult);
             then(loginValidator).should().validate(command.identifier(), command.password());
-            then(tokenCommandFacade).should().issueLoginResult(legacyMemberId);
+            then(tokenCommandFacade).should().issueLoginResult(memberId);
         }
     }
 }

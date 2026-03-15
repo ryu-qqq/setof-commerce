@@ -125,7 +125,7 @@ public class ProductJpaEntity extends BaseAuditEntity implements Persistable<Lon
                         sortOrder,
                         createdAt,
                         updatedAt);
-        entity.isNew = (id == null);
+        entity.isNew = true;
         return entity;
     }
 

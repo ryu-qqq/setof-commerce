@@ -10,8 +10,8 @@ import com.ryuqq.setof.adapter.in.rest.v1.mileage.dto.response.MileageHistoryV1A
 import com.ryuqq.setof.application.mileage.dto.query.MileageHistorySearchParams;
 import com.ryuqq.setof.application.mileage.dto.response.MileageHistoryItemResult;
 import com.ryuqq.setof.application.mileage.dto.response.MileageHistoryPageResult;
-import com.ryuqq.setof.application.mileage.dto.response.MileageSummaryResult;
 import com.ryuqq.setof.domain.common.vo.PageMeta;
+import com.ryuqq.setof.domain.mileage.vo.MileageSummary;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -58,12 +58,12 @@ public class MileageV1ApiMapper {
      * <p>레거시 MileagePage 구조에 맞춰 페이징 메타를 개별 필드로 풀어 반환합니다. numberOfElements는 content 리스트 크기로 산정합니다.
      */
     public MileageHistoryPageV1ApiResponse toPageResponse(MileageHistoryPageResult result) {
-        MileageSummaryResult summary = result.mileageSummary();
+        MileageSummary summary = result.mileageSummary();
         PageMeta pageMeta = result.pageMeta();
 
         UserMileageSummaryResponse userMileage =
                 new UserMileageSummaryResponse(
-                        summary.userId(),
+                        result.userId(),
                         summary.currentMileage(),
                         summary.expectedSaveMileage(),
                         summary.expectedExpireMileage());

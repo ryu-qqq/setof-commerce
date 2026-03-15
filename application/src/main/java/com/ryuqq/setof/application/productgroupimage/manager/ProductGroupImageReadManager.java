@@ -4,6 +4,7 @@ import com.ryuqq.setof.application.productgroupimage.port.out.query.ProductGroup
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import com.ryuqq.setof.domain.productgroupimage.aggregate.ProductGroupImage;
 import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,5 +44,16 @@ public class ProductGroupImageReadManager {
      */
     public List<ProductGroupImage> getByProductGroupIds(List<ProductGroupId> productGroupIds) {
         return queryPort.findByProductGroupIds(productGroupIds);
+    }
+
+    /**
+     * 복수 상품그룹 ID로 대표(THUMBNAIL) 이미지 ID를 조회합니다.
+     *
+     * @param productGroupIds 상품그룹 ID 목록
+     * @return productGroupId → thumbnailImageId 맵
+     */
+    public Map<Long, Long> getThumbnailImageIdsByProductGroupIds(
+            List<ProductGroupId> productGroupIds) {
+        return queryPort.findThumbnailImageIdsByProductGroupIds(productGroupIds);
     }
 }

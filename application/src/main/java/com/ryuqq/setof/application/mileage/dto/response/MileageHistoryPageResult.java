@@ -1,6 +1,7 @@
 package com.ryuqq.setof.application.mileage.dto.response;
 
 import com.ryuqq.setof.domain.common.vo.PageMeta;
+import com.ryuqq.setof.domain.mileage.vo.MileageSummary;
 import java.util.List;
 
 /**
@@ -10,6 +11,7 @@ import java.util.List;
  *
  * <p>마일리지 요약 정보와 이력 목록, 페이지 메타를 함께 반환.
  *
+ * @param userId 사용자 ID
  * @param mileageSummary 마일리지 요약 정보
  * @param histories 마일리지 이력 목록
  * @param pageMeta 페이지 메타 정보
@@ -17,19 +19,21 @@ import java.util.List;
  * @since 1.1.0
  */
 public record MileageHistoryPageResult(
-        MileageSummaryResult mileageSummary,
+        long userId,
+        MileageSummary mileageSummary,
         List<MileageHistoryItemResult> histories,
         PageMeta pageMeta) {
 
     public static MileageHistoryPageResult of(
-            MileageSummaryResult mileageSummary,
+            long userId,
+            MileageSummary mileageSummary,
             List<MileageHistoryItemResult> histories,
             PageMeta pageMeta) {
-        return new MileageHistoryPageResult(mileageSummary, histories, pageMeta);
+        return new MileageHistoryPageResult(userId, mileageSummary, histories, pageMeta);
     }
 
     public static MileageHistoryPageResult empty(long userId, int size) {
         return new MileageHistoryPageResult(
-                MileageSummaryResult.empty(userId), List.of(), PageMeta.empty(size));
+                userId, MileageSummary.empty(), List.of(), PageMeta.empty(size));
     }
 }

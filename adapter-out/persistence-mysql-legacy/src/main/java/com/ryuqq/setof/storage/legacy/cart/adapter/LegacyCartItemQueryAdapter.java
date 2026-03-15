@@ -6,6 +6,7 @@ import com.ryuqq.setof.storage.legacy.cart.mapper.LegacyCartEntityMapper;
 import com.ryuqq.setof.storage.legacy.cart.repository.LegacyCartCommandQueryDslRepository;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,10 +14,13 @@ import org.springframework.stereotype.Component;
  *
  * <p>Command 흐름에서 기존 CartItem 도메인 객체 조회에 사용합니다.
  *
+ * <p>활성화 조건: persistence.legacy.cart.enabled=true
+ *
  * @author ryu-qqq
  * @since 1.1.0
  */
 @Component
+@ConditionalOnProperty(name = "persistence.legacy.cart.enabled", havingValue = "true")
 public class LegacyCartItemQueryAdapter implements CartItemQueryPort {
 
     private final LegacyCartCommandQueryDslRepository queryDslRepository;

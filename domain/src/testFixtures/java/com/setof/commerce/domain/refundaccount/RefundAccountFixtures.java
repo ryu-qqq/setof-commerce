@@ -24,7 +24,7 @@ public final class RefundAccountFixtures {
     public static final String DEFAULT_BANK_NAME = "국민은행";
     public static final String DEFAULT_ACCOUNT_NUMBER = "123456789012";
     public static final String DEFAULT_ACCOUNT_HOLDER_NAME = "홍길동";
-    public static final String DEFAULT_MEMBER_ID = "member-uuid-0001";
+    public static final Long DEFAULT_MEMBER_ID = 1L;
 
     // ===== ID Fixtures =====
 
@@ -46,7 +46,7 @@ public final class RefundAccountFixtures {
         return MemberId.of(DEFAULT_MEMBER_ID);
     }
 
-    public static MemberId memberId(String value) {
+    public static MemberId memberId(Long value) {
         return MemberId.of(value);
     }
 

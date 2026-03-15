@@ -7,7 +7,7 @@ import com.ryuqq.setof.storage.legacy.review.mapper.LegacyReviewEntityMapper;
 import com.ryuqq.setof.storage.legacy.review.repository.LegacyReviewImageJpaRepository;
 import com.ryuqq.setof.storage.legacy.review.repository.LegacyReviewImageQueryDslRepository;
 import java.util.List;
-import org.springframework.context.annotation.Primary;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,8 +24,8 @@ import org.springframework.stereotype.Component;
  * @author ryu-qqq
  * @since 1.1.0
  */
-@Primary
 @Component
+@ConditionalOnProperty(name = "persistence.member.enabled", havingValue = "true")
 public class LegacyReviewImageCommandAdapter implements ReviewImageCommandPort {
 
     private final LegacyReviewImageJpaRepository jpaRepository;

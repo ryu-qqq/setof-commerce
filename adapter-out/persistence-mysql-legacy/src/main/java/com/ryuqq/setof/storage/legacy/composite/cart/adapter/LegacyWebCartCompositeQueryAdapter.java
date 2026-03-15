@@ -9,6 +9,7 @@ import com.ryuqq.setof.storage.legacy.composite.cart.dto.LegacyWebCartQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.cart.mapper.LegacyWebCartMapper;
 import com.ryuqq.setof.storage.legacy.composite.cart.repository.LegacyWebCartCompositeQueryDslRepository;
 import java.util.List;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,10 +17,13 @@ import org.springframework.stereotype.Component;
  *
  * <p>Domain SearchCriteria를 Legacy SearchCondition으로 변환하여 Repository에 위임합니다.
  *
+ * <p>활성화 조건: persistence.legacy.cart.enabled=true
+ *
  * @author ryu-qqq
  * @since 1.1.0
  */
 @Component
+@ConditionalOnProperty(name = "persistence.legacy.cart.enabled", havingValue = "true")
 public class LegacyWebCartCompositeQueryAdapter implements CartQueryPort {
 
     private final LegacyWebCartCompositeQueryDslRepository repository;

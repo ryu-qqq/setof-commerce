@@ -27,6 +27,7 @@ public final class ProductGroupJpaEntityFixtures {
     public static final int DEFAULT_REGULAR_PRICE = 50000;
     public static final int DEFAULT_CURRENT_PRICE = 45000;
     public static final int DEFAULT_SALE_PRICE = 40000;
+    public static final int DEFAULT_DISCOUNT_RATE = 20;
     public static final String DEFAULT_STATUS = "ACTIVE";
 
     public static final Long DEFAULT_OPTION_GROUP_ID = 10L;
@@ -51,6 +52,7 @@ public final class ProductGroupJpaEntityFixtures {
                 DEFAULT_REGULAR_PRICE,
                 DEFAULT_CURRENT_PRICE,
                 DEFAULT_SALE_PRICE,
+                DEFAULT_DISCOUNT_RATE,
                 DEFAULT_STATUS,
                 now,
                 now,
@@ -72,6 +74,7 @@ public final class ProductGroupJpaEntityFixtures {
                 DEFAULT_REGULAR_PRICE,
                 DEFAULT_CURRENT_PRICE,
                 DEFAULT_SALE_PRICE,
+                DEFAULT_DISCOUNT_RATE,
                 DEFAULT_STATUS,
                 now,
                 now,
@@ -93,6 +96,7 @@ public final class ProductGroupJpaEntityFixtures {
                 DEFAULT_REGULAR_PRICE,
                 DEFAULT_CURRENT_PRICE,
                 DEFAULT_SALE_PRICE,
+                DEFAULT_DISCOUNT_RATE,
                 DEFAULT_STATUS,
                 now,
                 now,
@@ -114,6 +118,7 @@ public final class ProductGroupJpaEntityFixtures {
                 DEFAULT_REGULAR_PRICE,
                 DEFAULT_CURRENT_PRICE,
                 DEFAULT_SALE_PRICE,
+                DEFAULT_DISCOUNT_RATE,
                 "SOLD_OUT",
                 now,
                 now,
@@ -135,6 +140,7 @@ public final class ProductGroupJpaEntityFixtures {
                 DEFAULT_REGULAR_PRICE,
                 DEFAULT_CURRENT_PRICE,
                 DEFAULT_SALE_PRICE,
+                DEFAULT_DISCOUNT_RATE,
                 "DELETED",
                 now,
                 now,
@@ -156,6 +162,7 @@ public final class ProductGroupJpaEntityFixtures {
                 DEFAULT_REGULAR_PRICE,
                 DEFAULT_CURRENT_PRICE,
                 DEFAULT_SALE_PRICE,
+                DEFAULT_DISCOUNT_RATE,
                 DEFAULT_STATUS,
                 now,
                 now,
@@ -177,6 +184,7 @@ public final class ProductGroupJpaEntityFixtures {
                 DEFAULT_REGULAR_PRICE,
                 DEFAULT_CURRENT_PRICE,
                 DEFAULT_SALE_PRICE,
+                DEFAULT_DISCOUNT_RATE,
                 DEFAULT_STATUS,
                 now,
                 now,

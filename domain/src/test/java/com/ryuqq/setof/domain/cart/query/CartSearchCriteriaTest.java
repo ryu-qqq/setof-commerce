@@ -24,7 +24,7 @@ class CartSearchCriteriaTest {
         @DisplayName("모든 파라미터로 검색 조건을 생성한다")
         void createWithAllParameters() {
             // given
-            String memberId = CartFixtures.DEFAULT_MEMBER_ID;
+            Long memberId = CartFixtures.DEFAULT_MEMBER_ID;
             Long userId = CartFixtures.DEFAULT_USER_ID;
             CursorQueryContext<CartSortKey, Long> queryContext =
                     CursorQueryContext.defaultOf(CartSortKey.defaultKey());

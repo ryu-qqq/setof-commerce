@@ -27,7 +27,7 @@ public final class RefundAccountDomainFixtures {
     public static RefundAccount activeRefundAccount(Long refundAccountId, Long userId) {
         return RefundAccount.reconstitute(
                 RefundAccountId.of(refundAccountId),
-                MemberId.of(String.valueOf(userId)),
+                MemberId.of(userId),
                 RefundBankInfo.of("신한은행", "110-123-456789", "홍길동"),
                 DeletionStatus.active(),
                 FIXED_NOW,
@@ -42,7 +42,7 @@ public final class RefundAccountDomainFixtures {
             String holderName) {
         return RefundAccount.reconstitute(
                 RefundAccountId.of(refundAccountId),
-                MemberId.of(String.valueOf(userId)),
+                MemberId.of(userId),
                 RefundBankInfo.of(bankName, accountNumber, holderName),
                 DeletionStatus.active(),
                 FIXED_NOW,
@@ -52,7 +52,7 @@ public final class RefundAccountDomainFixtures {
     public static RefundAccount deletedRefundAccount(Long refundAccountId, Long userId) {
         return RefundAccount.reconstitute(
                 RefundAccountId.of(refundAccountId),
-                MemberId.of(String.valueOf(userId)),
+                MemberId.of(userId),
                 RefundBankInfo.of("신한은행", "110-123-456789", "홍길동"),
                 DeletionStatus.deletedAt(FIXED_NOW),
                 FIXED_NOW,
@@ -61,15 +61,13 @@ public final class RefundAccountDomainFixtures {
 
     public static RefundAccount newRefundAccount(Long userId) {
         return RefundAccount.forNew(
-                MemberId.of(String.valueOf(userId)),
-                RefundBankInfo.of("신한은행", "110-123-456789", "홍길동"),
-                FIXED_NOW);
+                MemberId.of(userId), RefundBankInfo.of("신한은행", "110-123-456789", "홍길동"), FIXED_NOW);
     }
 
     public static RefundAccount newRefundAccount(
             Long userId, String bankName, String accountNumber, String holderName) {
         return RefundAccount.forNew(
-                MemberId.of(String.valueOf(userId)),
+                MemberId.of(userId),
                 RefundBankInfo.of(bankName, accountNumber, holderName),
                 FIXED_NOW);
     }

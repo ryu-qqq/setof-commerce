@@ -1,58 +1,25 @@
 package com.ryuqq.setof.application.member.port.out.command;
 
-import com.ryuqq.setof.application.member.dto.command.MemberRegistrationInfo;
 import com.ryuqq.setof.domain.member.aggregate.Member;
 
 /**
- * 회원 명령 Port.
+ * 회원 엔티티 Command Port.
  *
- * <p>레거시 DB에서 회원 persist 작업을 수행하는 아웃바운드 포트입니다.
+ * <p>회원 엔티티(members 테이블)의 저장만 담당합니다. 인증 수단은 MemberAuthCommandPort, 동의 정보는
+ * MemberConsentCommandPort에서 처리합니다.
  *
  * @author ryu-qqq
- * @since 1.2.0
+ * @since 1.1.0
  */
 public interface MemberCommandPort {
 
     /**
-     * 신규 회원 저장.
+     * 회원 저장 (신규 INSERT / 기존 UPDATE).
+     *
+     * <p>member.idValue()가 null이면 INSERT 후 생성된 PK를 반환합니다. null이 아니면 UPDATE(더티체킹) 후 기존 PK를 반환합니다.
      *
      * @param member 회원 도메인 객체
-     * @param registrationInfo 가입 부가 정보 (비밀번호, 동의 등)
-     * @return 생성된 사용자 ID
+     * @return 저장된 회원의 PK (auto-increment)
      */
-    Long persist(Member member, MemberRegistrationInfo registrationInfo);
-
-    /**
-     * 회원 상태 변경 저장 - 탈퇴 (더티 체킹).
-     *
-     * @param userId 레거시 user_id
-     * @param withdrawalReason 탈퇴 사유
-     */
-    void persistWithdrawal(long userId, String withdrawalReason);
-
-    /**
-     * 비밀번호 변경 저장 (더티 체킹).
-     *
-     * @param userId 레거시 user_id
-     * @param encodedPassword BCrypt 해시된 새 비밀번호
-     */
-    void persistPasswordChange(long userId, String encodedPassword);
-
-    /**
-     * 소셜 로그인 통합 저장.
-     *
-     * <p>기존 전화번호 회원에 소셜 로그인 정보(socialLoginType, socialPkId, gender, dateOfBirth)를 업데이트합니다.
-     *
-     * @param userId 레거시 user_id
-     * @param socialLoginType 소셜 로그인 타입 (KAKAO 등)
-     * @param socialPkId 소셜 PK ID
-     * @param gender 성별
-     * @param dateOfBirth 생년월일
-     */
-    void persistSocialIntegration(
-            long userId,
-            String socialLoginType,
-            String socialPkId,
-            String gender,
-            String dateOfBirth);
+    Long persist(Member member);
 }

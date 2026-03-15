@@ -17,5 +17,8 @@ public enum TargetGroup {
     KIDS,
 
     /** 라이프 */
-    LIFE
+    LIFE,
+
+    /** 전체 */
+    ALL
 }

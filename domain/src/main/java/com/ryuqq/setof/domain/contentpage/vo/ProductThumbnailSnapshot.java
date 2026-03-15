@@ -1,6 +1,6 @@
 package com.ryuqq.setof.domain.contentpage.vo;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -30,13 +30,9 @@ public record ProductThumbnailSnapshot(
         int directDiscountRate,
         int directDiscountPrice,
         int discountRate,
-        LocalDateTime insertDate,
-        double averageRating,
-        long reviewCount,
-        double score,
-        boolean favorite,
-        String displayYn,
-        String soldOutYn) {
+        Instant createdAt,
+        boolean displayed,
+        boolean soldOut) {
 
     /** 전시 영역에 노출할 상품명을 반환한다. displayName이 있으면 오버라이드, 없으면 원본 productGroupName. */
     public String resolvedName() {

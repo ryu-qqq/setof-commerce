@@ -5,6 +5,7 @@ import com.ryuqq.setof.domain.refundaccount.aggregate.RefundAccount;
 import com.ryuqq.setof.storage.legacy.refundaccount.mapper.LegacyRefundAccountEntityMapper;
 import com.ryuqq.setof.storage.legacy.refundaccount.repository.LegacyRefundAccountQueryDslRepository;
 import java.util.Optional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
  * @since 1.1.0
  */
 @Component
+@ConditionalOnProperty(name = "persistence.member.enabled", havingValue = "true")
 public class LegacyRefundAccountQueryAdapter implements RefundAccountQueryPort {
 
     private final LegacyRefundAccountQueryDslRepository repository;

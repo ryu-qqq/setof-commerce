@@ -137,44 +137,37 @@ public final class CartApiFixtures {
     // ===== Application SearchParams / Command Fixtures =====
 
     public static CartSearchParams searchParams(Long userId) {
-        String memberId = String.valueOf(userId);
-        return CartSearchParams.of(memberId, userId, null, 20);
+        return CartSearchParams.of(userId, userId, null, 20);
     }
 
     public static CartSearchParams searchParamsWithCursor(Long userId, Long lastCartId) {
-        String memberId = String.valueOf(userId);
-        return CartSearchParams.of(memberId, userId, lastCartId, 10);
+        return CartSearchParams.of(userId, userId, lastCartId, 10);
     }
 
     public static CartSearchParams countParams(Long userId) {
-        String memberId = String.valueOf(userId);
-        return CartSearchParams.forCount(memberId, userId);
+        return CartSearchParams.forCount(userId, userId);
     }
 
     public static AddCartItemCommand addCommand(Long userId) {
-        String memberId = String.valueOf(userId);
         List<AddCartItemCommand.CartItemDetail> items =
                 List.of(new AddCartItemCommand.CartItemDetail(101L, 1001L, 2, 10L));
-        return AddCartItemCommand.of(memberId, userId, items);
+        return AddCartItemCommand.of(userId, userId, items);
     }
 
     public static AddCartItemCommand addCommandMultiple(Long userId) {
-        String memberId = String.valueOf(userId);
         List<AddCartItemCommand.CartItemDetail> items =
                 List.of(
                         new AddCartItemCommand.CartItemDetail(101L, 1001L, 2, 10L),
                         new AddCartItemCommand.CartItemDetail(102L, 1002L, 1, 10L));
-        return AddCartItemCommand.of(memberId, userId, items);
+        return AddCartItemCommand.of(userId, userId, items);
     }
 
     public static ModifyCartItemCommand modifyCommand(Long cartId, Long userId) {
-        String memberId = String.valueOf(userId);
-        return ModifyCartItemCommand.of(cartId, memberId, userId, 3);
+        return ModifyCartItemCommand.of(cartId, userId, userId, 3);
     }
 
     public static DeleteCartItemsCommand deleteCommand(Long cartId, Long userId) {
-        String memberId = String.valueOf(userId);
-        return DeleteCartItemsCommand.ofSingle(cartId, memberId, userId);
+        return DeleteCartItemsCommand.ofSingle(cartId, userId, userId);
     }
 
     // ===== API Response Fixtures =====

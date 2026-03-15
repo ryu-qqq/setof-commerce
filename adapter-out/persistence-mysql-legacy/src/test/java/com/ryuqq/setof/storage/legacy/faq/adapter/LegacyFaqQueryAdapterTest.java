@@ -57,14 +57,14 @@ class LegacyFaqQueryAdapterTest {
             LegacyFaqEntity entity1 =
                     LegacyFaqEntityFixtures.builder()
                             .id(1L)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.MEMBER_LOGIN)
+                            .faqType(FaqType.MEMBER_LOGIN)
                             .title("FAQ 1")
                             .build();
 
             LegacyFaqEntity entity2 =
                     LegacyFaqEntityFixtures.builder()
                             .id(2L)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.MEMBER_LOGIN)
+                            .faqType(FaqType.MEMBER_LOGIN)
                             .title("FAQ 2")
                             .build();
 
@@ -110,7 +110,7 @@ class LegacyFaqQueryAdapterTest {
             LegacyFaqEntity topEntity =
                     LegacyFaqEntityFixtures.builder()
                             .id(10L)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.TOP)
+                            .faqType(FaqType.TOP)
                             .title("상단 고정 FAQ")
                             .topDisplayOrder(1)
                             .build();
@@ -139,20 +139,17 @@ class LegacyFaqQueryAdapterTest {
                     List.of(
                             LegacyFaqEntityFixtures.builder()
                                     .id(1L)
-                                    .faqType(
-                                            com.ryuqq.setof.domain.legacy.faq.FaqType.ORDER_PAYMENT)
+                                    .faqType(FaqType.ORDER_PAYMENT)
                                     .displayOrder(1)
                                     .build(),
                             LegacyFaqEntityFixtures.builder()
                                     .id(2L)
-                                    .faqType(
-                                            com.ryuqq.setof.domain.legacy.faq.FaqType.ORDER_PAYMENT)
+                                    .faqType(FaqType.ORDER_PAYMENT)
                                     .displayOrder(2)
                                     .build(),
                             LegacyFaqEntityFixtures.builder()
                                     .id(3L)
-                                    .faqType(
-                                            com.ryuqq.setof.domain.legacy.faq.FaqType.ORDER_PAYMENT)
+                                    .faqType(FaqType.ORDER_PAYMENT)
                                     .displayOrder(3)
                                     .build());
 

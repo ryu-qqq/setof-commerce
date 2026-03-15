@@ -73,7 +73,7 @@ class MemberValidatorTest {
         void getByPhoneNumber_ExistingPhone_ReturnsMember() {
             // given
             String phoneNumber = MemberCommandFixtures.DEFAULT_PHONE_NUMBER;
-            Member expected = MemberFixtures.activeMigratedMember();
+            Member expected = MemberFixtures.activeMember();
 
             given(memberReadManager.findByPhoneNumber(phoneNumber))
                     .willReturn(Optional.of(expected));
@@ -103,37 +103,37 @@ class MemberValidatorTest {
     }
 
     @Nested
-    @DisplayName("getByLegacyId() - 레거시 ID로 회원 조회")
-    class GetByLegacyIdTest {
+    @DisplayName("getById() - 회원 ID로 회원 조회")
+    class GetByIdTest {
 
         @Test
-        @DisplayName("존재하는 userId면 회원 도메인 객체를 반환한다")
-        void getByLegacyId_ExistingUser_ReturnsMember() {
+        @DisplayName("존재하는 memberId면 회원 도메인 객체를 반환한다")
+        void getById_ExistingUser_ReturnsMember() {
             // given
-            long userId = MemberFixtures.DEFAULT_LEGACY_MEMBER_ID;
-            Member expected = MemberFixtures.activeMigratedMember();
+            long memberId = MemberFixtures.DEFAULT_MEMBER_ID;
+            Member expected = MemberFixtures.activeMember();
 
-            given(memberReadManager.getByLegacyId(userId)).willReturn(expected);
+            given(memberReadManager.getById(memberId)).willReturn(expected);
 
             // when
-            Member result = sut.getByLegacyId(userId);
+            Member result = sut.getById(memberId);
 
             // then
             assertThat(result).isEqualTo(expected);
-            then(memberReadManager).should().getByLegacyId(userId);
+            then(memberReadManager).should().getById(memberId);
         }
 
         @Test
-        @DisplayName("존재하지 않는 userId면 MemberNotFoundException이 전파된다")
-        void getByLegacyId_NonExistingUser_PropagatesMemberNotFoundException() {
+        @DisplayName("존재하지 않는 memberId면 MemberNotFoundException이 전파된다")
+        void getById_NonExistingUser_PropagatesMemberNotFoundException() {
             // given
-            long userId = 99999L;
+            long memberId = 99999L;
 
-            given(memberReadManager.getByLegacyId(userId))
-                    .willThrow(new MemberNotFoundException(String.valueOf(userId)));
+            given(memberReadManager.getById(memberId))
+                    .willThrow(new MemberNotFoundException(String.valueOf(memberId)));
 
             // when & then
-            assertThatThrownBy(() -> sut.getByLegacyId(userId))
+            assertThatThrownBy(() -> sut.getById(memberId))
                     .isInstanceOf(MemberNotFoundException.class);
         }
     }

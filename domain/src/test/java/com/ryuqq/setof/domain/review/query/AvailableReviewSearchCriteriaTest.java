@@ -56,7 +56,7 @@ class AvailableReviewSearchCriteriaTest {
             // then
             assertThat(criteria.memberId()).isEqualTo(memberId);
             assertThat(criteria.legacyMemberId()).isNull();
-            assertThat(criteria.memberIdValue()).isEqualTo("member-uuid-0001");
+            assertThat(criteria.memberIdValue()).isEqualTo(1L);
         }
 
         @Test

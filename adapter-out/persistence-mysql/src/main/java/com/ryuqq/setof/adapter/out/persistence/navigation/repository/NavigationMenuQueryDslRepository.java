@@ -40,7 +40,10 @@ public class NavigationMenuQueryDslRepository {
     public List<NavigationMenuJpaEntity> fetchDisplayMenus() {
         return queryFactory
                 .selectFrom(navigationMenuJpaEntity)
-                .where(conditionBuilder.activeEq(true), conditionBuilder.notDeleted())
+                .where(
+                        conditionBuilder.activeEq(true),
+                        conditionBuilder.notDeleted(),
+                        conditionBuilder.displayPeriodBetween())
                 .orderBy(navigationMenuJpaEntity.displayOrder.asc())
                 .fetch();
     }

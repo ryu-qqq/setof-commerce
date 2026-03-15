@@ -22,7 +22,7 @@ public final class CartQueryFixtures {
 
     private CartQueryFixtures() {}
 
-    public static final String MEMBER_ID = "01900000-0000-7000-8000-000000000001";
+    public static final Long MEMBER_ID = 1L;
     public static final Long USER_ID = 100L;
 
     // ===== CartSearchParams =====

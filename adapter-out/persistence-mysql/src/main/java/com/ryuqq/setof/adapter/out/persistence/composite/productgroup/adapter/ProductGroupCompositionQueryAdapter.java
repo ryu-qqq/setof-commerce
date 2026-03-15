@@ -7,6 +7,9 @@ import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupEnrich
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupExcelBaseBundle;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupListCompositeResult;
 import com.ryuqq.setof.application.productgroup.port.out.query.ProductGroupCompositeQueryPort;
+import com.ryuqq.setof.application.productgroupdescription.dto.response.DescriptionImageResult;
+import com.ryuqq.setof.application.productgroupimage.dto.response.ImageWithVariantsResult;
+import com.ryuqq.setof.application.productnotice.dto.response.ProductNoticeEntryResult;
 import com.ryuqq.setof.domain.productgroup.query.ProductGroupOffsetSearchCriteria;
 import java.util.List;
 import java.util.Map;
@@ -72,5 +75,21 @@ public class ProductGroupCompositionQueryAdapter implements ProductGroupComposit
     public Map<Long, List<ProductResult>> findProductsWithOptionNamesByProductGroupIds(
             List<Long> productGroupIds) {
         return compositeRepository.findProductsWithOptionNamesByProductGroupIds(productGroupIds);
+    }
+
+    @Override
+    public List<ImageWithVariantsResult> findImagesWithVariantsByProductGroupId(
+            Long productGroupId) {
+        return compositeRepository.findImagesWithVariantsByProductGroupId(productGroupId);
+    }
+
+    @Override
+    public List<ProductNoticeEntryResult> findNoticeEntriesByNoticeId(Long noticeId) {
+        return compositeRepository.findNoticeEntriesByNoticeId(noticeId);
+    }
+
+    @Override
+    public List<DescriptionImageResult> findDescriptionImagesByDescriptionId(Long descriptionId) {
+        return compositeRepository.findDescriptionImagesByDescriptionId(descriptionId);
     }
 }

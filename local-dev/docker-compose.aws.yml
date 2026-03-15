@@ -32,7 +32,7 @@ x-common-env: &common-env
 
   # Redis (로컬 Docker - local-start.sh로 실행)
   REDIS_HOST: host.docker.internal
-  REDIS_PORT: 46379
+  REDIS_PORT: ${REDIS_PORT:-46379}
 
   # AWS
   AWS_REGION: ${AWS_REGION:-ap-northeast-2}

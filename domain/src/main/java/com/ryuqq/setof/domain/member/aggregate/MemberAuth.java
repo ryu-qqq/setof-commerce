@@ -23,7 +23,7 @@ import java.time.Instant;
 public class MemberAuth {
 
     private final MemberAuthId id;
-    private final MemberId memberId;
+    private MemberId memberId;
     private final AuthProvider authProvider;
     private final ProviderUserId providerUserId;
     private PasswordHash passwordHash;
@@ -126,6 +126,19 @@ public class MemberAuth {
     }
 
     /**
+     * 회원 PK 할당 (auto-increment 후 1회만 호출).
+     *
+     * @param memberId 생성된 회원 PK
+     * @throws IllegalStateException 이미 할당된 경우
+     */
+    public void assignMemberId(MemberId memberId) {
+        if (this.memberId != null) {
+            throw new IllegalStateException("memberId는 이미 할당되었습니다");
+        }
+        this.memberId = memberId;
+    }
+
+    /**
      * 비밀번호 변경.
      *
      * @param newPasswordHash 새 비밀번호 해시
@@ -190,7 +203,7 @@ public class MemberAuth {
         return memberId;
     }
 
-    public String memberIdValue() {
+    public Long memberIdValue() {
         return memberId.value();
     }
 

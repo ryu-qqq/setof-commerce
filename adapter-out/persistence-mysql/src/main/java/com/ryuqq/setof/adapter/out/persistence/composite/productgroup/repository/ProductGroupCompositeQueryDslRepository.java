@@ -7,13 +7,17 @@ import com.ryuqq.setof.adapter.out.persistence.brand.entity.QBrandJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.category.entity.QCategoryJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.composite.productgroup.condition.CompositionProductConditionBuilder;
 import com.ryuqq.setof.adapter.out.persistence.composite.productgroup.condition.ProductGroupCompositeConditionBuilder;
+import com.ryuqq.setof.adapter.out.persistence.imagevariant.entity.QImageVariantJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.product.entity.QProductJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.product.entity.QProductOptionMappingJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.entity.QProductGroupJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.entity.QSellerOptionGroupJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.productgroup.entity.QSellerOptionValueJpaEntity;
+import com.ryuqq.setof.adapter.out.persistence.productgroupdescription.entity.QDescriptionImageJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.productgroupdescription.entity.QProductGroupDescriptionJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.productgroupimage.entity.QProductGroupImageJpaEntity;
+import com.ryuqq.setof.adapter.out.persistence.productnotice.entity.QProductNoticeEntryJpaEntity;
+import com.ryuqq.setof.adapter.out.persistence.productnotice.entity.QProductNoticeJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.refundpolicy.entity.QRefundPolicyJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.seller.entity.QSellerJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.shippingpolicy.entity.QShippingPolicyJpaEntity;
@@ -24,6 +28,9 @@ import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetail
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupEnrichmentResult;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupExcelBaseBundle;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupListCompositeResult;
+import com.ryuqq.setof.application.productgroupdescription.dto.response.DescriptionImageResult;
+import com.ryuqq.setof.application.productgroupimage.dto.response.ImageWithVariantsResult;
+import com.ryuqq.setof.application.productnotice.dto.response.ProductNoticeEntryResult;
 import com.ryuqq.setof.application.refundpolicy.dto.response.RefundPolicyResult;
 import com.ryuqq.setof.application.shippingpolicy.dto.response.ShippingPolicyResult;
 import com.ryuqq.setof.domain.common.vo.SortDirection;
@@ -61,6 +68,14 @@ public class ProductGroupCompositeQueryDslRepository {
             QProductOptionMappingJpaEntity.productOptionMappingJpaEntity;
     private static final QProductGroupDescriptionJpaEntity description =
             QProductGroupDescriptionJpaEntity.productGroupDescriptionJpaEntity;
+    private static final QProductNoticeJpaEntity notice =
+            QProductNoticeJpaEntity.productNoticeJpaEntity;
+    private static final QImageVariantJpaEntity imageVariant =
+            QImageVariantJpaEntity.imageVariantJpaEntity;
+    private static final QProductNoticeEntryJpaEntity noticeEntry =
+            QProductNoticeEntryJpaEntity.productNoticeEntryJpaEntity;
+    private static final QDescriptionImageJpaEntity descriptionImage =
+            QDescriptionImageJpaEntity.descriptionImageJpaEntity;
 
     private final JPAQueryFactory queryFactory;
     private final ProductGroupCompositeConditionBuilder conditionBuilder;
@@ -85,6 +100,9 @@ public class ProductGroupCompositeQueryDslRepository {
                                 seller.sellerName,
                                 pg.brandId,
                                 brand.brandName,
+                                brand.displayKoreanName,
+                                brand.displayEnglishName,
+                                brand.brandIconImageUrl,
                                 pg.categoryId,
                                 category.categoryName,
                                 category.path,
@@ -92,6 +110,10 @@ public class ProductGroupCompositeQueryDslRepository {
                                 pg.productGroupName,
                                 pg.optionType,
                                 pg.status,
+                                pg.regularPrice,
+                                pg.currentPrice,
+                                pg.salePrice,
+                                pg.discountRate,
                                 pg.createdAt,
                                 pg.updatedAt)
                         .from(pg)
@@ -113,24 +135,7 @@ public class ProductGroupCompositeQueryDslRepository {
         String thumbnailUrl = findThumbnailUrl(productGroupId);
         int productCount = countProducts(productGroupId);
 
-        return Optional.of(
-                ProductGroupListCompositeResult.ofBase(
-                        row.get(pg.id),
-                        row.get(pg.sellerId),
-                        row.get(seller.sellerName),
-                        row.get(pg.brandId),
-                        row.get(brand.brandName),
-                        row.get(pg.categoryId),
-                        row.get(category.categoryName),
-                        row.get(category.path),
-                        safeInt(row.get(category.categoryDepth)),
-                        row.get(pg.productGroupName),
-                        row.get(pg.optionType),
-                        row.get(pg.status),
-                        thumbnailUrl,
-                        productCount,
-                        row.get(pg.createdAt),
-                        row.get(pg.updatedAt)));
+        return Optional.of(toListCompositeResult(row, thumbnailUrl, productCount));
     }
 
     /** 목록 Composite 조회. */
@@ -145,6 +150,9 @@ public class ProductGroupCompositeQueryDslRepository {
                                 seller.sellerName,
                                 pg.brandId,
                                 brand.brandName,
+                                brand.displayKoreanName,
+                                brand.displayEnglishName,
+                                brand.brandIconImageUrl,
                                 pg.categoryId,
                                 category.categoryName,
                                 category.path,
@@ -152,6 +160,10 @@ public class ProductGroupCompositeQueryDslRepository {
                                 pg.productGroupName,
                                 pg.optionType,
                                 pg.status,
+                                pg.regularPrice,
+                                pg.currentPrice,
+                                pg.salePrice,
+                                pg.discountRate,
                                 pg.createdAt,
                                 pg.updatedAt)
                         .from(pg)
@@ -186,23 +198,10 @@ public class ProductGroupCompositeQueryDslRepository {
         for (Tuple row : rows) {
             Long pgId = row.get(pg.id);
             results.add(
-                    ProductGroupListCompositeResult.ofBase(
-                            pgId,
-                            row.get(pg.sellerId),
-                            row.get(seller.sellerName),
-                            row.get(pg.brandId),
-                            row.get(brand.brandName),
-                            row.get(pg.categoryId),
-                            row.get(category.categoryName),
-                            row.get(category.path),
-                            safeInt(row.get(category.categoryDepth)),
-                            row.get(pg.productGroupName),
-                            row.get(pg.optionType),
-                            row.get(pg.status),
+                    toListCompositeResult(
+                            row,
                             thumbnailMap.getOrDefault(pgId, null),
-                            productCountMap.getOrDefault(pgId, 0),
-                            row.get(pg.createdAt),
-                            row.get(pg.updatedAt)));
+                            productCountMap.getOrDefault(pgId, 0)));
         }
         return results;
     }
@@ -272,7 +271,13 @@ public class ProductGroupCompositeQueryDslRepository {
         return results;
     }
 
-    /** 상세용 Composite 조회 (정책 포함). */
+    /**
+     * 상세용 Composite 조회 (1:1 관계 통합).
+     *
+     * <p>PG + Seller + Brand + Category + ShippingPolicy + RefundPolicy + Description(header) +
+     * Notice(header)를 단일 쿼리로 조회합니다. 1:N 관계(Images, NoticeEntries, DescriptionImages 등)는 별도 배치 쿼리로
+     * 처리합니다.
+     */
     public Optional<ProductGroupDetailCompositeQueryResult> findDetailCompositeById(
             Long productGroupId) {
 
@@ -293,8 +298,27 @@ public class ProductGroupCompositeQueryDslRepository {
                                 pg.status,
                                 pg.createdAt,
                                 pg.updatedAt,
-                                pg.shippingPolicyId,
-                                pg.refundPolicyId)
+                                shippingPolicy.id,
+                                shippingPolicy.policyName,
+                                shippingPolicy.defaultPolicy,
+                                shippingPolicy.active,
+                                shippingPolicy.shippingFeeType,
+                                shippingPolicy.baseFee,
+                                shippingPolicy.freeThreshold,
+                                shippingPolicy.createdAt,
+                                refundPolicy.id,
+                                refundPolicy.policyName,
+                                refundPolicy.defaultPolicy,
+                                refundPolicy.active,
+                                refundPolicy.returnPeriodDays,
+                                refundPolicy.exchangePeriodDays,
+                                refundPolicy.createdAt,
+                                description.id,
+                                description.content,
+                                description.cdnPath,
+                                notice.id,
+                                notice.createdAt,
+                                notice.updatedAt)
                         .from(pg)
                         .leftJoin(seller)
                         .on(pg.sellerId.eq(seller.id))
@@ -302,6 +326,18 @@ public class ProductGroupCompositeQueryDslRepository {
                         .on(pg.brandId.eq(brand.id))
                         .leftJoin(category)
                         .on(pg.categoryId.eq(category.id))
+                        .leftJoin(shippingPolicy)
+                        .on(pg.shippingPolicyId.eq(shippingPolicy.id))
+                        .leftJoin(refundPolicy)
+                        .on(pg.refundPolicyId.eq(refundPolicy.id))
+                        .leftJoin(description)
+                        .on(
+                                description
+                                        .productGroupId
+                                        .eq(pg.id)
+                                        .and(description.deletedAt.isNull()))
+                        .leftJoin(notice)
+                        .on(notice.productGroupId.eq(pg.id))
                         .where(
                                 conditionBuilder.idEq(productGroupId),
                                 conditionBuilder.statusNotDeleted())
@@ -311,11 +347,8 @@ public class ProductGroupCompositeQueryDslRepository {
             return Optional.empty();
         }
 
-        Long shippingPolicyId = row.get(pg.shippingPolicyId);
-        Long refundPolicyId = row.get(pg.refundPolicyId);
-
-        ShippingPolicyResult shippingResult = findShippingPolicy(shippingPolicyId);
-        RefundPolicyResult refundResult = findRefundPolicy(refundPolicyId);
+        ShippingPolicyResult shippingResult = toShippingPolicyResult(row);
+        RefundPolicyResult refundResult = toRefundPolicyResult(row);
 
         return Optional.of(
                 new ProductGroupDetailCompositeQueryResult(
@@ -334,7 +367,114 @@ public class ProductGroupCompositeQueryDslRepository {
                         row.get(pg.createdAt),
                         row.get(pg.updatedAt),
                         shippingResult,
-                        refundResult));
+                        refundResult,
+                        row.get(description.id),
+                        row.get(description.content),
+                        row.get(description.cdnPath),
+                        row.get(notice.id),
+                        row.get(notice.createdAt),
+                        row.get(notice.updatedAt)));
+    }
+
+    /**
+     * 이미지 + Variant 통합 조회.
+     *
+     * <p>product_group_images LEFT JOIN image_variants로 이미지와 변환된 variant를 한 번에 조회합니다. 1:N이지만 이미지당
+     * variant가 최대 4개이므로 row 폭발 위험이 없습니다.
+     */
+    public List<ImageWithVariantsResult> findImagesWithVariantsByProductGroupId(
+            Long productGroupId) {
+        List<Tuple> rows =
+                queryFactory
+                        .select(
+                                pgImage.id,
+                                pgImage.imageType,
+                                pgImage.imageUrl,
+                                pgImage.sortOrder,
+                                imageVariant.variantType,
+                                imageVariant.variantUrl,
+                                imageVariant.width,
+                                imageVariant.height)
+                        .from(pgImage)
+                        .leftJoin(imageVariant)
+                        .on(
+                                imageVariant
+                                        .sourceImageId
+                                        .eq(pgImage.id)
+                                        .and(imageVariant.sourceType.eq("PRODUCT_GROUP"))
+                                        .and(imageVariant.deletedAt.isNull()))
+                        .where(
+                                pgImage.productGroupId.eq(productGroupId),
+                                pgImage.deletedAt.isNull())
+                        .orderBy(pgImage.sortOrder.asc())
+                        .fetch();
+
+        Map<Long, ImageWithVariantsResult> imageMap = new LinkedHashMap<>();
+        for (Tuple t : rows) {
+            Long imageId = t.get(pgImage.id);
+            imageMap.computeIfAbsent(
+                    imageId,
+                    k ->
+                            new ImageWithVariantsResult(
+                                    imageId,
+                                    t.get(pgImage.imageType),
+                                    t.get(pgImage.imageUrl),
+                                    safeInt(t.get(pgImage.sortOrder)),
+                                    new ArrayList<>()));
+
+            String variantType = t.get(imageVariant.variantType);
+            if (variantType != null) {
+                imageMap.get(imageId)
+                        .variants()
+                        .add(
+                                new ImageWithVariantsResult.VariantInfo(
+                                        variantType,
+                                        t.get(imageVariant.variantUrl),
+                                        t.get(imageVariant.width),
+                                        t.get(imageVariant.height)));
+            }
+        }
+        return new ArrayList<>(imageMap.values());
+    }
+
+    /** 고시정보 항목 배치 조회. */
+    public List<ProductNoticeEntryResult> findNoticeEntriesByNoticeId(Long noticeId) {
+        if (noticeId == null) {
+            return List.of();
+        }
+        return queryFactory
+                .select(noticeEntry.id, noticeEntry.fieldName, noticeEntry.fieldValue)
+                .from(noticeEntry)
+                .where(noticeEntry.productNoticeId.eq(noticeId), noticeEntry.deletedAt.isNull())
+                .orderBy(noticeEntry.sortOrder.asc())
+                .fetch()
+                .stream()
+                .map(
+                        t ->
+                                new ProductNoticeEntryResult(
+                                        t.get(noticeEntry.id), null, t.get(noticeEntry.fieldValue)))
+                .toList();
+    }
+
+    /** 상세설명 이미지 배치 조회. */
+    public List<DescriptionImageResult> findDescriptionImagesByDescriptionId(Long descriptionId) {
+        if (descriptionId == null) {
+            return List.of();
+        }
+        return queryFactory
+                .select(descriptionImage.id, descriptionImage.imageUrl, descriptionImage.sortOrder)
+                .from(descriptionImage)
+                .where(descriptionImage.productGroupDescriptionId.eq(descriptionId))
+                .orderBy(descriptionImage.sortOrder.asc())
+                .fetch()
+                .stream()
+                .map(
+                        t ->
+                                new DescriptionImageResult(
+                                        t.get(descriptionImage.id),
+                                        t.get(descriptionImage.imageUrl),
+                                        safeInt(t.get(descriptionImage.sortOrder))))
+                .toList();
     }
 
     /** 엑셀용 통합 Composite: base + 가격 enrichment + description cdnUrl + count. */
@@ -522,6 +662,42 @@ public class ProductGroupCompositeQueryDslRepository {
         return result;
     }
 
+    /**
+     * 썸네일 Variant URL 배치 조회.
+     *
+     * <p>product_group_images(THUMBNAIL) LEFT JOIN image_variants(MEDIUM_WEBP)로 productGroupId →
+     * variant URL 맵을 한 방에 조회합니다. variant가 없는 상품그룹은 맵에 포함되지 않습니다.
+     */
+    public Map<Long, String> findThumbnailVariantUrlsByProductGroupIds(List<Long> productGroupIds) {
+        if (productGroupIds == null || productGroupIds.isEmpty()) {
+            return Map.of();
+        }
+
+        List<Tuple> rows =
+                queryFactory
+                        .select(pgImage.productGroupId, imageVariant.variantUrl)
+                        .from(pgImage)
+                        .innerJoin(imageVariant)
+                        .on(
+                                imageVariant
+                                        .sourceImageId
+                                        .eq(pgImage.id)
+                                        .and(imageVariant.sourceType.eq("PRODUCT_GROUP"))
+                                        .and(imageVariant.variantType.eq("MEDIUM_WEBP"))
+                                        .and(imageVariant.deletedAt.isNull()))
+                        .where(
+                                pgImage.productGroupId.in(productGroupIds),
+                                pgImage.imageType.eq("THUMBNAIL"),
+                                pgImage.deletedAt.isNull())
+                        .fetch();
+
+        Map<Long, String> map = new LinkedHashMap<>();
+        for (Tuple t : rows) {
+            map.putIfAbsent(t.get(pgImage.productGroupId), t.get(imageVariant.variantUrl));
+        }
+        return map;
+    }
+
     // ── Private 헬퍼 ──
 
     private String findThumbnailUrl(Long productGroupId) {
@@ -635,33 +811,14 @@ public class ProductGroupCompositeQueryDslRepository {
         return result;
     }
 
-    private ShippingPolicyResult findShippingPolicy(Long policyId) {
-        if (policyId == null) {
+    private ShippingPolicyResult toShippingPolicyResult(Tuple row) {
+        Long id = row.get(shippingPolicy.id);
+        if (id == null) {
             return null;
         }
-
-        Tuple row =
-                queryFactory
-                        .select(
-                                shippingPolicy.id,
-                                shippingPolicy.policyName,
-                                shippingPolicy.defaultPolicy,
-                                shippingPolicy.active,
-                                shippingPolicy.shippingFeeType,
-                                shippingPolicy.baseFee,
-                                shippingPolicy.freeThreshold,
-                                shippingPolicy.createdAt)
-                        .from(shippingPolicy)
-                        .where(shippingPolicy.id.eq(policyId))
-                        .fetchOne();
-
-        if (row == null) {
-            return null;
-        }
-
         String feeType = row.get(shippingPolicy.shippingFeeType);
         return new ShippingPolicyResult(
-                row.get(shippingPolicy.id),
+                id,
                 row.get(shippingPolicy.policyName),
                 Boolean.TRUE.equals(row.get(shippingPolicy.defaultPolicy)),
                 Boolean.TRUE.equals(row.get(shippingPolicy.active)),
@@ -672,31 +829,13 @@ public class ProductGroupCompositeQueryDslRepository {
                 row.get(shippingPolicy.createdAt));
     }
 
-    private RefundPolicyResult findRefundPolicy(Long policyId) {
-        if (policyId == null) {
+    private RefundPolicyResult toRefundPolicyResult(Tuple row) {
+        Long id = row.get(refundPolicy.id);
+        if (id == null) {
             return null;
         }
-
-        Tuple row =
-                queryFactory
-                        .select(
-                                refundPolicy.id,
-                                refundPolicy.policyName,
-                                refundPolicy.defaultPolicy,
-                                refundPolicy.active,
-                                refundPolicy.returnPeriodDays,
-                                refundPolicy.exchangePeriodDays,
-                                refundPolicy.createdAt)
-                        .from(refundPolicy)
-                        .where(refundPolicy.id.eq(policyId))
-                        .fetchOne();
-
-        if (row == null) {
-            return null;
-        }
-
         return new RefundPolicyResult(
-                row.get(refundPolicy.id),
+                id,
                 row.get(refundPolicy.policyName),
                 Boolean.TRUE.equals(row.get(refundPolicy.defaultPolicy)),
                 Boolean.TRUE.equals(row.get(refundPolicy.active)),
@@ -731,6 +870,37 @@ public class ProductGroupCompositeQueryDslRepository {
             case NAME -> isAsc ? pg.productGroupName.asc() : pg.productGroupName.desc();
             case CURRENT_PRICE -> isAsc ? pg.currentPrice.asc() : pg.currentPrice.desc();
             case SALE_PRICE -> isAsc ? pg.salePrice.asc() : pg.salePrice.desc();
+            case DISCOUNT_RATE -> isAsc ? pg.discountRate.asc() : pg.discountRate.desc();
+            default -> isAsc ? pg.createdAt.asc() : pg.createdAt.desc();
         };
+    }
+
+    /** Tuple → ProductGroupListCompositeResult 변환 헬퍼. */
+    private ProductGroupListCompositeResult toListCompositeResult(
+            Tuple row, String thumbnailUrl, int productCount) {
+        return ProductGroupListCompositeResult.ofBase(
+                row.get(pg.id),
+                row.get(pg.sellerId),
+                row.get(seller.sellerName),
+                row.get(pg.brandId),
+                row.get(brand.brandName),
+                row.get(brand.displayKoreanName),
+                row.get(brand.displayEnglishName),
+                row.get(brand.brandIconImageUrl),
+                row.get(pg.categoryId),
+                row.get(category.categoryName),
+                row.get(category.path),
+                safeInt(row.get(category.categoryDepth)),
+                row.get(pg.productGroupName),
+                row.get(pg.optionType),
+                row.get(pg.status),
+                thumbnailUrl,
+                productCount,
+                safeInt(row.get(pg.regularPrice)),
+                safeInt(row.get(pg.currentPrice)),
+                safeInt(row.get(pg.salePrice)),
+                safeInt(row.get(pg.discountRate)),
+                row.get(pg.createdAt),
+                row.get(pg.updatedAt));
     }
 }

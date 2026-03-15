@@ -9,11 +9,11 @@ import com.ryuqq.setof.application.productgroup.ProductGroupCompositeQueryFixtur
 import com.ryuqq.setof.application.productgroup.assembler.ProductGroupAssembler;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailBundle;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailImageResults;
 import com.ryuqq.setof.application.productgroup.internal.ProductGroupReadFacade;
 import com.ryuqq.setof.domain.productgroup.ProductGroupFixtures;
 import com.ryuqq.setof.domain.productgroup.exception.ProductGroupNotFoundException;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -46,10 +46,11 @@ class GetAdminProductGroupServiceTest {
                     new ProductGroupDetailBundle(
                             ProductGroupCompositeQueryFixtures.detailCompositeQueryResult(
                                     productGroupId),
+                            ProductGroupDetailImageResults.create(List.of()),
                             ProductGroupFixtures.activeProductGroup(productGroupId),
                             List.of(),
-                            Optional.empty(),
-                            Optional.empty());
+                            List.of(),
+                            List.of());
             ProductGroupDetailCompositeResult expectedResult =
                     org.mockito.Mockito.mock(ProductGroupDetailCompositeResult.class);
 

@@ -2,6 +2,7 @@ package com.ryuqq.setof.adapter.out.persistence.category.dto;
 
 import com.ryuqq.setof.domain.category.vo.CategoryType;
 import com.ryuqq.setof.domain.category.vo.TargetGroup;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
@@ -35,8 +36,8 @@ public class CategoryTreeDto {
     /**
      * Projections.constructor()용 생성자.
      *
-     * <p>Native SQL에서 H2는 OffsetDateTime, MySQL은 Instant를 반환할 수 있으므로 Temporal 타입으로 받아 Instant로
-     * 변환합니다.
+     * <p>Recursive CTE native SQL에서 MySQL은 java.sql.Timestamp, H2는 OffsetDateTime, JPA는 Instant를
+     * 반환할 수 있으므로 Object 타입으로 받아 Instant로 변환합니다.
      */
     public CategoryTreeDto(
             Long id,
@@ -48,9 +49,9 @@ public class CategoryTreeDto {
             TargetGroup targetGroup,
             CategoryType categoryType,
             String path,
-            Temporal createdAt,
-            Temporal updatedAt,
-            Temporal deletedAt) {
+            Object createdAt,
+            Object updatedAt,
+            Object deletedAt) {
         this.id = id;
         this.categoryName = categoryName;
         this.categoryDepth = categoryDepth;
@@ -65,17 +66,22 @@ public class CategoryTreeDto {
         this.deletedAt = toInstant(deletedAt);
     }
 
-    private static Instant toInstant(Temporal temporal) {
-        if (temporal == null) {
+    private static Instant toInstant(Object value) {
+        if (value == null) {
             return null;
         }
-        if (temporal instanceof Instant instant) {
+        if (value instanceof Instant instant) {
             return instant;
         }
-        if (temporal instanceof OffsetDateTime odt) {
+        if (value instanceof Timestamp ts) {
+            return ts.toInstant();
+        }
+        if (value instanceof OffsetDateTime odt) {
             return odt.toInstant();
         }
-        // 지원하지 않는 타입은 null 반환 (예외를 던지면 생성자에서 SpotBugs 경고 발생)
+        if (value instanceof Temporal temporal) {
+            return Instant.from(temporal);
+        }
         return null;
     }
 

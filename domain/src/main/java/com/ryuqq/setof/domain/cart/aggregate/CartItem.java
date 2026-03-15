@@ -226,7 +226,7 @@ public class CartItem {
         return id.value();
     }
 
-    public String memberIdValue() {
+    public Long memberIdValue() {
         return memberId.value();
     }
 

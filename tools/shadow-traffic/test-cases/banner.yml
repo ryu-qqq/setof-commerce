@@ -3,12 +3,14 @@ description: "Banner API shadow traffic test cases"
 
 test_cases:
   # === 배너 타입별 조회 ===
+  # known_diff: CATEGORY, PRODUCT_DETAIL_DESCRIPTION 배너는 legacy에 미등록(404), new에는 존재(200).
   - name: "banner_category"
     path: "/api/v1/content/banner?bannerType=CATEGORY"
     method: GET
     auth: none
-    compare_mode: full
+    compare_mode: status_only
     ignore_fields: []
+    known_diff: true
 
   - name: "banner_my_page"
     path: "/api/v1/content/banner?bannerType=MY_PAGE"
@@ -28,8 +30,9 @@ test_cases:
     path: "/api/v1/content/banner?bannerType=PRODUCT_DETAIL_DESCRIPTION"
     method: GET
     auth: none
-    compare_mode: full
+    compare_mode: status_only
     ignore_fields: []
+    known_diff: true
 
   - name: "banner_recommend"
     path: "/api/v1/content/banner?bannerType=RECOMMEND"

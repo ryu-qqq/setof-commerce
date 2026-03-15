@@ -141,57 +141,6 @@ class MemberVoTest {
         }
     }
 
-    // ===== LegacyMemberId =====
-    @Nested
-    @DisplayName("LegacyMemberId Value Object 테스트")
-    class LegacyMemberIdTest {
-
-        @Nested
-        @DisplayName("생성 테스트")
-        class CreationTest {
-
-            @Test
-            @DisplayName("양수 값으로 LegacyMemberId를 생성한다")
-            void createWithPositiveValue() {
-                // when
-                LegacyMemberId id = LegacyMemberId.of(1001L);
-
-                // then
-                assertThat(id.value()).isEqualTo(1001L);
-            }
-
-            @Test
-            @DisplayName("0 값으로 생성하면 예외가 발생한다")
-            void createWithZeroThrowsException() {
-                assertThatThrownBy(() -> LegacyMemberId.of(0L))
-                        .isInstanceOf(IllegalArgumentException.class)
-                        .hasMessageContaining("양수");
-            }
-
-            @Test
-            @DisplayName("음수 값으로 생성하면 예외가 발생한다")
-            void createWithNegativeThrowsException() {
-                assertThatThrownBy(() -> LegacyMemberId.of(-1L))
-                        .isInstanceOf(IllegalArgumentException.class)
-                        .hasMessageContaining("양수");
-            }
-        }
-
-        @Nested
-        @DisplayName("동등성 테스트")
-        class EqualityTest {
-
-            @Test
-            @DisplayName("같은 값은 동등하다")
-            void sameValueEquals() {
-                LegacyMemberId id1 = LegacyMemberId.of(1001L);
-                LegacyMemberId id2 = LegacyMemberId.of(1001L);
-                assertThat(id1).isEqualTo(id2);
-                assertThat(id1.hashCode()).isEqualTo(id2.hashCode());
-            }
-        }
-    }
-
     // ===== PasswordHash =====
     @Nested
     @DisplayName("PasswordHash Value Object 테스트")

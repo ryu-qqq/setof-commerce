@@ -50,7 +50,8 @@ async def run_test_case(
     legacy_url: str,
     new_url: str,
     test_case: dict,
-    auth_headers: dict[str, str] | None = None,
+    legacy_auth_headers: dict[str, str] | None = None,
+    new_auth_headers: dict[str, str] | None = None,
 ) -> tuple[DiffResult, Any, Any]:
     name = test_case["name"]
     method = test_case.get("method", "GET")
@@ -60,18 +61,25 @@ async def run_test_case(
     ignore_fields = set(test_case.get("ignore_fields", []))
     known_diff = test_case.get("known_diff", False)
 
-    headers = {}
-    if test_case.get("auth") and test_case["auth"] != "none":
-        if auth_headers:
-            headers.update(auth_headers)
-
     tc_timeout = float(test_case.get("timeout", 10.0))
 
+    # Legacy request with Legacy auth headers
+    legacy_headers = {}
+    if test_case.get("auth") and test_case["auth"] != "none":
+        if legacy_auth_headers:
+            legacy_headers.update(legacy_auth_headers)
+
+    # New request with New auth headers
+    new_headers = {}
+    if test_case.get("auth") and test_case["auth"] != "none":
+        if new_auth_headers:
+            new_headers.update(new_auth_headers)
+
     legacy_result: CallResult = await call_endpoint(
-        http_client, legacy_url, method, path, headers=headers, body=body, timeout=tc_timeout
+        http_client, legacy_url, method, path, headers=legacy_headers, body=body, timeout=tc_timeout
     )
     new_result: CallResult = await call_endpoint(
-        http_client, new_url, method, path, headers=headers, body=body, timeout=tc_timeout
+        http_client, new_url, method, path, headers=new_headers, body=body, timeout=tc_timeout
     )
 
     if legacy_result.error:
@@ -125,17 +133,19 @@ async def run_suite(
     legacy_bodies: dict[str, object] = {}
     new_bodies: dict[str, object] = {}
 
-    # Auth: acquire token if suite has auth_config
-    suite_auth_headers = dict(auth_headers) if auth_headers else {}
+    # Auth: acquire tokens from both servers independently
+    legacy_auth_headers = dict(auth_headers) if auth_headers else {}
+    new_auth_headers = dict(auth_headers) if auth_headers else {}
     auth_config = AuthConfig.from_dict(suite.get("auth_config"))
     if auth_config.strategy != "none":
         auth_provider = AuthProvider(auth_config)
-        token = await auth_provider.acquire_token(http_client, legacy_url)
-        if token:
-            suite_auth_headers.update(auth_provider.get_headers())
-            logger.info(f"[{domain}] Auth token acquired (strategy={auth_config.strategy})")
+        success = await auth_provider.acquire_tokens(http_client, legacy_url, new_url)
+        if success:
+            legacy_auth_headers.update(auth_provider.get_legacy_headers())
+            new_auth_headers.update(auth_provider.get_new_headers())
+            logger.info(f"[{domain}] Auth tokens acquired (strategy={auth_config.strategy})")
         else:
-            logger.warning(f"[{domain}] Failed to acquire auth token, authenticated tests may fail")
+            logger.warning(f"[{domain}] Failed to acquire auth token(s), authenticated tests may fail")
 
     all_cases = suite.get("test_cases", [])
     if safe_only:
@@ -145,20 +155,19 @@ async def run_suite(
             logger.info(f"[{domain}] --safe-only: skipped {len(skipped)} unsafe test(s): {skipped}")
 
     for tc in all_cases:
-        # Pass suite-level auth headers only for test cases that need auth
         needs_auth = tc.get("auth") and tc["auth"] != "none"
-        tc_auth = suite_auth_headers if needs_auth else None
+        tc_legacy_auth = legacy_auth_headers if needs_auth else None
+        tc_new_auth = new_auth_headers if needs_auth else None
 
         # Use a fresh client for unauthenticated tests to avoid cookie leakage
-        # (httpx shares cookies from login across all requests in the same client)
         if needs_auth:
             result, legacy_body, new_body = await run_test_case(
-                http_client, legacy_url, new_url, tc, tc_auth
+                http_client, legacy_url, new_url, tc, tc_legacy_auth, tc_new_auth
             )
         else:
             async with httpx.AsyncClient(follow_redirects=False) as clean_client:
                 result, legacy_body, new_body = await run_test_case(
-                    clean_client, legacy_url, new_url, tc, tc_auth
+                    clean_client, legacy_url, new_url, tc, tc_legacy_auth, tc_new_auth
                 )
         log_record = logger.makeRecord(
             logger.name, logging.INFO, "", 0,

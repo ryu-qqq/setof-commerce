@@ -60,15 +60,15 @@ class LegacyCategoryEntityMapperTest {
 
             // then
             assertThat(category).isNotNull();
-            assertThat(category.id().value()).isEqualTo(100L);
-            assertThat(category.name().value()).isEqualTo("상의");
-            assertThat(category.depth().value()).isEqualTo(1);
-            assertThat(category.parentId().value()).isEqualTo(0L);
-            assertThat(category.displayName().value()).isEqualTo("상의");
-            assertThat(category.displayed()).isTrue();
+            assertThat(category.idValue()).isEqualTo(100L);
+            assertThat(category.categoryNameValue()).isEqualTo("상의");
+            assertThat(category.categoryDepthValue()).isEqualTo(1);
+            assertThat(category.parentCategoryIdValue()).isEqualTo(0L);
+            assertThat(category.displayNameValue()).isEqualTo("상의");
+            assertThat(category.isDisplayed()).isTrue();
             assertThat(category.targetGroup()).isEqualTo(TargetGroup.MALE);
             assertThat(category.categoryType()).isEqualTo(CategoryType.CLOTHING);
-            assertThat(category.path().value()).isEqualTo("/100");
+            assertThat(category.pathValue()).isEqualTo("/100");
         }
 
         @Test
@@ -82,7 +82,7 @@ class LegacyCategoryEntityMapperTest {
             Category category = mapper.toDomain(entity);
 
             // then
-            assertThat(category.displayed()).isTrue();
+            assertThat(category.isDisplayed()).isTrue();
         }
 
         @Test
@@ -96,7 +96,7 @@ class LegacyCategoryEntityMapperTest {
             Category category = mapper.toDomain(entity);
 
             // then
-            assertThat(category.displayed()).isFalse();
+            assertThat(category.isDisplayed()).isFalse();
         }
 
         @Test
@@ -155,15 +155,15 @@ class LegacyCategoryEntityMapperTest {
 
             // then
             assertThat(category).isNotNull();
-            assertThat(category.id().value()).isEqualTo(200L);
-            assertThat(category.name().value()).isEqualTo("카테고리A");
-            assertThat(category.depth().value()).isEqualTo(2);
-            assertThat(category.parentId().value()).isEqualTo(100L);
-            assertThat(category.displayName().value()).isEqualTo("카테고리A 표시명");
-            assertThat(category.displayed()).isTrue();
+            assertThat(category.idValue()).isEqualTo(200L);
+            assertThat(category.categoryNameValue()).isEqualTo("카테고리A");
+            assertThat(category.categoryDepthValue()).isEqualTo(2);
+            assertThat(category.parentCategoryIdValue()).isEqualTo(100L);
+            assertThat(category.displayNameValue()).isEqualTo("카테고리A 표시명");
+            assertThat(category.isDisplayed()).isTrue();
             assertThat(category.targetGroup()).isEqualTo(TargetGroup.FEMALE);
             assertThat(category.categoryType()).isEqualTo(CategoryType.BAG);
-            assertThat(category.path().value()).isEqualTo("/100/200");
+            assertThat(category.pathValue()).isEqualTo("/100/200");
         }
 
         @Test
@@ -188,7 +188,7 @@ class LegacyCategoryEntityMapperTest {
             Category category = mapper.toDomain(dto);
 
             // then
-            assertThat(category.displayed()).isFalse();
+            assertThat(category.isDisplayed()).isFalse();
         }
 
         @Test

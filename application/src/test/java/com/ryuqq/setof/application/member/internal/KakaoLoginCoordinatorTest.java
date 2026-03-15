@@ -1,6 +1,7 @@
 package com.ryuqq.setof.application.member.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -10,13 +11,12 @@ import com.ryuqq.setof.application.auth.manager.TokenCommandFacade;
 import com.ryuqq.setof.application.member.MemberCommandFixtures;
 import com.ryuqq.setof.application.member.MemberQueryFixtures;
 import com.ryuqq.setof.application.member.dto.command.KakaoLoginCommand;
-import com.ryuqq.setof.application.member.dto.command.MemberRegistrationInfo;
-import com.ryuqq.setof.application.member.dto.command.SocialIntegrationContext;
+import com.ryuqq.setof.application.member.dto.command.MemberRegistrationBundle;
 import com.ryuqq.setof.application.member.dto.query.MemberWithCredentials;
 import com.ryuqq.setof.application.member.factory.KakaoMemberFactory;
-import com.ryuqq.setof.application.member.manager.MemberCommandManager;
-import com.ryuqq.setof.domain.member.MemberFixtures;
+import com.ryuqq.setof.application.member.manager.MemberAuthCommandManager;
 import com.ryuqq.setof.domain.member.aggregate.Member;
+import com.ryuqq.setof.domain.member.aggregate.MemberAuth;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,7 +35,8 @@ class KakaoLoginCoordinatorTest {
     @InjectMocks private KakaoLoginCoordinator sut;
 
     @Mock private KakaoMemberFactory kakaoMemberFactory;
-    @Mock private MemberCommandManager memberCommandManager;
+    @Mock private MemberRegistrationFacade memberRegistrationFacade;
+    @Mock private MemberAuthCommandManager memberAuthCommandManager;
     @Mock private TokenCommandFacade tokenCommandFacade;
 
     @Nested
@@ -49,16 +50,15 @@ class KakaoLoginCoordinatorTest {
             KakaoLoginCommand command = MemberCommandFixtures.kakaoLoginCommand();
             Optional<MemberWithCredentials> emptyOpt = Optional.empty();
 
-            Member newMember = MemberFixtures.newMember();
-            MemberRegistrationInfo info = MemberCommandFixtures.kakaoMemberRegistrationInfo();
+            MemberRegistrationBundle bundle = MemberCommandFixtures.registrationBundle();
             Long userId = 2001L;
             LoginResult loginResult =
                     LoginResult.success(
                             String.valueOf(userId), "access", "refresh", 3600L, "Bearer");
 
-            given(kakaoMemberFactory.createMember(command)).willReturn(newMember);
-            given(kakaoMemberFactory.createRegistrationInfo(command)).willReturn(info);
-            given(memberCommandManager.persist(newMember, info)).willReturn(userId);
+            given(kakaoMemberFactory.createRegistrationBundle(command)).willReturn(bundle);
+            given(memberRegistrationFacade.register(any(MemberRegistrationBundle.class)))
+                    .willReturn(userId);
             given(tokenCommandFacade.issueLoginResult(userId)).willReturn(loginResult);
 
             // when
@@ -67,9 +67,8 @@ class KakaoLoginCoordinatorTest {
             // then
             assertThat(result).isNotNull();
             assertThat(result.joined()).isFalse();
-            then(kakaoMemberFactory).should().createMember(command);
-            then(kakaoMemberFactory).should().createRegistrationInfo(command);
-            then(memberCommandManager).should().persist(newMember, info);
+            then(kakaoMemberFactory).should().createRegistrationBundle(command);
+            then(memberRegistrationFacade).should().register(any(MemberRegistrationBundle.class));
             then(tokenCommandFacade).should().issueLoginResult(userId);
         }
 
@@ -82,7 +81,7 @@ class KakaoLoginCoordinatorTest {
             Optional<MemberWithCredentials> existingOpt = Optional.of(credentials);
 
             Member member = credentials.member();
-            long userId = member.legacyMemberIdValue();
+            Long userId = member.idValue();
             LoginResult loginResult =
                     LoginResult.success(
                             String.valueOf(userId), "access", "refresh", 3600L, "Bearer");
@@ -97,7 +96,7 @@ class KakaoLoginCoordinatorTest {
             assertThat(result.joined()).isTrue();
             then(tokenCommandFacade).should().issueLoginResult(userId);
             then(kakaoMemberFactory).shouldHaveNoInteractions();
-            then(memberCommandManager).shouldHaveNoInteractions();
+            then(memberRegistrationFacade).shouldHaveNoInteractions();
         }
 
         @Test
@@ -109,14 +108,13 @@ class KakaoLoginCoordinatorTest {
             Optional<MemberWithCredentials> existingOpt = Optional.of(credentials);
 
             Member member = credentials.member();
-            long userId = member.legacyMemberIdValue();
-            SocialIntegrationContext context =
-                    MemberCommandFixtures.socialIntegrationContext(userId);
+            Long userId = member.idValue();
+            MemberAuth socialAuth = org.mockito.Mockito.mock(MemberAuth.class);
             LoginResult loginResult =
                     LoginResult.success(
                             String.valueOf(userId), "access", "refresh", 3600L, "Bearer");
 
-            given(kakaoMemberFactory.createIntegrationContext(userId, command)).willReturn(context);
+            given(kakaoMemberFactory.createSocialAuth(userId, command)).willReturn(socialAuth);
             given(tokenCommandFacade.issueLoginResult(userId)).willReturn(loginResult);
 
             // when
@@ -125,8 +123,8 @@ class KakaoLoginCoordinatorTest {
             // then
             assertThat(result).isNotNull();
             assertThat(result.joined()).isFalse();
-            then(kakaoMemberFactory).should().createIntegrationContext(userId, command);
-            then(memberCommandManager).should().persist(context);
+            then(kakaoMemberFactory).should().createSocialAuth(userId, command);
+            then(memberAuthCommandManager).should().persist(socialAuth);
             then(tokenCommandFacade).should().issueLoginResult(userId);
         }
     }

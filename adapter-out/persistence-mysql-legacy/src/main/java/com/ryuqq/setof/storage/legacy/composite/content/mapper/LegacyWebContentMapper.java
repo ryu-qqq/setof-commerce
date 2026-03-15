@@ -305,13 +305,9 @@ public class LegacyWebContentMapper {
                 dto.directDiscountRate(),
                 dto.directDiscountPrice(),
                 dto.discountRate(),
-                dto.insertDate(),
-                dto.averageRating(),
-                dto.reviewCount(),
-                dto.score(),
-                false,
-                dto.displayYn(),
-                dto.soldOutYn());
+                toInstant(dto.insertDate()),
+                "Y".equals(dto.displayYn()),
+                "Y".equals(dto.soldOutYn()));
     }
 
     private Instant toInstant(LocalDateTime localDateTime) {

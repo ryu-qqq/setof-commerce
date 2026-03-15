@@ -30,7 +30,7 @@ public final class ReviewQueryFixtures {
     public static final long DEFAULT_ORDER_ID = 700L;
     public static final long DEFAULT_PRODUCT_GROUP_ID = 500L;
     public static final int DEFAULT_SIZE = 20;
-    public static final String DEFAULT_MEMBER_ID = "member-uuid-0001";
+    public static final Long DEFAULT_MEMBER_ID = 1L;
 
     // ===== AvailableReviewSearchParams =====
 

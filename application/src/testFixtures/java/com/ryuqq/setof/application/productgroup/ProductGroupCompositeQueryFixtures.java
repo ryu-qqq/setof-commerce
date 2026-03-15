@@ -49,6 +49,9 @@ public final class ProductGroupCompositeQueryFixtures {
                 "테스트셀러",
                 20L,
                 "테스트브랜드",
+                "테스트브랜드",
+                "TestBrand",
+                "https://example.com/brand-icon.png",
                 30L,
                 "의류",
                 "1,2,30",
@@ -58,6 +61,10 @@ public final class ProductGroupCompositeQueryFixtures {
                 "ACTIVE",
                 "http://example.com/thumb.jpg",
                 5,
+                50000,
+                45000,
+                40000,
+                20,
                 FIXED_NOW,
                 FIXED_NOW);
     }
@@ -111,7 +118,13 @@ public final class ProductGroupCompositeQueryFixtures {
                 FIXED_NOW,
                 FIXED_NOW,
                 shippingPolicyResult(),
-                refundPolicyResult());
+                refundPolicyResult(),
+                1L,
+                "<p>상세설명</p>",
+                "https://cdn.example.com/desc/1",
+                2L,
+                FIXED_NOW,
+                FIXED_NOW);
     }
 
     public static ProductGroupDetailCompositeQueryResult detailCompositeQueryResultWithoutPolicies(
@@ -131,6 +144,12 @@ public final class ProductGroupCompositeQueryFixtures {
                 "ACTIVE",
                 FIXED_NOW,
                 FIXED_NOW,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
                 null,
                 null);
     }

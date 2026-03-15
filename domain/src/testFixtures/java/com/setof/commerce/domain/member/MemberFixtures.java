@@ -10,7 +10,6 @@ import com.ryuqq.setof.domain.member.id.MemberId;
 import com.ryuqq.setof.domain.member.vo.AuthProvider;
 import com.ryuqq.setof.domain.member.vo.DateOfBirth;
 import com.ryuqq.setof.domain.member.vo.Gender;
-import com.ryuqq.setof.domain.member.vo.LegacyMemberId;
 import com.ryuqq.setof.domain.member.vo.MemberName;
 import com.ryuqq.setof.domain.member.vo.MemberStatus;
 import com.ryuqq.setof.domain.member.vo.PasswordHash;
@@ -30,8 +29,7 @@ public final class MemberFixtures {
     private MemberFixtures() {}
 
     // ===== 상수 =====
-    public static final String DEFAULT_MEMBER_ID = "01900000-0000-7000-8000-000000000099";
-    public static final long DEFAULT_LEGACY_MEMBER_ID = 1001L;
+    public static final Long DEFAULT_MEMBER_ID = 99L;
     public static final Long DEFAULT_MEMBER_AUTH_ID = 10L;
 
     // ===== MemberId Fixtures =====
@@ -39,7 +37,7 @@ public final class MemberFixtures {
         return MemberId.of(DEFAULT_MEMBER_ID);
     }
 
-    public static MemberId memberId(String value) {
+    public static MemberId memberId(Long value) {
         return MemberId.of(value);
     }
 
@@ -83,15 +81,6 @@ public final class MemberFixtures {
         return DateOfBirth.of(LocalDate.of(year, month, day));
     }
 
-    // ===== LegacyMemberId Fixtures =====
-    public static LegacyMemberId defaultLegacyMemberId() {
-        return LegacyMemberId.of(DEFAULT_LEGACY_MEMBER_ID);
-    }
-
-    public static LegacyMemberId legacyMemberId(long value) {
-        return LegacyMemberId.of(value);
-    }
-
     // ===== PasswordHash Fixtures =====
     public static PasswordHash defaultPasswordHash() {
         return PasswordHash.of("$2a$10$hashedPasswordValue");
@@ -119,32 +108,6 @@ public final class MemberFixtures {
     /** 신규 회원 (forNew, ACTIVE 상태) */
     public static Member newMember() {
         return Member.forNew(
-                defaultMemberId(),
-                defaultMemberName(),
-                defaultEmail(),
-                CommonVoFixtures.defaultPhoneNumber(),
-                defaultDateOfBirth(),
-                Gender.MALE,
-                CommonVoFixtures.now());
-    }
-
-    /** 신규 회원 (지정 MemberId) */
-    public static Member newMember(MemberId memberId) {
-        return Member.forNew(
-                memberId,
-                defaultMemberName(),
-                defaultEmail(),
-                CommonVoFixtures.defaultPhoneNumber(),
-                defaultDateOfBirth(),
-                Gender.MALE,
-                CommonVoFixtures.now());
-    }
-
-    /** 레거시 마이그레이션 회원 */
-    public static Member migratedMember() {
-        return Member.forMigration(
-                defaultMemberId(),
-                defaultLegacyMemberId(),
                 defaultMemberName(),
                 defaultEmail(),
                 CommonVoFixtures.defaultPhoneNumber(),
@@ -157,7 +120,6 @@ public final class MemberFixtures {
     public static Member activeMember() {
         return Member.reconstitute(
                 defaultMemberId(),
-                null,
                 defaultMemberName(),
                 defaultEmail(),
                 CommonVoFixtures.defaultPhoneNumber(),
@@ -172,8 +134,7 @@ public final class MemberFixtures {
     /** 정지 상태 회원 */
     public static Member suspendedMember() {
         return Member.reconstitute(
-                MemberId.of("01900000-0000-7000-8000-000000000002"),
-                null,
+                MemberId.of(2L),
                 defaultMemberName(),
                 defaultEmail(),
                 CommonVoFixtures.defaultPhoneNumber(),
@@ -188,8 +149,7 @@ public final class MemberFixtures {
     /** 탈퇴 상태 회원 */
     public static Member withdrawnMember() {
         return Member.reconstitute(
-                MemberId.of("01900000-0000-7000-8000-000000000003"),
-                null,
+                MemberId.of(3L),
                 defaultMemberName(),
                 defaultEmail(),
                 CommonVoFixtures.defaultPhoneNumber(),
@@ -204,8 +164,7 @@ public final class MemberFixtures {
     /** 소프트 삭제된 회원 */
     public static Member deletedMember() {
         return Member.reconstitute(
-                MemberId.of("01900000-0000-7000-8000-000000000004"),
-                null,
+                MemberId.of(4L),
                 defaultMemberName(),
                 defaultEmail(),
                 CommonVoFixtures.defaultPhoneNumber(),
@@ -213,22 +172,6 @@ public final class MemberFixtures {
                 Gender.MALE,
                 MemberStatus.ACTIVE,
                 DeletionStatus.deletedAt(CommonVoFixtures.yesterday()),
-                CommonVoFixtures.yesterday(),
-                CommonVoFixtures.yesterday());
-    }
-
-    /** 레거시 마이그레이션된 활성 회원 (영속성 복원) */
-    public static Member activeMigratedMember() {
-        return Member.reconstitute(
-                defaultMemberId(),
-                defaultLegacyMemberId(),
-                defaultMemberName(),
-                defaultEmail(),
-                CommonVoFixtures.defaultPhoneNumber(),
-                defaultDateOfBirth(),
-                Gender.MALE,
-                MemberStatus.ACTIVE,
-                DeletionStatus.active(),
                 CommonVoFixtures.yesterday(),
                 CommonVoFixtures.yesterday());
     }

@@ -8,6 +8,7 @@ import com.ryuqq.setof.storage.legacy.composite.content.repository.LegacyWebCont
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,10 +16,13 @@ import org.springframework.stereotype.Component;
  *
  * <p>component_target → component_item 경로로 고정 배치된 상품을 조회한다.
  *
+ * <p>활성화 조건: persistence.legacy.content.enabled=true
+ *
  * @author ryu-qqq
  * @since 1.1.0
  */
 @Component
+@ConditionalOnProperty(name = "persistence.legacy.content.enabled", havingValue = "true")
 public class LegacyWebFixedProductQueryAdapter implements ComponentFixedProductQueryPort {
 
     private final LegacyWebContentCompositeQueryDslRepository repository;

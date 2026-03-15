@@ -45,7 +45,7 @@ class LegacyFaqEntityMapperTest {
             LegacyFaqEntity entity =
                     LegacyFaqEntityFixtures.builder()
                             .id(1L)
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.MEMBER_LOGIN)
+                            .faqType(FaqType.MEMBER_LOGIN)
                             .title("회원가입 방법")
                             .contents("회원가입 절차 안내")
                             .displayOrder(10)
@@ -81,10 +81,7 @@ class LegacyFaqEntityMapperTest {
         @DisplayName("레거시 FaqType을 신규 FaqType으로 변환한다")
         void shouldConvertLegacyFaqTypeToNewFaqType() {
             // given
-            LegacyFaqEntity entity =
-                    LegacyFaqEntityFixtures.builder()
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.TOP)
-                            .build();
+            LegacyFaqEntity entity = LegacyFaqEntityFixtures.builder().faqType(FaqType.TOP).build();
 
             // when
             Faq result = mapper.toDomain(entity);
@@ -138,9 +135,7 @@ class LegacyFaqEntityMapperTest {
         void shouldConvertNonTopFaqType() {
             // given
             LegacyFaqEntity entity =
-                    LegacyFaqEntityFixtures.builder()
-                            .faqType(com.ryuqq.setof.domain.legacy.faq.FaqType.SHIPPING)
-                            .build();
+                    LegacyFaqEntityFixtures.builder().faqType(FaqType.SHIPPING).build();
 
             // when
             Faq result = mapper.toDomain(entity);

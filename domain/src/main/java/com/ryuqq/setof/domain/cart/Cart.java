@@ -18,19 +18,19 @@ import java.util.stream.Collectors;
  */
 public class Cart {
 
-    private final String memberId;
+    private final Long memberId;
     private final Long userId;
     private final Instant occurredAt;
     private final List<CartItem> items;
 
-    private Cart(String memberId, Long userId, Instant occurredAt, List<CartItem> items) {
+    private Cart(Long memberId, Long userId, Instant occurredAt, List<CartItem> items) {
         this.memberId = memberId;
         this.userId = userId;
         this.occurredAt = occurredAt;
         this.items = List.copyOf(items);
     }
 
-    public static Cart of(String memberId, Long userId, Instant occurredAt, List<CartItem> items) {
+    public static Cart of(Long memberId, Long userId, Instant occurredAt, List<CartItem> items) {
         return new Cart(memberId, userId, occurredAt, items);
     }
 
@@ -67,7 +67,7 @@ public class Cart {
         return items.stream().map(CartItem::productIdValue).toList();
     }
 
-    public String memberId() {
+    public Long memberId() {
         return memberId;
     }
 

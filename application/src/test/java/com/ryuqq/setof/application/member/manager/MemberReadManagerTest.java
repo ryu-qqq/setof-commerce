@@ -6,7 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.ryuqq.setof.application.member.MemberQueryFixtures;
-import com.ryuqq.setof.application.member.dto.query.MemberProfile;
+import com.ryuqq.setof.application.member.dto.query.MemberLoginInfo;
 import com.ryuqq.setof.application.member.dto.query.MemberWithCredentials;
 import com.ryuqq.setof.application.member.port.out.query.MemberQueryPort;
 import com.ryuqq.setof.domain.member.MemberFixtures;
@@ -32,36 +32,36 @@ class MemberReadManagerTest {
     @Mock private MemberQueryPort memberQueryPort;
 
     @Nested
-    @DisplayName("getByLegacyId() - 레거시 ID로 회원 조회")
-    class GetByLegacyIdTest {
+    @DisplayName("getById() - 회원 ID로 회원 조회")
+    class GetByIdTest {
 
         @Test
-        @DisplayName("존재하는 userId로 회원을 조회한다")
-        void getByLegacyId_ExistingUser_ReturnsMember() {
+        @DisplayName("존재하는 memberId로 회원을 조회한다")
+        void getById_ExistingUser_ReturnsMember() {
             // given
-            long userId = MemberFixtures.DEFAULT_LEGACY_MEMBER_ID;
-            Member expected = MemberFixtures.activeMigratedMember();
+            long memberId = MemberFixtures.DEFAULT_MEMBER_ID;
+            Member expected = MemberFixtures.activeMember();
 
-            given(memberQueryPort.findByLegacyId(userId)).willReturn(Optional.of(expected));
+            given(memberQueryPort.findById(memberId)).willReturn(Optional.of(expected));
 
             // when
-            Member result = sut.getByLegacyId(userId);
+            Member result = sut.getById(memberId);
 
             // then
             assertThat(result).isEqualTo(expected);
-            then(memberQueryPort).should().findByLegacyId(userId);
+            then(memberQueryPort).should().findById(memberId);
         }
 
         @Test
-        @DisplayName("존재하지 않는 userId면 MemberNotFoundException이 발생한다")
-        void getByLegacyId_NonExistingUser_ThrowsMemberNotFoundException() {
+        @DisplayName("존재하지 않는 memberId면 MemberNotFoundException이 발생한다")
+        void getById_NonExistingUser_ThrowsMemberNotFoundException() {
             // given
-            long userId = 99999L;
+            long memberId = 99999L;
 
-            given(memberQueryPort.findByLegacyId(userId)).willReturn(Optional.empty());
+            given(memberQueryPort.findById(memberId)).willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> sut.getByLegacyId(userId))
+            assertThatThrownBy(() -> sut.getById(memberId))
                     .isInstanceOf(MemberNotFoundException.class);
         }
     }
@@ -75,7 +75,7 @@ class MemberReadManagerTest {
         void findByPhoneNumber_ExistingPhone_ReturnsOptionalMember() {
             // given
             String phoneNumber = "01012345678";
-            Member expected = MemberFixtures.activeMigratedMember();
+            Member expected = MemberFixtures.activeMember();
 
             given(memberQueryPort.findByPhoneNumber(phoneNumber)).willReturn(Optional.of(expected));
 
@@ -222,36 +222,36 @@ class MemberReadManagerTest {
     }
 
     @Nested
-    @DisplayName("getProfileByLegacyId() - 레거시 ID로 프로필 조회")
-    class GetProfileByLegacyIdTest {
+    @DisplayName("getLoginInfoById() - 회원 ID로 로그인 정보 조회")
+    class GetLoginInfoByIdTest {
 
         @Test
-        @DisplayName("존재하는 userId로 MemberProfile을 반환한다")
-        void getProfileByLegacyId_ExistingUser_ReturnsMemberProfile() {
+        @DisplayName("존재하는 memberId로 MemberLoginInfo를 반환한다")
+        void getLoginInfoById_ExistingUser_ReturnsMemberLoginInfo() {
             // given
-            long userId = MemberFixtures.DEFAULT_LEGACY_MEMBER_ID;
-            MemberProfile expected = MemberQueryFixtures.memberProfile();
+            long memberId = MemberFixtures.DEFAULT_MEMBER_ID;
+            MemberLoginInfo expected = MemberQueryFixtures.memberLoginInfo();
 
-            given(memberQueryPort.findProfileByLegacyId(userId)).willReturn(Optional.of(expected));
+            given(memberQueryPort.findLoginInfoById(memberId)).willReturn(Optional.of(expected));
 
             // when
-            MemberProfile result = sut.getProfileByLegacyId(userId);
+            MemberLoginInfo result = sut.getLoginInfoById(memberId);
 
             // then
             assertThat(result).isEqualTo(expected);
-            then(memberQueryPort).should().findProfileByLegacyId(userId);
+            then(memberQueryPort).should().findLoginInfoById(memberId);
         }
 
         @Test
-        @DisplayName("존재하지 않는 userId면 MemberNotFoundException이 발생한다")
-        void getProfileByLegacyId_NonExistingUser_ThrowsMemberNotFoundException() {
+        @DisplayName("존재하지 않는 memberId면 MemberNotFoundException이 발생한다")
+        void getLoginInfoById_NonExistingUser_ThrowsMemberNotFoundException() {
             // given
-            long userId = 99999L;
+            long memberId = 99999L;
 
-            given(memberQueryPort.findProfileByLegacyId(userId)).willReturn(Optional.empty());
+            given(memberQueryPort.findLoginInfoById(memberId)).willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> sut.getProfileByLegacyId(userId))
+            assertThatThrownBy(() -> sut.getLoginInfoById(memberId))
                     .isInstanceOf(MemberNotFoundException.class);
         }
     }

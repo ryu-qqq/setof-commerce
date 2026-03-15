@@ -20,7 +20,6 @@ import com.ryuqq.setof.domain.contentpage.vo.ProductSlot;
 import com.ryuqq.setof.domain.contentpage.vo.ProductThumbnailSnapshot;
 import com.ryuqq.setof.domain.contentpage.vo.TabMovingType;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -170,27 +169,17 @@ public final class ContentPageFixtures {
                 10000,
                 8000,
                 8000,
+                0,
+                0,
                 20,
-                2000,
-                20,
-                LocalDateTime.of(2025, 1, 1, 0, 0),
-                4.5,
-                100L,
-                0.85,
-                false,
-                "Y",
-                "N");
+                Instant.parse("2025-01-01T00:00:00Z"),
+                true,
+                false);
     }
 
-    /** 커스텀 가격/할인율/평점/리뷰 수를 가진 ProductThumbnailSnapshot 생성. */
+    /** 커스텀 가격/할인율을 가진 ProductThumbnailSnapshot 생성. */
     public static ProductThumbnailSnapshot snapshotWithDetails(
-            long productGroupId,
-            int regularPrice,
-            int currentPrice,
-            int discountRate,
-            double averageRating,
-            long reviewCount,
-            double score) {
+            long productGroupId, int regularPrice, int currentPrice, int discountRate) {
         return new ProductThumbnailSnapshot(
                 productGroupId,
                 1L,
@@ -203,16 +192,12 @@ public final class ContentPageFixtures {
                 regularPrice,
                 currentPrice,
                 currentPrice,
+                0,
+                0,
                 discountRate,
-                regularPrice - currentPrice,
-                discountRate,
-                LocalDateTime.of(2025, 1, 1, 0, 0),
-                averageRating,
-                reviewCount,
-                score,
-                false,
-                "Y",
-                "N");
+                Instant.parse("2025-01-01T00:00:00Z"),
+                true,
+                false);
     }
 
     // ===== DisplayConfig Fixtures =====
@@ -227,14 +212,6 @@ public final class ContentPageFixtures {
 
     // ===== DisplayComponent Fixtures (Non-TAB) =====
 
-    /**
-     * PRODUCT 타입 DisplayComponent 생성.
-     *
-     * @param componentId 컴포넌트 ID
-     * @param orderType 정렬 타입
-     * @param pageSize 노출 상품 수 (0이면 제한 없음)
-     * @return DisplayComponent
-     */
     public static DisplayComponent productComponent(
             long componentId, OrderType orderType, int pageSize) {
         DisplayConfig config = displayConfig(orderType);
@@ -257,14 +234,6 @@ public final class ContentPageFixtures {
                 Instant.now());
     }
 
-    /**
-     * TAB 타입 DisplayComponent 생성.
-     *
-     * @param componentId 컴포넌트 ID
-     * @param orderType 정렬 타입
-     * @param tabs 탭 목록
-     * @return DisplayComponent
-     */
     public static DisplayComponent tabComponent(
             long componentId, OrderType orderType, List<DisplayTab> tabs) {
         DisplayConfig config = displayConfig(orderType);
@@ -287,7 +256,6 @@ public final class ContentPageFixtures {
                 Instant.now());
     }
 
-    /** TEXT 타입(상품 비관련) DisplayComponent 생성. */
     public static DisplayComponent textComponent(long componentId) {
         DisplayConfig config = defaultDisplayConfig();
         ComponentSpec spec = new ComponentSpec.TextSpec(componentId * 100, "텍스트 내용");
@@ -308,15 +276,6 @@ public final class ContentPageFixtures {
                 Instant.now());
     }
 
-    /**
-     * DisplayTab 생성.
-     *
-     * @param tabId 탭 ID
-     * @param tabName 탭 이름
-     * @param fixedCount 고정 상품 수
-     * @param autoCount 자동 상품 수
-     * @return DisplayTab
-     */
     public static DisplayTab displayTab(Long tabId, String tabName, int fixedCount, int autoCount) {
         List<ProductSlot> fixed = new java.util.ArrayList<>();
         for (int i = 0; i < fixedCount; i++) {
@@ -331,17 +290,14 @@ public final class ContentPageFixtures {
 
     // ===== ProductComponentGroup Fixtures =====
 
-    /** Non-TAB 컴포넌트만 있는 ProductComponentGroup. */
     public static ProductComponentGroup nonTabOnly(List<DisplayComponent> nonTabComponents) {
         return new ProductComponentGroup(nonTabComponents, List.of());
     }
 
-    /** TAB 컴포넌트만 있는 ProductComponentGroup. */
     public static ProductComponentGroup tabOnly(List<DisplayComponent> tabComponents) {
         return new ProductComponentGroup(List.of(), tabComponents);
     }
 
-    /** 빈 ProductComponentGroup. */
     public static ProductComponentGroup emptyGroup() {
         return new ProductComponentGroup(List.of(), List.of());
     }

@@ -67,8 +67,8 @@ class LegacyCategoryQueryAdapterTest {
 
             // then
             assertThat(result).isPresent();
-            assertThat(result.get().id().value()).isEqualTo(100L);
-            assertThat(result.get().name().value()).isEqualTo("상의");
+            assertThat(result.get().idValue()).isEqualTo(100L);
+            assertThat(result.get().categoryNameValue()).isEqualTo("상의");
 
             then(queryDslRepository).should().findById(100L);
         }
@@ -114,8 +114,10 @@ class LegacyCategoryQueryAdapterTest {
 
             // then
             assertThat(result).hasSize(2);
-            assertThat(result).extracting(category -> category.id().value()).contains(100L, 200L);
-            assertThat(result).extracting(category -> category.name().value()).contains("상의", "하의");
+            assertThat(result).extracting(category -> category.idValue()).contains(100L, 200L);
+            assertThat(result)
+                    .extracting(category -> category.categoryName().value())
+                    .contains("상의", "하의");
 
             then(queryDslRepository).should().findByIds(List.of(100L, 200L));
         }
@@ -200,7 +202,9 @@ class LegacyCategoryQueryAdapterTest {
 
             // then
             assertThat(result).hasSize(2);
-            assertThat(result).extracting(category -> category.name().value()).contains("상의", "하의");
+            assertThat(result)
+                    .extracting(category -> category.categoryName().value())
+                    .contains("상의", "하의");
 
             then(queryDslRepository).should().findByCriteria(criteria);
         }
@@ -290,7 +294,7 @@ class LegacyCategoryQueryAdapterTest {
 
             // then
             assertThat(result).hasSize(2);
-            assertThat(result).allMatch(Category::displayed);
+            assertThat(result).allMatch(Category::isDisplayed);
 
             then(queryDslRepository).should().findAllDisplayed();
         }
@@ -343,7 +347,7 @@ class LegacyCategoryQueryAdapterTest {
             // then
             assertThat(result).hasSize(2);
             assertThat(result)
-                    .extracting(category -> category.name().value())
+                    .extracting(category -> category.categoryName().value())
                     .contains("티셔츠", "셔츠");
 
             then(queryDslRepository).should().findChildrenByParentId(100L);
@@ -428,7 +432,7 @@ class LegacyCategoryQueryAdapterTest {
             // then
             assertThat(result).hasSize(3);
             assertThat(result)
-                    .extracting(category -> category.name().value())
+                    .extracting(category -> category.categoryName().value())
                     .contains("루트", "부모", "자식");
 
             then(queryDslRepository).should().findParentsByChildId(300L);

@@ -31,4 +31,14 @@ public interface CategoryQueryPort {
     List<Category> findChildrenByParentId(CategoryId parentId);
 
     List<Category> findParentsByChildId(CategoryId childId);
+
+    /**
+     * 주어진 카테고리의 모든 하위 카테고리 ID 조회 (자기 자신 포함).
+     *
+     * <p>Recursive CTE로 전체 하위 트리를 조회하여 ID만 반환한다.
+     *
+     * @param categoryId 부모 카테고리 ID
+     * @return 하위 카테고리 ID 목록 (자기 자신 포함)
+     */
+    List<Long> findDescendantIds(CategoryId categoryId);
 }

@@ -43,15 +43,13 @@ public class CartV1ApiMapper {
      * <p>기본값 처리: size가 null이면 20으로 설정. memberId는 레거시 호환으로 userId 문자열 변환.
      */
     public CartSearchParams toSearchParams(Long userId, SearchCartsCursorV1ApiRequest request) {
-        String legacyMemberId = String.valueOf(userId);
         int size = (request.size() != null) ? request.size() : DEFAULT_SIZE;
-        return CartSearchParams.of(legacyMemberId, userId, request.lastDomainId(), size);
+        return CartSearchParams.of(userId, userId, request.lastDomainId(), size);
     }
 
     /** 카운트 조회용 CartSearchParams 생성. */
     public CartSearchParams toCountParams(Long userId) {
-        String legacyMemberId = String.valueOf(userId);
-        return CartSearchParams.forCount(legacyMemberId, userId);
+        return CartSearchParams.forCount(userId, userId);
     }
 
     /** CartCountResult → CartCountV1ApiResponse 변환. */
@@ -148,7 +146,6 @@ public class CartV1ApiMapper {
      * <p>레거시 호환: memberId는 userId의 문자열 표현으로 대체합니다.
      */
     public AddCartItemCommand toAddCommand(Long userId, List<AddCartItemV1ApiRequest> requests) {
-        String legacyMemberId = String.valueOf(userId);
         List<AddCartItemCommand.CartItemDetail> items =
                 requests.stream()
                         .map(
@@ -159,7 +156,7 @@ public class CartV1ApiMapper {
                                                 r.quantity(),
                                                 r.sellerId()))
                         .toList();
-        return AddCartItemCommand.of(legacyMemberId, userId, items);
+        return AddCartItemCommand.of(userId, userId, items);
     }
 
     /**
@@ -198,14 +195,12 @@ public class CartV1ApiMapper {
     /** ModifyCartItemV1ApiRequest → ModifyCartItemCommand 변환. */
     public ModifyCartItemCommand toModifyCommand(
             Long cartId, Long userId, ModifyCartItemV1ApiRequest request) {
-        String legacyMemberId = String.valueOf(userId);
-        return ModifyCartItemCommand.of(cartId, legacyMemberId, userId, request.quantity());
+        return ModifyCartItemCommand.of(cartId, userId, userId, request.quantity());
     }
 
     /** DeleteCartItemsV1ApiRequest → DeleteCartItemsCommand 변환. */
     public DeleteCartItemsCommand toDeleteCommand(
             Long userId, DeleteCartItemsV1ApiRequest request) {
-        String legacyMemberId = String.valueOf(userId);
-        return DeleteCartItemsCommand.ofSingle(request.cartId(), legacyMemberId, userId);
+        return DeleteCartItemsCommand.ofSingle(request.cartId(), userId, userId);
     }
 }

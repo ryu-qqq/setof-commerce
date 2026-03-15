@@ -37,6 +37,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthV1ApiMapper {
 
+    private static final String DEFAULT_SOCIAL_LOGIN_TYPE = "none";
+    private static final String DEFAULT_USER_GRADE = "NORMAL_GRADE";
+
     public LoginCommand toLoginCommand(LoginV1ApiRequest request) {
         return new LoginCommand(request.phoneNumber(), request.passwordHash());
     }
@@ -78,7 +81,7 @@ public class AuthV1ApiMapper {
                 new IsExistUserV1ApiResponse.JoinedUserResponse(
                         result.name(),
                         result.userId(),
-                        result.socialLoginType(),
+                        resolveSocialLoginType(result.socialLoginType()),
                         result.phoneNumber(),
                         result.socialPkId(),
                         result.currentMileage(),
@@ -92,7 +95,7 @@ public class AuthV1ApiMapper {
                 new UserV1ApiResponse.UserDetailResponse(
                         result.name(),
                         result.userId(),
-                        result.socialLoginType(),
+                        resolveSocialLoginType(result.socialLoginType()),
                         result.phoneNumber(),
                         result.socialPkId(),
                         result.currentMileage(),
@@ -105,15 +108,19 @@ public class AuthV1ApiMapper {
                 result.name(),
                 result.phoneNumber(),
                 result.email(),
-                result.socialLoginType(),
+                resolveSocialLoginType(result.socialLoginType()),
                 DateTimeFormatUtils.format(result.registrationDate()),
-                result.gradeName(),
+                DEFAULT_USER_GRADE,
                 result.currentMileage(),
-                result.orderCounts().stream()
+                result.orderCounts().counts().stream()
                         .map(
                                 oc ->
                                         new MyPageV1ApiResponse.OrderCountResponse(
                                                 oc.orderStatus(), oc.count()))
                         .toList());
+    }
+
+    private String resolveSocialLoginType(String socialLoginType) {
+        return socialLoginType != null ? socialLoginType : DEFAULT_SOCIAL_LOGIN_TYPE;
     }
 }

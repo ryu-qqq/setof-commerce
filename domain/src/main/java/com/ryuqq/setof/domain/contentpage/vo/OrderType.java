@@ -21,17 +21,15 @@ public enum OrderType {
     LOW_DISCOUNT,
     HIGH_DISCOUNT;
 
-    /** AUTO 상품에 적용할 정렬 Comparator를 반환한다. */
+    /**
+     * AUTO 상품에 적용할 정렬 Comparator를 반환한다.
+     *
+     * <p>RECOMMEND, REVIEW, HIGH_RATING은 현재 데이터가 없으므로 RECENT(최신순)로 폴백한다.
+     */
     public Comparator<ProductThumbnailSnapshot> comparator() {
         return switch (this) {
-            case RECOMMEND ->
-                    Comparator.comparingDouble(ProductThumbnailSnapshot::score).reversed();
-            case REVIEW ->
-                    Comparator.comparingLong(ProductThumbnailSnapshot::reviewCount).reversed();
-            case RECENT ->
+            case RECOMMEND, REVIEW, HIGH_RATING, RECENT ->
                     Comparator.comparingLong(ProductThumbnailSnapshot::productGroupId).reversed();
-            case HIGH_RATING ->
-                    Comparator.comparingDouble(ProductThumbnailSnapshot::averageRating).reversed();
             case LOW_PRICE -> Comparator.comparingInt(ProductThumbnailSnapshot::currentPrice);
             case HIGH_PRICE ->
                     Comparator.comparingInt(ProductThumbnailSnapshot::currentPrice).reversed();

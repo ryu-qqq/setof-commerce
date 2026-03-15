@@ -59,14 +59,14 @@ class CartV1ApiMapperTest {
             CartSearchParams params = mapper.toSearchParams(userId, request);
 
             // then
-            assertThat(params.memberId()).isEqualTo("42");
+            assertThat(params.memberId()).isEqualTo(42L);
             assertThat(params.userId()).isEqualTo(userId);
             assertThat(params.lastCartId()).isNull();
             assertThat(params.size()).isEqualTo(20);
         }
 
         @Test
-        @DisplayName("memberId는 userId의 문자열 변환값으로 설정된다")
+        @DisplayName("memberId는 userId와 동일한 값으로 설정된다")
         void toSearchParams_MemberIdIsStringOfUserId() {
             // given
             Long userId = 100L;
@@ -76,7 +76,7 @@ class CartV1ApiMapperTest {
             CartSearchParams params = mapper.toSearchParams(userId, request);
 
             // then
-            assertThat(params.memberId()).isEqualTo(String.valueOf(userId));
+            assertThat(params.memberId()).isEqualTo(userId);
         }
 
         @Test
@@ -125,13 +125,13 @@ class CartV1ApiMapperTest {
             CartSearchParams params = mapper.toCountParams(userId);
 
             // then
-            assertThat(params.memberId()).isEqualTo("42");
+            assertThat(params.memberId()).isEqualTo(42L);
             assertThat(params.userId()).isEqualTo(userId);
             assertThat(params.lastCartId()).isNull();
         }
 
         @Test
-        @DisplayName("카운트 파라미터의 memberId는 userId의 문자열 변환값이다")
+        @DisplayName("카운트 파라미터의 memberId는 userId와 동일한 값이다")
         void toCountParams_MemberIdIsStringOfUserId() {
             // given
             Long userId = 7L;
@@ -140,7 +140,7 @@ class CartV1ApiMapperTest {
             CartSearchParams params = mapper.toCountParams(userId);
 
             // then
-            assertThat(params.memberId()).isEqualTo("7");
+            assertThat(params.memberId()).isEqualTo(7L);
         }
     }
 
@@ -289,13 +289,13 @@ class CartV1ApiMapperTest {
             AddCartItemCommand command = mapper.toAddCommand(userId, requests);
 
             // then
-            assertThat(command.memberId()).isEqualTo("42");
+            assertThat(command.memberId()).isEqualTo(42L);
             assertThat(command.userId()).isEqualTo(userId);
             assertThat(command.items()).hasSize(2);
         }
 
         @Test
-        @DisplayName("memberId는 userId의 문자열 변환값이다")
+        @DisplayName("memberId는 userId와 동일한 값이다")
         void toAddCommand_MemberIdIsStringOfUserId() {
             // given
             Long userId = 99L;
@@ -305,7 +305,7 @@ class CartV1ApiMapperTest {
             AddCartItemCommand command = mapper.toAddCommand(userId, requests);
 
             // then
-            assertThat(command.memberId()).isEqualTo("99");
+            assertThat(command.memberId()).isEqualTo(99L);
         }
 
         @Test
@@ -345,13 +345,13 @@ class CartV1ApiMapperTest {
 
             // then
             assertThat(command.cartId()).isEqualTo(cartId);
-            assertThat(command.memberId()).isEqualTo("42");
+            assertThat(command.memberId()).isEqualTo(42L);
             assertThat(command.userId()).isEqualTo(userId);
             assertThat(command.newQuantity()).isEqualTo(3);
         }
 
         @Test
-        @DisplayName("memberId는 userId의 문자열 변환값이다")
+        @DisplayName("memberId는 userId와 동일한 값이다")
         void toModifyCommand_MemberIdIsStringOfUserId() {
             // given
             Long cartId = 500L;
@@ -362,7 +362,7 @@ class CartV1ApiMapperTest {
             ModifyCartItemCommand command = mapper.toModifyCommand(cartId, userId, request);
 
             // then
-            assertThat(command.memberId()).isEqualTo("77");
+            assertThat(command.memberId()).isEqualTo(77L);
         }
     }
 
@@ -381,7 +381,7 @@ class CartV1ApiMapperTest {
             DeleteCartItemsCommand command = mapper.toDeleteCommand(userId, request);
 
             // then
-            assertThat(command.memberId()).isEqualTo("42");
+            assertThat(command.memberId()).isEqualTo(42L);
             assertThat(command.userId()).isEqualTo(userId);
             assertThat(command.cartIds()).containsExactly(300L);
         }

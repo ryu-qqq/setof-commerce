@@ -3,14 +3,15 @@ package com.ryuqq.setof.application.member.internal;
 import com.ryuqq.setof.application.auth.dto.response.KakaoLoginResult;
 import com.ryuqq.setof.application.auth.manager.TokenCommandFacade;
 import com.ryuqq.setof.application.member.dto.command.KakaoLoginCommand;
-import com.ryuqq.setof.application.member.dto.command.MemberRegistrationInfo;
-import com.ryuqq.setof.application.member.dto.command.SocialIntegrationContext;
+import com.ryuqq.setof.application.member.dto.command.MemberRegistrationBundle;
 import com.ryuqq.setof.application.member.dto.query.MemberWithCredentials;
 import com.ryuqq.setof.application.member.factory.KakaoMemberFactory;
-import com.ryuqq.setof.application.member.manager.MemberCommandManager;
+import com.ryuqq.setof.application.member.manager.MemberAuthCommandManager;
 import com.ryuqq.setof.domain.member.aggregate.Member;
+import com.ryuqq.setof.domain.member.aggregate.MemberAuth;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * KakaoLoginCoordinator - 카카오 로그인 분기 코디네이터.
@@ -24,15 +25,18 @@ import org.springframework.stereotype.Component;
 public class KakaoLoginCoordinator {
 
     private final KakaoMemberFactory kakaoMemberFactory;
-    private final MemberCommandManager memberCommandManager;
+    private final MemberRegistrationFacade memberRegistrationFacade;
+    private final MemberAuthCommandManager memberAuthCommandManager;
     private final TokenCommandFacade tokenCommandFacade;
 
     public KakaoLoginCoordinator(
             KakaoMemberFactory kakaoMemberFactory,
-            MemberCommandManager memberCommandManager,
+            MemberRegistrationFacade memberRegistrationFacade,
+            MemberAuthCommandManager memberAuthCommandManager,
             TokenCommandFacade tokenCommandFacade) {
         this.kakaoMemberFactory = kakaoMemberFactory;
-        this.memberCommandManager = memberCommandManager;
+        this.memberRegistrationFacade = memberRegistrationFacade;
+        this.memberAuthCommandManager = memberAuthCommandManager;
         this.tokenCommandFacade = tokenCommandFacade;
     }
 
@@ -43,6 +47,7 @@ public class KakaoLoginCoordinator {
      * @param command 카카오 로그인 Command
      * @return 카카오 로그인 결과
      */
+    @Transactional
     public KakaoLoginResult coordinate(
             Optional<MemberWithCredentials> existingOpt, KakaoLoginCommand command) {
         if (existingOpt.isPresent()) {
@@ -54,12 +59,11 @@ public class KakaoLoginCoordinator {
     private KakaoLoginResult handleExistingMember(
             MemberWithCredentials credentials, KakaoLoginCommand command) {
         Member member = credentials.member();
-        long userId = member.legacyMemberIdValue();
+        Long userId = member.idValue();
 
         if (command.integration()) {
-            SocialIntegrationContext context =
-                    kakaoMemberFactory.createIntegrationContext(userId, command);
-            memberCommandManager.persist(context);
+            MemberAuth socialAuth = kakaoMemberFactory.createSocialAuth(userId, command);
+            memberAuthCommandManager.persist(socialAuth);
             return KakaoLoginResult.ofIntegrated(tokenCommandFacade.issueLoginResult(userId));
         }
 
@@ -67,11 +71,8 @@ public class KakaoLoginCoordinator {
     }
 
     private KakaoLoginResult handleNewMember(KakaoLoginCommand command) {
-        Member member = kakaoMemberFactory.createMember(command);
-        MemberRegistrationInfo registrationInfo =
-                kakaoMemberFactory.createRegistrationInfo(command);
-
-        Long userId = memberCommandManager.persist(member, registrationInfo);
+        MemberRegistrationBundle bundle = kakaoMemberFactory.createRegistrationBundle(command);
+        Long userId = memberRegistrationFacade.register(bundle);
         return KakaoLoginResult.ofNewMember(tokenCommandFacade.issueLoginResult(userId));
     }
 }

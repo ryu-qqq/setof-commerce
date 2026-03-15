@@ -64,7 +64,7 @@ class RefundAccountCommandFactoryTest {
             RefundAccount result = sut.createNewRefundAccount(command);
 
             // then
-            assertThat(result.memberIdValue()).isEqualTo(String.valueOf(command.userId()));
+            assertThat(result.memberIdValue()).isEqualTo(command.userId());
         }
 
         @Test

@@ -65,6 +65,9 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity implements Persis
     @Column(name = "sale_price", nullable = false)
     private int salePrice;
 
+    @Column(name = "discount_rate", nullable = false)
+    private int discountRate;
+
     @Column(name = "status", nullable = false, length = 50)
     private String status;
 
@@ -90,6 +93,7 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity implements Persis
             int regularPrice,
             int currentPrice,
             int salePrice,
+            int discountRate,
             String status,
             Instant createdAt,
             Instant updatedAt,
@@ -106,6 +110,7 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity implements Persis
         this.regularPrice = regularPrice;
         this.currentPrice = currentPrice;
         this.salePrice = salePrice;
+        this.discountRate = discountRate;
         this.status = status;
     }
 
@@ -121,6 +126,7 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity implements Persis
             int regularPrice,
             int currentPrice,
             int salePrice,
+            int discountRate,
             String status,
             Instant createdAt,
             Instant updatedAt,
@@ -138,11 +144,12 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity implements Persis
                         regularPrice,
                         currentPrice,
                         salePrice,
+                        discountRate,
                         status,
                         createdAt,
                         updatedAt,
                         deletedAt);
-        entity.isNew = (id == null);
+        entity.isNew = true;
         return entity;
     }
 
@@ -188,6 +195,10 @@ public class ProductGroupJpaEntity extends SoftDeletableEntity implements Persis
 
     public int getSalePrice() {
         return salePrice;
+    }
+
+    public int getDiscountRate() {
+        return discountRate;
     }
 
     public String getStatus() {

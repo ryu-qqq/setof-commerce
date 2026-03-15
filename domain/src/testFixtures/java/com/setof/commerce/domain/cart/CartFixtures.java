@@ -31,7 +31,7 @@ public final class CartFixtures {
     private CartFixtures() {}
 
     // ===== 상수 =====
-    public static final String DEFAULT_MEMBER_ID = "01900000-0000-7000-8000-000000000001";
+    public static final Long DEFAULT_MEMBER_ID = 1L;
     public static final Long DEFAULT_USER_ID = 1L;
     public static final Long DEFAULT_PRODUCT_GROUP_ID = 100L;
     public static final Long DEFAULT_PRODUCT_ID = 200L;
@@ -44,7 +44,7 @@ public final class CartFixtures {
         return MemberId.of(DEFAULT_MEMBER_ID);
     }
 
-    public static MemberId memberId(String value) {
+    public static MemberId memberId(Long value) {
         return MemberId.of(value);
     }
 

@@ -4,6 +4,7 @@ import static com.ryuqq.setof.adapter.out.persistence.banner.entity.QBannerGroup
 import static com.ryuqq.setof.adapter.out.persistence.banner.entity.QBannerSlideJpaEntity.bannerSlideJpaEntity;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import java.time.Instant;
 import org.springframework.stereotype.Component;
 
 /**
@@ -46,5 +47,23 @@ public class BannerConditionBuilder {
     /** 배너 슬라이드 삭제되지 않은 조건 */
     public BooleanExpression bannerSlideNotDeleted() {
         return bannerSlideJpaEntity.deletedAt.isNull();
+    }
+
+    /** 배너 그룹 전시 기간 조건 (displayStartAt <= now <= displayEndAt) */
+    public BooleanExpression bannerGroupDisplayPeriodBetween() {
+        Instant now = Instant.now();
+        return bannerGroupJpaEntity
+                .displayStartAt
+                .loe(now)
+                .and(bannerGroupJpaEntity.displayEndAt.goe(now));
+    }
+
+    /** 배너 슬라이드 전시 기간 조건 (displayStartAt <= now <= displayEndAt) */
+    public BooleanExpression bannerSlideDisplayPeriodBetween() {
+        Instant now = Instant.now();
+        return bannerSlideJpaEntity
+                .displayStartAt
+                .loe(now)
+                .and(bannerSlideJpaEntity.displayEndAt.goe(now));
     }
 }

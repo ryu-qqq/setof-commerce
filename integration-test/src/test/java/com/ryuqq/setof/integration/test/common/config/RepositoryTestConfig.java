@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
@@ -38,6 +39,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
             "com.ryuqq.setof.adapter.out.persistence.category.repository",
             "com.ryuqq.setof.adapter.out.persistence.composite.productgroup.condition",
             "com.ryuqq.setof.adapter.out.persistence.composite.productgroup.repository",
+            "com.ryuqq.setof.adapter.out.persistence.banner.condition",
+            "com.ryuqq.setof.adapter.out.persistence.banner.repository",
+            "com.ryuqq.setof.adapter.out.persistence.navigation.condition",
+            "com.ryuqq.setof.adapter.out.persistence.navigation.repository",
+            "com.ryuqq.setof.adapter.out.persistence.contentpage.condition",
+            "com.ryuqq.setof.adapter.out.persistence.contentpage.repository",
             // ===== Legacy DB Adapters =====
             "com.ryuqq.setof.storage.legacy.brand.condition",
             "com.ryuqq.setof.storage.legacy.brand.repository",
@@ -91,6 +98,7 @@ public class RepositoryTestConfig {
      * @return JPAQueryFactory
      */
     @Bean
+    @Primary
     public JPAQueryFactory jpaQueryFactory(EntityManager entityManager) {
         return new JPAQueryFactory(entityManager);
     }

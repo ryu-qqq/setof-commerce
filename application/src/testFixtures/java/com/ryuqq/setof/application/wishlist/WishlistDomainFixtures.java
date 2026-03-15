@@ -29,7 +29,7 @@ public final class WishlistDomainFixtures {
         return WishlistItem.reconstitute(
                 WishlistItemId.of(wishlistItemId),
                 LegacyMemberId.of(userId),
-                MemberId.of(String.valueOf(userId)),
+                MemberId.of(userId),
                 ProductGroupId.of(productGroupId),
                 DeletionStatus.active(),
                 FIXED_NOW);
@@ -44,7 +44,7 @@ public final class WishlistDomainFixtures {
         return WishlistItem.reconstitute(
                 WishlistItemId.of(wishlistItemId),
                 LegacyMemberId.of(userId),
-                MemberId.of(String.valueOf(userId)),
+                MemberId.of(userId),
                 ProductGroupId.of(productGroupId),
                 DeletionStatus.deletedAt(FIXED_NOW),
                 FIXED_NOW);

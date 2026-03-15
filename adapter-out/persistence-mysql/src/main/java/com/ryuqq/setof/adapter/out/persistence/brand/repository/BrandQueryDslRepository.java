@@ -114,7 +114,7 @@ public class BrandQueryDslRepository {
                         .from(brandJpaEntity)
                         .where(
                                 conditionBuilder.displayedEq(criteria.displayed()),
-                                conditionBuilder.brandNameContains(criteria.searchWord()),
+                                conditionBuilder.searchCondition(criteria),
                                 conditionBuilder.notDeleted())
                         .fetchOne();
         return count != null ? count : 0L;

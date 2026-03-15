@@ -56,7 +56,7 @@ public record AvailableReviewSearchCriteria(
         return legacyMemberId != null ? legacyMemberId.value() : null;
     }
 
-    public String memberIdValue() {
+    public Long memberIdValue() {
         return memberId != null ? memberId.value() : null;
     }
 }

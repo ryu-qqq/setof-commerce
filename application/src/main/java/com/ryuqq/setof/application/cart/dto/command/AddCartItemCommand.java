@@ -7,15 +7,15 @@ import java.util.List;
  *
  * <p>레거시 POST /api/v1/cart 기반. 복수 항목 동시 추가 가능.
  *
- * @param memberId 회원 ID (UUIDv7, SecurityContext에서 추출)
+ * @param memberId 회원 ID (Long PK, SecurityContext에서 추출)
  * @param userId 레거시 사용자 ID (SecurityContext에서 추출)
  * @param items 추가할 장바구니 항목 목록
  * @author ryu-qqq
  * @since 1.1.0
  */
-public record AddCartItemCommand(String memberId, Long userId, List<CartItemDetail> items) {
+public record AddCartItemCommand(Long memberId, Long userId, List<CartItemDetail> items) {
 
-    public static AddCartItemCommand of(String memberId, Long userId, List<CartItemDetail> items) {
+    public static AddCartItemCommand of(Long memberId, Long userId, List<CartItemDetail> items) {
         return new AddCartItemCommand(memberId, userId, items);
     }
 

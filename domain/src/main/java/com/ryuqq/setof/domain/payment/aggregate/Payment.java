@@ -285,7 +285,7 @@ public class Payment {
         return memberId;
     }
 
-    public String memberIdValue() {
+    public Long memberIdValue() {
         return memberId != null ? memberId.value() : null;
     }
 

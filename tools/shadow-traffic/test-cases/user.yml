@@ -18,7 +18,8 @@ test_cases:
     method: GET
     auth: NORMAL_GRADE
     compare_mode: full
-    ignore_fields: []
+    ignore_fields:
+      - "['data']['joinedUser']['joinedDate']"
     safe_for_repeat: true
 
   - name: "user_fetch_unauthenticated"

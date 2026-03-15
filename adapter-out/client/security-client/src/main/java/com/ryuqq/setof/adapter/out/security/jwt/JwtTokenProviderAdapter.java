@@ -36,6 +36,8 @@ import org.springframework.stereotype.Component;
 public class JwtTokenProviderAdapter implements TokenProviderPort {
 
     private static final String TOKEN_TYPE_CLAIM = "token_type";
+    private static final String ROLE_CLAIM = "role";
+    private static final String DEFAULT_ROLE = "NORMAL_GRADE";
     private static final String ACCESS_TOKEN_TYPE = "access";
     private static final String REFRESH_TOKEN_TYPE = "refresh";
 
@@ -115,6 +117,7 @@ public class JwtTokenProviderAdapter implements TokenProviderPort {
                 .issuedAt(issuedAt)
                 .expiration(expiration)
                 .claim(TOKEN_TYPE_CLAIM, tokenType)
+                .claim(ROLE_CLAIM, DEFAULT_ROLE)
                 .signWith(secretKey)
                 .compact();
     }

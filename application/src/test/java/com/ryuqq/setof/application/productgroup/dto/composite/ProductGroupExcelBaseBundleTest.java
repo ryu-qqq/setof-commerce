@@ -120,6 +120,9 @@ class ProductGroupExcelBaseBundleTest {
                 "테스트셀러",
                 20L,
                 "테스트브랜드",
+                "테스트브랜드",
+                "TestBrand",
+                "https://example.com/icon.png",
                 30L,
                 "의류",
                 "1,2,30",
@@ -129,6 +132,10 @@ class ProductGroupExcelBaseBundleTest {
                 "ACTIVE",
                 "http://example.com/thumb.jpg",
                 5,
+                50000,
+                45000,
+                40000,
+                20,
                 FIXED_NOW,
                 FIXED_NOW);
     }

@@ -1,13 +1,16 @@
 package com.ryuqq.setof.application.member;
 
 import com.ryuqq.setof.application.member.dto.query.IsExistUserResult;
+import com.ryuqq.setof.application.member.dto.query.MemberLoginInfo;
 import com.ryuqq.setof.application.member.dto.query.MemberProfile;
 import com.ryuqq.setof.application.member.dto.query.MemberWithCredentials;
 import com.ryuqq.setof.application.member.dto.query.MyPageResult;
 import com.ryuqq.setof.application.member.dto.query.UserResult;
-import com.ryuqq.setof.application.order.dto.response.OrderStatusCountResult;
 import com.ryuqq.setof.domain.member.MemberFixtures;
 import com.ryuqq.setof.domain.member.aggregate.Member;
+import com.ryuqq.setof.domain.mileage.vo.MileageSummary;
+import com.ryuqq.setof.domain.order.vo.MyPageOrderCounts;
+import com.ryuqq.setof.domain.order.vo.OrderStatusCount;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
@@ -25,40 +28,62 @@ public final class MemberQueryFixtures {
     private MemberQueryFixtures() {}
 
     // ===== 상수 =====
-    public static final String DEFAULT_GRADE_NAME = "NORMAL_GRADE";
     public static final double DEFAULT_MILEAGE = 1000.0;
     public static final String DEFAULT_SOCIAL_LOGIN_TYPE = "EMAIL";
     public static final String DEFAULT_SOCIAL_PK_ID = "kakao_123456789";
 
-    // ===== MemberProfile =====
+    // ===== MemberLoginInfo =====
+
+    public static MemberLoginInfo memberLoginInfo() {
+        Member member = MemberFixtures.activeMember();
+        return new MemberLoginInfo(member, DEFAULT_SOCIAL_LOGIN_TYPE, null);
+    }
+
+    public static MemberLoginInfo memberLoginInfo(Member member) {
+        return new MemberLoginInfo(member, DEFAULT_SOCIAL_LOGIN_TYPE, null);
+    }
+
+    public static MemberLoginInfo kakaoMemberLoginInfo() {
+        Member member = MemberFixtures.activeMember();
+        return new MemberLoginInfo(member, "KAKAO", DEFAULT_SOCIAL_PK_ID);
+    }
+
+    // ===== MemberProfile (복합 객체) =====
 
     public static MemberProfile memberProfile() {
-        Member member = MemberFixtures.activeMigratedMember();
         return new MemberProfile(
-                member, DEFAULT_GRADE_NAME, DEFAULT_MILEAGE, DEFAULT_SOCIAL_LOGIN_TYPE, null);
+                memberLoginInfo(),
+                MileageSummary.of(DEFAULT_MILEAGE, 0.0, 0.0),
+                myPageOrderCounts());
     }
 
     public static MemberProfile memberProfile(Member member) {
         return new MemberProfile(
-                member, DEFAULT_GRADE_NAME, DEFAULT_MILEAGE, DEFAULT_SOCIAL_LOGIN_TYPE, null);
+                memberLoginInfo(member),
+                MileageSummary.of(DEFAULT_MILEAGE, 0.0, 0.0),
+                myPageOrderCounts());
     }
 
-    public static MemberProfile kakaoMemberProfile() {
-        Member member = MemberFixtures.activeMigratedMember();
-        return new MemberProfile(
-                member, DEFAULT_GRADE_NAME, DEFAULT_MILEAGE, "KAKAO", DEFAULT_SOCIAL_PK_ID);
+    public static MemberProfile emptyMileageProfile() {
+        return new MemberProfile(memberLoginInfo(), MileageSummary.empty(), myPageOrderCounts());
+    }
+
+    // ===== MileageSummary =====
+
+    public static MileageSummary defaultMileageSummary() {
+        return MileageSummary.of(DEFAULT_MILEAGE, 0.0, 0.0);
     }
 
     // ===== MemberWithCredentials =====
 
     public static MemberWithCredentials memberWithCredentials() {
-        Member member = MemberFixtures.activeMigratedMember();
+        Member member = MemberFixtures.activeMember();
         return new MemberWithCredentials(
                 member, "$2a$10$hashedPasswordValue", DEFAULT_SOCIAL_LOGIN_TYPE, null);
     }
 
     public static MemberWithCredentials kakaoMemberWithCredentials() {
-        Member member = MemberFixtures.activeMigratedMember();
+        Member member = MemberFixtures.activeMember();
         return new MemberWithCredentials(member, "", "KAKAO", DEFAULT_SOCIAL_PK_ID);
     }
 
@@ -76,7 +101,6 @@ public final class MemberQueryFixtures {
                 "01012345678",
                 "홍길동",
                 "test@example.com",
-                DEFAULT_GRADE_NAME,
                 DEFAULT_MILEAGE,
                 DEFAULT_SOCIAL_LOGIN_TYPE,
                 null,
@@ -110,11 +134,10 @@ public final class MemberQueryFixtures {
                 "01012345678",
                 "홍길동",
                 "test@example.com",
-                DEFAULT_GRADE_NAME,
                 DEFAULT_MILEAGE,
                 DEFAULT_SOCIAL_LOGIN_TYPE,
                 Instant.parse("2024-01-01T00:00:00Z"),
-                orderStatusCountResults());
+                myPageOrderCounts());
     }
 
     public static MyPageResult emptyOrderMyPageResult(long userId) {
@@ -123,19 +146,19 @@ public final class MemberQueryFixtures {
                 "01012345678",
                 "홍길동",
                 "test@example.com",
-                DEFAULT_GRADE_NAME,
                 DEFAULT_MILEAGE,
                 DEFAULT_SOCIAL_LOGIN_TYPE,
                 Instant.parse("2024-01-01T00:00:00Z"),
-                Collections.emptyList());
+                MyPageOrderCounts.of(Collections.emptyList()));
     }
 
-    // ===== OrderStatusCountResult =====
+    // ===== MyPageOrderCounts =====
 
-    public static List<OrderStatusCountResult> orderStatusCountResults() {
-        return List.of(
-                new OrderStatusCountResult("ORDER_PROCESSING", 2),
-                new OrderStatusCountResult("ORDER_COMPLETED", 5),
-                new OrderStatusCountResult("DELIVERY_PENDING", 1));
+    public static MyPageOrderCounts myPageOrderCounts() {
+        return MyPageOrderCounts.of(
+                List.of(
+                        new OrderStatusCount("ORDER_PROCESSING", 2),
+                        new OrderStatusCount("ORDER_COMPLETED", 5),
+                        new OrderStatusCount("DELIVERY_PENDING", 1)));
     }
 }

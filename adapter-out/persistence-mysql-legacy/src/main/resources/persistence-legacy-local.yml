@@ -26,6 +26,12 @@ persistence:
       enabled: false
     wishlist:
       enabled: false
+    banner:
+      enabled: false
+    navigation:
+      enabled: false
+    content:
+      enabled: false
 
 datasource:
   legacy:

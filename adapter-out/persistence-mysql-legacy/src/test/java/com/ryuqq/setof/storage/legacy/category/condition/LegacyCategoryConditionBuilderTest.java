@@ -346,10 +346,8 @@ class LegacyCategoryConditionBuilderTest {
         void shouldReturnSearchConditionWhenCriteriaHasSearchCondition() {
             // given
             CategorySearchCriteria criteria =
-                    CategorySearchCriteria.builder()
-                            .searchField(CategorySearchField.CATEGORY_NAME)
-                            .searchWord("상의")
-                            .build();
+                    CategorySearchCriteria.of(
+                            null, null, null, null, CategorySearchField.CATEGORY_NAME, "상의", null);
 
             // when
             BooleanExpression condition = conditionBuilder.searchCondition(criteria);

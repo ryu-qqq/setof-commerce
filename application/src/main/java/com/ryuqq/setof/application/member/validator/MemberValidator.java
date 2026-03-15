@@ -49,13 +49,13 @@ public class MemberValidator {
     }
 
     /**
-     * 레거시 user_id로 회원을 조회합니다.
+     * 회원 ID로 회원을 조회합니다.
      *
-     * @param userId 레거시 user_id
+     * @param memberId 회원 ID
      * @return 회원 도메인 객체
      * @throws MemberNotFoundException 회원이 존재하지 않는 경우
      */
-    public Member getByLegacyId(long userId) {
-        return memberReadManager.getByLegacyId(userId);
+    public Member getById(long memberId) {
+        return memberReadManager.getById(memberId);
     }
 }

@@ -1,7 +1,6 @@
 package com.ryuqq.setof.domain.member.id;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,44 +19,20 @@ class MemberIdTest {
         @DisplayName("of()로 MemberId를 생성한다")
         void createWithOf() {
             // when
-            MemberId memberId = MemberId.of("01900000-0000-7000-8000-000000000001");
+            MemberId memberId = MemberId.of(1L);
 
             // then
-            assertThat(memberId.value()).isEqualTo("01900000-0000-7000-8000-000000000001");
+            assertThat(memberId.value()).isEqualTo(1L);
         }
 
         @Test
-        @DisplayName("forNew()로 MemberId를 생성한다")
-        void createWithForNew() {
+        @DisplayName("null 값으로 MemberId를 생성할 수 있다 (신규 회원용)")
+        void createWithNull() {
             // when
-            MemberId memberId = MemberId.forNew("01900000-0000-7000-8000-000000000002");
+            MemberId memberId = MemberId.of(null);
 
             // then
-            assertThat(memberId.value()).isEqualTo("01900000-0000-7000-8000-000000000002");
-        }
-
-        @Test
-        @DisplayName("null 값으로 생성하면 예외가 발생한다")
-        void createWithNullThrowsException() {
-            // when & then
-            assertThatThrownBy(() -> MemberId.of(null))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("null");
-        }
-
-        @Test
-        @DisplayName("빈 문자열로 생성하면 예외가 발생한다")
-        void createWithBlankThrowsException() {
-            // when & then
-            assertThatThrownBy(() -> MemberId.of("")).isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @Test
-        @DisplayName("공백 문자열로 생성하면 예외가 발생한다")
-        void createWithWhitespaceThrowsException() {
-            // when & then
-            assertThatThrownBy(() -> MemberId.of("   "))
-                    .isInstanceOf(IllegalArgumentException.class);
+            assertThat(memberId.value()).isNull();
         }
     }
 
@@ -69,8 +44,8 @@ class MemberIdTest {
         @DisplayName("같은 값을 가진 MemberId는 동등하다")
         void sameValueEquals() {
             // given
-            MemberId id1 = MemberId.of("01900000-0000-7000-8000-000000000001");
-            MemberId id2 = MemberId.of("01900000-0000-7000-8000-000000000001");
+            MemberId id1 = MemberId.of(1L);
+            MemberId id2 = MemberId.of(1L);
 
             // then
             assertThat(id1).isEqualTo(id2);
@@ -81,8 +56,8 @@ class MemberIdTest {
         @DisplayName("다른 값을 가진 MemberId는 동등하지 않다")
         void differentValueNotEquals() {
             // given
-            MemberId id1 = MemberId.of("01900000-0000-7000-8000-000000000001");
-            MemberId id2 = MemberId.of("01900000-0000-7000-8000-000000000002");
+            MemberId id1 = MemberId.of(1L);
+            MemberId id2 = MemberId.of(2L);
 
             // then
             assertThat(id1).isNotEqualTo(id2);

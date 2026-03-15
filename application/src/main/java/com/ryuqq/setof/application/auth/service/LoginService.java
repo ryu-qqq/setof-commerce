@@ -30,6 +30,6 @@ public class LoginService implements LoginUseCase {
     @Override
     public LoginResult execute(LoginCommand command) {
         Member member = loginValidator.validate(command.identifier(), command.password());
-        return tokenCommandFacade.issueLoginResult(member.legacyMemberIdValue());
+        return tokenCommandFacade.issueLoginResult(member.idValue());
     }
 }

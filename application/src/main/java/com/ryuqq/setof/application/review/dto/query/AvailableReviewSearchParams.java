@@ -13,7 +13,7 @@ package com.ryuqq.setof.application.review.dto.query;
  * @since 1.1.0
  */
 public record AvailableReviewSearchParams(
-        Long legacyUserId, String memberId, Long lastOrderId, Integer size) {
+        Long legacyUserId, Long memberId, Long lastOrderId, Integer size) {
 
     private static final int DEFAULT_SIZE = 20;
 

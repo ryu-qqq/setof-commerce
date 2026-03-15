@@ -5,8 +5,9 @@ import com.ryuqq.setof.application.product.dto.response.ResolvedProductOptionRes
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailBundle;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeQueryResult;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailImageResults;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupListBundle;
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupThumbnailCompositeResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupListCompositeResult;
 import com.ryuqq.setof.application.productgroup.dto.composite.WebProductGroupDetailCompositeResult;
 import com.ryuqq.setof.application.productgroup.dto.response.ProductGroupSliceResult;
 import com.ryuqq.setof.application.productgroup.dto.response.ProductGroupThumbnailResult;
@@ -20,6 +21,7 @@ import com.ryuqq.setof.domain.product.aggregate.Product;
 import com.ryuqq.setof.domain.productgroup.aggregate.ProductGroup;
 import com.ryuqq.setof.domain.productgroup.aggregate.SellerOptionGroup;
 import com.ryuqq.setof.domain.productgroup.aggregate.SellerOptionValue;
+import com.ryuqq.setof.domain.productgroup.query.ProductGroupSortKey;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,26 +42,26 @@ public class ProductGroupAssembler {
     /**
      * 커서 기반 목록 번들 → 슬라이스 결과 조립.
      *
-     * <p>pageSize + 1개 조회한 결과에서 hasNext를 판별하고, 커서를 결정합니다. cursor는 레거시 방식과 동일하게
-     * "lastDomainId,cursorValue" 형식으로 인코딩합니다.
+     * <p>pageSize + 1개 조회한 결과에서 hasNext를 판별하고, 커서를 결정합니다.
      *
-     * @param bundle 썸네일 번들 (thumbnails + totalElements + orderType)
+     * @param bundle 목록 번들 (results + totalElements + sortKey)
      * @param requestedSize 요청 페이지 크기
      * @return 슬라이스 결과
      */
     public ProductGroupSliceResult toSliceResult(ProductGroupListBundle bundle, int requestedSize) {
-        if (bundle.thumbnails().isEmpty()) {
+        if (bundle.isEmpty()) {
             return ProductGroupSliceResult.empty(requestedSize);
         }
 
-        boolean hasNext = bundle.thumbnails().size() > requestedSize;
-        List<ProductGroupThumbnailCompositeResult> rawContent =
-                hasNext ? bundle.thumbnails().subList(0, requestedSize) : bundle.thumbnails();
+        List<ProductGroupListCompositeResult> allResults = bundle.results();
+        boolean hasNext = allResults.size() > requestedSize;
+        List<ProductGroupListCompositeResult> rawContent =
+                hasNext ? allResults.subList(0, requestedSize) : allResults;
 
         List<ProductGroupThumbnailResult> content =
                 rawContent.stream().map(ProductGroupThumbnailResult::from).toList();
 
-        String nextCursor = resolveNextCursor(rawContent, bundle.orderType());
+        String nextCursor = resolveNextCursor(rawContent, bundle.sortKey());
         SliceMeta sliceMeta =
                 SliceMeta.withCursor(nextCursor, requestedSize, hasNext, content.size());
 
@@ -69,19 +71,18 @@ public class ProductGroupAssembler {
     /**
      * 다음 커서 값 결정.
      *
-     * <p>레거시 커서 전략: - 마지막 아이템의 productGroupId를 lastDomainId로 사용 - orderType에 따라 cursorValue를 결정 -
-     * "lastDomainId,cursorValue" 형식으로 인코딩
+     * <p>마지막 아이템의 id를 lastDomainId로 사용하고, sortKey에 따라 cursorValue를 결정합니다.
      */
     private String resolveNextCursor(
-            List<ProductGroupThumbnailCompositeResult> content, String orderType) {
+            List<ProductGroupListCompositeResult> content, ProductGroupSortKey sortKey) {
         if (content.isEmpty()) {
             return null;
         }
 
-        ProductGroupThumbnailCompositeResult last = content.get(content.size() - 1);
-        long lastDomainId = last.productGroupId();
+        ProductGroupListCompositeResult last = content.get(content.size() - 1);
+        long lastDomainId = last.id();
 
-        String cursorValue = resolveCursorValue(last, orderType);
+        String cursorValue = resolveCursorValue(last, sortKey);
 
         if (cursorValue != null) {
             return lastDomainId + "," + cursorValue;
@@ -89,37 +90,36 @@ public class ProductGroupAssembler {
         return String.valueOf(lastDomainId);
     }
 
-    /** orderType에 따른 cursorValue 결정. */
-    private String resolveCursorValue(ProductGroupThumbnailCompositeResult item, String orderType) {
-        if (orderType == null) {
+    /** SortKey에 따른 cursorValue 결정. */
+    private String resolveCursorValue(
+            ProductGroupListCompositeResult item, ProductGroupSortKey sortKey) {
+        if (sortKey == null) {
             return null;
         }
-        return switch (orderType.toUpperCase()) {
-            case "RECOMMEND" -> String.valueOf(item.score());
-            case "REVIEW" -> String.valueOf(item.reviewCount());
-            case "HIGH_RATING" -> String.valueOf(item.averageRating());
-            case "LOW_PRICE", "HIGH_PRICE" -> String.valueOf(item.salePrice());
-            case "LOW_DISCOUNT", "HIGH_DISCOUNT" -> String.valueOf(item.discountRate());
-            case "RECENT" -> item.insertDate() != null ? item.insertDate().toString() : null;
+        return switch (sortKey) {
+            case SALE_PRICE -> String.valueOf(item.salePrice());
+            case DISCOUNT_RATE -> String.valueOf(item.discountRate());
+            case CREATED_AT -> item.createdAt() != null ? item.createdAt().toString() : null;
             default -> null;
         };
     }
 
-    /** 상세 번들 → DetailCompositeResult 조립. */
+    /**
+     * 상세 번들 → Admin DetailCompositeResult 조립.
+     *
+     * <p>Admin 조회에서는 variant URL 치환을 하지 않고 원본 이미지 URL을 그대로 사용합니다.
+     */
     public ProductGroupDetailCompositeResult toDetailResult(ProductGroupDetailBundle bundle) {
         ProductGroupDetailCompositeQueryResult queryResult = bundle.queryResult();
-        ProductGroup group = bundle.group();
 
         List<ProductGroupImageResult> images =
-                group.images().stream().map(ProductGroupImageResult::from).toList();
+                bundle.imageResults().images().stream().map(ProductGroupImageResult::from).toList();
 
         ProductOptionMatrixResult optionProductMatrix =
-                buildOptionProductMatrix(group, bundle.products());
+                buildOptionProductMatrix(bundle.group(), bundle.products());
 
-        ProductGroupDescriptionResult descriptionResult =
-                bundle.description().map(ProductGroupDescriptionResult::from).orElse(null);
-        ProductNoticeResult noticeResult =
-                bundle.notice().map(ProductNoticeResult::from).orElse(null);
+        ProductGroupDescriptionResult descriptionResult = buildDescriptionResult(bundle);
+        ProductNoticeResult noticeResult = buildNoticeResult(bundle);
 
         return new ProductGroupDetailCompositeResult(
                 queryResult.id(),
@@ -143,21 +143,22 @@ public class ProductGroupAssembler {
                 noticeResult);
     }
 
-    /** 상세 번들 → 웹(사용자) DetailCompositeResult 조립. */
+    /**
+     * 상세 번들 → 웹(사용자) DetailCompositeResult 조립.
+     *
+     * <p>번들에 포함된 variant URL 맵으로 이미지 URL을 enrichment합니다.
+     */
     public WebProductGroupDetailCompositeResult toWebDetailResult(ProductGroupDetailBundle bundle) {
         ProductGroupDetailCompositeQueryResult queryResult = bundle.queryResult();
-        ProductGroup group = bundle.group();
 
-        List<ProductGroupImageResult> images =
-                group.images().stream().map(ProductGroupImageResult::from).toList();
+        ProductGroupDetailImageResults imageResults = bundle.imageResults();
+        List<ProductGroupImageResult> images = enrichDetailImages(imageResults);
 
         ProductOptionMatrixResult optionProductMatrix =
-                buildOptionProductMatrix(group, bundle.products());
+                buildOptionProductMatrix(bundle.group(), bundle.products());
 
-        ProductGroupDescriptionResult descriptionResult =
-                bundle.description().map(ProductGroupDescriptionResult::from).orElse(null);
-        ProductNoticeResult noticeResult =
-                bundle.notice().map(ProductNoticeResult::from).orElse(null);
+        ProductGroupDescriptionResult descriptionResult = buildDescriptionResult(bundle);
+        ProductNoticeResult noticeResult = buildNoticeResult(bundle);
 
         return new WebProductGroupDetailCompositeResult(
                 queryResult.id(),
@@ -250,5 +251,52 @@ public class ProductGroupAssembler {
                 options,
                 product.createdAt(),
                 product.updatedAt());
+    }
+
+    // ========== Description / Notice 조립 ==========
+
+    /** 1:1 쿼리 결과 + 1:N 배치 결과에서 Description Result를 조립합니다. */
+    private ProductGroupDescriptionResult buildDescriptionResult(ProductGroupDetailBundle bundle) {
+        Long descriptionId = bundle.queryResult().descriptionId();
+        if (descriptionId == null) {
+            return null;
+        }
+        return new ProductGroupDescriptionResult(
+                descriptionId,
+                bundle.queryResult().descriptionContent(),
+                bundle.queryResult().descriptionCdnPath(),
+                bundle.descriptionImages());
+    }
+
+    /** 1:1 쿼리 결과 + 1:N 배치 결과에서 Notice Result를 조립합니다. */
+    private ProductNoticeResult buildNoticeResult(ProductGroupDetailBundle bundle) {
+        Long noticeId = bundle.queryResult().noticeId();
+        if (noticeId == null) {
+            return null;
+        }
+        return new ProductNoticeResult(
+                noticeId,
+                bundle.noticeEntries(),
+                bundle.queryResult().noticeCreatedAt(),
+                bundle.queryResult().noticeUpdatedAt());
+    }
+
+    // ========== Variant URL Enrichment ==========
+
+    /**
+     * 웹 상세 이미지에 Variant URL을 적용합니다.
+     *
+     * <p>래핑 객체에 미리 해석된 variant URL을 사용하여 이미지 URL을 대체합니다.
+     */
+    private List<ProductGroupImageResult> enrichDetailImages(
+            ProductGroupDetailImageResults imageResults) {
+        return imageResults.images().stream()
+                .map(
+                        image ->
+                                ProductGroupImageResult.from(
+                                        image,
+                                        imageResults.resolveImageUrl(
+                                                image.imageId(), image.imageUrl())))
+                .toList();
     }
 }

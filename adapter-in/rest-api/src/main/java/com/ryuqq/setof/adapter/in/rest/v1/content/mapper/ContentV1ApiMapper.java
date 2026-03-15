@@ -341,15 +341,15 @@ public class ContentV1ApiMapper {
         m.put("price", priceMap);
         m.put(
                 "insertDate",
-                t.insertDate() != null ? DateTimeFormatUtils.format(t.insertDate()) : null);
-        m.put("averageRating", t.averageRating());
-        m.put("reviewCount", t.reviewCount());
-        m.put("score", t.score());
+                t.createdAt() != null ? DateTimeFormatUtils.format(t.createdAt()) : null);
+        m.put("averageRating", 0.0);
+        m.put("reviewCount", 0L);
+        m.put("score", 0.0);
         Map<String, Object> statusMap = new LinkedHashMap<>();
-        statusMap.put("soldOutYn", t.soldOutYn());
-        statusMap.put("displayYn", t.displayYn());
+        statusMap.put("soldOutYn", t.soldOut() ? "Y" : "N");
+        statusMap.put("displayYn", t.displayed() ? "Y" : "N");
         m.put("productStatus", statusMap);
-        m.put("favorite", t.favorite());
+        m.put("favorite", false);
         return m;
     }
 

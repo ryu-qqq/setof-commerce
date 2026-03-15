@@ -26,6 +26,7 @@ import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -43,6 +44,7 @@ import org.springframework.stereotype.Repository;
  * @since 1.1.0
  */
 @Repository
+@ConditionalOnProperty(name = "persistence.legacy.enabled", havingValue = "true")
 public class LegacyCategoryQueryDslRepository {
 
     private final JPAQueryFactory queryFactory;
@@ -259,6 +261,33 @@ public class LegacyCategoryQueryDslRepository {
                                 sub.updateDate))
                 .from(rec)
                 .orderBy(sub.categoryDepth.asc())
+                .fetch();
+    }
+
+    /**
+     * 주어진 카테고리의 모든 하위 카테고리 ID 조회 (path 기반).
+     *
+     * <p>카테고리의 path 필드를 사용하여 하위 카테고리를 조회한다. path가 부모의 path로 시작하는 카테고리가 하위 카테고리이다.
+     *
+     * @param categoryId 부모 카테고리 ID
+     * @return 하위 카테고리 ID 목록 (자기 자신 포함)
+     */
+    public List<Long> findDescendantIds(Long categoryId) {
+        String path =
+                queryFactory
+                        .select(legacyCategoryEntity.path)
+                        .from(legacyCategoryEntity)
+                        .where(legacyCategoryEntity.id.eq(categoryId))
+                        .fetchOne();
+
+        if (path == null) {
+            return List.of();
+        }
+
+        return queryFactory
+                .select(legacyCategoryEntity.id)
+                .from(legacyCategoryEntity)
+                .where(legacyCategoryEntity.path.startsWith(path))
                 .fetch();
     }
 

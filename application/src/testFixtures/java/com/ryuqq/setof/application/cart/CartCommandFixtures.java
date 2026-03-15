@@ -19,7 +19,7 @@ public final class CartCommandFixtures {
 
     // ===== 공통 상수 =====
 
-    public static final String MEMBER_ID = "01900000-0000-7000-8000-000000000001";
+    public static final Long MEMBER_ID = 1L;
     public static final Long USER_ID = 100L;
     public static final Long CART_ID = 1L;
     public static final Long PRODUCT_GROUP_ID = 10L;

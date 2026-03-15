@@ -50,7 +50,8 @@ public class ContentPageQueryDslRepository {
                 .from(contentPageJpaEntity)
                 .where(
                         conditionBuilder.contentPageActiveEq(true),
-                        conditionBuilder.contentPageNotDeleted())
+                        conditionBuilder.contentPageNotDeleted(),
+                        conditionBuilder.contentPageDisplayPeriodBetween())
                 .fetch();
     }
 }

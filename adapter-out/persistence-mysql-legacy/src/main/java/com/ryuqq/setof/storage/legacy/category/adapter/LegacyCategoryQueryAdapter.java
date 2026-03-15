@@ -89,4 +89,9 @@ public class LegacyCategoryQueryAdapter implements CategoryQueryPort {
         List<LegacyCategoryTreeDto> dtos = queryDslRepository.findParentsByChildId(childId.value());
         return dtos.stream().map(mapper::toDomain).toList();
     }
+
+    @Override
+    public List<Long> findDescendantIds(CategoryId categoryId) {
+        return queryDslRepository.findDescendantIds(categoryId.value());
+    }
 }

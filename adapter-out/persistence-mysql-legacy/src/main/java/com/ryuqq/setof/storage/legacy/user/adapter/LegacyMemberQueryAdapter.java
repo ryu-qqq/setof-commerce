@@ -1,26 +1,32 @@
 package com.ryuqq.setof.storage.legacy.user.adapter;
 
-import com.ryuqq.setof.application.member.dto.query.MemberProfile;
+import com.ryuqq.setof.application.member.dto.query.MemberLoginInfo;
 import com.ryuqq.setof.application.member.dto.query.MemberWithCredentials;
+import com.ryuqq.setof.application.member.port.out.query.MemberAuthQueryPort;
 import com.ryuqq.setof.application.member.port.out.query.MemberQueryPort;
+import com.ryuqq.setof.domain.common.vo.DeletionStatus;
 import com.ryuqq.setof.domain.member.aggregate.Member;
+import com.ryuqq.setof.domain.member.aggregate.MemberAuth;
+import com.ryuqq.setof.domain.member.exception.MemberNotFoundException;
+import com.ryuqq.setof.domain.member.id.MemberAuthId;
+import com.ryuqq.setof.domain.member.id.MemberId;
+import com.ryuqq.setof.domain.member.vo.AuthProvider;
+import com.ryuqq.setof.domain.member.vo.PasswordHash;
+import com.ryuqq.setof.domain.member.vo.ProviderUserId;
 import com.ryuqq.setof.storage.legacy.user.dto.LegacyMemberProfileQueryDto;
 import com.ryuqq.setof.storage.legacy.user.entity.LegacyUserEntity;
 import com.ryuqq.setof.storage.legacy.user.mapper.LegacyMemberEntityMapper;
 import com.ryuqq.setof.storage.legacy.user.repository.LegacyMemberQueryDslRepository;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
-/**
- * LegacyMemberQueryAdapter - 레거시 회원 조회 Adapter.
- *
- * <p>Application Layer의 MemberQueryPort를 구현하는 Adapter입니다. Domain 객체만 반환합니다.
- *
- * @author ryu-qqq
- * @since 1.2.0
- */
 @Component
-public class LegacyMemberQueryAdapter implements MemberQueryPort {
+@ConditionalOnProperty(name = "persistence.member.enabled", havingValue = "true")
+public class LegacyMemberQueryAdapter implements MemberQueryPort, MemberAuthQueryPort {
 
     private final LegacyMemberQueryDslRepository repository;
     private final LegacyMemberEntityMapper mapper;
@@ -32,8 +38,8 @@ public class LegacyMemberQueryAdapter implements MemberQueryPort {
     }
 
     @Override
-    public Optional<Member> findByLegacyId(Long userId) {
-        return repository.findByUserId(userId).map(mapper::toDomain);
+    public Optional<Member> findById(Long memberId) {
+        return repository.findByUserId(memberId).map(mapper::toDomain);
     }
 
     @Override
@@ -52,8 +58,8 @@ public class LegacyMemberQueryAdapter implements MemberQueryPort {
     }
 
     @Override
-    public Optional<MemberProfile> findProfileByLegacyId(Long userId) {
-        return repository.findProfileByUserId(userId).map(this::toMemberProfile);
+    public Optional<MemberLoginInfo> findLoginInfoById(Long memberId) {
+        return repository.findProfileByUserId(memberId).map(this::toMemberLoginInfo);
     }
 
     private MemberWithCredentials toMemberWithCredentials(LegacyUserEntity entity) {
@@ -65,13 +71,48 @@ public class LegacyMemberQueryAdapter implements MemberQueryPort {
                 entity.getSocialPkId());
     }
 
-    private MemberProfile toMemberProfile(LegacyMemberProfileQueryDto dto) {
+    private MemberLoginInfo toMemberLoginInfo(LegacyMemberProfileQueryDto dto) {
         Member member = mapper.toDomainFromProfile(dto);
-        return new MemberProfile(
+        return new MemberLoginInfo(
                 member,
-                dto.getGradeName(),
-                dto.getCurrentMileage(),
                 dto.getSocialLoginType() != null ? dto.getSocialLoginType().name() : null,
                 dto.getSocialPkId());
+    }
+
+    @Override
+    public MemberAuth findPhoneAuthByMemberId(Long memberId) {
+        LegacyUserEntity entity =
+                repository
+                        .findByUserId(memberId)
+                        .orElseThrow(
+                                () ->
+                                        new MemberNotFoundException(
+                                                "Phone auth not found for memberId: " + memberId));
+        return toMemberAuth(entity);
+    }
+
+    private MemberAuth toMemberAuth(LegacyUserEntity entity) {
+        Instant createdAt = toInstant(entity.getInsertDate());
+        Instant updatedAt = toInstant(entity.getUpdateDate());
+        PasswordHash passwordHash =
+                entity.getPasswordHash() != null ? PasswordHash.of(entity.getPasswordHash()) : null;
+        return MemberAuth.reconstitute(
+                MemberAuthId.of(entity.getId()),
+                MemberId.of(entity.getId()),
+                AuthProvider.PHONE,
+                ProviderUserId.of(entity.getPhoneNumber()),
+                passwordHash,
+                DeletionStatus.active(),
+                createdAt,
+                updatedAt);
+    }
+
+    private static final ZoneId LEGACY_DB_ZONE = ZoneId.of("Asia/Seoul");
+
+    private Instant toInstant(LocalDateTime localDateTime) {
+        if (localDateTime == null) {
+            return Instant.now();
+        }
+        return localDateTime.atZone(LEGACY_DB_ZONE).toInstant();
     }
 }

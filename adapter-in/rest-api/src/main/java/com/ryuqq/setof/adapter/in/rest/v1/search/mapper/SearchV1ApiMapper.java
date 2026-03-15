@@ -165,10 +165,10 @@ public class SearchV1ApiMapper {
                 brand,
                 result.productImageUrl(),
                 price,
-                format(result.insertDate()),
-                result.averageRating(),
-                result.reviewCount(),
-                result.score(),
+                format(result.createdAt()),
+                0.0,
+                0L,
+                0.0,
                 false,
                 productStatus);
     }

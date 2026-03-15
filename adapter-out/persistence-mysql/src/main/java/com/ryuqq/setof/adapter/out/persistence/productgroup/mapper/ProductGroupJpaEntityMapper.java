@@ -66,6 +66,7 @@ public class ProductGroupJpaEntityMapper {
                 domain.regularPriceValue(),
                 domain.currentPriceValue(),
                 domain.salePriceValue(),
+                domain.discountRate(),
                 domain.status().name(),
                 domain.createdAt(),
                 domain.updatedAt(),

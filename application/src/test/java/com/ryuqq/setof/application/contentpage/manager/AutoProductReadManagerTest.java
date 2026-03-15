@@ -1,11 +1,15 @@
 package com.ryuqq.setof.application.contentpage.manager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
 
+import com.ryuqq.setof.application.category.port.out.CategoryQueryPort;
 import com.ryuqq.setof.application.contentpage.ContentPageProductFixtures;
 import com.ryuqq.setof.application.contentpage.port.out.ComponentAutoProductQueryPort;
+import com.ryuqq.setof.domain.category.id.CategoryId;
 import com.ryuqq.setof.domain.contentpage.vo.AutoProductCriteria;
 import com.ryuqq.setof.domain.contentpage.vo.ProductThumbnailSnapshot;
 import java.util.List;
@@ -27,13 +31,15 @@ class AutoProductReadManagerTest {
 
     @Mock private ComponentAutoProductQueryPort queryPort;
 
+    @Mock private CategoryQueryPort categoryQueryPort;
+
     @Nested
     @DisplayName("fetchAutoProducts() - AUTO 상품 조회")
     class FetchAutoProductsTest {
 
         @Test
-        @DisplayName("컴포넌트 레벨 조건으로 AUTO 상품 목록을 조회하여 반환한다")
-        void fetchAutoProducts_ComponentLevelCriteria_ReturnsProductList() {
+        @DisplayName("카테고리 필터 없는 컴포넌트 레벨 조건은 카테고리 확장 없이 조회한다")
+        void fetchAutoProducts_NoCategoryFilter_SkipsExpansion() {
             // given
             AutoProductCriteria criteria =
                     ContentPageProductFixtures.autoProductCriteriaForComponent(1L);
@@ -48,7 +54,7 @@ class AutoProductReadManagerTest {
             // then
             assertThat(result).hasSize(3);
             assertThat(result).isEqualTo(expected);
-            then(queryPort).should().fetchAutoProducts(criteria);
+            then(categoryQueryPort).should(never()).findDescendantIds(any());
         }
 
         @Test
@@ -68,7 +74,6 @@ class AutoProductReadManagerTest {
             // then
             assertThat(result).hasSize(2);
             assertThat(result).isEqualTo(expected);
-            then(queryPort).should().fetchAutoProducts(criteria);
         }
 
         @Test
@@ -85,18 +90,21 @@ class AutoProductReadManagerTest {
 
             // then
             assertThat(result).isEmpty();
-            then(queryPort).should().fetchAutoProducts(criteria);
         }
 
         @Test
-        @DisplayName("카테고리 필터가 있는 조건으로 AUTO 상품을 조회한다")
-        void fetchAutoProducts_WithCategoryFilter_ReturnsFilteredProducts() {
+        @DisplayName("카테고리 필터가 있으면 하위 카테고리까지 확장하여 조회한다")
+        void fetchAutoProducts_WithCategoryFilter_ExpandsToDescendants() {
             // given
             AutoProductCriteria criteria = AutoProductCriteria.ofComponent(1L, 500L, List.of(), 10);
+            List<Long> descendantIds = List.of(500L, 501L, 502L);
+            AutoProductCriteria expanded = criteria.withExpandedCategories(descendantIds);
             List<ProductThumbnailSnapshot> expected =
                     ContentPageProductFixtures.productSnapshots(501L);
 
-            given(queryPort.fetchAutoProducts(criteria)).willReturn(expected);
+            given(categoryQueryPort.findDescendantIds(CategoryId.of(500L)))
+                    .willReturn(descendantIds);
+            given(queryPort.fetchAutoProducts(expanded)).willReturn(expected);
 
             // when
             List<ProductThumbnailSnapshot> result = sut.fetchAutoProducts(criteria);
@@ -104,7 +112,7 @@ class AutoProductReadManagerTest {
             // then
             assertThat(result).hasSize(1);
             assertThat(result.getFirst().productGroupId()).isEqualTo(501L);
-            then(queryPort).should().fetchAutoProducts(criteria);
+            then(categoryQueryPort).should().findDescendantIds(CategoryId.of(500L));
         }
 
         @Test
@@ -123,7 +131,7 @@ class AutoProductReadManagerTest {
 
             // then
             assertThat(result).hasSize(2);
-            then(queryPort).should().fetchAutoProducts(criteria);
+            then(categoryQueryPort).should(never()).findDescendantIds(any());
         }
     }
 }

@@ -3,26 +3,30 @@ description: "Seller API shadow traffic test cases"
 
 test_cases:
   # === 단건 조회 ===
+  # known_diff: seller_id=1(admin)은 new에서 삭제 예정, seller_id=3(binicode)은 new에 미마이그레이션.
   - name: "seller_detail_id_1"
     path: "/api/v1/seller/1"
     method: GET
     auth: none
-    compare_mode: full
+    compare_mode: status_only
     ignore_fields: []
+    known_diff: true
 
+  # alimTalkPhoneNumber: legacy 전용 필드, new에서는 지원하지 않음 (null).
   - name: "seller_detail_id_2"
     path: "/api/v1/seller/2"
     method: GET
     auth: none
     compare_mode: full
-    ignore_fields: []
+    ignore_fields: ["alimTalkPhoneNumber"]
 
   - name: "seller_detail_id_3"
     path: "/api/v1/seller/3"
     method: GET
     auth: none
-    compare_mode: full
+    compare_mode: status_only
     ignore_fields: []
+    known_diff: true
 
   # === 에러 케이스 ===
   - name: "seller_detail_not_found"

@@ -542,19 +542,21 @@ public class LegacyWebContentCompositeQueryDslRepository {
     /**
      * AUTO 상품 조회 (카테고리/브랜드 기반).
      *
-     * <p>product_group 테이블에서 categoryId, brandIds 조건으로 직접 조회한다. displayYn=Y, soldOutYn=N 필터 적용.
+     * <p>product_group 테이블에서 categoryIds, brandIds 조건으로 직접 조회한다. displayYn=Y, soldOutYn=N 필터 적용.
      *
-     * @param categoryId 카테고리 ID (0이면 미적용)
+     * @param categoryIds 카테고리 ID 목록 (빈 리스트이면 미적용)
      * @param brandIds 브랜드 ID 목록 (빈 리스트이면 미적용)
      * @param limit 최대 조회 수
      * @return 상품 목록
      */
     public List<LegacyWebComponentProductQueryDto> fetchAutoProducts(
-            long categoryId, List<Long> brandIds, int limit) {
+            List<Long> categoryIds, List<Long> brandIds, int limit) {
         QLegacyBrandEntity brand = QLegacyBrandEntity.legacyBrandEntity;
 
         BooleanExpression categoryCondition =
-                categoryId != 0L ? legacyProductGroupEntity.categoryId.eq(categoryId) : null;
+                (categoryIds != null && !categoryIds.isEmpty())
+                        ? legacyProductGroupEntity.categoryId.in(categoryIds)
+                        : null;
         BooleanExpression brandCondition =
                 (brandIds != null && !brandIds.isEmpty())
                         ? legacyProductGroupEntity.brandId.in(brandIds)

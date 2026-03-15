@@ -27,7 +27,7 @@ public class RefundAccountCommandFactory {
 
     public RefundAccount createNewRefundAccount(RegisterRefundAccountCommand command) {
         Instant now = timeProvider.now();
-        MemberId memberId = MemberId.of(String.valueOf(command.userId()));
+        MemberId memberId = MemberId.of(command.userId());
         RefundBankInfo bankInfo =
                 RefundBankInfo.of(
                         command.bankName(), command.accountNumber(), command.accountHolderName());

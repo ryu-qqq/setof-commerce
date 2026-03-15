@@ -46,7 +46,7 @@ public final class PaymentFixtures {
     }
 
     public static MemberId defaultMemberId() {
-        return MemberId.of("01914b6c-dead-beef-8000-aabbccddeeff");
+        return MemberId.of(1L);
     }
 
     public static LegacyUserId defaultLegacyUserId() {

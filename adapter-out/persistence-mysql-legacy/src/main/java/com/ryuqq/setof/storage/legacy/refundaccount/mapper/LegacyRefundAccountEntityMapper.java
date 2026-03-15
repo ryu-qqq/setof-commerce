@@ -34,7 +34,7 @@ public class LegacyRefundAccountEntityMapper {
     public RefundAccount toDomain(LegacyRefundAccountEntity entity) {
         return RefundAccount.reconstitute(
                 RefundAccountId.of(entity.getId()),
-                MemberId.of(String.valueOf(entity.getUserId())),
+                MemberId.of(entity.getUserId()),
                 RefundBankInfo.of(
                         entity.getBankName(),
                         entity.getAccountNumber(),
@@ -65,7 +65,7 @@ public class LegacyRefundAccountEntityMapper {
                         ? LocalDateTime.ofInstant(domain.updatedAt(), ZoneId.systemDefault())
                         : now;
 
-        long userId = Long.parseLong(domain.memberIdValue());
+        long userId = domain.memberIdValue();
 
         if (domain.isNew()) {
             return LegacyRefundAccountEntity.create(

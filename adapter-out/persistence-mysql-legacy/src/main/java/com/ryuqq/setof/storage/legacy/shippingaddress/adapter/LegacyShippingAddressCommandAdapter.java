@@ -5,6 +5,7 @@ import com.ryuqq.setof.domain.shippingaddress.aggregate.ShippingAddress;
 import com.ryuqq.setof.storage.legacy.shippingaddress.entity.LegacyShippingAddressEntity;
 import com.ryuqq.setof.storage.legacy.shippingaddress.mapper.LegacyShippingAddressEntityMapper;
 import com.ryuqq.setof.storage.legacy.shippingaddress.repository.LegacyShippingAddressJpaRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
  * @since 1.1.0
  */
 @Component
+@ConditionalOnProperty(name = "persistence.member.enabled", havingValue = "true")
 public class LegacyShippingAddressCommandAdapter implements ShippingAddressCommandPort {
 
     private final LegacyShippingAddressJpaRepository repository;

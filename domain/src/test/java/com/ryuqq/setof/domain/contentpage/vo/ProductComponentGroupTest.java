@@ -139,10 +139,8 @@ class ProductComponentGroupTest {
 
             List<ProductThumbnailSnapshot> auto =
                     List.of(
-                            ContentPageFixtures.snapshotWithDetails(
-                                    10L, 10000, 9000, 10, 4.0, 10L, 0.5),
-                            ContentPageFixtures.snapshotWithDetails(
-                                    20L, 10000, 5000, 50, 4.8, 50L, 0.9));
+                            ContentPageFixtures.snapshotWithDetails(10L, 10000, 9000, 10),
+                            ContentPageFixtures.snapshotWithDetails(20L, 10000, 5000, 50));
 
             Map<Long, List<ProductThumbnailSnapshot>> result =
                     group.mergeComponentProducts(Map.of(), Map.of(2L, auto));

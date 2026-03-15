@@ -78,7 +78,7 @@ class ReviewTest {
             assertThat(review.legacyMemberId()).isNotNull();
             assertThat(review.legacyMemberIdValue()).isEqualTo(100L);
             assertThat(review.memberId()).isNotNull();
-            assertThat(review.memberIdValue()).isEqualTo("member-uuid-0001");
+            assertThat(review.memberIdValue()).isEqualTo(1L);
         }
 
         @Test

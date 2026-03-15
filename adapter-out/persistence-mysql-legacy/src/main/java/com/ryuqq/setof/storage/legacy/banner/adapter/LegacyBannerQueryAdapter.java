@@ -7,6 +7,7 @@ import com.ryuqq.setof.storage.legacy.banner.entity.LegacyBannerItemEntity;
 import com.ryuqq.setof.storage.legacy.banner.mapper.LegacyBannerMapper;
 import com.ryuqq.setof.storage.legacy.banner.repository.LegacyBannerQueryDslRepository;
 import java.util.List;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,10 +15,13 @@ import org.springframework.stereotype.Component;
  *
  * <p>레거시 DB를 조회하여 BannerSlide 도메인 객체로 변환 후 반환한다.
  *
+ * <p>활성화 조건: persistence.legacy.banner.enabled=true
+ *
  * @author ryu-qqq
  * @since 1.1.0
  */
 @Component
+@ConditionalOnProperty(name = "persistence.legacy.banner.enabled", havingValue = "true")
 public class LegacyBannerQueryAdapter implements BannerSlideQueryPort {
 
     private final LegacyBannerQueryDslRepository repository;

@@ -76,7 +76,7 @@ public final class QnaFixtures {
     }
 
     public static MemberId defaultMemberId() {
-        return MemberId.of("member-uuid-0001");
+        return MemberId.of(1L);
     }
 
     public static QnaTitle defaultQnaTitle() {

@@ -22,7 +22,19 @@ public enum ProductGroupSortKey implements SortKey {
     CURRENT_PRICE("currentPrice"),
 
     /** 할인가 순 */
-    SALE_PRICE("salePrice");
+    SALE_PRICE("salePrice"),
+
+    /** 추천 스코어 순 */
+    SCORE("score"),
+
+    /** 리뷰 수 순 */
+    REVIEW_COUNT("reviewCount"),
+
+    /** 평균 평점 순 */
+    AVERAGE_RATING("averageRating"),
+
+    /** 할인율 순 */
+    DISCOUNT_RATE("discountRate");
 
     private final String fieldName;
 

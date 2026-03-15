@@ -33,7 +33,7 @@ class MemberTest {
             Member member = MemberFixtures.newMember();
 
             // then
-            assertThat(member.id()).isNotNull();
+            assertThat(member.id()).isNull();
             assertThat(member.memberNameValue()).isEqualTo("홍길동");
             assertThat(member.emailValue()).isEqualTo("test@example.com");
             assertThat(member.phoneNumberValue()).isEqualTo("010-1234-5678");
@@ -41,8 +41,6 @@ class MemberTest {
             assertThat(member.status()).isEqualTo(MemberStatus.ACTIVE);
             assertThat(member.isActive()).isTrue();
             assertThat(member.isDeleted()).isFalse();
-            assertThat(member.legacyMemberId()).isNull();
-            assertThat(member.isMigrated()).isFalse();
         }
 
         @Test
@@ -52,7 +50,6 @@ class MemberTest {
             Instant now = CommonVoFixtures.now();
             Member member =
                     Member.forNew(
-                            MemberFixtures.defaultMemberId(),
                             MemberFixtures.defaultMemberName(),
                             MemberFixtures.defaultEmail(),
                             CommonVoFixtures.defaultPhoneNumber(),
@@ -63,25 +60,6 @@ class MemberTest {
             // then
             assertThat(member.createdAt()).isEqualTo(now);
             assertThat(member.updatedAt()).isEqualTo(now);
-        }
-    }
-
-    @Nested
-    @DisplayName("forMigration() - 레거시 마이그레이션 회원 생성")
-    class ForMigrationTest {
-
-        @Test
-        @DisplayName("레거시 마이그레이션 회원을 생성한다")
-        void createMigratedMember() {
-            // when
-            Member member = MemberFixtures.migratedMember();
-
-            // then
-            assertThat(member.legacyMemberId()).isNotNull();
-            assertThat(member.legacyMemberIdValue()).isEqualTo(1001L);
-            assertThat(member.isMigrated()).isTrue();
-            assertThat(member.status()).isEqualTo(MemberStatus.ACTIVE);
-            assertThat(member.isActive()).isTrue();
         }
     }
 
@@ -136,18 +114,6 @@ class MemberTest {
             // then
             assertThat(member.isDeleted()).isTrue();
             assertThat(member.isActive()).isFalse();
-        }
-
-        @Test
-        @DisplayName("레거시 마이그레이션된 활성 회원을 복원한다")
-        void reconstituteMigratedMember() {
-            // when
-            Member member = MemberFixtures.activeMigratedMember();
-
-            // then
-            assertThat(member.isMigrated()).isTrue();
-            assertThat(member.legacyMemberIdValue()).isEqualTo(1001L);
-            assertThat(member.isActive()).isTrue();
         }
     }
 
@@ -281,18 +247,6 @@ class MemberTest {
 
             // then
             assertThat(member.canLogin()).isFalse();
-        }
-
-        @Test
-        @DisplayName("레거시 ID가 없는 회원은 isMigrated()가 false다")
-        void memberWithoutLegacyIdIsNotMigrated() {
-            // given
-            Member member = MemberFixtures.activeMember();
-
-            // then
-            assertThat(member.isMigrated()).isFalse();
-            assertThat(member.legacyMemberId()).isNull();
-            assertThat(member.legacyMemberIdValue()).isNull();
         }
     }
 

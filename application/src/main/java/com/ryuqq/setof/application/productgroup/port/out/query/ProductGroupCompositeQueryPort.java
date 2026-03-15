@@ -5,6 +5,9 @@ import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetail
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupEnrichmentResult;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupExcelBaseBundle;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupListCompositeResult;
+import com.ryuqq.setof.application.productgroupdescription.dto.response.DescriptionImageResult;
+import com.ryuqq.setof.application.productgroupimage.dto.response.ImageWithVariantsResult;
+import com.ryuqq.setof.application.productnotice.dto.response.ProductNoticeEntryResult;
 import com.ryuqq.setof.domain.productgroup.query.ProductGroupOffsetSearchCriteria;
 import java.util.List;
 import java.util.Map;
@@ -57,4 +60,17 @@ public interface ProductGroupCompositeQueryPort {
      */
     Map<Long, List<ProductResult>> findProductsWithOptionNamesByProductGroupIds(
             List<Long> productGroupIds);
+
+    /**
+     * 이미지 + Variant 통합 조회.
+     *
+     * <p>product_group_images LEFT JOIN image_variants로 이미지와 변환된 variant를 한 번에 조회합니다.
+     */
+    List<ImageWithVariantsResult> findImagesWithVariantsByProductGroupId(Long productGroupId);
+
+    /** 고시정보 항목 배치 조회. */
+    List<ProductNoticeEntryResult> findNoticeEntriesByNoticeId(Long noticeId);
+
+    /** 상세설명 이미지 배치 조회. */
+    List<DescriptionImageResult> findDescriptionImagesByDescriptionId(Long descriptionId);
 }

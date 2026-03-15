@@ -1,13 +1,12 @@
 package com.ryuqq.setof.storage.legacy.user.mapper;
 
-import com.ryuqq.setof.application.member.dto.command.MemberRegistrationInfo;
 import com.ryuqq.setof.domain.common.vo.DeletionStatus;
 import com.ryuqq.setof.domain.common.vo.Email;
 import com.ryuqq.setof.domain.common.vo.PhoneNumber;
 import com.ryuqq.setof.domain.member.aggregate.Member;
+import com.ryuqq.setof.domain.member.id.MemberId;
 import com.ryuqq.setof.domain.member.vo.DateOfBirth;
 import com.ryuqq.setof.domain.member.vo.Gender;
-import com.ryuqq.setof.domain.member.vo.LegacyMemberId;
 import com.ryuqq.setof.domain.member.vo.MemberName;
 import com.ryuqq.setof.domain.member.vo.MemberStatus;
 import com.ryuqq.setof.storage.legacy.common.Yn;
@@ -34,13 +33,14 @@ public class LegacyMemberEntityMapper {
     /**
      * LegacyUserEntity → Member 도메인 변환.
      *
+     * <p>레거시 user_id가 곧 member PK(Long auto-increment)입니다.
+     *
      * @param entity 레거시 사용자 엔티티
      * @return Member 도메인 객체
      */
     public Member toDomain(LegacyUserEntity entity) {
         return Member.reconstitute(
-                null,
-                LegacyMemberId.of(entity.getId()),
+                MemberId.of(entity.getId()),
                 MemberName.of(entity.getName()),
                 entity.getEmail() != null ? Email.of(entity.getEmail()) : null,
                 PhoneNumber.of(entity.getPhoneNumber()),
@@ -60,8 +60,7 @@ public class LegacyMemberEntityMapper {
      */
     public Member toDomainFromProfile(LegacyMemberProfileQueryDto dto) {
         return Member.reconstitute(
-                null,
-                LegacyMemberId.of(dto.getUserId()),
+                MemberId.of(dto.getUserId()),
                 MemberName.of(dto.getName()),
                 dto.getEmail() != null ? Email.of(dto.getEmail()) : null,
                 PhoneNumber.of(dto.getPhoneNumber()),
@@ -71,28 +70,6 @@ public class LegacyMemberEntityMapper {
                 mapDeletionStatus(dto.getDeleteYn(), toInstant(dto.getInsertDate())),
                 toInstant(dto.getInsertDate()),
                 toInstant(dto.getInsertDate()));
-    }
-
-    /**
-     * Member + MemberRegistrationInfo → LegacyUserEntity 변환.
-     *
-     * @param member 회원 도메인 객체
-     * @param info 가입 부가 정보
-     * @return 레거시 사용자 엔티티
-     */
-    public LegacyUserEntity toEntity(Member member, MemberRegistrationInfo info) {
-        LocalDateTime now = LocalDateTime.now();
-        return LegacyUserEntity.create(
-                member.phoneNumberValue(),
-                info.encodedPassword(),
-                member.memberNameValue(),
-                parseSocialLoginType(info.socialLoginType()),
-                info.socialPkId(),
-                Yn.fromBoolean(info.privacyConsent()),
-                Yn.fromBoolean(info.serviceTermsConsent()),
-                Yn.fromBoolean(info.adConsent()),
-                now,
-                now);
     }
 
     private Gender mapGender(LegacyUserEntity.Gender entityGender) {
@@ -132,17 +109,6 @@ public class LegacyMemberEntityMapper {
             return DeletionStatus.deletedAt(fallbackInstant);
         }
         return DeletionStatus.active();
-    }
-
-    private LegacyUserEntity.SocialLoginType parseSocialLoginType(String socialLoginType) {
-        if (socialLoginType == null || socialLoginType.isBlank()) {
-            return LegacyUserEntity.SocialLoginType.EMAIL;
-        }
-        try {
-            return LegacyUserEntity.SocialLoginType.valueOf(socialLoginType);
-        } catch (IllegalArgumentException e) {
-            return LegacyUserEntity.SocialLoginType.EMAIL;
-        }
     }
 
     private static final ZoneId LEGACY_DB_ZONE = ZoneId.of("Asia/Seoul");

@@ -1,14 +1,12 @@
 package com.ryuqq.setof.application.member.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willDoNothing;
 
 import com.ryuqq.setof.application.member.MemberCommandFixtures;
-import com.ryuqq.setof.application.member.dto.command.StatusChangeContext;
 import com.ryuqq.setof.application.member.dto.command.WithdrawalCommand;
-import com.ryuqq.setof.application.member.factory.MemberCommandFactory;
 import com.ryuqq.setof.application.member.manager.MemberCommandManager;
 import com.ryuqq.setof.application.member.validator.MemberValidator;
 import com.ryuqq.setof.domain.member.MemberFixtures;
@@ -31,7 +29,6 @@ class WithdrawalServiceTest {
     @InjectMocks private WithdrawalService sut;
 
     @Mock private MemberValidator memberValidator;
-    @Mock private MemberCommandFactory memberCommandFactory;
     @Mock private MemberCommandManager memberCommandManager;
 
     @Nested
@@ -43,25 +40,17 @@ class WithdrawalServiceTest {
         void execute_ValidCommand_ProcessesWithdrawal() {
             // given
             WithdrawalCommand command = MemberCommandFixtures.withdrawalCommand();
-            Member member = MemberFixtures.activeMigratedMember();
-            StatusChangeContext context = MemberCommandFixtures.statusChangeContext();
+            Member member = MemberFixtures.activeMember();
 
-            given(memberValidator.getByLegacyId(command.userId())).willReturn(member);
-            given(
-                            memberCommandFactory.createStatusChangeContext(
-                                    member, command.withdrawalReason()))
-                    .willReturn(context);
-            willDoNothing().given(memberCommandManager).persist(context);
+            given(memberValidator.getById(command.userId())).willReturn(member);
+            given(memberCommandManager.persist(any(Member.class))).willReturn(member.idValue());
 
             // when
             sut.execute(command);
 
             // then
-            then(memberValidator).should().getByLegacyId(command.userId());
-            then(memberCommandFactory)
-                    .should()
-                    .createStatusChangeContext(member, command.withdrawalReason());
-            then(memberCommandManager).should().persist(context);
+            then(memberValidator).should().getById(command.userId());
+            then(memberCommandManager).should().persist(member);
         }
 
         @Test
@@ -70,39 +59,31 @@ class WithdrawalServiceTest {
             // given
             WithdrawalCommand command = MemberCommandFixtures.withdrawalCommand(99999L, "탈퇴 사유");
 
-            given(memberValidator.getByLegacyId(command.userId()))
+            given(memberValidator.getById(command.userId()))
                     .willThrow(new MemberNotFoundException(String.valueOf(command.userId())));
 
             // when & then
             assertThatThrownBy(() -> sut.execute(command))
                     .isInstanceOf(MemberNotFoundException.class);
 
-            then(memberCommandFactory).shouldHaveNoInteractions();
             then(memberCommandManager).shouldHaveNoInteractions();
         }
 
         @Test
-        @DisplayName("Validator에서 조회한 회원과 탈퇴 사유가 Factory에 전달된다")
-        void execute_ValidCommand_MemberAndReasonPassedToFactory() {
+        @DisplayName("Validator에서 조회한 회원이 탈퇴 처리 후 persist된다")
+        void execute_ValidCommand_MemberWithdrawnAndPersisted() {
             // given
             WithdrawalCommand command = MemberCommandFixtures.withdrawalCommand();
-            Member member = MemberFixtures.activeMigratedMember();
-            StatusChangeContext context = MemberCommandFixtures.statusChangeContext();
+            Member member = MemberFixtures.activeMember();
 
-            given(memberValidator.getByLegacyId(command.userId())).willReturn(member);
-            given(
-                            memberCommandFactory.createStatusChangeContext(
-                                    member, command.withdrawalReason()))
-                    .willReturn(context);
-            willDoNothing().given(memberCommandManager).persist(context);
+            given(memberValidator.getById(command.userId())).willReturn(member);
+            given(memberCommandManager.persist(any(Member.class))).willReturn(member.idValue());
 
             // when
             sut.execute(command);
 
             // then
-            then(memberCommandFactory)
-                    .should()
-                    .createStatusChangeContext(member, command.withdrawalReason());
+            then(memberCommandManager).should().persist(member);
         }
     }
 }

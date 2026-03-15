@@ -47,7 +47,13 @@ class ProductGroupDetailCompositeQueryResultTest {
                             FIXED_NOW,
                             FIXED_NOW,
                             shippingPolicy,
-                            refundPolicy);
+                            refundPolicy,
+                            1L,
+                            "<p>상세설명</p>",
+                            "https://cdn.example.com/desc/1",
+                            2L,
+                            FIXED_NOW,
+                            FIXED_NOW);
 
             // then
             assertThat(result.id()).isEqualTo(1L);
@@ -87,6 +93,12 @@ class ProductGroupDetailCompositeQueryResultTest {
                             "INACTIVE",
                             FIXED_NOW,
                             FIXED_NOW,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
                             null,
                             null);
 

@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,10 +17,13 @@ import org.springframework.stereotype.Component;
  *
  * <p>ContentPageQueryPort를 구현하여 콘텐츠 메타데이터만 조회한다.
  *
+ * <p>활성화 조건: persistence.legacy.content.enabled=true
+ *
  * @author ryu-qqq
  * @since 1.1.0
  */
 @Component
+@ConditionalOnProperty(name = "persistence.legacy.content.enabled", havingValue = "true")
 public class LegacyWebContentCompositeQueryAdapter implements ContentPageQueryPort {
 
     private final LegacyWebContentCompositeQueryDslRepository repository;

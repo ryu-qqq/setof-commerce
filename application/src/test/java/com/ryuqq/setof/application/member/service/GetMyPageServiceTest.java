@@ -8,10 +8,7 @@ import com.ryuqq.setof.application.member.MemberQueryFixtures;
 import com.ryuqq.setof.application.member.dto.query.MemberProfile;
 import com.ryuqq.setof.application.member.dto.query.MyPageResult;
 import com.ryuqq.setof.application.member.internal.MyPageReadFacade;
-import com.ryuqq.setof.application.order.dto.response.OrderStatusCountResult;
 import com.ryuqq.setof.domain.member.MemberFixtures;
-import java.util.Collections;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -38,66 +35,38 @@ class GetMyPageServiceTest {
         @DisplayName("유효한 userId로 마이페이지 정보를 조회하여 MyPageResult를 반환한다")
         void execute_ValidUserId_ReturnsMyPageResult() {
             // given
-            long userId = MemberFixtures.DEFAULT_LEGACY_MEMBER_ID;
+            long userId = MemberFixtures.DEFAULT_MEMBER_ID;
             MemberProfile profile = MemberQueryFixtures.memberProfile();
-            List<OrderStatusCountResult> orderCounts =
-                    MemberQueryFixtures.orderStatusCountResults();
 
-            given(myPageReadFacade.fetchProfile(userId)).willReturn(profile);
-            given(myPageReadFacade.fetchOrderCounts(userId)).willReturn(orderCounts);
+            given(myPageReadFacade.getProfile(userId)).willReturn(profile);
 
             // when
             MyPageResult result = sut.execute(userId);
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.userId()).isEqualTo(profile.member().legacyMemberIdValue());
+            assertThat(result.userId()).isEqualTo(profile.member().idValue());
             assertThat(result.name()).isEqualTo(profile.member().memberNameValue());
-            assertThat(result.gradeName()).isEqualTo(profile.gradeName());
             assertThat(result.currentMileage()).isEqualTo(profile.currentMileage());
             assertThat(result.socialLoginType()).isEqualTo(profile.socialLoginType());
-            assertThat(result.orderCounts()).hasSize(3);
-            then(myPageReadFacade).should().fetchProfile(userId);
-            then(myPageReadFacade).should().fetchOrderCounts(userId);
+            assertThat(result.orderCounts().counts()).hasSize(3);
+            then(myPageReadFacade).should().getProfile(userId);
         }
 
         @Test
-        @DisplayName("주문이 없어도 빈 주문 목록과 함께 MyPageResult를 반환한다")
-        void execute_NoOrders_ReturnsMyPageResultWithEmptyOrderCounts() {
-            // given
-            long userId = MemberFixtures.DEFAULT_LEGACY_MEMBER_ID;
-            MemberProfile profile = MemberQueryFixtures.memberProfile();
-
-            given(myPageReadFacade.fetchProfile(userId)).willReturn(profile);
-            given(myPageReadFacade.fetchOrderCounts(userId)).willReturn(Collections.emptyList());
-
-            // when
-            MyPageResult result = sut.execute(userId);
-
-            // then
-            assertThat(result.orderCounts()).isEmpty();
-            then(myPageReadFacade).should().fetchProfile(userId);
-            then(myPageReadFacade).should().fetchOrderCounts(userId);
-        }
-
-        @Test
-        @DisplayName("Facade의 fetchProfile과 fetchOrderCounts가 모두 호출된다")
-        void execute_ValidUserId_BothFacadeMethodsCalled() {
+        @DisplayName("Facade의 getProfile이 호출된다")
+        void execute_ValidUserId_FacadeGetProfileCalled() {
             // given
             long userId = 2001L;
             MemberProfile profile = MemberQueryFixtures.memberProfile();
-            List<OrderStatusCountResult> orderCounts =
-                    MemberQueryFixtures.orderStatusCountResults();
 
-            given(myPageReadFacade.fetchProfile(userId)).willReturn(profile);
-            given(myPageReadFacade.fetchOrderCounts(userId)).willReturn(orderCounts);
+            given(myPageReadFacade.getProfile(userId)).willReturn(profile);
 
             // when
             sut.execute(userId);
 
             // then
-            then(myPageReadFacade).should().fetchProfile(userId);
-            then(myPageReadFacade).should().fetchOrderCounts(userId);
+            then(myPageReadFacade).should().getProfile(userId);
         }
     }
 }

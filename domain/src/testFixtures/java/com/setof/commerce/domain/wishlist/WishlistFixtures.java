@@ -52,10 +52,10 @@ public final class WishlistFixtures {
     // ===== MemberId Fixtures =====
 
     public static MemberId defaultMemberId() {
-        return MemberId.of("member-uuid-0001");
+        return MemberId.of(1L);
     }
 
-    public static MemberId memberId(String value) {
+    public static MemberId memberId(Long value) {
         return MemberId.of(value);
     }
 

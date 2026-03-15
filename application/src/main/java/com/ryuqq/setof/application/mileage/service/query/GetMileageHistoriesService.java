@@ -4,11 +4,11 @@ import com.ryuqq.setof.application.mileage.assembler.MileageAssembler;
 import com.ryuqq.setof.application.mileage.dto.query.MileageHistorySearchParams;
 import com.ryuqq.setof.application.mileage.dto.response.MileageHistoryItemResult;
 import com.ryuqq.setof.application.mileage.dto.response.MileageHistoryPageResult;
-import com.ryuqq.setof.application.mileage.dto.response.MileageSummaryResult;
 import com.ryuqq.setof.application.mileage.factory.MileageQueryFactory;
 import com.ryuqq.setof.application.mileage.manager.MileageCompositeReadManager;
 import com.ryuqq.setof.application.mileage.port.in.query.GetMileageHistoriesUseCase;
 import com.ryuqq.setof.domain.mileage.query.MileageHistorySearchCriteria;
+import com.ryuqq.setof.domain.mileage.vo.MileageSummary;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -43,8 +43,13 @@ public class GetMileageHistoriesService implements GetMileageHistoriesUseCase {
         MileageHistorySearchCriteria criteria = queryFactory.createCriteria(params);
         List<MileageHistoryItemResult> histories = readManager.fetchMileageHistories(criteria);
         long totalElements = readManager.countMileageHistories(criteria);
-        MileageSummaryResult summary = readManager.fetchMileageSummary(criteria.userId());
+        MileageSummary summary = readManager.getMileageSummary(criteria.userId());
         return assembler.toPageResult(
-                summary, histories, criteria.page(), criteria.size(), totalElements);
+                criteria.userId(),
+                summary,
+                histories,
+                criteria.page(),
+                criteria.size(),
+                totalElements);
     }
 }

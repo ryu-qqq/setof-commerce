@@ -1,6 +1,7 @@
 package com.ryuqq.setof.integration.test.common.base;
 
-import com.ryuqq.setof.SetofCommerceApplication;
+import com.ryuqq.setof.integration.test.common.config.TestSecurityConfig;
+import com.ryuqq.setof.integration.test.common.config.TestWebApplication;
 import com.ryuqq.setof.integration.test.common.tag.TestTags;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
@@ -54,8 +56,9 @@ import org.springframework.test.context.ActiveProfiles;
 @Tag(TestTags.E2E)
 @Tag(TestTags.API)
 @SpringBootTest(
-        classes = SetofCommerceApplication.class,
+        classes = TestWebApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import(TestSecurityConfig.class)
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class E2ETestBase {

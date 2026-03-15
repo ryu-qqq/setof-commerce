@@ -2,13 +2,13 @@ package com.ryuqq.setof.application.productgroup;
 
 import com.ryuqq.setof.application.common.dto.query.CommonCursorParams;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailBundle;
+import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailImageResults;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupListBundle;
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupThumbnailCompositeResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupListCompositeResult;
 import com.ryuqq.setof.application.productgroup.dto.query.ProductGroupSearchParams;
 import com.ryuqq.setof.domain.productgroup.ProductGroupFixtures;
-import java.time.LocalDateTime;
+import com.ryuqq.setof.domain.productgroup.query.ProductGroupSortKey;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * ProductGroup Application Query 테스트 Fixtures.
@@ -88,54 +88,33 @@ public final class ProductGroupQueryFixtures {
                 new CommonCursorParams(cursor, size));
     }
 
-    // ===== ProductGroupThumbnailCompositeResult =====
+    // ===== ProductGroupListCompositeResult =====
 
-    public static ProductGroupThumbnailCompositeResult thumbnailCompositeResult(
-            Long productGroupId) {
-        return new ProductGroupThumbnailCompositeResult(
-                productGroupId,
-                1L,
-                "테스트 상품그룹",
-                1L,
-                "테스트브랜드",
-                "테스트 브랜드",
-                "Test Brand",
-                "http://example.com/brand-icon.png",
-                "http://example.com/thumb.jpg",
-                50000,
-                45000,
-                40000,
-                10,
-                5000,
-                20,
-                LocalDateTime.of(2024, 1, 1, 0, 0, 0),
-                4.5,
-                100L,
-                95.5,
-                "Y",
-                "N");
+    public static ProductGroupListCompositeResult listCompositeResult(Long productGroupId) {
+        return ProductGroupCompositeQueryFixtures.baseCompositeResult(productGroupId);
     }
 
-    public static List<ProductGroupThumbnailCompositeResult> thumbnailCompositeResults() {
-        return List.of(thumbnailCompositeResult(1L), thumbnailCompositeResult(2L));
+    public static List<ProductGroupListCompositeResult> listCompositeResults() {
+        return List.of(listCompositeResult(1L), listCompositeResult(2L));
     }
 
     // ===== ProductGroupListBundle =====
 
     public static ProductGroupListBundle listBundle() {
-        return new ProductGroupListBundle(thumbnailCompositeResults(), 2L, "RECOMMEND");
+        return new ProductGroupListBundle(
+                listCompositeResults(), 2L, ProductGroupSortKey.CREATED_AT);
     }
 
     public static ProductGroupListBundle emptyListBundle() {
-        return new ProductGroupListBundle(List.of(), 0L, "RECOMMEND");
+        return new ProductGroupListBundle(List.of(), 0L, ProductGroupSortKey.CREATED_AT);
     }
 
     public static ProductGroupListBundle listBundleWithSize(int size) {
-        List<ProductGroupThumbnailCompositeResult> items =
+        List<ProductGroupListCompositeResult> items =
                 java.util.stream.LongStream.rangeClosed(1, size)
-                        .mapToObj(ProductGroupQueryFixtures::thumbnailCompositeResult)
+                        .mapToObj(ProductGroupQueryFixtures::listCompositeResult)
                         .toList();
-        return new ProductGroupListBundle(items, (long) size, "RECOMMEND");
+        return new ProductGroupListBundle(items, (long) size, ProductGroupSortKey.CREATED_AT);
     }
 
     // ===== ProductGroupDetailBundle =====
@@ -143,9 +122,10 @@ public final class ProductGroupQueryFixtures {
     public static ProductGroupDetailBundle detailBundle(Long productGroupId) {
         return new ProductGroupDetailBundle(
                 ProductGroupCompositeQueryFixtures.detailCompositeQueryResult(productGroupId),
+                ProductGroupDetailImageResults.create(List.of()),
                 ProductGroupFixtures.activeProductGroup(productGroupId),
                 List.of(),
-                Optional.empty(),
-                Optional.empty());
+                List.of(),
+                List.of());
     }
 }

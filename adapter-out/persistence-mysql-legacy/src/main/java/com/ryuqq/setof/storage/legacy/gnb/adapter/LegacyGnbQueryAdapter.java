@@ -6,6 +6,7 @@ import com.ryuqq.setof.storage.legacy.gnb.entity.LegacyGnbEntity;
 import com.ryuqq.setof.storage.legacy.gnb.mapper.LegacyGnbMapper;
 import com.ryuqq.setof.storage.legacy.gnb.repository.LegacyGnbQueryDslRepository;
 import java.util.List;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,10 +14,13 @@ import org.springframework.stereotype.Component;
  *
  * <p>레거시 DB를 조회하여 NavigationMenu 도메인 객체로 변환 후 반환한다. Application 레이어는 레거시 존재를 모른다.
  *
+ * <p>활성화 조건: persistence.legacy.navigation.enabled=true
+ *
  * @author ryu-qqq
  * @since 1.1.0
  */
 @Component
+@ConditionalOnProperty(name = "persistence.legacy.navigation.enabled", havingValue = "true")
 public class LegacyGnbQueryAdapter implements NavigationMenuQueryPort {
 
     private final LegacyGnbQueryDslRepository repository;

@@ -1,35 +1,33 @@
 package com.ryuqq.setof.application.member.service;
 
-import com.ryuqq.setof.application.member.dto.query.MemberProfile;
+import com.ryuqq.setof.application.member.dto.query.MemberLoginInfo;
 import com.ryuqq.setof.application.member.dto.query.UserResult;
 import com.ryuqq.setof.application.member.manager.MemberReadManager;
 import com.ryuqq.setof.application.member.port.in.GetUserUseCase;
+import com.ryuqq.setof.application.mileage.manager.MileageCompositeReadManager;
 import com.ryuqq.setof.domain.member.aggregate.Member;
+import com.ryuqq.setof.domain.mileage.vo.MileageSummary;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import org.springframework.stereotype.Service;
 
-/**
- * 회원 프로필 조회 서비스.
- *
- * <p>FetchUserUseCase를 구현하며, MemberReadManager를 통해 회원 프로필을 조회합니다.
- *
- * @author ryu-qqq
- * @since 1.2.0
- */
 @Service
 public class GetUserService implements GetUserUseCase {
 
     private final MemberReadManager memberReadManager;
+    private final MileageCompositeReadManager mileageReadManager;
 
-    public GetUserService(MemberReadManager memberReadManager) {
+    public GetUserService(
+            MemberReadManager memberReadManager, MileageCompositeReadManager mileageReadManager) {
         this.memberReadManager = memberReadManager;
+        this.mileageReadManager = mileageReadManager;
     }
 
     @Override
     public UserResult execute(long userId) {
-        MemberProfile profile = memberReadManager.getProfileByLegacyId(userId);
-        Member member = profile.member();
+        MemberLoginInfo loginInfo = memberReadManager.getLoginInfoById(userId);
+        MileageSummary mileage = mileageReadManager.getMileageSummary(userId);
+        Member member = loginInfo.member();
 
         String joinedDate =
                 member.createdAt() != null
@@ -38,14 +36,13 @@ public class GetUserService implements GetUserUseCase {
                         : null;
 
         return new UserResult(
-                member.legacyMemberIdValue(),
+                member.idValue(),
                 member.phoneNumberValue(),
                 member.memberNameValue(),
                 member.emailValue(),
-                profile.gradeName(),
-                profile.currentMileage(),
-                profile.socialLoginType(),
-                isSocialLogin(profile.socialLoginType()) ? profile.socialPkId() : "",
+                mileage.currentMileage(),
+                loginInfo.socialLoginType(),
+                isSocialLogin(loginInfo.socialLoginType()) ? loginInfo.socialPkId() : "",
                 joinedDate,
                 member.isDeleted() ? "Y" : "N");
     }

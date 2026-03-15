@@ -7,10 +7,12 @@ import static org.mockito.BDDMockito.then;
 import com.ryuqq.setof.application.member.MemberCommandFixtures;
 import com.ryuqq.setof.application.member.MemberQueryFixtures;
 import com.ryuqq.setof.application.member.dto.query.IsExistUserResult;
-import com.ryuqq.setof.application.member.dto.query.MemberProfile;
+import com.ryuqq.setof.application.member.dto.query.MemberLoginInfo;
 import com.ryuqq.setof.application.member.manager.MemberReadManager;
+import com.ryuqq.setof.application.mileage.manager.MileageCompositeReadManager;
 import com.ryuqq.setof.domain.member.MemberFixtures;
 import com.ryuqq.setof.domain.member.aggregate.Member;
+import com.ryuqq.setof.domain.mileage.vo.MileageSummary;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -29,6 +31,7 @@ class IsExistUserServiceTest {
     @InjectMocks private IsExistUserService sut;
 
     @Mock private MemberReadManager memberReadManager;
+    @Mock private MileageCompositeReadManager mileageReadManager;
 
     @Nested
     @DisplayName("execute() - 회원 존재 여부 조회")
@@ -39,22 +42,24 @@ class IsExistUserServiceTest {
         void execute_ExistingMember_ReturnsJoinedResult() {
             // given
             String phoneNumber = MemberCommandFixtures.DEFAULT_PHONE_NUMBER;
-            Member member = MemberFixtures.activeMigratedMember();
-            MemberProfile profile = MemberQueryFixtures.memberProfile(member);
+            Member member = MemberFixtures.activeMember();
+            MemberLoginInfo loginInfo = MemberQueryFixtures.memberLoginInfo(member);
+            MileageSummary mileage = MemberQueryFixtures.defaultMileageSummary();
 
             given(memberReadManager.findByPhoneNumber(phoneNumber)).willReturn(Optional.of(member));
-            given(memberReadManager.getProfileByLegacyId(member.legacyMemberIdValue()))
-                    .willReturn(profile);
+            given(memberReadManager.getLoginInfoById(member.idValue())).willReturn(loginInfo);
+            given(mileageReadManager.getMileageSummary(member.idValue())).willReturn(mileage);
 
             // when
             IsExistUserResult result = sut.execute(phoneNumber);
 
             // then
             assertThat(result.joined()).isTrue();
-            assertThat(result.userId()).isEqualTo(member.legacyMemberIdValue());
+            assertThat(result.userId()).isEqualTo(member.idValue());
             assertThat(result.name()).isEqualTo(member.memberNameValue());
             then(memberReadManager).should().findByPhoneNumber(phoneNumber);
-            then(memberReadManager).should().getProfileByLegacyId(member.legacyMemberIdValue());
+            then(memberReadManager).should().getLoginInfoById(member.idValue());
+            then(mileageReadManager).should().getMileageSummary(member.idValue());
         }
 
         @Test
@@ -97,12 +102,13 @@ class IsExistUserServiceTest {
         void execute_ExistingMember_ReturnsCorrectName() {
             // given
             String phoneNumber = MemberCommandFixtures.DEFAULT_PHONE_NUMBER;
-            Member member = MemberFixtures.activeMigratedMember();
-            MemberProfile profile = MemberQueryFixtures.memberProfile(member);
+            Member member = MemberFixtures.activeMember();
+            MemberLoginInfo loginInfo = MemberQueryFixtures.memberLoginInfo(member);
+            MileageSummary mileage = MemberQueryFixtures.defaultMileageSummary();
 
             given(memberReadManager.findByPhoneNumber(phoneNumber)).willReturn(Optional.of(member));
-            given(memberReadManager.getProfileByLegacyId(member.legacyMemberIdValue()))
-                    .willReturn(profile);
+            given(memberReadManager.getLoginInfoById(member.idValue())).willReturn(loginInfo);
+            given(mileageReadManager.getMileageSummary(member.idValue())).willReturn(mileage);
 
             // when
             IsExistUserResult result = sut.execute(phoneNumber);

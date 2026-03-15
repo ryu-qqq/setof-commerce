@@ -106,7 +106,7 @@ class WishlistItemTest {
             // given
             WishlistItemId id = WishlistItemId.of(10L);
             LegacyMemberId legacyMemberId = LegacyMemberId.of(1001L);
-            MemberId memberId = MemberId.of("member-uuid-0001");
+            MemberId memberId = MemberId.of(1L);
             ProductGroupId productGroupId = ProductGroupId.of(100L);
             DeletionStatus deletionStatus = DeletionStatus.active();
             Instant createdAt = CommonVoFixtures.yesterday();
@@ -127,7 +127,7 @@ class WishlistItemTest {
             assertThat(item.legacyMemberId()).isEqualTo(legacyMemberId);
             assertThat(item.legacyMemberIdValue()).isEqualTo(1001L);
             assertThat(item.memberId()).isEqualTo(memberId);
-            assertThat(item.memberIdValue()).isEqualTo("member-uuid-0001");
+            assertThat(item.memberIdValue()).isEqualTo(1L);
             assertThat(item.productGroupId()).isEqualTo(productGroupId);
             assertThat(item.productGroupIdValue()).isEqualTo(100L);
             assertThat(item.deletionStatus()).isEqualTo(deletionStatus);
@@ -265,7 +265,7 @@ class WishlistItemTest {
             WishlistItem item = WishlistFixtures.activeWishlistItem();
 
             // then
-            assertThat(item.memberIdValue()).isEqualTo("member-uuid-0001");
+            assertThat(item.memberIdValue()).isEqualTo(1L);
         }
 
         @Test

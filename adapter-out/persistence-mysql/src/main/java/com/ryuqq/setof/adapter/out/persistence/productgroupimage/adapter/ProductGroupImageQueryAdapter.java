@@ -6,6 +6,7 @@ import com.ryuqq.setof.application.productgroupimage.port.out.query.ProductGroup
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import com.ryuqq.setof.domain.productgroupimage.aggregate.ProductGroupImage;
 import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Component;
 
 /**
@@ -60,5 +61,12 @@ public class ProductGroupImageQueryAdapter implements ProductGroupImageQueryPort
         return queryDslRepository.findByProductGroupIds(rawIds).stream()
                 .map(mapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Map<Long, Long> findThumbnailImageIdsByProductGroupIds(
+            List<ProductGroupId> productGroupIds) {
+        List<Long> rawIds = productGroupIds.stream().map(ProductGroupId::value).toList();
+        return queryDslRepository.findThumbnailImageIdsByProductGroupIds(rawIds);
     }
 }

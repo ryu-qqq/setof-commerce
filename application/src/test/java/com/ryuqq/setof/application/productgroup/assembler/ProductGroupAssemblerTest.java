@@ -6,14 +6,15 @@ import com.ryuqq.setof.application.productgroup.ProductGroupCompositeQueryFixtur
 import com.ryuqq.setof.application.productgroup.ProductGroupQueryFixtures;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailBundle;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailCompositeResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupDetailImageResults;
 import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupListBundle;
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupThumbnailCompositeResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupListCompositeResult;
 import com.ryuqq.setof.application.productgroup.dto.composite.WebProductGroupDetailCompositeResult;
 import com.ryuqq.setof.application.productgroup.dto.response.ProductGroupSliceResult;
 import com.ryuqq.setof.domain.productgroup.ProductGroupFixtures;
+import com.ryuqq.setof.domain.productgroup.query.ProductGroupSortKey;
 import com.setof.commerce.domain.product.ProductFixtures;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -52,8 +53,8 @@ class ProductGroupAssemblerTest {
         }
 
         @Test
-        @DisplayName("썸네일 수가 요청 크기 이하면 hasNext가 false이다")
-        void toSliceResult_ThumbnailsLessThanSize_HasNextFalse() {
+        @DisplayName("결과 수가 요청 크기 이하면 hasNext가 false이다")
+        void toSliceResult_ResultsLessThanSize_HasNextFalse() {
             // given
             ProductGroupListBundle bundle = ProductGroupQueryFixtures.listBundleWithSize(2);
             int requestedSize = 20;
@@ -67,8 +68,8 @@ class ProductGroupAssemblerTest {
         }
 
         @Test
-        @DisplayName("썸네일 수가 요청 크기 초과면 hasNext가 true이고 nextCursor가 설정된다")
-        void toSliceResult_ThumbnailsMoreThanSize_HasNextTrue() {
+        @DisplayName("결과 수가 요청 크기 초과면 hasNext가 true이고 nextCursor가 설정된다")
+        void toSliceResult_ResultsMoreThanSize_HasNextTrue() {
             // given
             int requestedSize = 2;
             ProductGroupListBundle bundle =
@@ -84,12 +85,13 @@ class ProductGroupAssemblerTest {
         }
 
         @Test
-        @DisplayName("RECOMMEND orderType이면 커서에 score 값이 포함된다")
-        void toSliceResult_RecommendOrderType_CursorContainsScore() {
+        @DisplayName("CREATED_AT sortKey이면 커서에 id와 createdAt가 포함된다")
+        void toSliceResult_CreatedAtSortKey_CursorContainsIdAndDate() {
             // given
-            List<ProductGroupThumbnailCompositeResult> thumbnails =
-                    List.of(ProductGroupQueryFixtures.thumbnailCompositeResult(1L));
-            ProductGroupListBundle bundle = new ProductGroupListBundle(thumbnails, 1L, "RECOMMEND");
+            List<ProductGroupListCompositeResult> results =
+                    List.of(ProductGroupQueryFixtures.listCompositeResult(1L));
+            ProductGroupListBundle bundle =
+                    new ProductGroupListBundle(results, 1L, ProductGroupSortKey.CREATED_AT);
             int requestedSize = 20;
 
             // when
@@ -97,23 +99,7 @@ class ProductGroupAssemblerTest {
 
             // then
             assertThat(result.sliceMeta().cursor()).isNotNull();
-            assertThat(result.sliceMeta().cursor()).contains(",");
-        }
-
-        @Test
-        @DisplayName("orderType이 null이면 커서에 productGroupId만 포함된다")
-        void toSliceResult_NullOrderType_CursorContainsOnlyId() {
-            // given
-            List<ProductGroupThumbnailCompositeResult> thumbnails =
-                    List.of(ProductGroupQueryFixtures.thumbnailCompositeResult(1L));
-            ProductGroupListBundle bundle = new ProductGroupListBundle(thumbnails, 1L, null);
-            int requestedSize = 20;
-
-            // when
-            ProductGroupSliceResult result = sut.toSliceResult(bundle, requestedSize);
-
-            // then
-            assertThat(result.sliceMeta().cursor()).isEqualTo("1");
+            assertThat(result.sliceMeta().cursor()).startsWith("1,");
         }
 
         @Test
@@ -121,11 +107,11 @@ class ProductGroupAssemblerTest {
         void toSliceResult_TotalElementsFromBundle() {
             // given
             long totalElements = 100L;
+            List<ProductGroupListCompositeResult> results =
+                    List.of(ProductGroupQueryFixtures.listCompositeResult(1L));
             ProductGroupListBundle bundle =
                     new ProductGroupListBundle(
-                            List.of(ProductGroupQueryFixtures.thumbnailCompositeResult(1L)),
-                            totalElements,
-                            "RECOMMEND");
+                            results, totalElements, ProductGroupSortKey.SALE_PRICE);
 
             // when
             ProductGroupSliceResult result = sut.toSliceResult(bundle, 20);
@@ -148,10 +134,11 @@ class ProductGroupAssemblerTest {
                     new ProductGroupDetailBundle(
                             ProductGroupCompositeQueryFixtures.detailCompositeQueryResult(
                                     productGroupId),
+                            ProductGroupDetailImageResults.create(List.of()),
                             ProductGroupFixtures.activeProductGroup(productGroupId),
                             List.of(ProductFixtures.activeProduct(1L)),
-                            Optional.empty(),
-                            Optional.empty());
+                            List.of(),
+                            List.of());
 
             // when
             ProductGroupDetailCompositeResult result = sut.toDetailResult(bundle);
@@ -172,10 +159,11 @@ class ProductGroupAssemblerTest {
                     new ProductGroupDetailBundle(
                             ProductGroupCompositeQueryFixtures.detailCompositeQueryResult(
                                     productGroupId),
+                            ProductGroupDetailImageResults.create(List.of()),
                             ProductGroupFixtures.activeProductGroup(productGroupId),
                             List.of(),
-                            Optional.empty(),
-                            Optional.empty());
+                            List.of(),
+                            List.of());
 
             // when
             ProductGroupDetailCompositeResult result = sut.toDetailResult(bundle);
@@ -199,10 +187,11 @@ class ProductGroupAssemblerTest {
                     new ProductGroupDetailBundle(
                             ProductGroupCompositeQueryFixtures.detailCompositeQueryResult(
                                     productGroupId),
+                            ProductGroupDetailImageResults.create(List.of()),
                             ProductGroupFixtures.activeProductGroup(productGroupId),
                             List.of(ProductFixtures.activeProduct(1L)),
-                            Optional.empty(),
-                            Optional.empty());
+                            List.of(),
+                            List.of());
 
             // when
             WebProductGroupDetailCompositeResult result = sut.toWebDetailResult(bundle);
@@ -222,10 +211,11 @@ class ProductGroupAssemblerTest {
                     new ProductGroupDetailBundle(
                             ProductGroupCompositeQueryFixtures.detailCompositeQueryResult(
                                     productGroupId),
+                            ProductGroupDetailImageResults.create(List.of()),
                             ProductGroupFixtures.activeProductGroup(productGroupId),
                             List.of(),
-                            Optional.empty(),
-                            Optional.empty());
+                            List.of(),
+                            List.of());
 
             // when
             WebProductGroupDetailCompositeResult result = sut.toWebDetailResult(bundle);

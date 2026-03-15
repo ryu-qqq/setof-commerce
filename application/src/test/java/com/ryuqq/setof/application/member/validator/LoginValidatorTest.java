@@ -107,7 +107,7 @@ class LoginValidatorTest {
             String rawPassword = MemberCommandFixtures.DEFAULT_PASSWORD;
             MemberWithCredentials kakaoCredentials =
                     MemberQueryFixtures.memberWithCredentials(
-                            MemberFixtures.activeMigratedMember(), "KAKAO");
+                            MemberFixtures.activeMember(), "KAKAO");
 
             given(memberReadManager.getWithCredentialsByPhoneNumber(phoneNumber))
                     .willReturn(kakaoCredentials);
@@ -144,8 +144,7 @@ class LoginValidatorTest {
             String phoneNumber = MemberCommandFixtures.DEFAULT_PHONE_NUMBER;
             String rawPassword = MemberCommandFixtures.DEFAULT_PASSWORD;
             MemberWithCredentials credentialsWithNullSocial =
-                    MemberQueryFixtures.memberWithCredentials(
-                            MemberFixtures.activeMigratedMember(), null);
+                    MemberQueryFixtures.memberWithCredentials(MemberFixtures.activeMember(), null);
 
             given(memberReadManager.getWithCredentialsByPhoneNumber(phoneNumber))
                     .willReturn(credentialsWithNullSocial);

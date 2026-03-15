@@ -1,10 +1,13 @@
 package com.ryuqq.setof.storage.legacy.composite.productgroup.adapter;
 
 import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroupDetailCompositeResult;
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupThumbnailCompositeResult;
-import com.ryuqq.setof.application.productgroup.port.out.query.ProductGroupCompositionQueryPort;
+import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupListCompositeResult;
+import com.ryuqq.setof.application.productgroup.port.out.query.LegacyProductGroupWebQueryPort;
+import com.ryuqq.setof.domain.common.vo.SortDirection;
 import com.ryuqq.setof.domain.legacy.product.dto.query.LegacyProductGroupSearchCondition;
 import com.ryuqq.setof.domain.legacy.search.dto.query.LegacySearchCondition;
+import com.ryuqq.setof.domain.productgroup.query.ProductGroupSearchCriteria;
+import com.ryuqq.setof.domain.productgroup.query.ProductGroupSortKey;
 import com.ryuqq.setof.storage.legacy.composite.productgroup.dto.LegacyWebProductGroupBasicQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.productgroup.dto.LegacyWebProductGroupThumbnailQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.productgroup.dto.LegacyWebProductImageQueryDto;
@@ -20,16 +23,15 @@ import org.springframework.stereotype.Component;
 /**
  * LegacyWebProductGroupCompositeQueryAdapter - 레거시 Web 상품그룹 Composite 조회 Adapter.
  *
- * <p>ProductGroupCompositionQueryPort를 구현하여 Application Layer에 상품그룹 조회 기능을 제공합니다.
+ * <p>LegacyProductGroupWebQueryPort를 구현하여 Application Layer에 상품그룹 조회 기능을 제공합니다.
  *
- * <p>product/group 목록 조회와 키워드 검색(MySQL ngram FULLTEXT) 모두 이 Adapter에서 처리합니다.
+ * <p>ProductGroupSearchCriteria → LegacyProductGroupSearchCondition 변환을 내부에서 처리합니다.
  *
  * @author ryu-qqq
  * @since 1.1.0
  */
 @Component
-public class LegacyWebProductGroupCompositeQueryAdapter
-        implements ProductGroupCompositionQueryPort {
+public class LegacyWebProductGroupCompositeQueryAdapter implements LegacyProductGroupWebQueryPort {
 
     private final LegacyWebProductGroupCompositeQueryDslRepository productGroupRepository;
     private final LegacyWebSearchCompositeQueryDslRepository searchRepository;
@@ -47,14 +49,6 @@ public class LegacyWebProductGroupCompositeQueryAdapter
         this.searchMapper = searchMapper;
     }
 
-    /**
-     * 상품그룹 단건 상세 조회 (fetchProductGroup).
-     *
-     * <p>기본 정보(쿼리 1) + 개별 상품 목록(쿼리 2) + 이미지 목록(쿼리 3)을 조합합니다.
-     *
-     * @param productGroupId 상품그룹 ID
-     * @return LegacyProductGroupDetailCompositeResult Optional
-     */
     @Override
     public Optional<LegacyProductGroupDetailCompositeResult> fetchProductGroupDetail(
             Long productGroupId) {
@@ -71,108 +65,109 @@ public class LegacyWebProductGroupCompositeQueryAdapter
         return Optional.of(productGroupMapper.toDetailCompositeResult(basic, products, images));
     }
 
-    /**
-     * 상품그룹 썸네일 목록 조회 (fetchProductGroups - 커서 페이징).
-     *
-     * <p>pageSize + 1개 조회하여 hasNext 판별을 위임합니다.
-     *
-     * @param condition 검색 조건
-     * @return 썸네일 목록
-     */
     @Override
-    public List<ProductGroupThumbnailCompositeResult> fetchProductGroupThumbnails(
-            LegacyProductGroupSearchCondition condition) {
+    public List<ProductGroupListCompositeResult> fetchProductGroupThumbnails(
+            ProductGroupSearchCriteria criteria) {
+        LegacyProductGroupSearchCondition condition = toLegacyCondition(criteria);
         List<LegacyWebProductGroupThumbnailQueryDto> dtos =
                 productGroupRepository.fetchProductGroupThumbnails(condition);
-        return productGroupMapper.toThumbnailCompositeResults(dtos);
+        return productGroupMapper.toListCompositeResults(dtos);
     }
 
-    /**
-     * 상품그룹 총 개수 조회 (카운트 쿼리).
-     *
-     * @param condition 검색 조건
-     * @return 총 개수
-     */
     @Override
-    public long fetchProductGroupCount(LegacyProductGroupSearchCondition condition) {
+    public long fetchProductGroupCount(ProductGroupSearchCriteria criteria) {
+        LegacyProductGroupSearchCondition condition = toLegacyCondition(criteria);
         return productGroupRepository.fetchProductGroupCount(condition);
     }
 
-    /**
-     * ID 목록 기반 상품그룹 썸네일 조회 (찜 목록 등).
-     *
-     * <p>요청 ID 순서로 재정렬하여 반환합니다.
-     *
-     * @param productGroupIds 상품그룹 ID 목록
-     * @return 요청 ID 순서로 재정렬된 썸네일 목록
-     */
     @Override
-    public List<ProductGroupThumbnailCompositeResult> fetchProductGroupsByIds(
+    public List<ProductGroupListCompositeResult> fetchProductGroupsByIds(
             List<Long> productGroupIds) {
         List<LegacyWebProductGroupThumbnailQueryDto> dtos =
                 productGroupRepository.fetchProductGroupsByIds(productGroupIds);
-        List<ProductGroupThumbnailCompositeResult> results =
-                productGroupMapper.toThumbnailCompositeResults(dtos);
+        List<ProductGroupListCompositeResult> results =
+                productGroupMapper.toListCompositeResults(dtos);
         return productGroupMapper.reOrder(productGroupIds, results);
     }
 
-    /**
-     * 브랜드별 상품그룹 썸네일 조회 (fetchProductGroupWithBrand).
-     *
-     * <p>Redis 캐시 없이 직접 DB 조회합니다. (score DESC 정렬)
-     *
-     * @param brandId 브랜드 ID
-     * @param pageSize 페이지 크기
-     * @return 썸네일 목록
-     */
     @Override
-    public List<ProductGroupThumbnailCompositeResult> fetchProductGroupsByBrand(
+    public List<ProductGroupListCompositeResult> fetchProductGroupsByBrand(
             Long brandId, int pageSize) {
         List<LegacyWebProductGroupThumbnailQueryDto> dtos =
                 productGroupRepository.fetchProductGroupsByBrand(brandId, pageSize);
-        return productGroupMapper.toThumbnailCompositeResults(dtos);
+        return productGroupMapper.toListCompositeResults(dtos);
     }
 
-    /**
-     * 셀러별 상품그룹 썸네일 조회 (fetchProductGroupWithSeller).
-     *
-     * <p>Redis 캐시 없이 직접 DB 조회합니다. (score DESC 정렬)
-     *
-     * @param sellerId 셀러 ID
-     * @param pageSize 페이지 크기
-     * @return 썸네일 목록
-     */
     @Override
-    public List<ProductGroupThumbnailCompositeResult> fetchProductGroupsBySeller(
+    public List<ProductGroupListCompositeResult> fetchProductGroupsBySeller(
             Long sellerId, int pageSize) {
         List<LegacyWebProductGroupThumbnailQueryDto> dtos =
                 productGroupRepository.fetchProductGroupsBySeller(sellerId, pageSize);
-        return productGroupMapper.toThumbnailCompositeResults(dtos);
+        return productGroupMapper.toListCompositeResults(dtos);
     }
 
-    /**
-     * 키워드 검색 결과 목록 조회 (MySQL ngram FULLTEXT + 커서 페이징).
-     *
-     * <p>pageSize + 1개 조회하여 hasNext 판별을 위임합니다.
-     *
-     * @param condition 검색 조건 (searchWord 포함)
-     * @return 검색 결과 목록
-     */
     @Override
-    public List<ProductGroupThumbnailCompositeResult> fetchSearchResults(
-            LegacySearchCondition condition) {
-        return searchMapper.toThumbnailCompositeResults(
-                searchRepository.fetchSearchResults(condition));
+    public List<ProductGroupListCompositeResult> fetchSearchResults(
+            ProductGroupSearchCriteria criteria) {
+        LegacySearchCondition condition = toLegacySearchCondition(criteria);
+        return searchMapper.toListCompositeResults(searchRepository.fetchSearchResults(condition));
     }
 
-    /**
-     * 키워드 검색 전체 건수 조회.
-     *
-     * @param condition 검색 조건
-     * @return 전체 검색 건수
-     */
     @Override
-    public long fetchSearchCount(LegacySearchCondition condition) {
+    public long fetchSearchCount(ProductGroupSearchCriteria criteria) {
+        LegacySearchCondition condition = toLegacySearchCondition(criteria);
         return searchRepository.fetchSearchCount(condition);
+    }
+
+    // ── 변환 ──
+
+    private LegacyProductGroupSearchCondition toLegacyCondition(
+            ProductGroupSearchCriteria criteria) {
+        return new LegacyProductGroupSearchCondition(
+                null,
+                null,
+                criteria.queryContext().hasCursor() ? criteria.queryContext().cursor() : null,
+                criteria.cursorValue(),
+                criteria.lowestPrice(),
+                criteria.highestPrice(),
+                criteria.hasCategoryId() ? criteria.categoryId().value() : null,
+                criteria.hasBrandId() ? criteria.brandId().value() : null,
+                criteria.hasSellerId() ? criteria.sellerId().value() : null,
+                criteria.categoryIds(),
+                criteria.brandIds(),
+                toOrderType(criteria),
+                criteria.queryContext().size());
+    }
+
+    private LegacySearchCondition toLegacySearchCondition(ProductGroupSearchCriteria criteria) {
+        return new LegacySearchCondition(
+                criteria.searchWord(),
+                null,
+                criteria.queryContext().hasCursor() ? criteria.queryContext().cursor() : null,
+                criteria.cursorValue(),
+                criteria.lowestPrice(),
+                criteria.highestPrice(),
+                criteria.hasCategoryId() ? criteria.categoryId().value() : null,
+                criteria.hasBrandId() ? criteria.brandId().value() : null,
+                criteria.hasSellerId() ? criteria.sellerId().value() : null,
+                criteria.categoryIds(),
+                criteria.brandIds(),
+                toOrderType(criteria),
+                criteria.queryContext().size());
+    }
+
+    private String toOrderType(ProductGroupSearchCriteria criteria) {
+        ProductGroupSortKey sortKey = criteria.queryContext().sortKey();
+        SortDirection direction = criteria.queryContext().sortDirection();
+
+        return switch (sortKey) {
+            case SCORE -> "RECOMMEND";
+            case REVIEW_COUNT -> "REVIEW";
+            case AVERAGE_RATING -> "HIGH_RATING";
+            case SALE_PRICE -> direction.isAscending() ? "LOW_PRICE" : "HIGH_PRICE";
+            case DISCOUNT_RATE -> direction.isAscending() ? "LOW_DISCOUNT" : "HIGH_DISCOUNT";
+            case CREATED_AT -> "RECENT";
+            default -> "RECOMMEND";
+        };
     }
 }

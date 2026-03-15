@@ -17,15 +17,12 @@ class OrderTypeTest {
     /** 정렬 검증용 스냅샷 목록 생성. productGroupId 순서를 의도적으로 섞어 정렬 효과를 확인한다. */
     private List<ProductThumbnailSnapshot> mixedSnapshots() {
         return List.of(
-                // id=3: score=0.9, reviewCount=300, currentPrice=5000, discountRate=50,
-                // averageRating=4.8
-                ContentPageFixtures.snapshotWithDetails(3L, 10000, 5000, 50, 4.8, 300L, 0.9),
-                // id=1: score=0.5, reviewCount=100, currentPrice=9000, discountRate=10,
-                // averageRating=3.5
-                ContentPageFixtures.snapshotWithDetails(1L, 10000, 9000, 10, 3.5, 100L, 0.5),
-                // id=2: score=0.7, reviewCount=200, currentPrice=7000, discountRate=30,
-                // averageRating=4.2
-                ContentPageFixtures.snapshotWithDetails(2L, 10000, 7000, 30, 4.2, 200L, 0.7));
+                // id=3: currentPrice=5000, discountRate=50
+                ContentPageFixtures.snapshotWithDetails(3L, 10000, 5000, 50),
+                // id=1: currentPrice=9000, discountRate=10
+                ContentPageFixtures.snapshotWithDetails(1L, 10000, 9000, 10),
+                // id=2: currentPrice=7000, discountRate=30
+                ContentPageFixtures.snapshotWithDetails(2L, 10000, 7000, 30));
     }
 
     private List<ProductThumbnailSnapshot> sortWith(OrderType orderType) {
@@ -48,28 +45,28 @@ class OrderTypeTest {
     }
 
     @Nested
-    @DisplayName("RECOMMEND - score 내림차순")
+    @DisplayName("RECOMMEND - 현재 데이터 없어 RECENT(productGroupId 내림차순)로 폴백")
     class RecommendTest {
 
         @Test
-        @DisplayName("RECOMMEND는 score 내림차순으로 정렬한다")
-        void sortByScoreDescending() {
+        @DisplayName("RECOMMEND는 productGroupId 내림차순(RECENT 폴백)으로 정렬한다")
+        void sortByProductGroupIdDescending() {
             List<ProductThumbnailSnapshot> sorted = sortWith(OrderType.RECOMMEND);
 
-            // score: 3(0.9) > 2(0.7) > 1(0.5)
+            // RECENT 폴백: id 내림차순 → 3 > 2 > 1
             assertThat(sorted)
                     .extracting(ProductThumbnailSnapshot::productGroupId)
                     .containsExactly(3L, 2L, 1L);
         }
 
         @Test
-        @DisplayName("RECOMMEND comparator는 score 기준 역방향 Comparator를 반환한다")
-        void comparatorIsReversedByScore() {
+        @DisplayName("RECOMMEND comparator는 productGroupId 기준 역방향 Comparator를 반환한다")
+        void comparatorIsReversedByProductGroupId() {
             Comparator<ProductThumbnailSnapshot> c = OrderType.RECOMMEND.comparator();
             ProductThumbnailSnapshot high =
-                    ContentPageFixtures.snapshotWithDetails(1L, 10000, 10000, 0, 4.0, 10L, 0.9);
+                    ContentPageFixtures.snapshotWithDetails(2L, 10000, 10000, 0);
             ProductThumbnailSnapshot low =
-                    ContentPageFixtures.snapshotWithDetails(2L, 10000, 10000, 0, 4.0, 10L, 0.5);
+                    ContentPageFixtures.snapshotWithDetails(1L, 10000, 10000, 0);
 
             assertThat(c.compare(high, low)).isNegative();
             assertThat(c.compare(low, high)).isPositive();
@@ -77,15 +74,15 @@ class OrderTypeTest {
     }
 
     @Nested
-    @DisplayName("REVIEW - reviewCount 내림차순")
+    @DisplayName("REVIEW - 현재 데이터 없어 RECENT(productGroupId 내림차순)로 폴백")
     class ReviewTest {
 
         @Test
-        @DisplayName("REVIEW는 reviewCount 내림차순으로 정렬한다")
-        void sortByReviewCountDescending() {
+        @DisplayName("REVIEW는 productGroupId 내림차순(RECENT 폴백)으로 정렬한다")
+        void sortByProductGroupIdDescending() {
             List<ProductThumbnailSnapshot> sorted = sortWith(OrderType.REVIEW);
 
-            // reviewCount: 3(300) > 2(200) > 1(100)
+            // RECENT 폴백: id 내림차순 → 3 > 2 > 1
             assertThat(sorted)
                     .extracting(ProductThumbnailSnapshot::productGroupId)
                     .containsExactly(3L, 2L, 1L);
@@ -109,15 +106,15 @@ class OrderTypeTest {
     }
 
     @Nested
-    @DisplayName("HIGH_RATING - averageRating 내림차순")
+    @DisplayName("HIGH_RATING - 현재 데이터 없어 RECENT(productGroupId 내림차순)로 폴백")
     class HighRatingTest {
 
         @Test
-        @DisplayName("HIGH_RATING은 averageRating 내림차순으로 정렬한다")
-        void sortByAverageRatingDescending() {
+        @DisplayName("HIGH_RATING은 productGroupId 내림차순(RECENT 폴백)으로 정렬한다")
+        void sortByProductGroupIdDescending() {
             List<ProductThumbnailSnapshot> sorted = sortWith(OrderType.HIGH_RATING);
 
-            // averageRating: 3(4.8) > 2(4.2) > 1(3.5)
+            // RECENT 폴백: id 내림차순 → 3 > 2 > 1
             assertThat(sorted)
                     .extracting(ProductThumbnailSnapshot::productGroupId)
                     .containsExactly(3L, 2L, 1L);

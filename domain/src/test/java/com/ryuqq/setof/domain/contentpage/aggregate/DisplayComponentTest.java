@@ -415,7 +415,7 @@ class DisplayComponentTest {
 
             // then
             assertThat(criteria).hasSize(1);
-            assertThat(criteria.get(0).categoryId()).isEqualTo(50L);
+            assertThat(criteria.get(0).categoryIds()).containsExactly(50L);
             assertThat(criteria.get(0).hasCategoryFilter()).isTrue();
         }
 

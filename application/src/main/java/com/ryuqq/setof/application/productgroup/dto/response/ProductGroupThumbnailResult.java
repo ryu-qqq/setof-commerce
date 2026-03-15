@@ -1,7 +1,7 @@
 package com.ryuqq.setof.application.productgroup.dto.response;
 
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupThumbnailCompositeResult;
-import java.time.LocalDateTime;
+import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupListCompositeResult;
+import java.time.Instant;
 
 /**
  * ProductGroupThumbnailResult - 상품그룹 썸네일 응답 DTO.
@@ -23,10 +23,7 @@ import java.time.LocalDateTime;
  * @param directDiscountRate 직접 할인율
  * @param directDiscountPrice 직접 할인액
  * @param discountRate 총 할인율
- * @param insertDate 등록일
- * @param averageRating 평균 평점
- * @param reviewCount 리뷰 수
- * @param score 추천 스코어
+ * @param createdAt 등록일
  * @param displayYn 노출 여부
  * @param soldOutYn 품절 여부
  * @author ryu-qqq
@@ -48,16 +45,19 @@ public record ProductGroupThumbnailResult(
         int directDiscountRate,
         int directDiscountPrice,
         int discountRate,
-        LocalDateTime insertDate,
-        double averageRating,
-        long reviewCount,
-        double score,
+        Instant createdAt,
         String displayYn,
         String soldOutYn) {
 
-    public static ProductGroupThumbnailResult from(ProductGroupThumbnailCompositeResult composite) {
+    /**
+     * ProductGroupListCompositeResult → ProductGroupThumbnailResult 변환.
+     *
+     * <p>새 표준 Composite 결과에서 v1 호환 응답을 생성합니다. directDiscount 필드는 computed 메서드로 계산하고,
+     * displayYn/soldOutYn은 boolean에서 문자열로 변환합니다.
+     */
+    public static ProductGroupThumbnailResult from(ProductGroupListCompositeResult composite) {
         return new ProductGroupThumbnailResult(
-                composite.productGroupId(),
+                composite.id(),
                 composite.sellerId(),
                 composite.productGroupName(),
                 composite.brandId(),
@@ -65,18 +65,15 @@ public record ProductGroupThumbnailResult(
                 composite.displayKoreanName(),
                 composite.displayEnglishName(),
                 composite.brandIconImageUrl(),
-                composite.productImageUrl(),
+                composite.thumbnailUrl(),
                 composite.regularPrice(),
                 composite.currentPrice(),
                 composite.salePrice(),
                 composite.directDiscountRate(),
                 composite.directDiscountPrice(),
                 composite.discountRate(),
-                composite.insertDate(),
-                composite.averageRating(),
-                composite.reviewCount(),
-                composite.score(),
-                composite.displayYn(),
-                composite.soldOutYn());
+                composite.createdAt(),
+                composite.displayed() ? "Y" : "N",
+                composite.soldOut() ? "Y" : "N");
     }
 }

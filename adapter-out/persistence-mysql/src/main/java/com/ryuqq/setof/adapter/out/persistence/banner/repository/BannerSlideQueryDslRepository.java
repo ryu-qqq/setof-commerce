@@ -49,8 +49,10 @@ public class BannerSlideQueryDslRepository {
                         conditionBuilder.bannerGroupTypeEq(bannerType),
                         conditionBuilder.bannerGroupActiveEq(true),
                         conditionBuilder.bannerGroupNotDeleted(),
+                        conditionBuilder.bannerGroupDisplayPeriodBetween(),
                         conditionBuilder.bannerSlideActiveEq(true),
-                        conditionBuilder.bannerSlideNotDeleted())
+                        conditionBuilder.bannerSlideNotDeleted(),
+                        conditionBuilder.bannerSlideDisplayPeriodBetween())
                 .orderBy(bannerSlideJpaEntity.displayOrder.asc())
                 .fetch();
     }

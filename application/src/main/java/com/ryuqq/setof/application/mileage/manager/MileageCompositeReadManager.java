@@ -1,9 +1,9 @@
 package com.ryuqq.setof.application.mileage.manager;
 
 import com.ryuqq.setof.application.mileage.dto.response.MileageHistoryItemResult;
-import com.ryuqq.setof.application.mileage.dto.response.MileageSummaryResult;
 import com.ryuqq.setof.application.mileage.port.out.query.MileageCompositeQueryPort;
 import com.ryuqq.setof.domain.mileage.query.MileageHistorySearchCriteria;
+import com.ryuqq.setof.domain.mileage.vo.MileageSummary;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +57,7 @@ public class MileageCompositeReadManager {
      * @return 마일리지 요약 결과
      */
     @Transactional(readOnly = true)
-    public MileageSummaryResult fetchMileageSummary(long userId) {
+    public MileageSummary getMileageSummary(long userId) {
         return compositeQueryPort.fetchMileageSummary(userId);
     }
 }

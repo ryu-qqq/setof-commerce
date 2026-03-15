@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ryuqq.setof.application.productgroup.ProductGroupQueryFixtures;
 import com.ryuqq.setof.application.productgroup.dto.query.ProductGroupSearchParams;
-import com.ryuqq.setof.domain.legacy.product.dto.query.LegacyProductGroupSearchCondition;
-import com.ryuqq.setof.domain.legacy.search.dto.query.LegacySearchCondition;
+import com.ryuqq.setof.domain.productgroup.query.ProductGroupSearchCriteria;
+import com.ryuqq.setof.domain.productgroup.query.ProductGroupSortKey;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,127 +24,106 @@ class ProductGroupQueryFactoryTest {
     }
 
     @Nested
-    @DisplayName("createCondition() - 상품그룹 검색 조건 생성")
-    class CreateConditionTest {
+    @DisplayName("createCriteria() - 상품그룹 검색 조건 생성")
+    class CreateCriteriaTest {
 
         @Test
-        @DisplayName("SearchParams를 LegacyProductGroupSearchCondition으로 변환한다")
-        void createCondition_ValidParams_ReturnsCondition() {
+        @DisplayName("SearchParams를 ProductGroupSearchCriteria로 변환한다")
+        void createCriteria_ValidParams_ReturnsCriteria() {
             // given
             ProductGroupSearchParams params = ProductGroupQueryFixtures.defaultSearchParams();
 
             // when
-            LegacyProductGroupSearchCondition result = sut.createCondition(params);
+            ProductGroupSearchCriteria result = sut.createCriteria(params);
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.pageSize()).isEqualTo(20);
-            assertThat(result.orderType()).isEqualTo("RECOMMEND");
+            assertThat(result.queryContext().cursorPageRequest().size()).isEqualTo(20);
         }
 
         @Test
-        @DisplayName("orderType이 null이면 RECOMMEND로 기본 설정된다")
-        void createCondition_NullOrderType_DefaultsToRecommend() {
+        @DisplayName("orderType이 null이면 SCORE(RECOMMEND)로 기본 정렬된다")
+        void createCriteria_NullOrderType_DefaultsToScore() {
             // given
             ProductGroupSearchParams params = ProductGroupQueryFixtures.defaultSearchParams();
 
             // when
-            LegacyProductGroupSearchCondition result = sut.createCondition(params);
+            ProductGroupSearchCriteria result = sut.createCriteria(params);
 
             // then
-            assertThat(result.orderType()).isEqualTo("RECOMMEND");
+            assertThat(result.queryContext().sortKey()).isEqualTo(ProductGroupSortKey.SCORE);
         }
 
         @Test
-        @DisplayName("커서가 있으면 lastDomainId와 cursorValue가 파싱된다")
-        void createCondition_WithCursor_ParsesCursorCorrectly() {
+        @DisplayName("커서가 있으면 cursor와 cursorValue가 파싱된다")
+        void createCriteria_WithCursor_ParsesCursorCorrectly() {
             // given
             ProductGroupSearchParams params =
                     ProductGroupQueryFixtures.searchParamsWithCursor("100,95.5", 20);
 
             // when
-            LegacyProductGroupSearchCondition result = sut.createCondition(params);
+            ProductGroupSearchCriteria result = sut.createCriteria(params);
 
             // then
-            assertThat(result.lastDomainId()).isEqualTo(100L);
+            assertThat(result.queryContext().cursorPageRequest().cursor()).isEqualTo(100L);
             assertThat(result.cursorValue()).isEqualTo("95.5");
         }
 
         @Test
-        @DisplayName("커서 없이 첫 페이지 조회하면 lastDomainId가 null이다")
-        void createCondition_NoCursor_LastDomainIdIsNull() {
+        @DisplayName("커서 없이 첫 페이지 조회하면 cursor가 null이다")
+        void createCriteria_NoCursor_CursorIsNull() {
             // given
             ProductGroupSearchParams params = ProductGroupQueryFixtures.defaultSearchParams();
 
             // when
-            LegacyProductGroupSearchCondition result = sut.createCondition(params);
+            ProductGroupSearchCriteria result = sut.createCriteria(params);
 
             // then
-            assertThat(result.lastDomainId()).isNull();
+            assertThat(result.queryContext().cursorPageRequest().cursor()).isNull();
             assertThat(result.cursorValue()).isNull();
         }
 
         @Test
-        @DisplayName("잘못된 형식의 커서는 lastDomainId가 null이다")
-        void createCondition_InvalidCursor_LastDomainIdIsNull() {
+        @DisplayName("잘못된 형식의 커서는 cursor가 null이다")
+        void createCriteria_InvalidCursor_CursorIsNull() {
             // given
             ProductGroupSearchParams params =
                     ProductGroupQueryFixtures.searchParamsWithCursor("invalid-cursor", 20);
 
             // when
-            LegacyProductGroupSearchCondition result = sut.createCondition(params);
+            ProductGroupSearchCriteria result = sut.createCriteria(params);
 
             // then
-            assertThat(result.lastDomainId()).isNull();
+            assertThat(result.queryContext().cursorPageRequest().cursor()).isNull();
         }
-    }
-
-    @Nested
-    @DisplayName("createSearchCondition() - 키워드 검색 조건 생성")
-    class CreateSearchConditionTest {
 
         @Test
-        @DisplayName("키워드를 포함하는 LegacySearchCondition을 생성한다")
-        void createSearchCondition_WithKeyword_ReturnsSearchCondition() {
+        @DisplayName("키워드가 있으면 검색어가 포함된다")
+        void createCriteria_WithKeyword_SearchWordIncluded() {
             // given
             String keyword = "나이키";
             ProductGroupSearchParams params =
                     ProductGroupQueryFixtures.searchParamsWithKeyword(keyword);
 
             // when
-            LegacySearchCondition result = sut.createSearchCondition(params);
+            ProductGroupSearchCriteria result = sut.createCriteria(params);
 
             // then
-            assertThat(result).isNotNull();
             assertThat(result.searchWord()).isEqualTo(keyword);
         }
 
         @Test
-        @DisplayName("커서가 있으면 검색 조건에 파싱된 커서 값이 포함된다")
-        void createSearchCondition_WithCursor_ParsesCursor() {
+        @DisplayName("페이지 크기가 반영된다")
+        void createCriteria_WithSize_SizeReflected() {
             // given
-            ProductGroupSearchParams params =
-                    ProductGroupQueryFixtures.searchParamsWithCursor("50,score123", 10);
+            int size = 10;
+            ProductGroupSearchParams params = ProductGroupQueryFixtures.searchParamsWithSize(size);
 
             // when
-            LegacySearchCondition result = sut.createSearchCondition(params);
+            ProductGroupSearchCriteria result = sut.createCriteria(params);
 
             // then
-            assertThat(result.lastDomainId()).isEqualTo(50L);
-            assertThat(result.cursorValue()).isEqualTo("score123");
-        }
-
-        @Test
-        @DisplayName("대소문자를 가리지 않고 orderType이 대문자로 변환된다")
-        void createSearchCondition_LowerCaseOrderType_ConvertsToUpperCase() {
-            // given
-            ProductGroupSearchParams params = ProductGroupQueryFixtures.searchParamsWithSize(20);
-
-            // when
-            LegacySearchCondition result = sut.createSearchCondition(params);
-
-            // then
-            assertThat(result.orderType()).isEqualTo("RECOMMEND");
+            assertThat(result.queryContext().cursorPageRequest().size()).isEqualTo(size);
         }
     }
 }

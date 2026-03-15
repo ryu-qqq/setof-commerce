@@ -1,30 +1,27 @@
 package com.ryuqq.setof.application.member.service;
 
 import com.ryuqq.setof.application.member.dto.query.IsExistUserResult;
-import com.ryuqq.setof.application.member.dto.query.MemberProfile;
+import com.ryuqq.setof.application.member.dto.query.MemberLoginInfo;
 import com.ryuqq.setof.application.member.manager.MemberReadManager;
 import com.ryuqq.setof.application.member.port.in.IsExistUserUseCase;
+import com.ryuqq.setof.application.mileage.manager.MileageCompositeReadManager;
 import com.ryuqq.setof.domain.member.aggregate.Member;
+import com.ryuqq.setof.domain.mileage.vo.MileageSummary;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
-/**
- * 회원 존재 여부 조회 서비스.
- *
- * <p>IsExistUserUseCase를 구현하며, 전화번호로 회원 가입 여부를 확인합니다.
- *
- * @author ryu-qqq
- * @since 1.2.0
- */
 @Service
 public class IsExistUserService implements IsExistUserUseCase {
 
     private final MemberReadManager memberReadManager;
+    private final MileageCompositeReadManager mileageReadManager;
 
-    public IsExistUserService(MemberReadManager memberReadManager) {
+    public IsExistUserService(
+            MemberReadManager memberReadManager, MileageCompositeReadManager mileageReadManager) {
         this.memberReadManager = memberReadManager;
+        this.mileageReadManager = mileageReadManager;
     }
 
     @Override
@@ -36,16 +33,16 @@ public class IsExistUserService implements IsExistUserUseCase {
         }
 
         Member member = memberOpt.get();
-        MemberProfile profile =
-                memberReadManager.getProfileByLegacyId(member.legacyMemberIdValue());
+        MemberLoginInfo loginInfo = memberReadManager.getLoginInfoById(member.idValue());
+        MileageSummary mileage = mileageReadManager.getMileageSummary(member.idValue());
 
         return IsExistUserResult.joined(
-                member.legacyMemberIdValue(),
+                member.idValue(),
                 member.memberNameValue(),
-                profile.socialLoginType(),
+                loginInfo.socialLoginType(),
                 member.phoneNumberValue(),
-                isSocialLogin(profile.socialLoginType()) ? profile.socialPkId() : "",
-                profile.currentMileage(),
+                isSocialLogin(loginInfo.socialLoginType()) ? loginInfo.socialPkId() : "",
+                mileage.currentMileage(),
                 member.createdAt() != null
                         ? LocalDateTime.ofInstant(member.createdAt(), ZoneId.of("Asia/Seoul"))
                                 .toString()

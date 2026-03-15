@@ -125,7 +125,7 @@ public class RefundAccount {
         return memberId;
     }
 
-    public String memberIdValue() {
+    public Long memberIdValue() {
         return memberId.value();
     }
 

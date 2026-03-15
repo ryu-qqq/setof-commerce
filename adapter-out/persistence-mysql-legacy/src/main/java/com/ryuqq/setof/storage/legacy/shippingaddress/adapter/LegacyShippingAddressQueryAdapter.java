@@ -8,6 +8,7 @@ import com.ryuqq.setof.storage.legacy.shippingaddress.mapper.LegacyShippingAddre
 import com.ryuqq.setof.storage.legacy.shippingaddress.repository.LegacyShippingAddressQueryDslRepository;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
  * @since 1.1.0
  */
 @Component
+@ConditionalOnProperty(name = "persistence.member.enabled", havingValue = "true")
 public class LegacyShippingAddressQueryAdapter implements ShippingAddressQueryPort {
 
     private final LegacyShippingAddressQueryDslRepository repository;

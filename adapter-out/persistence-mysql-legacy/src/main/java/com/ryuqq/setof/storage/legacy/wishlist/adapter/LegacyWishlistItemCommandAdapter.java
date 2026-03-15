@@ -8,6 +8,7 @@ import com.ryuqq.setof.storage.legacy.wishlist.repository.LegacyWishlistItemJpaR
 import com.ryuqq.setof.storage.legacy.wishlist.repository.LegacyWishlistItemQueryDslRepository;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
  * @since 1.1.0
  */
 @Component
+@ConditionalOnProperty(name = "persistence.member.enabled", havingValue = "true")
 public class LegacyWishlistItemCommandAdapter implements WishlistCommandPort {
 
     private final LegacyWishlistItemJpaRepository jpaRepository;

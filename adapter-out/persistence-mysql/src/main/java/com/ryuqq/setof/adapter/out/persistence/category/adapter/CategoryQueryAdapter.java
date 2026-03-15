@@ -145,4 +145,17 @@ public class CategoryQueryAdapter implements CategoryQueryPort {
         List<CategoryTreeDto> dtos = queryDslRepository.findAncestorsByChildId(childId.value());
         return dtos.stream().map(mapper::toDomain).toList();
     }
+
+    /**
+     * 주어진 카테고리의 모든 하위 카테고리 ID 조회 (자기 자신 포함).
+     *
+     * @param categoryId 부모 카테고리 ID
+     * @return 하위 카테고리 ID 목록 (자기 자신 포함)
+     */
+    @Override
+    public List<Long> findDescendantIds(CategoryId categoryId) {
+        List<CategoryTreeDto> dtos =
+                queryDslRepository.findDescendantsByCategoryId(categoryId.value());
+        return dtos.stream().map(CategoryTreeDto::getId).toList();
+    }
 }

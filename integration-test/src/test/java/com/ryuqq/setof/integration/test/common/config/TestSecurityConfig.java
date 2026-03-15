@@ -10,22 +10,38 @@ import com.ryuqq.setof.application.auth.dto.response.TokenPairResponse;
 import com.ryuqq.setof.application.auth.port.out.cache.RefreshTokenCacheCommandPort;
 import com.ryuqq.setof.application.auth.port.out.cache.RefreshTokenCacheQueryPort;
 import com.ryuqq.setof.application.auth.port.out.client.TokenProviderPort;
-import com.ryuqq.setof.application.productgroup.port.out.query.ProductGroupCompositeQueryPort;
-import com.ryuqq.setof.application.productgroup.port.out.query.ProductGroupCompositionQueryPort;
+import com.ryuqq.setof.application.productgroup.port.out.query.LegacyProductGroupWebQueryPort;
 import com.ryuqq.setof.domain.auth.vo.RefreshTokenCacheKey;
 import java.util.Optional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * 통합 테스트용 설정.
  *
- * <p>테스트 환경에서 필요한 Mock 빈들을 제공합니다. Security 설정은 기존 SecurityConfig를 사용합니다.
+ * <p>테스트 환경에서 필요한 Mock 빈들과 Security 설정을 제공합니다.
  */
 @TestConfiguration
 @Profile("test")
 public class TestSecurityConfig {
+
+    /**
+     * 테스트용 SecurityFilterChain - 모든 요청 허용.
+     *
+     * <p>Web E2E 테스트에서 실제 SecurityConfig를 제외하고 사용합니다.
+     */
+    @Bean
+    @ConditionalOnMissingBean(SecurityFilterChain.class)
+    public SecurityFilterChain testFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authz -> authz.anyRequest().permitAll());
+        return http.build();
+    }
 
     /**
      * 테스트용 TokenProviderPort Mock.
@@ -33,6 +49,7 @@ public class TestSecurityConfig {
      * @return TokenProviderPort Mock
      */
     @Bean
+    @ConditionalOnMissingBean(TokenProviderPort.class)
     public TokenProviderPort tokenProviderPort() {
         TokenProviderPort mock = mock(TokenProviderPort.class);
         when(mock.generateTokenPair(anyString()))
@@ -53,6 +70,7 @@ public class TestSecurityConfig {
      * @return RefreshTokenCacheCommandPort Mock
      */
     @Bean
+    @ConditionalOnMissingBean(RefreshTokenCacheCommandPort.class)
     public RefreshTokenCacheCommandPort refreshTokenCacheCommandPort() {
         RefreshTokenCacheCommandPort mock = mock(RefreshTokenCacheCommandPort.class);
         doNothing()
@@ -68,6 +86,7 @@ public class TestSecurityConfig {
      * @return RefreshTokenCacheQueryPort Mock
      */
     @Bean
+    @ConditionalOnMissingBean(RefreshTokenCacheQueryPort.class)
     public RefreshTokenCacheQueryPort refreshTokenCacheQueryPort() {
         RefreshTokenCacheQueryPort mock = mock(RefreshTokenCacheQueryPort.class);
         when(mock.findMemberIdByToken(any(RefreshTokenCacheKey.class)))
@@ -76,26 +95,13 @@ public class TestSecurityConfig {
     }
 
     /**
-     * 테스트용 ProductGroupCompositionQueryPort Mock.
+     * 테스트용 LegacyProductGroupWebQueryPort Mock.
      *
-     * <p>레거시 DB 전용 포트로, 테스트 환경에서는 Mock으로 대체합니다.
-     *
-     * @return ProductGroupCompositionQueryPort Mock
+     * @return LegacyProductGroupWebQueryPort Mock
      */
     @Bean
-    public ProductGroupCompositionQueryPort productGroupCompositionQueryPort() {
-        return mock(ProductGroupCompositionQueryPort.class);
-    }
-
-    /**
-     * 테스트용 ProductGroupCompositeQueryPort Mock.
-     *
-     * <p>Composite QueryDSL 포트로, 구현체가 WIP 상태이므로 Mock으로 대체합니다.
-     *
-     * @return ProductGroupCompositeQueryPort Mock
-     */
-    @Bean
-    public ProductGroupCompositeQueryPort productGroupCompositeQueryPort() {
-        return mock(ProductGroupCompositeQueryPort.class);
+    @ConditionalOnMissingBean(LegacyProductGroupWebQueryPort.class)
+    public LegacyProductGroupWebQueryPort legacyProductGroupWebQueryPort() {
+        return mock(LegacyProductGroupWebQueryPort.class);
     }
 }

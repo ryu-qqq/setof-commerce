@@ -2,8 +2,8 @@ package com.ryuqq.setof.application.mileage.assembler;
 
 import com.ryuqq.setof.application.mileage.dto.response.MileageHistoryItemResult;
 import com.ryuqq.setof.application.mileage.dto.response.MileageHistoryPageResult;
-import com.ryuqq.setof.application.mileage.dto.response.MileageSummaryResult;
 import com.ryuqq.setof.domain.common.vo.PageMeta;
+import com.ryuqq.setof.domain.mileage.vo.MileageSummary;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +23,7 @@ public class MileageAssembler {
      *
      * <p>이력 목록의 각 항목에 사유별 제목 자동 적용 (withReasonTitle).
      *
+     * @param userId 사용자 ID
      * @param summary 마일리지 요약
      * @param histories 마일리지 이력 목록
      * @param page 현재 페이지 번호
@@ -31,7 +32,8 @@ public class MileageAssembler {
      * @return MileageHistoryPageResult
      */
     public MileageHistoryPageResult toPageResult(
-            MileageSummaryResult summary,
+            long userId,
+            MileageSummary summary,
             List<MileageHistoryItemResult> histories,
             int page,
             int size,
@@ -39,6 +41,6 @@ public class MileageAssembler {
         List<MileageHistoryItemResult> titled =
                 histories.stream().map(MileageHistoryItemResult::withReasonTitle).toList();
         PageMeta pageMeta = PageMeta.of(page, size, totalElements);
-        return MileageHistoryPageResult.of(summary, titled, pageMeta);
+        return MileageHistoryPageResult.of(userId, summary, titled, pageMeta);
     }
 }

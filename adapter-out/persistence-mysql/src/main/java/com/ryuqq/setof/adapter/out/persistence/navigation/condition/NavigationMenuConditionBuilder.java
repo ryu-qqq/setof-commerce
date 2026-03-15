@@ -3,6 +3,7 @@ package com.ryuqq.setof.adapter.out.persistence.navigation.condition;
 import static com.ryuqq.setof.adapter.out.persistence.navigation.entity.QNavigationMenuJpaEntity.navigationMenuJpaEntity;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import java.time.Instant;
 import org.springframework.stereotype.Component;
 
 /**
@@ -28,5 +29,14 @@ public class NavigationMenuConditionBuilder {
     /** 삭제되지 않은 조건 */
     public BooleanExpression notDeleted() {
         return navigationMenuJpaEntity.deletedAt.isNull();
+    }
+
+    /** 전시 기간 조건 (displayStartAt <= now <= displayEndAt) */
+    public BooleanExpression displayPeriodBetween() {
+        Instant now = Instant.now();
+        return navigationMenuJpaEntity
+                .displayStartAt
+                .loe(now)
+                .and(navigationMenuJpaEntity.displayEndAt.goe(now));
     }
 }

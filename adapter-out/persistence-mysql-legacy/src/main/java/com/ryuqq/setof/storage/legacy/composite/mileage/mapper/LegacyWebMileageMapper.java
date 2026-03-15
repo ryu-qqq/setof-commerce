@@ -3,7 +3,7 @@ package com.ryuqq.setof.storage.legacy.composite.mileage.mapper;
 import com.ryuqq.setof.application.legacy.mileage.dto.response.LegacyMileageHistoryResult;
 import com.ryuqq.setof.application.legacy.mileage.dto.response.LegacyUserMileageResult;
 import com.ryuqq.setof.application.mileage.dto.response.MileageHistoryItemResult;
-import com.ryuqq.setof.application.mileage.dto.response.MileageSummaryResult;
+import com.ryuqq.setof.domain.mileage.vo.MileageSummary;
 import com.ryuqq.setof.storage.legacy.composite.mileage.dto.LegacyWebMileageHistoryQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.mileage.dto.LegacyWebUserMileageQueryDto;
 import java.time.LocalDateTime;
@@ -60,18 +60,16 @@ public class LegacyWebMileageMapper {
     }
 
     /**
-     * UserMileage QueryDto 목록 → MileageSummaryResult 변환 (신규 Port용).
+     * UserMileage QueryDto 목록 → MileageSummary 도메인 VO 변환 (신규 Port용).
      *
      * <p>만료 예정 마일리지 계산 포함.
      *
-     * @param userId 사용자 ID
      * @param dtos 사용자 마일리지 QueryDto 목록
-     * @return MileageSummaryResult
+     * @return MileageSummary
      */
-    public MileageSummaryResult toSummaryResult(
-            long userId, List<LegacyWebUserMileageQueryDto> dtos) {
+    public MileageSummary toMileageSummary(List<LegacyWebUserMileageQueryDto> dtos) {
         if (dtos == null || dtos.isEmpty()) {
-            return MileageSummaryResult.empty(userId);
+            return MileageSummary.empty();
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -79,7 +77,7 @@ public class LegacyWebMileageMapper {
         double currentMileageAmount = calculateCurrentMileage(dtos);
         double availableMileage = Math.max(currentMileageAmount - expiringMileageAmount, 0.0);
 
-        return MileageSummaryResult.of(userId, availableMileage, 0.0, expiringMileageAmount);
+        return MileageSummary.of(availableMileage, 0.0, expiringMileageAmount);
     }
 
     // ========== 레거시 메서드 ==========

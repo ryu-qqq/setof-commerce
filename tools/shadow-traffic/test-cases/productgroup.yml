@@ -198,6 +198,7 @@ test_cases:
     ignore_fields: ["['number']", "['sort']", "['cursorValue']"]
 
   # === fetchProductGroupLikes: 최근 본 상품 배치 조회 (/api/v1/products/group/recent) ===
+  # known_diff: score(레거시 전용, 신규 0.0), directDiscountRate/Price(신규는 가격 기반 계산, 레거시는 DB 저장값 - stale 데이터 존재).
   - name: "productgroup_recent_single"
     path: "/api/v1/products/group/recent"
     method: GET
@@ -205,7 +206,7 @@ test_cases:
     body:
       productGroupIds: [1]
     compare_mode: full
-    ignore_fields: []
+    ignore_fields: ["score", "directDiscountRate", "directDiscountPrice"]
 
   - name: "productgroup_recent_multiple"
     path: "/api/v1/products/group/recent"
@@ -214,7 +215,7 @@ test_cases:
     body:
       productGroupIds: [1, 2, 3]
     compare_mode: full
-    ignore_fields: []
+    ignore_fields: ["score", "directDiscountRate", "directDiscountPrice"]
 
   - name: "productgroup_recent_order_preserved"
     path: "/api/v1/products/group/recent"
@@ -223,7 +224,7 @@ test_cases:
     body:
       productGroupIds: [3, 1, 2]
     compare_mode: full
-    ignore_fields: []
+    ignore_fields: ["score", "directDiscountRate", "directDiscountPrice"]
 
   - name: "productgroup_recent_not_found"
     path: "/api/v1/products/group/recent"
@@ -232,29 +233,30 @@ test_cases:
     body:
       productGroupIds: [999999999]
     compare_mode: full
-    ignore_fields: []
+    ignore_fields: ["score", "directDiscountRate", "directDiscountPrice"]
 
   # === fetchProductGroupWithBrand: 브랜드별 상품 목록 (/api/v1/product/group/brand/{brandId}) ===
+  # known_diff: score(레거시 전용, 신규 0.0), directDiscountRate/Price(신규는 가격 기반 계산, 레거시는 DB 저장값 - stale 데이터 존재).
   - name: "productgroup_with_brand_id_1"
     path: "/api/v1/product/group/brand/1"
     method: GET
     auth: none
     compare_mode: full
-    ignore_fields: []
+    ignore_fields: ["score", "directDiscountRate", "directDiscountPrice"]
 
   - name: "productgroup_with_brand_id_2"
     path: "/api/v1/product/group/brand/2"
     method: GET
     auth: none
     compare_mode: full
-    ignore_fields: []
+    ignore_fields: ["score", "directDiscountRate", "directDiscountPrice"]
 
   - name: "productgroup_with_brand_id_3"
     path: "/api/v1/product/group/brand/3"
     method: GET
     auth: none
     compare_mode: full
-    ignore_fields: []
+    ignore_fields: ["score", "directDiscountRate", "directDiscountPrice"]
 
   - name: "productgroup_with_brand_custom_size"
     path: "/api/v1/product/group/brand/1"
@@ -263,36 +265,37 @@ test_cases:
     body:
       size: 10
     compare_mode: full
-    ignore_fields: []
+    ignore_fields: ["score", "directDiscountRate", "directDiscountPrice"]
 
   - name: "productgroup_with_brand_not_found"
     path: "/api/v1/product/group/brand/999999999"
     method: GET
     auth: none
     compare_mode: full
-    ignore_fields: []
+    ignore_fields: ["score", "directDiscountRate", "directDiscountPrice"]
 
   # === fetchProductGroupWithSeller: 셀러별 상품 목록 (/api/v1/product/group/seller/{sellerId}) ===
+  # known_diff: score(레거시 전용, 신규 0.0), directDiscountRate/Price(신규는 가격 기반 계산, 레거시는 DB 저장값 - stale 데이터 존재).
   - name: "productgroup_with_seller_id_1"
     path: "/api/v1/product/group/seller/1"
     method: GET
     auth: none
     compare_mode: full
-    ignore_fields: []
+    ignore_fields: ["score", "directDiscountRate", "directDiscountPrice"]
 
   - name: "productgroup_with_seller_id_2"
     path: "/api/v1/product/group/seller/2"
     method: GET
     auth: none
     compare_mode: full
-    ignore_fields: []
+    ignore_fields: ["score", "directDiscountRate", "directDiscountPrice"]
 
   - name: "productgroup_with_seller_id_3"
     path: "/api/v1/product/group/seller/3"
     method: GET
     auth: none
     compare_mode: full
-    ignore_fields: []
+    ignore_fields: ["score", "directDiscountRate", "directDiscountPrice"]
 
   - name: "productgroup_with_seller_custom_size"
     path: "/api/v1/product/group/seller/1"
@@ -301,11 +304,11 @@ test_cases:
     body:
       size: 10
     compare_mode: full
-    ignore_fields: []
+    ignore_fields: ["score", "directDiscountRate", "directDiscountPrice"]
 
   - name: "productgroup_with_seller_not_found"
     path: "/api/v1/product/group/seller/999999999"
     method: GET
     auth: none
     compare_mode: full
-    ignore_fields: []
+    ignore_fields: ["score", "directDiscountRate", "directDiscountPrice"]

@@ -15,7 +15,6 @@ import com.ryuqq.setof.domain.contentpage.vo.OrderType;
 import com.ryuqq.setof.domain.contentpage.vo.ProductSlot;
 import com.ryuqq.setof.domain.contentpage.vo.ProductThumbnailSnapshot;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -53,13 +52,9 @@ public final class ContentPageProductFixtures {
                 10,
                 3000,
                 16,
-                LocalDateTime.of(2024, 1, 1, 0, 0),
-                4.5,
-                100L,
-                4.3,
-                false,
-                "Y",
-                "N");
+                Instant.parse("2024-01-01T00:00:00Z"),
+                true,
+                false);
     }
 
     public static List<ProductThumbnailSnapshot> productSnapshots(long... productGroupIds) {

@@ -2,12 +2,17 @@ package com.ryuqq.setof.application.member;
 
 import com.ryuqq.setof.application.member.dto.command.JoinCommand;
 import com.ryuqq.setof.application.member.dto.command.KakaoLoginCommand;
-import com.ryuqq.setof.application.member.dto.command.MemberRegistrationInfo;
+import com.ryuqq.setof.application.member.dto.command.MemberRegistrationBundle;
 import com.ryuqq.setof.application.member.dto.command.ResetPasswordCommand;
-import com.ryuqq.setof.application.member.dto.command.SocialIntegrationContext;
-import com.ryuqq.setof.application.member.dto.command.StatusChangeContext;
-import com.ryuqq.setof.application.member.dto.command.UpdatePasswordContext;
 import com.ryuqq.setof.application.member.dto.command.WithdrawalCommand;
+import com.ryuqq.setof.domain.common.vo.PhoneNumber;
+import com.ryuqq.setof.domain.member.aggregate.Member;
+import com.ryuqq.setof.domain.member.aggregate.MemberAuth;
+import com.ryuqq.setof.domain.member.aggregate.MemberConsent;
+import com.ryuqq.setof.domain.member.vo.MemberName;
+import com.ryuqq.setof.domain.member.vo.PasswordHash;
+import com.ryuqq.setof.domain.member.vo.ProviderUserId;
+import java.time.Instant;
 
 /**
  * Member Application Command 테스트 Fixtures.
@@ -117,46 +122,28 @@ public final class MemberCommandFixtures {
         return new WithdrawalCommand(userId, reason);
     }
 
-    // ===== MemberRegistrationInfo =====
+    // ===== MemberRegistrationBundle =====
 
-    public static MemberRegistrationInfo memberRegistrationInfo() {
-        return new MemberRegistrationInfo(
-                DEFAULT_ENCODED_PASSWORD, "EMAIL", null, true, true, false);
-    }
+    public static MemberRegistrationBundle registrationBundle() {
+        Instant now = Instant.now();
+        Member member =
+                Member.forNew(
+                        MemberName.of(DEFAULT_NAME),
+                        null,
+                        PhoneNumber.of(DEFAULT_PHONE_NUMBER),
+                        null,
+                        null,
+                        now);
 
-    public static MemberRegistrationInfo kakaoMemberRegistrationInfo() {
-        return new MemberRegistrationInfo("", "KAKAO", DEFAULT_SOCIAL_PK_ID, true, true, true);
-    }
+        MemberAuth auth =
+                MemberAuth.forPhoneAuth(
+                        null,
+                        ProviderUserId.of(DEFAULT_PHONE_NUMBER),
+                        PasswordHash.of(DEFAULT_ENCODED_PASSWORD),
+                        now);
 
-    // ===== StatusChangeContext =====
+        MemberConsent consent = MemberConsent.forNew(null, true, true, false, now);
 
-    public static StatusChangeContext statusChangeContext() {
-        return new StatusChangeContext(DEFAULT_USER_ID, DEFAULT_WITHDRAWAL_REASON);
-    }
-
-    public static StatusChangeContext statusChangeContext(long userId, String reason) {
-        return new StatusChangeContext(userId, reason);
-    }
-
-    // ===== UpdatePasswordContext =====
-
-    public static UpdatePasswordContext updatePasswordContext() {
-        return new UpdatePasswordContext(DEFAULT_USER_ID, DEFAULT_ENCODED_PASSWORD);
-    }
-
-    public static UpdatePasswordContext updatePasswordContext(long userId, String encodedPassword) {
-        return new UpdatePasswordContext(userId, encodedPassword);
-    }
-
-    // ===== SocialIntegrationContext =====
-
-    public static SocialIntegrationContext socialIntegrationContext() {
-        return new SocialIntegrationContext(
-                DEFAULT_USER_ID, "KAKAO", DEFAULT_SOCIAL_PK_ID, "M", "1990-01-01");
-    }
-
-    public static SocialIntegrationContext socialIntegrationContext(long userId) {
-        return new SocialIntegrationContext(
-                userId, "KAKAO", DEFAULT_SOCIAL_PK_ID, "M", "1990-01-01");
+        return new MemberRegistrationBundle(member, auth, consent);
     }
 }

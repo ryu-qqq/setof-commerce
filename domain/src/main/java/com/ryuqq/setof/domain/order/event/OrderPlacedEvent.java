@@ -29,7 +29,7 @@ public record OrderPlacedEvent(
         return orderId.value();
     }
 
-    public String memberIdValue() {
+    public Long memberIdValue() {
         return memberId != null ? memberId.value() : null;
     }
 

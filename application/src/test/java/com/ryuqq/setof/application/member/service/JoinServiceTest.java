@@ -12,12 +12,10 @@ import com.ryuqq.setof.application.auth.dto.response.LoginResult;
 import com.ryuqq.setof.application.auth.manager.TokenCommandFacade;
 import com.ryuqq.setof.application.member.MemberCommandFixtures;
 import com.ryuqq.setof.application.member.dto.command.JoinCommand;
-import com.ryuqq.setof.application.member.dto.command.MemberRegistrationInfo;
+import com.ryuqq.setof.application.member.dto.command.MemberRegistrationBundle;
 import com.ryuqq.setof.application.member.factory.MemberCommandFactory;
-import com.ryuqq.setof.application.member.manager.MemberCommandManager;
+import com.ryuqq.setof.application.member.internal.MemberRegistrationFacade;
 import com.ryuqq.setof.application.member.validator.MemberValidator;
-import com.ryuqq.setof.domain.member.MemberFixtures;
-import com.ryuqq.setof.domain.member.aggregate.Member;
 import com.ryuqq.setof.domain.member.exception.MemberAlreadyRegisteredException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -37,7 +35,7 @@ class JoinServiceTest {
 
     @Mock private MemberValidator memberValidator;
     @Mock private MemberCommandFactory memberCommandFactory;
-    @Mock private MemberCommandManager memberCommandManager;
+    @Mock private MemberRegistrationFacade memberRegistrationFacade;
     @Mock private TokenCommandFacade tokenCommandFacade;
 
     @Nested
@@ -49,19 +47,16 @@ class JoinServiceTest {
         void execute_ValidCommand_ReturnsLoginResult() {
             // given
             JoinCommand command = MemberCommandFixtures.joinCommand();
-            Member member = MemberFixtures.newMember();
-            MemberRegistrationInfo registrationInfo =
-                    MemberCommandFixtures.memberRegistrationInfo();
+            MemberRegistrationBundle bundle = MemberCommandFixtures.registrationBundle();
             Long userId = MemberCommandFixtures.DEFAULT_USER_ID;
             LoginResult expectedResult =
                     LoginResult.success(
                             String.valueOf(userId), "accessToken", "refreshToken", 3600L, "Bearer");
 
             willDoNothing().given(memberValidator).validateNotRegistered(command.phoneNumber());
-            given(memberCommandFactory.createMember(command)).willReturn(member);
-            given(memberCommandFactory.createRegistrationInfo(command))
-                    .willReturn(registrationInfo);
-            given(memberCommandManager.persist(member, registrationInfo)).willReturn(userId);
+            given(memberCommandFactory.createRegistrationBundle(command)).willReturn(bundle);
+            given(memberRegistrationFacade.register(any(MemberRegistrationBundle.class)))
+                    .willReturn(userId);
             given(tokenCommandFacade.issueLoginResult(userId)).willReturn(expectedResult);
 
             // when
@@ -71,9 +66,8 @@ class JoinServiceTest {
             assertThat(result).isEqualTo(expectedResult);
             assertThat(result.isSuccess()).isTrue();
             then(memberValidator).should().validateNotRegistered(command.phoneNumber());
-            then(memberCommandFactory).should().createMember(command);
-            then(memberCommandFactory).should().createRegistrationInfo(command);
-            then(memberCommandManager).should().persist(member, registrationInfo);
+            then(memberCommandFactory).should().createRegistrationBundle(command);
+            then(memberRegistrationFacade).should().register(any(MemberRegistrationBundle.class));
             then(tokenCommandFacade).should().issueLoginResult(userId);
         }
 
@@ -92,28 +86,25 @@ class JoinServiceTest {
                     .isInstanceOf(MemberAlreadyRegisteredException.class);
 
             then(memberCommandFactory).shouldHaveNoInteractions();
-            then(memberCommandManager).shouldHaveNoInteractions();
+            then(memberRegistrationFacade).shouldHaveNoInteractions();
             then(tokenCommandFacade).shouldHaveNoInteractions();
         }
 
         @Test
-        @DisplayName("검증 통과 후 Factory와 Manager가 순서대로 호출된다")
+        @DisplayName("검증 통과 후 Factory와 Facade가 순서대로 호출된다")
         void execute_ValidCommand_FactoryAndManagerCalledInOrder() {
             // given
             JoinCommand command = MemberCommandFixtures.joinCommand();
-            Member member = MemberFixtures.newMember();
-            MemberRegistrationInfo registrationInfo =
-                    MemberCommandFixtures.memberRegistrationInfo();
+            MemberRegistrationBundle bundle = MemberCommandFixtures.registrationBundle();
             Long userId = 999L;
             LoginResult loginResult =
                     LoginResult.success(
                             String.valueOf(userId), "token", "refresh", 3600L, "Bearer");
 
             willDoNothing().given(memberValidator).validateNotRegistered(any());
-            given(memberCommandFactory.createMember(command)).willReturn(member);
-            given(memberCommandFactory.createRegistrationInfo(command))
-                    .willReturn(registrationInfo);
-            given(memberCommandManager.persist(member, registrationInfo)).willReturn(userId);
+            given(memberCommandFactory.createRegistrationBundle(command)).willReturn(bundle);
+            given(memberRegistrationFacade.register(any(MemberRegistrationBundle.class)))
+                    .willReturn(userId);
             given(tokenCommandFacade.issueLoginResult(userId)).willReturn(loginResult);
 
             // when
@@ -121,9 +112,8 @@ class JoinServiceTest {
 
             // then
             then(memberValidator).should().validateNotRegistered(command.phoneNumber());
-            then(memberCommandFactory).should().createMember(command);
-            then(memberCommandFactory).should().createRegistrationInfo(command);
-            then(memberCommandManager).should().persist(member, registrationInfo);
+            then(memberCommandFactory).should().createRegistrationBundle(command);
+            then(memberRegistrationFacade).should().register(any(MemberRegistrationBundle.class));
             then(tokenCommandFacade).should().issueLoginResult(userId);
         }
     }

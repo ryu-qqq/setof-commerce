@@ -362,7 +362,7 @@ class PaymentTest {
             Payment payment = PaymentFixtures.completedPayment();
 
             // then
-            assertThat(payment.memberIdValue()).isEqualTo("01914b6c-dead-beef-8000-aabbccddeeff");
+            assertThat(payment.memberIdValue()).isEqualTo(1L);
         }
 
         @Test

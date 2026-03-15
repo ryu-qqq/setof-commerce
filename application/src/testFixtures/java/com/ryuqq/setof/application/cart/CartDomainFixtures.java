@@ -25,7 +25,7 @@ import java.util.List;
 public final class CartDomainFixtures {
 
     private static final Instant FIXED_NOW = Instant.parse("2024-01-01T00:00:00Z");
-    private static final String MEMBER_ID = "01900000-0000-7000-8000-000000000001";
+    private static final Long MEMBER_ID = 1L;
     private static final Long USER_ID = 100L;
     private static final Long SELLER_ID = 5L;
 

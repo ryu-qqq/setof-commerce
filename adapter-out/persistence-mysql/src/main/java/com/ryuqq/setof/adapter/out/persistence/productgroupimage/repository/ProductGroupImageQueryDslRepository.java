@@ -1,9 +1,12 @@
 package com.ryuqq.setof.adapter.out.persistence.productgroupimage.repository;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ryuqq.setof.adapter.out.persistence.productgroupimage.entity.ProductGroupImageJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.productgroupimage.entity.QProductGroupImageJpaEntity;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -56,5 +59,30 @@ public class ProductGroupImageQueryDslRepository {
                         productGroupImage.deletedAt.isNull())
                 .orderBy(productGroupImage.sortOrder.asc())
                 .fetch();
+    }
+
+    /**
+     * 복수 상품그룹 ID로 대표(THUMBNAIL) 이미지 ID 조회.
+     *
+     * @param productGroupIds 상품그룹 ID 목록
+     * @return productGroupId → thumbnailImageId 맵
+     */
+    public Map<Long, Long> findThumbnailImageIdsByProductGroupIds(List<Long> productGroupIds) {
+        List<Tuple> results =
+                queryFactory
+                        .select(productGroupImage.productGroupId, productGroupImage.id)
+                        .from(productGroupImage)
+                        .where(
+                                productGroupImage.productGroupId.in(productGroupIds),
+                                productGroupImage.imageType.eq("THUMBNAIL"),
+                                productGroupImage.deletedAt.isNull())
+                        .fetch();
+
+        return results.stream()
+                .collect(
+                        Collectors.toMap(
+                                tuple -> tuple.get(productGroupImage.productGroupId),
+                                tuple -> tuple.get(productGroupImage.id),
+                                (existing, replacement) -> existing));
     }
 }

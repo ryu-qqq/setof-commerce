@@ -4,11 +4,12 @@ import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroup
 import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroupDetailCompositeResult.OptionInfoResult;
 import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroupDetailCompositeResult.ProductImageResult;
 import com.ryuqq.setof.application.productgroup.dto.composite.LegacyProductGroupDetailCompositeResult.ProductInfoResult;
-import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupThumbnailCompositeResult;
+import com.ryuqq.setof.application.productgroup.dto.composite.ProductGroupListCompositeResult;
 import com.ryuqq.setof.storage.legacy.composite.productgroup.dto.LegacyWebProductGroupBasicQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.productgroup.dto.LegacyWebProductGroupThumbnailQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.productgroup.dto.LegacyWebProductImageQueryDto;
 import com.ryuqq.setof.storage.legacy.composite.productgroup.dto.LegacyWebProductQueryDto;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -30,67 +31,75 @@ import org.springframework.stereotype.Component;
 public class LegacyWebProductGroupMapper {
 
     /**
-     * 썸네일 QueryDto → ProductGroupThumbnailCompositeResult 변환.
+     * 썸네일 QueryDto → ProductGroupListCompositeResult 변환.
      *
-     * @param dto QueryDto
-     * @return ProductGroupThumbnailCompositeResult
+     * <p>레거시 DB에 없는 필드(sellerName, categoryId 등)는 기본값으로 설정됩니다.
      */
-    public ProductGroupThumbnailCompositeResult toThumbnailCompositeResult(
+    public ProductGroupListCompositeResult toListCompositeResult(
             LegacyWebProductGroupThumbnailQueryDto dto) {
-        return new ProductGroupThumbnailCompositeResult(
+        boolean soldOut = "Y".equals(dto.soldOutYn());
+        boolean displayed = "Y".equals(dto.displayYn());
+        String status = soldOut ? "SOLD_OUT" : (displayed ? "ACTIVE" : "INACTIVE");
+
+        return new ProductGroupListCompositeResult(
                 dto.productGroupId(),
                 dto.sellerId(),
-                dto.productGroupName(),
+                null,
                 dto.brandId(),
                 dto.brandName(),
                 dto.displayKoreanName(),
                 dto.displayEnglishName(),
                 dto.brandIconImageUrl(),
+                0L,
+                null,
+                null,
+                0,
+                dto.productGroupName(),
+                null,
+                status,
+                soldOut,
+                displayed,
                 dto.productImageUrl(),
+                0,
                 dto.regularPrice(),
                 dto.currentPrice(),
                 dto.salePrice(),
-                dto.directDiscountRate(),
-                dto.directDiscountPrice(),
                 dto.discountRate(),
-                dto.insertDate(),
-                dto.averageRating(),
-                dto.reviewCount(),
-                dto.score(),
-                dto.displayYn(),
-                dto.soldOutYn());
+                0,
+                0,
+                0,
+                List.of(),
+                dto.insertDate() != null
+                        ? dto.insertDate().toInstant(ZoneOffset.of("+09:00"))
+                        : null,
+                dto.insertDate() != null
+                        ? dto.insertDate().toInstant(ZoneOffset.of("+09:00"))
+                        : null);
     }
 
-    /**
-     * 썸네일 QueryDto 목록 → ProductGroupThumbnailCompositeResult 목록 변환.
-     *
-     * @param dtos QueryDto 목록
-     * @return ProductGroupThumbnailCompositeResult 목록
-     */
-    public List<ProductGroupThumbnailCompositeResult> toThumbnailCompositeResults(
+    /** 썸네일 QueryDto 목록 → ProductGroupListCompositeResult 목록 변환. */
+    public List<ProductGroupListCompositeResult> toListCompositeResults(
             List<LegacyWebProductGroupThumbnailQueryDto> dtos) {
-        return dtos.stream().map(this::toThumbnailCompositeResult).toList();
+        return dtos.stream().map(this::toListCompositeResult).toList();
     }
 
     /**
-     * 요청 ID 순서 기준으로 썸네일 목록 재정렬.
+     * 요청 ID 순서 기준으로 목록 재정렬.
      *
      * @param productGroupIds 요청 순서 ID 목록
-     * @param results 조회된 썸네일 목록
-     * @return 요청 ID 순서로 재정렬된 썸네일 목록
+     * @param results 조회된 목록
+     * @return 요청 ID 순서로 재정렬된 목록
      */
-    public List<ProductGroupThumbnailCompositeResult> reOrder(
-            List<Long> productGroupIds, List<ProductGroupThumbnailCompositeResult> results) {
-        Map<Long, ProductGroupThumbnailCompositeResult> resultMap =
+    public List<ProductGroupListCompositeResult> reOrder(
+            List<Long> productGroupIds, List<ProductGroupListCompositeResult> results) {
+        Map<Long, ProductGroupListCompositeResult> resultMap =
                 results.stream()
                         .collect(
                                 Collectors.toMap(
-                                        ProductGroupThumbnailCompositeResult::productGroupId,
-                                        r -> r,
-                                        (a, b) -> a));
-        List<ProductGroupThumbnailCompositeResult> ordered = new ArrayList<>();
+                                        ProductGroupListCompositeResult::id, r -> r, (a, b) -> a));
+        List<ProductGroupListCompositeResult> ordered = new ArrayList<>();
         for (Long id : productGroupIds) {
-            ProductGroupThumbnailCompositeResult r = resultMap.get(id);
+            ProductGroupListCompositeResult r = resultMap.get(id);
             if (r != null) {
                 ordered.add(r);
             }
@@ -98,14 +107,7 @@ public class LegacyWebProductGroupMapper {
         return ordered;
     }
 
-    /**
-     * 상품그룹 상세 정보 조합 → LegacyProductGroupDetailCompositeResult 변환.
-     *
-     * @param basic 기본 정보 QueryDto
-     * @param products 개별 상품 목록 QueryDto
-     * @param images 이미지 목록 QueryDto
-     * @return LegacyProductGroupDetailCompositeResult
-     */
+    /** 상품그룹 상세 정보 조합 → LegacyProductGroupDetailCompositeResult 변환. */
     public LegacyProductGroupDetailCompositeResult toDetailCompositeResult(
             LegacyWebProductGroupBasicQueryDto basic,
             List<LegacyWebProductQueryDto> products,
@@ -145,12 +147,6 @@ public class LegacyWebProductGroupMapper {
                 basic.insertDate());
     }
 
-    /**
-     * 개별 상품 QueryDto 목록을 productId 기준으로 그룹핑하여 ProductInfoResult Set 생성.
-     *
-     * @param dtos 개별 상품 QueryDto 목록
-     * @return ProductInfoResult Set
-     */
     private Set<ProductInfoResult> toProductInfoSet(List<LegacyWebProductQueryDto> dtos) {
         Map<Long, List<LegacyWebProductQueryDto>> grouped = new LinkedHashMap<>();
         for (LegacyWebProductQueryDto dto : dtos) {
@@ -185,12 +181,6 @@ public class LegacyWebProductGroupMapper {
         return result;
     }
 
-    /**
-     * 이미지 QueryDto 목록 → ProductImageResult Set 생성 (MAIN 이미지 우선 정렬).
-     *
-     * @param dtos 이미지 QueryDto 목록
-     * @return ProductImageResult Set
-     */
     private Set<ProductImageResult> toImageInfoSet(List<LegacyWebProductImageQueryDto> dtos) {
         Set<ProductImageResult> result = new LinkedHashSet<>();
         dtos.stream()

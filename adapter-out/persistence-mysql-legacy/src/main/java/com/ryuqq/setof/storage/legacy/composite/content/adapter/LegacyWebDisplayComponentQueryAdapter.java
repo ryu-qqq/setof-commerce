@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -36,10 +37,13 @@ import org.springframework.stereotype.Component;
  *
  * <p>DisplayComponentQueryPort를 구현하여 컴포넌트 메타 + ViewExtension + ComponentSpec을 조회한다.
  *
+ * <p>활성화 조건: persistence.legacy.content.enabled=true
+ *
  * @author ryu-qqq
  * @since 1.1.0
  */
 @Component
+@ConditionalOnProperty(name = "persistence.legacy.content.enabled", havingValue = "true")
 public class LegacyWebDisplayComponentQueryAdapter implements DisplayComponentQueryPort {
 
     private final LegacyWebContentCompositeQueryDslRepository repository;

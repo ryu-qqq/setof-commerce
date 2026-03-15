@@ -129,6 +129,15 @@ public final class TestTags {
     /** 상품그룹 관련 테스트 */
     public static final String PRODUCT_GROUP = "product-group";
 
+    /** 배너 관련 테스트 */
+    public static final String BANNER = "banner";
+
+    /** 네비게이션 관련 테스트 */
+    public static final String NAVIGATION = "navigation";
+
+    /** 콘텐츠 페이지 관련 테스트 */
+    public static final String CONTENT_PAGE = "content-page";
+
     // ========================================
     // Migration Tags (마이그레이션 태그)
     // ========================================
