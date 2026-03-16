@@ -1,5 +1,6 @@
 package com.ryuqq.setof.application.productgroup.internal;
 
+import com.ryuqq.setof.application.discount.manager.ProductGroupPriceCommandManager;
 import com.ryuqq.setof.application.product.dto.command.ProductDiffUpdateEntry;
 import com.ryuqq.setof.application.product.factory.ProductCommandFactory;
 import com.ryuqq.setof.application.product.internal.ProductCommandCoordinator;
@@ -51,6 +52,7 @@ import org.springframework.stereotype.Component;
 public class ProductGroupPersistFacade {
 
     private final ProductGroupCommandManager productGroupCommandManager;
+    private final ProductGroupPriceCommandManager priceCommandManager;
     private final ImageCommandCoordinator imageCommandCoordinator;
     private final SellerOptionPersistFacade sellerOptionPersistFacade;
     private final SellerOptionCommandCoordinator sellerOptionCommandCoordinator;
@@ -63,6 +65,7 @@ public class ProductGroupPersistFacade {
 
     public ProductGroupPersistFacade(
             ProductGroupCommandManager productGroupCommandManager,
+            ProductGroupPriceCommandManager priceCommandManager,
             ImageCommandCoordinator imageCommandCoordinator,
             SellerOptionPersistFacade sellerOptionPersistFacade,
             SellerOptionCommandCoordinator sellerOptionCommandCoordinator,
@@ -73,6 +76,7 @@ public class ProductGroupPersistFacade {
             ProductCommandCoordinator productCommandCoordinator,
             ProductCommandFactory productCommandFactory) {
         this.productGroupCommandManager = productGroupCommandManager;
+        this.priceCommandManager = priceCommandManager;
         this.imageCommandCoordinator = imageCommandCoordinator;
         this.sellerOptionPersistFacade = sellerOptionPersistFacade;
         this.sellerOptionCommandCoordinator = sellerOptionCommandCoordinator;
@@ -96,6 +100,7 @@ public class ProductGroupPersistFacade {
             ProductGroup productGroup, RegisterProductGroupCommand command, Instant now) {
 
         Long productGroupId = productGroupCommandManager.persist(productGroup);
+        priceCommandManager.initPrice(productGroupId);
 
         registerImages(productGroupId, command);
         List<SellerOptionValueId> optionValueIds =
