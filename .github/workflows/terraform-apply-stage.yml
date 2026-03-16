@@ -120,6 +120,31 @@ jobs:
             echo "⚠️ Module directory does not exist: ${{ matrix.module.dir }} - SKIPPING"
           fi
 
+      - name: Clear Stale Terraform Lock - ${{ matrix.module.name }}
+        if: steps.check-dir.outputs.exists == 'true'
+        run: |
+          # Terraform backend S3 key 규칙: prod-connectly/setof-commerce/{module-name}/terraform.tfstate
+          LOCK_KEY="prod-connectly/setof-commerce/${{ matrix.module.name }}/terraform.tfstate"
+          echo "🔍 Checking for stale lock: $LOCK_KEY"
+
+          LOCK_ITEM=$(aws dynamodb get-item \
+            --table-name prod-connectly-tf-lock \
+            --key "{\"LockID\":{\"S\":\"$LOCK_KEY\"}}" \
+            --region ap-northeast-2 \
+            --output json 2>/dev/null || echo "{}")
+
+          if echo "$LOCK_ITEM" | grep -q '"LockID"'; then
+            CREATED=$(echo "$LOCK_ITEM" | grep -o '"Created":"[^"]*"' | head -1 | cut -d'"' -f4)
+            echo "⚠️ Lock found (created: $CREATED). Removing stale lock..."
+            aws dynamodb delete-item \
+              --table-name prod-connectly-tf-lock \
+              --key "{\"LockID\":{\"S\":\"$LOCK_KEY\"}}" \
+              --region ap-northeast-2
+            echo "✅ Stale lock removed"
+          else
+            echo "✅ No stale lock found"
+          fi
+
       - name: Terraform Init - ${{ matrix.module.name }}
         if: steps.check-dir.outputs.exists == 'true'
         working-directory: ${{ matrix.module.dir }}
