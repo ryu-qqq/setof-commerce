@@ -1,11 +1,14 @@
 package com.ryuqq.setof.application.productgroup.factory;
 
 import com.ryuqq.setof.application.common.time.TimeProvider;
+import com.ryuqq.setof.application.product.dto.command.RegisterProductsCommand;
 import com.ryuqq.setof.application.productgroup.dto.bundle.ProductGroupRegistrationBundle;
 import com.ryuqq.setof.application.productgroup.dto.bundle.ProductGroupUpdateBundle;
 import com.ryuqq.setof.application.productgroup.dto.command.RegisterProductGroupCommand;
 import com.ryuqq.setof.application.productgroup.dto.command.UpdateProductGroupFullCommand;
 import com.ryuqq.setof.application.productgroup.manager.ProductGroupReadManager;
+import com.ryuqq.setof.application.productgroupimage.dto.command.RegisterProductGroupImagesCommand;
+import com.ryuqq.setof.application.productnotice.dto.command.RegisterProductNoticeCommand;
 import com.ryuqq.setof.domain.brand.id.BrandId;
 import com.ryuqq.setof.domain.category.id.CategoryId;
 import com.ryuqq.setof.domain.common.vo.Money;
@@ -17,6 +20,7 @@ import com.ryuqq.setof.domain.refundpolicy.id.RefundPolicyId;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import com.ryuqq.setof.domain.shippingpolicy.id.ShippingPolicyId;
 import java.time.Instant;
+import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
@@ -61,7 +65,29 @@ public class ProductGroupBundleFactory {
                         Money.of(command.currentPrice()),
                         now);
 
-        return new ProductGroupRegistrationBundle(productGroup, command, now);
+        List<RegisterProductGroupImagesCommand.ImageCommand> images =
+                toImageCommands(command.images());
+        List<RegisterProductNoticeCommand.NoticeEntryCommand> noticeEntries =
+                toNoticeEntryCommands(command.notice());
+        List<RegisterProductsCommand.ProductData> products = toProductDataList(command.products());
+
+        String descriptionContent =
+                command.description() != null ? command.description().content() : null;
+        List<RegisterProductGroupCommand.DescriptionImageCommand> descriptionImages =
+                command.description() != null
+                        ? command.description().descriptionImages()
+                        : List.of();
+
+        return new ProductGroupRegistrationBundle(
+                productGroup,
+                images,
+                command.optionType(),
+                command.optionGroups() != null ? command.optionGroups() : List.of(),
+                descriptionContent,
+                descriptionImages,
+                noticeEntries,
+                products,
+                now);
     }
 
     /**
@@ -77,5 +103,44 @@ public class ProductGroupBundleFactory {
         ProductGroupId productGroupId = ProductGroupId.of(command.productGroupId());
         ProductGroup productGroup = productGroupReadManager.getById(productGroupId);
         return new ProductGroupUpdateBundle(productGroup, command, now);
+    }
+
+    private static List<RegisterProductGroupImagesCommand.ImageCommand> toImageCommands(
+            List<RegisterProductGroupCommand.ImageCommand> images) {
+        if (images == null) return List.of();
+        return images.stream()
+                .map(
+                        img ->
+                                new RegisterProductGroupImagesCommand.ImageCommand(
+                                        img.imageType(), img.imageUrl(), img.sortOrder()))
+                .toList();
+    }
+
+    private static List<RegisterProductNoticeCommand.NoticeEntryCommand> toNoticeEntryCommands(
+            RegisterProductGroupCommand.NoticeCommand notice) {
+        if (notice == null || notice.entries() == null) return List.of();
+        return notice.entries().stream()
+                .map(
+                        e ->
+                                new RegisterProductNoticeCommand.NoticeEntryCommand(
+                                        e.noticeFieldId(), e.fieldName(), e.fieldValue()))
+                .toList();
+    }
+
+    private static List<RegisterProductsCommand.ProductData> toProductDataList(
+            List<RegisterProductGroupCommand.ProductCommand> products) {
+        if (products == null) return List.of();
+        return products.stream()
+                .map(
+                        p ->
+                                new RegisterProductsCommand.ProductData(
+                                        p.productId(),
+                                        p.skuCode(),
+                                        p.regularPrice(),
+                                        p.currentPrice(),
+                                        p.stockQuantity(),
+                                        p.sortOrder(),
+                                        p.selectedOptions()))
+                .toList();
     }
 }

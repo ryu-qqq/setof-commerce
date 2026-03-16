@@ -53,7 +53,8 @@ class ProductGroupBundleFactoryTest {
             // then
             assertThat(result).isNotNull();
             assertThat(result.productGroup()).isNotNull();
-            assertThat(result.command()).isEqualTo(command);
+            assertThat(result.images()).hasSize(command.images().size());
+            assertThat(result.optionType()).isEqualTo(command.optionType());
             assertThat(result.createdAt()).isEqualTo(now);
             then(timeProvider).should().now();
         }

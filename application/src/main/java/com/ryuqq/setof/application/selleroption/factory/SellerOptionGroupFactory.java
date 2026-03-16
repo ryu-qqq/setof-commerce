@@ -1,8 +1,14 @@
 package com.ryuqq.setof.application.selleroption.factory;
 
 import com.ryuqq.setof.application.common.time.TimeProvider;
+import com.ryuqq.setof.application.productgroup.dto.command.RegisterProductGroupCommand;
 import com.ryuqq.setof.application.selleroption.dto.command.UpdateSellerOptionGroupsCommand;
+import com.ryuqq.setof.domain.productgroup.aggregate.SellerOptionGroup;
+import com.ryuqq.setof.domain.productgroup.aggregate.SellerOptionValue;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
+import com.ryuqq.setof.domain.productgroup.id.SellerOptionGroupId;
+import com.ryuqq.setof.domain.productgroup.vo.OptionGroupName;
+import com.ryuqq.setof.domain.productgroup.vo.OptionValueName;
 import com.ryuqq.setof.domain.productgroup.vo.SellerOptionGroupUpdateData;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,5 +48,37 @@ public class SellerOptionGroupFactory {
         }
 
         return SellerOptionGroupUpdateData.of(productGroupId, entries, timeProvider.now());
+    }
+
+    /**
+     * 등록 커맨드로부터 신규 SellerOptionGroup 목록을 생성합니다.
+     *
+     * @param productGroupId 상품그룹 ID
+     * @param commands 옵션 그룹 커맨드 목록
+     * @return 신규 SellerOptionGroup 목록
+     */
+    public List<SellerOptionGroup> createNewGroups(
+            ProductGroupId productGroupId,
+            List<RegisterProductGroupCommand.OptionGroupCommand> commands) {
+        return commands.stream()
+                .map(
+                        og -> {
+                            List<SellerOptionValue> values =
+                                    og.optionValues().stream()
+                                            .map(
+                                                    ov ->
+                                                            SellerOptionValue.forNew(
+                                                                    SellerOptionGroupId.forNew(),
+                                                                    OptionValueName.of(
+                                                                            ov.optionValueName()),
+                                                                    ov.sortOrder()))
+                                            .toList();
+                            return SellerOptionGroup.forNew(
+                                    productGroupId,
+                                    OptionGroupName.of(og.optionGroupName()),
+                                    og.sortOrder(),
+                                    values);
+                        })
+                .toList();
     }
 }

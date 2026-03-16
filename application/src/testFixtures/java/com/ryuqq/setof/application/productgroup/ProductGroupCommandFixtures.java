@@ -144,8 +144,49 @@ public final class ProductGroupCommandFixtures {
     // ===== Bundle Fixtures =====
 
     public static ProductGroupRegistrationBundle registrationBundle() {
+        RegisterProductGroupCommand command = registerCommand();
         return new ProductGroupRegistrationBundle(
-                ProductGroupFixtures.activeProductGroup(), registerCommand(), FIXED_NOW);
+                ProductGroupFixtures.activeProductGroup(),
+                command.images().stream()
+                        .map(
+                                img ->
+                                        new com.ryuqq.setof.application.productgroupimage.dto
+                                                .command.RegisterProductGroupImagesCommand
+                                                .ImageCommand(
+                                                img.imageType(), img.imageUrl(), img.sortOrder()))
+                        .toList(),
+                command.optionType(),
+                command.optionGroups(),
+                command.description() != null ? command.description().content() : null,
+                command.description() != null
+                        ? command.description().descriptionImages()
+                        : List.of(),
+                command.notice() != null && command.notice().entries() != null
+                        ? command.notice().entries().stream()
+                                .map(
+                                        e ->
+                                                new com.ryuqq.setof.application.productnotice.dto
+                                                        .command.RegisterProductNoticeCommand
+                                                        .NoticeEntryCommand(
+                                                        e.noticeFieldId(),
+                                                        e.fieldName(),
+                                                        e.fieldValue()))
+                                .toList()
+                        : List.of(),
+                command.products().stream()
+                        .map(
+                                p ->
+                                        new com.ryuqq.setof.application.product.dto.command
+                                                .RegisterProductsCommand.ProductData(
+                                                p.productId(),
+                                                p.skuCode(),
+                                                p.regularPrice(),
+                                                p.currentPrice(),
+                                                p.stockQuantity(),
+                                                p.sortOrder(),
+                                                p.selectedOptions()))
+                        .toList(),
+                FIXED_NOW);
     }
 
     public static ProductGroupUpdateBundle updateBundle(long productGroupId) {

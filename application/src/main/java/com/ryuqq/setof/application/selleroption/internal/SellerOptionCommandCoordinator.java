@@ -1,9 +1,11 @@
 package com.ryuqq.setof.application.selleroption.internal;
 
+import com.ryuqq.setof.application.productgroup.dto.command.RegisterProductGroupCommand;
 import com.ryuqq.setof.application.selleroption.dto.command.UpdateSellerOptionGroupsCommand;
 import com.ryuqq.setof.application.selleroption.dto.result.SellerOptionUpdateResult;
 import com.ryuqq.setof.application.selleroption.factory.SellerOptionGroupFactory;
 import com.ryuqq.setof.application.selleroption.manager.SellerOptionGroupReadManager;
+import com.ryuqq.setof.domain.productgroup.aggregate.SellerOptionGroup;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import com.ryuqq.setof.domain.productgroup.id.SellerOptionValueId;
 import com.ryuqq.setof.domain.productgroup.vo.SellerOptionGroupDiff;
@@ -27,6 +29,25 @@ public class SellerOptionCommandCoordinator {
         this.optionGroupFactory = optionGroupFactory;
         this.readManager = readManager;
         this.persistFacade = persistFacade;
+    }
+
+    /**
+     * 신규 옵션 그룹을 등록하고 생성된 SellerOptionValueId 목록을 반환합니다.
+     *
+     * @param productGroupId 상품그룹 ID
+     * @param optionGroupCommands 등록할 옵션 그룹 커맨드 목록
+     * @return 생성된 SellerOptionValueId 목록
+     */
+    @Transactional
+    public List<SellerOptionValueId> register(
+            ProductGroupId productGroupId,
+            List<RegisterProductGroupCommand.OptionGroupCommand> optionGroupCommands) {
+        if (optionGroupCommands == null || optionGroupCommands.isEmpty()) {
+            return List.of();
+        }
+        List<SellerOptionGroup> groups =
+                optionGroupFactory.createNewGroups(productGroupId, optionGroupCommands);
+        return persistFacade.persistAll(groups);
     }
 
     @Transactional

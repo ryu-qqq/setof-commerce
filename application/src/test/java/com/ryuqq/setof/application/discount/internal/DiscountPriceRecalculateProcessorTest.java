@@ -6,9 +6,9 @@ import static org.mockito.BDDMockito.then;
 import com.ryuqq.setof.application.discount.DiscountDomainFixtures;
 import com.ryuqq.setof.application.discount.factory.ProductGroupPriceUpdateFactory;
 import com.ryuqq.setof.application.discount.manager.DiscountPolicyReadManager;
-import com.ryuqq.setof.application.discount.manager.LegacyProductGroupPriceCommandManager;
-import com.ryuqq.setof.application.discount.manager.LegacyProductGroupPriceReadManager;
+import com.ryuqq.setof.application.discount.manager.ProductGroupPriceReadManager;
 import com.ryuqq.setof.application.discount.port.out.query.LegacyProductGroupPriceQueryPort.ProductGroupPriceRow;
+import com.ryuqq.setof.application.productgroup.manager.ProductGroupPriceCommandManager;
 import com.ryuqq.setof.domain.discount.aggregate.DiscountPolicy;
 import com.ryuqq.setof.domain.discount.dto.ProductGroupPriceUpdateData;
 import com.ryuqq.setof.domain.discount.vo.DiscountTargetType;
@@ -31,8 +31,8 @@ class DiscountPriceRecalculateProcessorTest {
 
     @InjectMocks private DiscountPriceRecalculateProcessor sut;
 
-    @Mock private LegacyProductGroupPriceReadManager priceReadManager;
-    @Mock private LegacyProductGroupPriceCommandManager priceCommandManager;
+    @Mock private ProductGroupPriceReadManager priceReadManager;
+    @Mock private ProductGroupPriceCommandManager priceCommandManager;
     @Mock private DiscountPolicyReadManager policyReadManager;
     @Mock private ProductGroupPriceUpdateFactory priceUpdateFactory;
 
