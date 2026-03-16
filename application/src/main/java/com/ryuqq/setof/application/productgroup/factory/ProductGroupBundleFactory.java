@@ -1,14 +1,19 @@
 package com.ryuqq.setof.application.productgroup.factory;
 
 import com.ryuqq.setof.application.common.time.TimeProvider;
+import com.ryuqq.setof.application.product.dto.command.ProductDiffUpdateEntry;
 import com.ryuqq.setof.application.product.dto.command.RegisterProductsCommand;
+import com.ryuqq.setof.application.productdescription.dto.command.UpdateProductGroupDescriptionCommand;
 import com.ryuqq.setof.application.productgroup.dto.bundle.ProductGroupRegistrationBundle;
 import com.ryuqq.setof.application.productgroup.dto.bundle.ProductGroupUpdateBundle;
 import com.ryuqq.setof.application.productgroup.dto.command.RegisterProductGroupCommand;
 import com.ryuqq.setof.application.productgroup.dto.command.UpdateProductGroupFullCommand;
 import com.ryuqq.setof.application.productgroup.manager.ProductGroupReadManager;
 import com.ryuqq.setof.application.productgroupimage.dto.command.RegisterProductGroupImagesCommand;
+import com.ryuqq.setof.application.productgroupimage.dto.command.UpdateProductGroupImagesCommand;
 import com.ryuqq.setof.application.productnotice.dto.command.RegisterProductNoticeCommand;
+import com.ryuqq.setof.application.productnotice.dto.command.UpdateProductNoticeCommand;
+import com.ryuqq.setof.application.selleroption.dto.command.UpdateSellerOptionGroupsCommand;
 import com.ryuqq.setof.domain.brand.id.BrandId;
 import com.ryuqq.setof.domain.category.id.CategoryId;
 import com.ryuqq.setof.domain.common.vo.Money;
@@ -16,6 +21,7 @@ import com.ryuqq.setof.domain.productgroup.aggregate.ProductGroup;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
 import com.ryuqq.setof.domain.productgroup.vo.OptionType;
 import com.ryuqq.setof.domain.productgroup.vo.ProductGroupName;
+import com.ryuqq.setof.domain.productgroup.vo.ProductGroupUpdateData;
 import com.ryuqq.setof.domain.refundpolicy.id.RefundPolicyId;
 import com.ryuqq.setof.domain.seller.id.SellerId;
 import com.ryuqq.setof.domain.shippingpolicy.id.ShippingPolicyId;
@@ -93,7 +99,7 @@ public class ProductGroupBundleFactory {
     /**
      * 수정 커맨드로부터 ProductGroupUpdateBundle을 생성합니다.
      *
-     * <p>기존 상품그룹을 조회한 뒤 번들로 묶어 반환합니다.
+     * <p>기존 상품그룹을 조회하고, Command를 per-package Update Command로 변환하여 번들로 반환합니다.
      *
      * @param command 수정 커맨드
      * @return ProductGroupUpdateBundle 인스턴스
@@ -102,8 +108,151 @@ public class ProductGroupBundleFactory {
         Instant now = timeProvider.now();
         ProductGroupId productGroupId = ProductGroupId.of(command.productGroupId());
         ProductGroup productGroup = productGroupReadManager.getById(productGroupId);
-        return new ProductGroupUpdateBundle(productGroup, command, now);
+
+        productGroup.update(toUpdateData(productGroup, command, now));
+        productGroup.updatePrices(
+                Money.of(command.regularPrice()),
+                Money.of(command.currentPrice()),
+                Money.of(command.currentPrice()),
+                now);
+
+        UpdateProductGroupImagesCommand imageCommand = toImageCommand(command);
+        UpdateSellerOptionGroupsCommand optionGroupCommand = toOptionGroupCommand(command);
+        UpdateProductGroupDescriptionCommand descriptionCommand = toDescriptionCommand(command);
+        UpdateProductNoticeCommand noticeCommand = toNoticeCommand(command);
+        List<ProductDiffUpdateEntry> productEntries = toProductEntries(command);
+
+        return new ProductGroupUpdateBundle(
+                productGroup,
+                command.regularPrice(),
+                command.currentPrice(),
+                imageCommand,
+                optionGroupCommand,
+                descriptionCommand,
+                noticeCommand,
+                productEntries,
+                now);
     }
+
+    // ── 수정 커맨드 변환 메서드 ──
+
+    private static ProductGroupUpdateData toUpdateData(
+            ProductGroup productGroup, UpdateProductGroupFullCommand command, Instant now) {
+        return ProductGroupUpdateData.of(
+                productGroup.id(),
+                ProductGroupName.of(command.productGroupName()),
+                BrandId.of(command.brandId()),
+                CategoryId.of(command.categoryId()),
+                ShippingPolicyId.of(command.shippingPolicyId()),
+                RefundPolicyId.of(command.refundPolicyId()),
+                OptionType.valueOf(command.optionType()),
+                now);
+    }
+
+    private static UpdateProductGroupImagesCommand toImageCommand(
+            UpdateProductGroupFullCommand command) {
+        if (command.images() == null || command.images().isEmpty()) {
+            return null;
+        }
+        List<UpdateProductGroupImagesCommand.ImageCommand> imageCommands =
+                command.images().stream()
+                        .map(
+                                img ->
+                                        new UpdateProductGroupImagesCommand.ImageCommand(
+                                                img.imageType(), img.imageUrl(), img.sortOrder()))
+                        .toList();
+        return new UpdateProductGroupImagesCommand(command.productGroupId(), imageCommands);
+    }
+
+    private static UpdateSellerOptionGroupsCommand toOptionGroupCommand(
+            UpdateProductGroupFullCommand command) {
+        if (command.optionGroups() == null || command.optionGroups().isEmpty()) {
+            return null;
+        }
+        List<UpdateSellerOptionGroupsCommand.OptionGroupCommand> optionGroupCommands =
+                command.optionGroups().stream()
+                        .map(
+                                og -> {
+                                    List<UpdateSellerOptionGroupsCommand.OptionValueCommand>
+                                            valueCommands =
+                                                    og.optionValues().stream()
+                                                            .map(
+                                                                    ov ->
+                                                                            new UpdateSellerOptionGroupsCommand
+                                                                                    .OptionValueCommand(
+                                                                                    ov
+                                                                                            .sellerOptionValueId(),
+                                                                                    ov
+                                                                                            .optionValueName(),
+                                                                                    ov.sortOrder()))
+                                                            .toList();
+                                    return new UpdateSellerOptionGroupsCommand.OptionGroupCommand(
+                                            og.sellerOptionGroupId(),
+                                            og.optionGroupName(),
+                                            og.sortOrder(),
+                                            valueCommands);
+                                })
+                        .toList();
+        return new UpdateSellerOptionGroupsCommand(command.productGroupId(), optionGroupCommands);
+    }
+
+    private static UpdateProductGroupDescriptionCommand toDescriptionCommand(
+            UpdateProductGroupFullCommand command) {
+        if (command.description() == null) {
+            return null;
+        }
+        UpdateProductGroupFullCommand.DescriptionCommand descCmd = command.description();
+        List<UpdateProductGroupDescriptionCommand.DescriptionImageCommand> descImages =
+                descCmd.descriptionImages() != null
+                        ? descCmd.descriptionImages().stream()
+                                .map(
+                                        di ->
+                                                new UpdateProductGroupDescriptionCommand
+                                                        .DescriptionImageCommand(
+                                                        di.imageUrl(), di.sortOrder()))
+                                .toList()
+                        : List.of();
+        return new UpdateProductGroupDescriptionCommand(
+                command.productGroupId(), descCmd.content(), descImages);
+    }
+
+    private static UpdateProductNoticeCommand toNoticeCommand(
+            UpdateProductGroupFullCommand command) {
+        if (command.notice() == null
+                || command.notice().entries() == null
+                || command.notice().entries().isEmpty()) {
+            return null;
+        }
+        List<UpdateProductNoticeCommand.NoticeEntryCommand> entryCommands =
+                command.notice().entries().stream()
+                        .map(
+                                e ->
+                                        new UpdateProductNoticeCommand.NoticeEntryCommand(
+                                                e.noticeFieldId(), e.fieldName(), e.fieldValue()))
+                        .toList();
+        return new UpdateProductNoticeCommand(command.productGroupId(), entryCommands);
+    }
+
+    private static List<ProductDiffUpdateEntry> toProductEntries(
+            UpdateProductGroupFullCommand command) {
+        if (command.products() == null || command.products().isEmpty()) {
+            return List.of();
+        }
+        return command.products().stream()
+                .map(
+                        p ->
+                                new ProductDiffUpdateEntry(
+                                        p.productId(),
+                                        p.skuCode(),
+                                        p.regularPrice(),
+                                        p.currentPrice(),
+                                        p.stockQuantity(),
+                                        p.sortOrder(),
+                                        p.selectedOptions()))
+                .toList();
+    }
+
+    // ── 등록 커맨드 변환 메서드 ──
 
     private static List<RegisterProductGroupImagesCommand.ImageCommand> toImageCommands(
             List<RegisterProductGroupCommand.ImageCommand> images) {

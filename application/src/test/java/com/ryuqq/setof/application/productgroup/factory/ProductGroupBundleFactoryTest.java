@@ -83,7 +83,7 @@ class ProductGroupBundleFactoryTest {
     class CreateUpdateBundleTest {
 
         @Test
-        @DisplayName("수정 커맨드로 기존 상품그룹을 조회하여 ProductGroupUpdateBundle을 생성한다")
+        @DisplayName("수정 커맨드로 per-package Command가 포함된 ProductGroupUpdateBundle을 생성한다")
         void createUpdateBundle_ValidCommand_ReturnsBundle() {
             // given
             long productGroupId = 1L;
@@ -102,9 +102,76 @@ class ProductGroupBundleFactoryTest {
             // then
             assertThat(result).isNotNull();
             assertThat(result.productGroup()).isEqualTo(existingGroup);
-            assertThat(result.command()).isEqualTo(command);
             assertThat(result.updatedAt()).isEqualTo(now);
             then(productGroupReadManager).should().getById(ProductGroupId.of(productGroupId));
+        }
+
+        @Test
+        @DisplayName("수정 번들에 이미지, 옵션, 설명, 고시 커맨드가 포함된다")
+        void createUpdateBundle_ValidCommand_ContainsPerPackageCommands() {
+            // given
+            long productGroupId = 1L;
+            UpdateProductGroupFullCommand command =
+                    ProductGroupCommandFixtures.updateFullCommand(productGroupId);
+            ProductGroup existingGroup = ProductGroupFixtures.activeProductGroup(productGroupId);
+            Instant now = Instant.parse("2024-01-01T00:00:00Z");
+
+            given(timeProvider.now()).willReturn(now);
+            given(productGroupReadManager.getById(ProductGroupId.of(productGroupId)))
+                    .willReturn(existingGroup);
+
+            // when
+            ProductGroupUpdateBundle result = sut.createUpdateBundle(command);
+
+            // then
+            assertThat(result.imageCommand()).isNotNull();
+            assertThat(result.imageCommand().productGroupId()).isEqualTo(productGroupId);
+            assertThat(result.optionGroupCommand()).isNotNull();
+            assertThat(result.optionGroupCommand().productGroupId()).isEqualTo(productGroupId);
+            assertThat(result.descriptionCommand()).isNotNull();
+            assertThat(result.descriptionCommand().productGroupId()).isEqualTo(productGroupId);
+            assertThat(result.noticeCommand()).isNotNull();
+            assertThat(result.noticeCommand().productGroupId()).isEqualTo(productGroupId);
+            assertThat(result.productEntries()).hasSize(command.products().size());
+        }
+
+        @Test
+        @DisplayName("이미지 커맨드가 없으면 imageCommand는 null이다")
+        void createUpdateBundle_NoImages_ImageCommandIsNull() {
+            // given
+            long productGroupId = 2L;
+            UpdateProductGroupFullCommand command =
+                    new UpdateProductGroupFullCommand(
+                            productGroupId,
+                            "수정된 상품그룹",
+                            2L,
+                            2L,
+                            2L,
+                            2L,
+                            "NONE",
+                            30000,
+                            25000,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null);
+            ProductGroup existingGroup = ProductGroupFixtures.activeProductGroup(productGroupId);
+            Instant now = Instant.parse("2024-01-01T00:00:00Z");
+
+            given(timeProvider.now()).willReturn(now);
+            given(productGroupReadManager.getById(ProductGroupId.of(productGroupId)))
+                    .willReturn(existingGroup);
+
+            // when
+            ProductGroupUpdateBundle result = sut.createUpdateBundle(command);
+
+            // then
+            assertThat(result.imageCommand()).isNull();
+            assertThat(result.optionGroupCommand()).isNull();
+            assertThat(result.descriptionCommand()).isNull();
+            assertThat(result.noticeCommand()).isNull();
+            assertThat(result.productEntries()).isEmpty();
         }
     }
 }

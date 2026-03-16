@@ -1,11 +1,16 @@
 package com.ryuqq.setof.application.productgroup;
 
+import com.ryuqq.setof.application.product.dto.command.ProductDiffUpdateEntry;
 import com.ryuqq.setof.application.product.dto.command.SelectedOption;
+import com.ryuqq.setof.application.productdescription.dto.command.UpdateProductGroupDescriptionCommand;
 import com.ryuqq.setof.application.productgroup.dto.bundle.ProductGroupRegistrationBundle;
 import com.ryuqq.setof.application.productgroup.dto.bundle.ProductGroupUpdateBundle;
 import com.ryuqq.setof.application.productgroup.dto.command.RegisterProductGroupCommand;
 import com.ryuqq.setof.application.productgroup.dto.command.UpdateProductGroupBasicInfoCommand;
 import com.ryuqq.setof.application.productgroup.dto.command.UpdateProductGroupFullCommand;
+import com.ryuqq.setof.application.productgroupimage.dto.command.UpdateProductGroupImagesCommand;
+import com.ryuqq.setof.application.productnotice.dto.command.UpdateProductNoticeCommand;
+import com.ryuqq.setof.application.selleroption.dto.command.UpdateSellerOptionGroupsCommand;
 import com.ryuqq.setof.domain.productgroup.ProductGroupFixtures;
 import java.time.Instant;
 import java.util.List;
@@ -190,9 +195,58 @@ public final class ProductGroupCommandFixtures {
     }
 
     public static ProductGroupUpdateBundle updateBundle(long productGroupId) {
+        UpdateProductGroupImagesCommand imageCommand =
+                new UpdateProductGroupImagesCommand(
+                        productGroupId,
+                        List.of(
+                                new UpdateProductGroupImagesCommand.ImageCommand(
+                                        "THUMBNAIL", "http://example.com/new-thumb.jpg", 1)));
+
+        UpdateSellerOptionGroupsCommand optionGroupCommand =
+                new UpdateSellerOptionGroupsCommand(
+                        productGroupId,
+                        List.of(
+                                new UpdateSellerOptionGroupsCommand.OptionGroupCommand(
+                                        10L,
+                                        "색상",
+                                        1,
+                                        List.of(
+                                                new UpdateSellerOptionGroupsCommand
+                                                        .OptionValueCommand(100L, "블랙", 1),
+                                                new UpdateSellerOptionGroupsCommand
+                                                        .OptionValueCommand(null, "그린", 3)))));
+
+        UpdateProductGroupDescriptionCommand descriptionCommand =
+                new UpdateProductGroupDescriptionCommand(
+                        productGroupId, "<p>수정된 상세설명</p>", List.of());
+
+        UpdateProductNoticeCommand noticeCommand =
+                new UpdateProductNoticeCommand(
+                        productGroupId,
+                        List.of(
+                                new UpdateProductNoticeCommand.NoticeEntryCommand(
+                                        1L, "소재", "폴리에스터 100%")));
+
+        List<ProductDiffUpdateEntry> productEntries =
+                List.of(
+                        new ProductDiffUpdateEntry(
+                                1L,
+                                "SKU-001",
+                                60000,
+                                55000,
+                                8,
+                                1,
+                                List.of(new SelectedOption("색상", "블랙"))));
+
         return new ProductGroupUpdateBundle(
                 ProductGroupFixtures.activeProductGroup(productGroupId),
-                updateFullCommand(productGroupId),
+                60000,
+                55000,
+                imageCommand,
+                optionGroupCommand,
+                descriptionCommand,
+                noticeCommand,
+                productEntries,
                 FIXED_NOW);
     }
 }
