@@ -37,23 +37,23 @@ public class LegacyWebContentCompositeQueryAdapter implements ContentPageQueryPo
     }
 
     @Override
-    public Set<Long> fetchOnDisplayContentPageIds() {
+    public Set<Long> findOnDisplayContentPageIds() {
         List<Long> contentIds = repository.fetchOnDisplayContentIds();
         return new HashSet<>(contentIds);
     }
 
     @Override
-    public Optional<ContentPage> fetchContentPageMeta(long contentPageId) {
+    public Optional<ContentPage> findById(long contentPageId) {
         return repository.fetchContentById(contentPageId).map(mapper::toContentPage);
     }
 
     @Override
-    public Optional<ContentPage> fetchContentPage(ContentPageSearchCriteria criteria) {
+    public Optional<ContentPage> findByCriteria(ContentPageSearchCriteria criteria) {
         return repository.fetchContent(criteria.contentPageId()).map(mapper::toContentPage);
     }
 
     @Override
-    public List<ContentPage> findByCriteria(ContentPageListSearchCriteria criteria) {
+    public List<ContentPage> findAllByCriteria(ContentPageListSearchCriteria criteria) {
         throw new UnsupportedOperationException(
                 "레거시 어댑터에서는 목록 검색을 지원하지 않습니다. persistence.legacy.content.enabled=false로 전환하세요.");
     }

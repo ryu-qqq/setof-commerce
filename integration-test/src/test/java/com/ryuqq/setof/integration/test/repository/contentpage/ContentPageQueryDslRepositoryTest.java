@@ -193,7 +193,7 @@ class ContentPageQueryDslRepositoryTest extends RepositoryTestBase {
             flushAndClear();
 
             // when
-            List<Long> ids = queryDslRepository.fetchOnDisplayContentPageIds();
+            List<Long> ids = queryDslRepository.findOnDisplayContentPageIds();
 
             // then
             assertThat(ids).contains(active1.getId(), active2.getId());
@@ -209,7 +209,7 @@ class ContentPageQueryDslRepositoryTest extends RepositoryTestBase {
             flushAndClear();
 
             // when
-            List<Long> ids = queryDslRepository.fetchOnDisplayContentPageIds();
+            List<Long> ids = queryDslRepository.findOnDisplayContentPageIds();
 
             // then
             assertThat(ids).isEmpty();
@@ -219,7 +219,7 @@ class ContentPageQueryDslRepositoryTest extends RepositoryTestBase {
         @DisplayName("콘텐츠 페이지가 하나도 없으면 빈 리스트를 반환합니다")
         void shouldReturnEmptyListWhenNoPagesExist() {
             // when (아무 데이터도 저장하지 않음)
-            List<Long> ids = queryDslRepository.fetchOnDisplayContentPageIds();
+            List<Long> ids = queryDslRepository.findOnDisplayContentPageIds();
 
             // then
             assertThat(ids).isEmpty();

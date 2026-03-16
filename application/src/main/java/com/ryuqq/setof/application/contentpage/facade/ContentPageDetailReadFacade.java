@@ -43,9 +43,8 @@ public class ContentPageDetailReadFacade {
      * @return ContentPageDetailResult (메타 + 컴포넌트 + 상품 번들)
      */
     public ContentPageDetailResult getContentPageDetail(ContentPageSearchCriteria criteria) {
-        ContentPage page = contentPageQueryManager.fetchContentPage(criteria);
-        List<DisplayComponent> components =
-                displayComponentReadManager.fetchDisplayComponents(criteria);
+        ContentPage page = contentPageQueryManager.findByCriteriaOrThrow(criteria);
+        List<DisplayComponent> components = displayComponentReadManager.findByContentPage(criteria);
         ComponentProductBundle productBundle =
                 componentProductReadFacade.fetchComponentProducts(components);
         return new ContentPageDetailResult(page, components, productBundle);

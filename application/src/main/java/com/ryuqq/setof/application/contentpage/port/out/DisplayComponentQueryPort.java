@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * DisplayComponentQueryPort - 디스플레이 컴포넌트 조회 출력 포트.
  *
- * <p>컴포넌트 메타 + ViewExtension + ComponentSpec 조회를 담당한다.
+ * <p>APP-PRT-001: Port-Out은 interface이며, Adapter-Out이 구현합니다.
  *
  * @author ryu-qqq
  * @since 1.1.0
@@ -20,5 +20,5 @@ public interface DisplayComponentQueryPort {
      * @param criteria 검색 조건
      * @return DisplayComponent 목록
      */
-    List<DisplayComponent> fetchDisplayComponents(ContentPageSearchCriteria criteria);
+    List<DisplayComponent> findByContentPage(ContentPageSearchCriteria criteria);
 }

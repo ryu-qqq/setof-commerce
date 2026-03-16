@@ -30,7 +30,7 @@ public class DisplayComponentQueryAdapter implements DisplayComponentQueryPort {
     }
 
     @Override
-    public List<DisplayComponent> fetchDisplayComponents(ContentPageSearchCriteria criteria) {
+    public List<DisplayComponent> findByContentPage(ContentPageSearchCriteria criteria) {
         if (criteria.contentPageId() == null) {
             return List.of();
         }

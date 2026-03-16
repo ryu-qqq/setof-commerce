@@ -27,17 +27,17 @@ public class ContentPageQueryAdapter implements ContentPageQueryPort {
     }
 
     @Override
-    public Set<Long> fetchOnDisplayContentPageIds() {
-        return new HashSet<>(queryDslRepository.fetchOnDisplayContentPageIds());
+    public Set<Long> findOnDisplayContentPageIds() {
+        return new HashSet<>(queryDslRepository.findOnDisplayContentPageIds());
     }
 
     @Override
-    public Optional<ContentPage> fetchContentPageMeta(long contentPageId) {
+    public Optional<ContentPage> findById(long contentPageId) {
         return queryDslRepository.fetchById(contentPageId).map(mapper::toDomain);
     }
 
     @Override
-    public Optional<ContentPage> fetchContentPage(ContentPageSearchCriteria criteria) {
+    public Optional<ContentPage> findByCriteria(ContentPageSearchCriteria criteria) {
         if (criteria.contentPageId() == null) {
             return Optional.empty();
         }
@@ -47,7 +47,7 @@ public class ContentPageQueryAdapter implements ContentPageQueryPort {
     }
 
     @Override
-    public List<ContentPage> findByCriteria(ContentPageListSearchCriteria criteria) {
+    public List<ContentPage> findAllByCriteria(ContentPageListSearchCriteria criteria) {
         return queryDslRepository.searchContentPages(criteria).stream()
                 .map(mapper::toDomain)
                 .toList();

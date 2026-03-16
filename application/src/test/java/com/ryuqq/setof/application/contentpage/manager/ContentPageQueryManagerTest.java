@@ -32,127 +32,127 @@ class ContentPageQueryManagerTest {
     @Mock private ContentPageQueryPort queryPort;
 
     @Nested
-    @DisplayName("fetchOnDisplayContentPageIds() - 전시 중인 ID 목록 조회")
-    class FetchOnDisplayContentPageIdsTest {
+    @DisplayName("findOnDisplayContentPageIds() - 전시 중인 ID 목록 조회")
+    class FindOnDisplayContentPageIdsTest {
 
         @Test
         @DisplayName("전시 중인 콘텐츠 페이지 ID Set을 반환한다")
-        void fetchOnDisplayContentPageIds_ReturnsIdSet() {
+        void findOnDisplayContentPageIds_ReturnsIdSet() {
             // given
             Set<Long> expected = Set.of(1L, 2L, 5L);
 
-            given(queryPort.fetchOnDisplayContentPageIds()).willReturn(expected);
+            given(queryPort.findOnDisplayContentPageIds()).willReturn(expected);
 
             // when
-            Set<Long> result = sut.fetchOnDisplayContentPageIds();
+            Set<Long> result = sut.findOnDisplayContentPageIds();
 
             // then
             assertThat(result).isEqualTo(expected);
-            then(queryPort).should().fetchOnDisplayContentPageIds();
+            then(queryPort).should().findOnDisplayContentPageIds();
         }
 
         @Test
         @DisplayName("전시 중인 콘텐츠 페이지가 없으면 빈 Set을 반환한다")
-        void fetchOnDisplayContentPageIds_NoneDisplayed_ReturnsEmptySet() {
+        void findOnDisplayContentPageIds_NoneDisplayed_ReturnsEmptySet() {
             // given
-            given(queryPort.fetchOnDisplayContentPageIds()).willReturn(Set.of());
+            given(queryPort.findOnDisplayContentPageIds()).willReturn(Set.of());
 
             // when
-            Set<Long> result = sut.fetchOnDisplayContentPageIds();
+            Set<Long> result = sut.findOnDisplayContentPageIds();
 
             // then
             assertThat(result).isEmpty();
-            then(queryPort).should().fetchOnDisplayContentPageIds();
+            then(queryPort).should().findOnDisplayContentPageIds();
         }
     }
 
     @Nested
-    @DisplayName("fetchContentPageMeta() - 메타 조회")
-    class FetchContentPageMetaTest {
+    @DisplayName("findByIdOrThrow() - ID로 콘텐츠 페이지 조회")
+    class FindByIdOrThrowTest {
 
         @Test
-        @DisplayName("존재하는 ID로 메타 정보를 반환한다")
-        void fetchContentPageMeta_ExistingId_ReturnsContentPage() {
+        @DisplayName("존재하는 ID로 콘텐츠 페이지를 반환한다")
+        void findByIdOrThrow_ExistingId_ReturnsContentPage() {
             // given
             long contentPageId = 1L;
             ContentPage expected = ContentPageFixtures.activeContentPage();
 
-            given(queryPort.fetchContentPageMeta(contentPageId)).willReturn(Optional.of(expected));
+            given(queryPort.findById(contentPageId)).willReturn(Optional.of(expected));
 
             // when
-            ContentPage result = sut.fetchContentPageMeta(contentPageId);
+            ContentPage result = sut.findByIdOrThrow(contentPageId);
 
             // then
             assertThat(result).isEqualTo(expected);
-            then(queryPort).should().fetchContentPageMeta(contentPageId);
+            then(queryPort).should().findById(contentPageId);
         }
 
         @Test
         @DisplayName("존재하지 않는 ID로 조회하면 ContentPageNotFoundException이 발생한다")
-        void fetchContentPageMeta_NonExistingId_ThrowsException() {
+        void findByIdOrThrow_NonExistingId_ThrowsException() {
             // given
             long contentPageId = 999L;
 
-            given(queryPort.fetchContentPageMeta(contentPageId)).willReturn(Optional.empty());
+            given(queryPort.findById(contentPageId)).willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> sut.fetchContentPageMeta(contentPageId))
+            assertThatThrownBy(() -> sut.findByIdOrThrow(contentPageId))
                     .isInstanceOf(ContentPageNotFoundException.class);
-            then(queryPort).should().fetchContentPageMeta(contentPageId);
+            then(queryPort).should().findById(contentPageId);
         }
     }
 
     @Nested
-    @DisplayName("fetchContentPage() - 콘텐츠 페이지 상세 조회")
-    class FetchContentPageTest {
+    @DisplayName("findByCriteriaOrThrow() - 검색 조건으로 콘텐츠 페이지 조회")
+    class FindByCriteriaOrThrowTest {
 
         @Test
         @DisplayName("유효한 검색 조건으로 콘텐츠 페이지를 반환한다")
-        void fetchContentPage_ValidCriteria_ReturnsContentPage() {
+        void findByCriteriaOrThrow_ValidCriteria_ReturnsContentPage() {
             // given
             ContentPageSearchCriteria criteria = ContentPageQueryFixtures.defaultSearchCriteria();
             ContentPage expected = ContentPageFixtures.activeContentPage();
 
-            given(queryPort.fetchContentPage(criteria)).willReturn(Optional.of(expected));
+            given(queryPort.findByCriteria(criteria)).willReturn(Optional.of(expected));
 
             // when
-            ContentPage result = sut.fetchContentPage(criteria);
+            ContentPage result = sut.findByCriteriaOrThrow(criteria);
 
             // then
             assertThat(result).isEqualTo(expected);
-            then(queryPort).should().fetchContentPage(criteria);
+            then(queryPort).should().findByCriteria(criteria);
         }
 
         @Test
         @DisplayName("검색 결과가 없으면 ContentPageNotFoundException이 발생한다")
-        void fetchContentPage_NoResult_ThrowsException() {
+        void findByCriteriaOrThrow_NoResult_ThrowsException() {
             // given
             ContentPageSearchCriteria criteria = ContentPageQueryFixtures.searchCriteria(999L);
 
-            given(queryPort.fetchContentPage(criteria)).willReturn(Optional.empty());
+            given(queryPort.findByCriteria(criteria)).willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> sut.fetchContentPage(criteria))
+            assertThatThrownBy(() -> sut.findByCriteriaOrThrow(criteria))
                     .isInstanceOf(ContentPageNotFoundException.class);
-            then(queryPort).should().fetchContentPage(criteria);
+            then(queryPort).should().findByCriteria(criteria);
         }
 
         @Test
         @DisplayName("bypass 옵션이 있는 조건으로도 콘텐츠 페이지를 반환한다")
-        void fetchContentPage_CriteriaWithBypass_ReturnsContentPage() {
+        void findByCriteriaOrThrow_CriteriaWithBypass_ReturnsContentPage() {
             // given
             ContentPageSearchCriteria criteria =
                     ContentPageQueryFixtures.searchCriteriaWithBypass(2L);
             ContentPage expected = ContentPageFixtures.activeContentPage(2L);
 
-            given(queryPort.fetchContentPage(criteria)).willReturn(Optional.of(expected));
+            given(queryPort.findByCriteria(criteria)).willReturn(Optional.of(expected));
 
             // when
-            ContentPage result = sut.fetchContentPage(criteria);
+            ContentPage result = sut.findByCriteriaOrThrow(criteria);
 
             // then
             assertThat(result).isEqualTo(expected);
-            then(queryPort).should().fetchContentPage(criteria);
+            then(queryPort).should().findByCriteria(criteria);
         }
     }
 }

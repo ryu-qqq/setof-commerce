@@ -22,6 +22,6 @@ public class GetContentPageMetaService implements GetContentPageMetaUseCase {
 
     @Override
     public ContentPage execute(long contentPageId) {
-        return queryManager.fetchContentPageMeta(contentPageId);
+        return queryManager.findByIdOrThrow(contentPageId);
     }
 }

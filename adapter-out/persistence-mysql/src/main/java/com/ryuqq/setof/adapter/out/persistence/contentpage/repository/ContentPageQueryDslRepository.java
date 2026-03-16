@@ -45,7 +45,7 @@ public class ContentPageQueryDslRepository {
         return Optional.ofNullable(entity);
     }
 
-    public List<Long> fetchOnDisplayContentPageIds() {
+    public List<Long> findOnDisplayContentPageIds() {
         return queryFactory
                 .select(contentPageJpaEntity.id)
                 .from(contentPageJpaEntity)

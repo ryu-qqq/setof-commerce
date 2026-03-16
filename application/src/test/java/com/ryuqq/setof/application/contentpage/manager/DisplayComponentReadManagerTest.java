@@ -29,12 +29,12 @@ class DisplayComponentReadManagerTest {
     @Mock private DisplayComponentQueryPort queryPort;
 
     @Nested
-    @DisplayName("fetchDisplayComponents() - 디스플레이 컴포넌트 목록 조회")
+    @DisplayName("findByContentPage() - 디스플레이 컴포넌트 목록 조회")
     class FetchDisplayComponentsTest {
 
         @Test
         @DisplayName("유효한 검색 조건으로 컴포넌트 목록을 반환한다")
-        void fetchDisplayComponents_ValidCriteria_ReturnsComponentList() {
+        void findByContentPage_ValidCriteria_ReturnsComponentList() {
             // given
             ContentPageSearchCriteria criteria = ContentPageQueryFixtures.defaultSearchCriteria();
             List<DisplayComponent> expected =
@@ -45,50 +45,50 @@ class DisplayComponentReadManagerTest {
                                     10),
                             ContentPageFixtures.textComponent(2L));
 
-            given(queryPort.fetchDisplayComponents(criteria)).willReturn(expected);
+            given(queryPort.findByContentPage(criteria)).willReturn(expected);
 
             // when
-            List<DisplayComponent> result = sut.fetchDisplayComponents(criteria);
+            List<DisplayComponent> result = sut.findByContentPage(criteria);
 
             // then
             assertThat(result).isEqualTo(expected);
             assertThat(result).hasSize(2);
-            then(queryPort).should().fetchDisplayComponents(criteria);
+            then(queryPort).should().findByContentPage(criteria);
         }
 
         @Test
         @DisplayName("컴포넌트가 없으면 빈 목록을 반환한다")
-        void fetchDisplayComponents_NoComponents_ReturnsEmptyList() {
+        void findByContentPage_NoComponents_ReturnsEmptyList() {
             // given
             ContentPageSearchCriteria criteria = ContentPageQueryFixtures.searchCriteria(999L);
 
-            given(queryPort.fetchDisplayComponents(criteria)).willReturn(List.of());
+            given(queryPort.findByContentPage(criteria)).willReturn(List.of());
 
             // when
-            List<DisplayComponent> result = sut.fetchDisplayComponents(criteria);
+            List<DisplayComponent> result = sut.findByContentPage(criteria);
 
             // then
             assertThat(result).isEmpty();
-            then(queryPort).should().fetchDisplayComponents(criteria);
+            then(queryPort).should().findByContentPage(criteria);
         }
 
         @Test
         @DisplayName("단일 컴포넌트를 포함한 목록을 반환한다")
-        void fetchDisplayComponents_SingleComponent_ReturnsSingletonList() {
+        void findByContentPage_SingleComponent_ReturnsSingletonList() {
             // given
             ContentPageSearchCriteria criteria = ContentPageQueryFixtures.searchCriteria(3L);
             DisplayComponent component = ContentPageFixtures.textComponent(3L);
             List<DisplayComponent> expected = List.of(component);
 
-            given(queryPort.fetchDisplayComponents(criteria)).willReturn(expected);
+            given(queryPort.findByContentPage(criteria)).willReturn(expected);
 
             // when
-            List<DisplayComponent> result = sut.fetchDisplayComponents(criteria);
+            List<DisplayComponent> result = sut.findByContentPage(criteria);
 
             // then
             assertThat(result).hasSize(1);
             assertThat(result.getFirst()).isEqualTo(component);
-            then(queryPort).should().fetchDisplayComponents(criteria);
+            then(queryPort).should().findByContentPage(criteria);
         }
     }
 }

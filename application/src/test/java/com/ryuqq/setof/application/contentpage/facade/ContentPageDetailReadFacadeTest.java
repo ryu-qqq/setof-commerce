@@ -56,9 +56,8 @@ class ContentPageDetailReadFacadeTest {
                             Map.of(1L, ContentPageProductFixtures.productSnapshots(101L, 102L)),
                             Map.of());
 
-            given(contentPageQueryManager.fetchContentPage(criteria)).willReturn(contentPage);
-            given(displayComponentReadManager.fetchDisplayComponents(criteria))
-                    .willReturn(components);
+            given(contentPageQueryManager.findByCriteriaOrThrow(criteria)).willReturn(contentPage);
+            given(displayComponentReadManager.findByContentPage(criteria)).willReturn(components);
             given(componentProductReadFacade.fetchComponentProducts(components))
                     .willReturn(productBundle);
 
@@ -70,8 +69,8 @@ class ContentPageDetailReadFacadeTest {
             assertThat(result.contentPage()).isEqualTo(contentPage);
             assertThat(result.displayComponents()).isEqualTo(components);
             assertThat(result.productBundle()).isEqualTo(productBundle);
-            then(contentPageQueryManager).should().fetchContentPage(criteria);
-            then(displayComponentReadManager).should().fetchDisplayComponents(criteria);
+            then(contentPageQueryManager).should().findByCriteriaOrThrow(criteria);
+            then(displayComponentReadManager).should().findByContentPage(criteria);
             then(componentProductReadFacade).should().fetchComponentProducts(components);
         }
 
@@ -84,8 +83,8 @@ class ContentPageDetailReadFacadeTest {
             List<DisplayComponent> emptyComponents = List.of();
             ComponentProductBundle emptyBundle = ComponentProductBundle.empty();
 
-            given(contentPageQueryManager.fetchContentPage(criteria)).willReturn(contentPage);
-            given(displayComponentReadManager.fetchDisplayComponents(criteria))
+            given(contentPageQueryManager.findByCriteriaOrThrow(criteria)).willReturn(contentPage);
+            given(displayComponentReadManager.findByContentPage(criteria))
                     .willReturn(emptyComponents);
             given(componentProductReadFacade.fetchComponentProducts(emptyComponents))
                     .willReturn(emptyBundle);
@@ -98,8 +97,8 @@ class ContentPageDetailReadFacadeTest {
             assertThat(result.displayComponents()).isEmpty();
             assertThat(result.productBundle().componentProducts()).isEmpty();
             assertThat(result.productBundle().tabProducts()).isEmpty();
-            then(contentPageQueryManager).should().fetchContentPage(criteria);
-            then(displayComponentReadManager).should().fetchDisplayComponents(criteria);
+            then(contentPageQueryManager).should().findByCriteriaOrThrow(criteria);
+            then(displayComponentReadManager).should().findByContentPage(criteria);
             then(componentProductReadFacade).should().fetchComponentProducts(emptyComponents);
         }
 
@@ -117,9 +116,8 @@ class ContentPageDetailReadFacadeTest {
             ComponentProductBundle productBundle =
                     new ComponentProductBundle(Map.of(), Map.of(100L, tabSnapshots));
 
-            given(contentPageQueryManager.fetchContentPage(criteria)).willReturn(contentPage);
-            given(displayComponentReadManager.fetchDisplayComponents(criteria))
-                    .willReturn(components);
+            given(contentPageQueryManager.findByCriteriaOrThrow(criteria)).willReturn(contentPage);
+            given(displayComponentReadManager.findByContentPage(criteria)).willReturn(components);
             given(componentProductReadFacade.fetchComponentProducts(components))
                     .willReturn(productBundle);
 

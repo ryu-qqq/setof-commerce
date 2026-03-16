@@ -22,6 +22,6 @@ public class GetOnDisplayContentPageIdsService implements GetOnDisplayContentPag
 
     @Override
     public Set<Long> execute() {
-        return queryManager.fetchOnDisplayContentPageIds();
+        return queryManager.findOnDisplayContentPageIds();
     }
 }

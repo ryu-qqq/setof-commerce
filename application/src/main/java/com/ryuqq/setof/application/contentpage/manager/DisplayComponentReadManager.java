@@ -25,7 +25,7 @@ public class DisplayComponentReadManager {
     }
 
     @Transactional(readOnly = true)
-    public List<DisplayComponent> fetchDisplayComponents(ContentPageSearchCriteria criteria) {
-        return queryPort.fetchDisplayComponents(criteria);
+    public List<DisplayComponent> findByContentPage(ContentPageSearchCriteria criteria) {
+        return queryPort.findByContentPage(criteria);
     }
 }

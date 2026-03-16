@@ -9,6 +9,7 @@ import com.ryuqq.setof.adapter.out.persistence.contentpage.entity.ContentPageJpa
 import com.ryuqq.setof.adapter.out.persistence.contentpage.mapper.ContentPageJpaEntityMapper;
 import com.ryuqq.setof.adapter.out.persistence.contentpage.repository.ContentPageQueryDslRepository;
 import com.ryuqq.setof.domain.contentpage.aggregate.ContentPage;
+import com.ryuqq.setof.domain.contentpage.query.ContentPageListSearchCriteria;
 import com.ryuqq.setof.domain.contentpage.query.ContentPageSearchCriteria;
 import com.setof.commerce.domain.contentpage.ContentPageFixtures;
 import java.util.List;
@@ -42,40 +43,41 @@ class ContentPageQueryAdapterTest {
 
     @Mock private ContentPageJpaEntityMapper mapper;
 
+    @Mock private ContentPageListSearchCriteria listCriteria;
+
     @InjectMocks private ContentPageQueryAdapter queryAdapter;
 
     // ========================================================================
-    // 1. fetchOnDisplayContentPageIds 테스트
+    // 1. findOnDisplayContentPageIds 테스트
     // ========================================================================
 
     @Nested
-    @DisplayName("fetchOnDisplayContentPageIds 메서드 테스트")
-    class FetchOnDisplayContentPageIdsTest {
+    @DisplayName("findOnDisplayContentPageIds 메서드 테스트")
+    class FindOnDisplayContentPageIdsTest {
 
         @Test
         @DisplayName("전시 중인 콘텐츠 페이지 ID 목록을 Set으로 반환합니다")
-        void fetchOnDisplayContentPageIds_ReturnsIdSet() {
+        void findOnDisplayContentPageIds_ReturnsIdSet() {
             // given
-            given(queryDslRepository.fetchOnDisplayContentPageIds())
-                    .willReturn(List.of(1L, 2L, 3L));
+            given(queryDslRepository.findOnDisplayContentPageIds()).willReturn(List.of(1L, 2L, 3L));
 
             // when
-            Set<Long> result = queryAdapter.fetchOnDisplayContentPageIds();
+            Set<Long> result = queryAdapter.findOnDisplayContentPageIds();
 
             // then
             assertThat(result).hasSize(3);
             assertThat(result).containsExactlyInAnyOrder(1L, 2L, 3L);
-            then(queryDslRepository).should().fetchOnDisplayContentPageIds();
+            then(queryDslRepository).should().findOnDisplayContentPageIds();
         }
 
         @Test
         @DisplayName("전시 중인 콘텐츠 페이지가 없으면 빈 Set을 반환합니다")
-        void fetchOnDisplayContentPageIds_WithNoResults_ReturnsEmptySet() {
+        void findOnDisplayContentPageIds_WithNoResults_ReturnsEmptySet() {
             // given
-            given(queryDslRepository.fetchOnDisplayContentPageIds()).willReturn(List.of());
+            given(queryDslRepository.findOnDisplayContentPageIds()).willReturn(List.of());
 
             // when
-            Set<Long> result = queryAdapter.fetchOnDisplayContentPageIds();
+            Set<Long> result = queryAdapter.findOnDisplayContentPageIds();
 
             // then
             assertThat(result).isEmpty();
@@ -83,13 +85,12 @@ class ContentPageQueryAdapterTest {
 
         @Test
         @DisplayName("중복 ID가 있어도 Set으로 중복 제거되어 반환됩니다")
-        void fetchOnDisplayContentPageIds_WithDuplicates_ReturnsDistinctSet() {
+        void findOnDisplayContentPageIds_WithDuplicates_ReturnsDistinctSet() {
             // given
-            given(queryDslRepository.fetchOnDisplayContentPageIds())
-                    .willReturn(List.of(1L, 1L, 2L));
+            given(queryDslRepository.findOnDisplayContentPageIds()).willReturn(List.of(1L, 1L, 2L));
 
             // when
-            Set<Long> result = queryAdapter.fetchOnDisplayContentPageIds();
+            Set<Long> result = queryAdapter.findOnDisplayContentPageIds();
 
             // then
             assertThat(result).hasSize(2);
@@ -98,16 +99,16 @@ class ContentPageQueryAdapterTest {
     }
 
     // ========================================================================
-    // 2. fetchContentPageMeta 테스트
+    // 2. findById 테스트
     // ========================================================================
 
     @Nested
-    @DisplayName("fetchContentPageMeta 메서드 테스트")
-    class FetchContentPageMetaTest {
+    @DisplayName("findById 메서드 테스트")
+    class FindByIdTest {
 
         @Test
         @DisplayName("존재하는 ID로 조회 시 ContentPage를 반환합니다")
-        void fetchContentPageMeta_WithExistingId_ReturnsDomain() {
+        void findById_WithExistingId_ReturnsDomain() {
             // given
             long contentPageId = 1L;
             ContentPageJpaEntity entity = ContentPageJpaEntityFixtures.activeEntity();
@@ -117,7 +118,7 @@ class ContentPageQueryAdapterTest {
             given(mapper.toDomain(entity)).willReturn(domain);
 
             // when
-            Optional<ContentPage> result = queryAdapter.fetchContentPageMeta(contentPageId);
+            Optional<ContentPage> result = queryAdapter.findById(contentPageId);
 
             // then
             assertThat(result).isPresent();
@@ -126,13 +127,13 @@ class ContentPageQueryAdapterTest {
 
         @Test
         @DisplayName("존재하지 않는 ID로 조회 시 빈 Optional을 반환합니다")
-        void fetchContentPageMeta_WithNonExistingId_ReturnsEmpty() {
+        void findById_WithNonExistingId_ReturnsEmpty() {
             // given
             long contentPageId = 999L;
             given(queryDslRepository.fetchById(contentPageId)).willReturn(Optional.empty());
 
             // when
-            Optional<ContentPage> result = queryAdapter.fetchContentPageMeta(contentPageId);
+            Optional<ContentPage> result = queryAdapter.findById(contentPageId);
 
             // then
             assertThat(result).isEmpty();
@@ -140,16 +141,16 @@ class ContentPageQueryAdapterTest {
     }
 
     // ========================================================================
-    // 3. fetchContentPage 테스트
+    // 3. findByCriteria 테스트
     // ========================================================================
 
     @Nested
-    @DisplayName("fetchContentPage 메서드 테스트")
-    class FetchContentPageTest {
+    @DisplayName("findByCriteria 메서드 테스트")
+    class FindByCriteriaTest {
 
         @Test
         @DisplayName("유효한 contentPageId와 bypass=false로 활성 페이지를 반환합니다")
-        void fetchContentPage_WithValidIdAndNoBypass_ReturnsActivePage() {
+        void findByCriteria_WithValidIdAndNoBypass_ReturnsActivePage() {
             // given
             ContentPageSearchCriteria criteria = new ContentPageSearchCriteria(1L, false);
             ContentPageJpaEntity entity = ContentPageJpaEntityFixtures.activeEntity();
@@ -160,7 +161,7 @@ class ContentPageQueryAdapterTest {
             given(mapper.toDomain(entity)).willReturn(domain);
 
             // when
-            Optional<ContentPage> result = queryAdapter.fetchContentPage(criteria);
+            Optional<ContentPage> result = queryAdapter.findByCriteria(criteria);
 
             // then
             assertThat(result).isPresent();
@@ -169,7 +170,7 @@ class ContentPageQueryAdapterTest {
 
         @Test
         @DisplayName("bypass=true이면 비활성 페이지도 반환합니다")
-        void fetchContentPage_WithBypassTrue_ReturnsInactivePage() {
+        void findByCriteria_WithBypassTrue_ReturnsInactivePage() {
             // given
             ContentPageSearchCriteria criteria = new ContentPageSearchCriteria(2L, true);
             ContentPageJpaEntity entity = ContentPageJpaEntityFixtures.inactiveEntity();
@@ -179,7 +180,7 @@ class ContentPageQueryAdapterTest {
             given(mapper.toDomain(entity)).willReturn(domain);
 
             // when
-            Optional<ContentPage> result = queryAdapter.fetchContentPage(criteria);
+            Optional<ContentPage> result = queryAdapter.findByCriteria(criteria);
 
             // then
             assertThat(result).isPresent();
@@ -187,12 +188,12 @@ class ContentPageQueryAdapterTest {
 
         @Test
         @DisplayName("contentPageId가 null이면 빈 Optional을 즉시 반환합니다")
-        void fetchContentPage_WithNullId_ReturnsEmptyWithoutRepositoryCall() {
+        void findByCriteria_WithNullId_ReturnsEmptyWithoutRepositoryCall() {
             // given
             ContentPageSearchCriteria criteria = new ContentPageSearchCriteria(null, false);
 
             // when
-            Optional<ContentPage> result = queryAdapter.fetchContentPage(criteria);
+            Optional<ContentPage> result = queryAdapter.findByCriteria(criteria);
 
             // then
             assertThat(result).isEmpty();
@@ -201,16 +202,95 @@ class ContentPageQueryAdapterTest {
 
         @Test
         @DisplayName("존재하지 않는 ID로 조회 시 빈 Optional을 반환합니다")
-        void fetchContentPage_WithNonExistingId_ReturnsEmpty() {
+        void findByCriteria_WithNonExistingId_ReturnsEmpty() {
             // given
             ContentPageSearchCriteria criteria = new ContentPageSearchCriteria(999L, false);
             given(queryDslRepository.fetchByIdWithBypass(999L, false)).willReturn(Optional.empty());
 
             // when
-            Optional<ContentPage> result = queryAdapter.fetchContentPage(criteria);
+            Optional<ContentPage> result = queryAdapter.findByCriteria(criteria);
 
             // then
             assertThat(result).isEmpty();
+        }
+    }
+
+    // ========================================================================
+    // 4. findAllByCriteria 테스트
+    // ========================================================================
+
+    @Nested
+    @DisplayName("findAllByCriteria 메서드 테스트")
+    class FindAllByCriteriaTest {
+
+        @Test
+        @DisplayName("검색 조건으로 콘텐츠 페이지 목록을 반환합니다")
+        void findAllByCriteria_WithValidCriteria_ReturnsDomainList() {
+            // given
+            ContentPageJpaEntity entity1 = ContentPageJpaEntityFixtures.activeEntity(1L);
+            ContentPageJpaEntity entity2 = ContentPageJpaEntityFixtures.activeEntity(2L);
+            ContentPage domain1 = ContentPageFixtures.activeContentPage(1L);
+            ContentPage domain2 = ContentPageFixtures.activeContentPage(2L);
+
+            given(queryDslRepository.searchContentPages(listCriteria))
+                    .willReturn(List.of(entity1, entity2));
+            given(mapper.toDomain(entity1)).willReturn(domain1);
+            given(mapper.toDomain(entity2)).willReturn(domain2);
+
+            // when
+            List<ContentPage> result = queryAdapter.findAllByCriteria(listCriteria);
+
+            // then
+            assertThat(result).hasSize(2);
+            then(queryDslRepository).should().searchContentPages(listCriteria);
+        }
+
+        @Test
+        @DisplayName("검색 결과가 없으면 빈 리스트를 반환합니다")
+        void findAllByCriteria_WithNoResults_ReturnsEmptyList() {
+            // given
+            given(queryDslRepository.searchContentPages(listCriteria)).willReturn(List.of());
+
+            // when
+            List<ContentPage> result = queryAdapter.findAllByCriteria(listCriteria);
+
+            // then
+            assertThat(result).isEmpty();
+        }
+    }
+
+    // ========================================================================
+    // 5. countByCriteria 테스트
+    // ========================================================================
+
+    @Nested
+    @DisplayName("countByCriteria 메서드 테스트")
+    class CountByCriteriaTest {
+
+        @Test
+        @DisplayName("검색 조건으로 콘텐츠 페이지 개수를 반환합니다")
+        void countByCriteria_WithValidCriteria_ReturnsCount() {
+            // given
+            given(queryDslRepository.countContentPages(listCriteria)).willReturn(5L);
+
+            // when
+            long result = queryAdapter.countByCriteria(listCriteria);
+
+            // then
+            assertThat(result).isEqualTo(5L);
+        }
+
+        @Test
+        @DisplayName("검색 결과가 없으면 0을 반환합니다")
+        void countByCriteria_WithNoResults_ReturnsZero() {
+            // given
+            given(queryDslRepository.countContentPages(listCriteria)).willReturn(0L);
+
+            // when
+            long result = queryAdapter.countByCriteria(listCriteria);
+
+            // then
+            assertThat(result).isZero();
         }
     }
 }

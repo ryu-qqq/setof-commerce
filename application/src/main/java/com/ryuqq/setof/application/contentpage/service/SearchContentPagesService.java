@@ -31,7 +31,7 @@ public class SearchContentPagesService implements SearchContentPagesUseCase {
     @Override
     public ContentPagePageResult execute(ContentPageSearchParams params) {
         ContentPageListSearchCriteria criteria = queryFactory.create(params);
-        List<ContentPage> pages = queryManager.findByCriteria(criteria);
+        List<ContentPage> pages = queryManager.findAllByCriteria(criteria);
         long totalCount = queryManager.countByCriteria(criteria);
 
         Long lastDomainId = pages.isEmpty() ? null : pages.get(pages.size() - 1).idValue();

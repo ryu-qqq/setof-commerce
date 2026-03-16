@@ -34,7 +34,7 @@ class GetOnDisplayContentPageIdsServiceTest {
             // given
             Set<Long> expected = Set.of(1L, 2L, 3L);
 
-            given(queryManager.fetchOnDisplayContentPageIds()).willReturn(expected);
+            given(queryManager.findOnDisplayContentPageIds()).willReturn(expected);
 
             // when
             Set<Long> result = sut.execute();
@@ -42,21 +42,21 @@ class GetOnDisplayContentPageIdsServiceTest {
             // then
             assertThat(result).isEqualTo(expected);
             assertThat(result).hasSize(3);
-            then(queryManager).should().fetchOnDisplayContentPageIds();
+            then(queryManager).should().findOnDisplayContentPageIds();
         }
 
         @Test
         @DisplayName("전시 중인 콘텐츠 페이지가 없으면 빈 Set을 반환한다")
         void execute_NoOnDisplayPages_ReturnsEmptySet() {
             // given
-            given(queryManager.fetchOnDisplayContentPageIds()).willReturn(Set.of());
+            given(queryManager.findOnDisplayContentPageIds()).willReturn(Set.of());
 
             // when
             Set<Long> result = sut.execute();
 
             // then
             assertThat(result).isEmpty();
-            then(queryManager).should().fetchOnDisplayContentPageIds();
+            then(queryManager).should().findOnDisplayContentPageIds();
         }
 
         @Test
@@ -65,14 +65,14 @@ class GetOnDisplayContentPageIdsServiceTest {
             // given
             Set<Long> expected = Set.of(10L);
 
-            given(queryManager.fetchOnDisplayContentPageIds()).willReturn(expected);
+            given(queryManager.findOnDisplayContentPageIds()).willReturn(expected);
 
             // when
             Set<Long> result = sut.execute();
 
             // then
             assertThat(result).containsExactly(10L);
-            then(queryManager).should().fetchOnDisplayContentPageIds();
+            then(queryManager).should().findOnDisplayContentPageIds();
         }
     }
 }

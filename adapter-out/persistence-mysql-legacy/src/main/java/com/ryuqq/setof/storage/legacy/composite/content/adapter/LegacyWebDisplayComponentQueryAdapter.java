@@ -56,7 +56,7 @@ public class LegacyWebDisplayComponentQueryAdapter implements DisplayComponentQu
     }
 
     @Override
-    public List<DisplayComponent> fetchDisplayComponents(ContentPageSearchCriteria criteria) {
+    public List<DisplayComponent> findByContentPage(ContentPageSearchCriteria criteria) {
         LegacyContentSearchCondition condition =
                 LegacyContentSearchCondition.of(criteria.contentPageId(), criteria.bypass());
         List<LegacyWebComponentQueryDto> components =

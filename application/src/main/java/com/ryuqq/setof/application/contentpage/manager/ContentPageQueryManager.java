@@ -28,21 +28,21 @@ public class ContentPageQueryManager {
     }
 
     @Transactional(readOnly = true)
-    public Set<Long> fetchOnDisplayContentPageIds() {
-        return queryPort.fetchOnDisplayContentPageIds();
+    public Set<Long> findOnDisplayContentPageIds() {
+        return queryPort.findOnDisplayContentPageIds();
     }
 
     @Transactional(readOnly = true)
-    public ContentPage fetchContentPageMeta(long contentPageId) {
+    public ContentPage findByIdOrThrow(long contentPageId) {
         return queryPort
-                .fetchContentPageMeta(contentPageId)
+                .findById(contentPageId)
                 .orElseThrow(() -> new ContentPageNotFoundException(String.valueOf(contentPageId)));
     }
 
     @Transactional(readOnly = true)
-    public ContentPage fetchContentPage(ContentPageSearchCriteria criteria) {
+    public ContentPage findByCriteriaOrThrow(ContentPageSearchCriteria criteria) {
         return queryPort
-                .fetchContentPage(criteria)
+                .findByCriteria(criteria)
                 .orElseThrow(
                         () ->
                                 new ContentPageNotFoundException(
@@ -56,8 +56,8 @@ public class ContentPageQueryManager {
      * @return 콘텐츠 페이지 목록
      */
     @Transactional(readOnly = true)
-    public List<ContentPage> findByCriteria(ContentPageListSearchCriteria criteria) {
-        return queryPort.findByCriteria(criteria);
+    public List<ContentPage> findAllByCriteria(ContentPageListSearchCriteria criteria) {
+        return queryPort.findAllByCriteria(criteria);
     }
 
     /**

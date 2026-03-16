@@ -194,6 +194,94 @@ class ProductGroupReadFacadeTest {
     }
 
     @Nested
+    @DisplayName("getListBundleByBrand() - 브랜드별 상품그룹 목록 번들 조회")
+    class GetListBundleByBrandTest {
+
+        @Test
+        @DisplayName("브랜드 ID와 페이지 크기로 목록 번들을 반환한다")
+        void getListBundleByBrand_ValidBrandIdAndPageSize_ReturnsBundle() {
+            // given
+            Long brandId = 20L;
+            int pageSize = 20;
+            List<ProductGroupListCompositeResult> results =
+                    ProductGroupQueryFixtures.listCompositeResults();
+
+            given(compositionReadManager.fetchThumbnailResultsByBrand(brandId, pageSize))
+                    .willReturn(results);
+
+            // when
+            ProductGroupListBundle result = sut.getListBundleByBrand(brandId, pageSize);
+
+            // then
+            assertThat(result.results()).hasSize(2);
+            assertThat(result.totalElements()).isEqualTo(results.size());
+            then(compositionReadManager).should().fetchThumbnailResultsByBrand(brandId, pageSize);
+        }
+
+        @Test
+        @DisplayName("브랜드에 속한 상품그룹이 없으면 빈 번들을 반환한다")
+        void getListBundleByBrand_NoResults_ReturnsEmptyBundle() {
+            // given
+            Long brandId = 999L;
+            int pageSize = 10;
+
+            given(compositionReadManager.fetchThumbnailResultsByBrand(brandId, pageSize))
+                    .willReturn(List.of());
+
+            // when
+            ProductGroupListBundle result = sut.getListBundleByBrand(brandId, pageSize);
+
+            // then
+            assertThat(result.results()).isEmpty();
+            assertThat(result.totalElements()).isZero();
+        }
+    }
+
+    @Nested
+    @DisplayName("getListBundleBySeller() - 셀러별 상품그룹 목록 번들 조회")
+    class GetListBundleBySellerTest {
+
+        @Test
+        @DisplayName("셀러 ID와 페이지 크기로 목록 번들을 반환한다")
+        void getListBundleBySeller_ValidSellerIdAndPageSize_ReturnsBundle() {
+            // given
+            Long sellerId = 10L;
+            int pageSize = 20;
+            List<ProductGroupListCompositeResult> results =
+                    ProductGroupQueryFixtures.listCompositeResults();
+
+            given(compositionReadManager.fetchThumbnailResultsBySeller(sellerId, pageSize))
+                    .willReturn(results);
+
+            // when
+            ProductGroupListBundle result = sut.getListBundleBySeller(sellerId, pageSize);
+
+            // then
+            assertThat(result.results()).hasSize(2);
+            assertThat(result.totalElements()).isEqualTo(results.size());
+            then(compositionReadManager).should().fetchThumbnailResultsBySeller(sellerId, pageSize);
+        }
+
+        @Test
+        @DisplayName("셀러에 속한 상품그룹이 없으면 빈 번들을 반환한다")
+        void getListBundleBySeller_NoResults_ReturnsEmptyBundle() {
+            // given
+            Long sellerId = 999L;
+            int pageSize = 10;
+
+            given(compositionReadManager.fetchThumbnailResultsBySeller(sellerId, pageSize))
+                    .willReturn(List.of());
+
+            // when
+            ProductGroupListBundle result = sut.getListBundleBySeller(sellerId, pageSize);
+
+            // then
+            assertThat(result.results()).isEmpty();
+            assertThat(result.totalElements()).isZero();
+        }
+    }
+
+    @Nested
     @DisplayName("getSearchBundle() - 키워드 검색 번들 조회")
     class GetSearchBundleTest {
 

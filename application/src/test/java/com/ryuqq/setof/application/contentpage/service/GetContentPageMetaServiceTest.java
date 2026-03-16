@@ -36,7 +36,7 @@ class GetContentPageMetaServiceTest {
             long contentPageId = 1L;
             ContentPage expected = ContentPageFixtures.activeContentPage();
 
-            given(queryManager.fetchContentPageMeta(contentPageId)).willReturn(expected);
+            given(queryManager.findByIdOrThrow(contentPageId)).willReturn(expected);
 
             // when
             ContentPage result = sut.execute(contentPageId);
@@ -44,7 +44,7 @@ class GetContentPageMetaServiceTest {
             // then
             assertThat(result).isEqualTo(expected);
             assertThat(result.idValue()).isEqualTo(contentPageId);
-            then(queryManager).should().fetchContentPageMeta(contentPageId);
+            then(queryManager).should().findByIdOrThrow(contentPageId);
         }
 
         @Test
@@ -54,14 +54,14 @@ class GetContentPageMetaServiceTest {
             long contentPageId = 5L;
             ContentPage expected = ContentPageFixtures.activeContentPage(contentPageId);
 
-            given(queryManager.fetchContentPageMeta(contentPageId)).willReturn(expected);
+            given(queryManager.findByIdOrThrow(contentPageId)).willReturn(expected);
 
             // when
             ContentPage result = sut.execute(contentPageId);
 
             // then
             assertThat(result).isEqualTo(expected);
-            then(queryManager).should().fetchContentPageMeta(contentPageId);
+            then(queryManager).should().findByIdOrThrow(contentPageId);
         }
     }
 }
