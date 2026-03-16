@@ -16,7 +16,9 @@ import com.ryuqq.setof.application.productgroup.manager.ProductGroupPriceCommand
 import com.ryuqq.setof.application.productgroupimage.internal.ImageCommandCoordinator;
 import com.ryuqq.setof.application.productnotice.internal.ProductNoticeCommandCoordinator;
 import com.ryuqq.setof.application.selleroption.internal.SellerOptionCommandCoordinator;
+import com.ryuqq.setof.domain.productgroup.ProductGroupFixtures;
 import com.ryuqq.setof.domain.productgroup.id.ProductGroupId;
+import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -68,6 +70,89 @@ class FullProductGroupRegistrationCoordinatorTest {
             then(priceCommandManager).should().persist(expectedId);
             then(imageCommandCoordinator).should().register(any());
             then(sellerOptionCommandCoordinator).should().register(any(), any());
+            then(descriptionCommandCoordinator).should().register(any());
+            then(noticeCommandCoordinator).should().register(any());
+        }
+
+        @Test
+        @DisplayName("이미지가 비어있으면 imageCommandCoordinator를 호출하지 않는다")
+        void register_EmptyImages_SkipsImageCoordinator() {
+            // given
+            ProductGroupRegistrationBundle bundle =
+                    new ProductGroupRegistrationBundle(
+                            ProductGroupFixtures.activeProductGroup(),
+                            List.of(),
+                            "SINGLE",
+                            List.of(),
+                            null,
+                            List.of(),
+                            List.of(),
+                            List.of(),
+                            Instant.now());
+            Long expectedId = 1L;
+
+            given(productGroupCommandManager.persist(bundle.productGroup())).willReturn(expectedId);
+            given(sellerOptionCommandCoordinator.register(any(), any())).willReturn(List.of());
+
+            // when
+            sut.register(bundle);
+
+            // then
+            then(imageCommandCoordinator).shouldHaveNoInteractions();
+        }
+
+        @Test
+        @DisplayName("고시 항목이 비어있으면 noticeCommandCoordinator를 호출하지 않는다")
+        void register_EmptyNoticeEntries_SkipsNoticeCoordinator() {
+            // given
+            ProductGroupRegistrationBundle bundle =
+                    new ProductGroupRegistrationBundle(
+                            ProductGroupFixtures.activeProductGroup(),
+                            List.of(),
+                            "SINGLE",
+                            List.of(),
+                            "상세설명",
+                            List.of(),
+                            List.of(),
+                            List.of(),
+                            Instant.now());
+            Long expectedId = 1L;
+
+            given(productGroupCommandManager.persist(bundle.productGroup())).willReturn(expectedId);
+            given(sellerOptionCommandCoordinator.register(any(), any())).willReturn(List.of());
+
+            // when
+            sut.register(bundle);
+
+            // then
+            then(noticeCommandCoordinator).shouldHaveNoInteractions();
+        }
+
+        @Test
+        @DisplayName("상세설명이 null이면 descriptionCommandCoordinator를 호출하지 않는다")
+        void register_NullDescription_SkipsDescriptionCoordinator() {
+            // given
+            ProductGroupRegistrationBundle bundle =
+                    new ProductGroupRegistrationBundle(
+                            ProductGroupFixtures.activeProductGroup(),
+                            List.of(),
+                            "SINGLE",
+                            List.of(),
+                            null,
+                            List.of(),
+                            List.of(),
+                            List.of(),
+                            Instant.now());
+            Long expectedId = 1L;
+
+            given(productGroupCommandManager.persist(bundle.productGroup())).willReturn(expectedId);
+            given(sellerOptionCommandCoordinator.register(any(), any())).willReturn(List.of());
+
+            // when
+            sut.register(bundle);
+
+            // then
+            then(descriptionCommandCoordinator).shouldHaveNoInteractions();
         }
     }
 }
