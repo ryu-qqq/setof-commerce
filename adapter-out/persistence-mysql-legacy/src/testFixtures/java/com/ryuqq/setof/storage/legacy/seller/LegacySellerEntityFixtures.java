@@ -88,8 +88,8 @@ public final class LegacySellerEntityFixtures {
             setField(entity, "sellerLogoUrl", sellerLogoUrl);
             setField(entity, "sellerDescription", sellerDescription);
             setField(entity, "commissionRate", commissionRate);
-            setField(entity, "createdAt", createdAt);
-            setField(entity, "updatedAt", updatedAt);
+            setField(entity, "insertDate", createdAt);
+            setField(entity, "updateDate", updatedAt);
             return entity;
         }
 

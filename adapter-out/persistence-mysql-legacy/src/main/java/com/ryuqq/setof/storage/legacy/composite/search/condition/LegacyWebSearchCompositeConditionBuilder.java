@@ -151,7 +151,9 @@ public class LegacyWebSearchCompositeConditionBuilder {
      * @return BooleanExpression
      */
     public BooleanExpression recommendCursor(Long lastDomainId, Double cursorScore) {
-        if (lastDomainId == null || cursorScore == null) return null;
+        if (lastDomainId == null || cursorScore == null) {
+            return null;
+        }
         return legacyProductScoreEntity
                 .score
                 .lt(cursorScore)
@@ -170,7 +172,9 @@ public class LegacyWebSearchCompositeConditionBuilder {
      * @return BooleanExpression
      */
     public BooleanExpression reviewCursor(Long lastDomainId, Long cursorCount) {
-        if (lastDomainId == null || cursorCount == null) return null;
+        if (lastDomainId == null || cursorCount == null) {
+            return null;
+        }
         return legacyProductRatingStatsEntity
                 .reviewCount
                 .lt(cursorCount)
@@ -189,7 +193,9 @@ public class LegacyWebSearchCompositeConditionBuilder {
      * @return BooleanExpression
      */
     public BooleanExpression highRatingCursor(Long lastDomainId, Double cursorRating) {
-        if (lastDomainId == null || cursorRating == null) return null;
+        if (lastDomainId == null || cursorRating == null) {
+            return null;
+        }
         return legacyProductRatingStatsEntity
                 .averageRating
                 .lt(cursorRating)
@@ -208,7 +214,9 @@ public class LegacyWebSearchCompositeConditionBuilder {
      * @return BooleanExpression
      */
     public BooleanExpression highPriceCursor(Long lastDomainId, Integer cursorPrice) {
-        if (lastDomainId == null || cursorPrice == null) return null;
+        if (lastDomainId == null || cursorPrice == null) {
+            return null;
+        }
         return legacyProductGroupEntity
                 .salePrice
                 .lt(cursorPrice)
@@ -227,7 +235,9 @@ public class LegacyWebSearchCompositeConditionBuilder {
      * @return BooleanExpression
      */
     public BooleanExpression lowPriceCursor(Long lastDomainId, Integer cursorPrice) {
-        if (lastDomainId == null || cursorPrice == null) return null;
+        if (lastDomainId == null || cursorPrice == null) {
+            return null;
+        }
         return legacyProductGroupEntity
                 .salePrice
                 .gt(cursorPrice)
@@ -246,7 +256,9 @@ public class LegacyWebSearchCompositeConditionBuilder {
      * @return BooleanExpression
      */
     public BooleanExpression highDiscountCursor(Long lastDomainId, Integer cursorRate) {
-        if (lastDomainId == null || cursorRate == null) return null;
+        if (lastDomainId == null || cursorRate == null) {
+            return null;
+        }
         return legacyProductGroupEntity
                 .discountRate
                 .lt(cursorRate)
@@ -265,7 +277,9 @@ public class LegacyWebSearchCompositeConditionBuilder {
      * @return BooleanExpression
      */
     public BooleanExpression lowDiscountCursor(Long lastDomainId, Integer cursorRate) {
-        if (lastDomainId == null || cursorRate == null) return null;
+        if (lastDomainId == null || cursorRate == null) {
+            return null;
+        }
         return legacyProductGroupEntity
                 .discountRate
                 .gt(cursorRate)
@@ -284,7 +298,9 @@ public class LegacyWebSearchCompositeConditionBuilder {
      * @return BooleanExpression
      */
     public BooleanExpression recentCursor(Long lastDomainId, LocalDateTime cursorDate) {
-        if (lastDomainId == null || cursorDate == null) return null;
+        if (lastDomainId == null || cursorDate == null) {
+            return null;
+        }
         return legacyProductGroupEntity
                 .insertDate
                 .lt(cursorDate)
@@ -385,7 +401,9 @@ public class LegacyWebSearchCompositeConditionBuilder {
     }
 
     private Double parseDouble(String value) {
-        if (value == null || value.isBlank()) return null;
+        if (value == null || value.isBlank()) {
+            return null;
+        }
         try {
             return Double.parseDouble(value);
         } catch (NumberFormatException e) {
@@ -394,7 +412,9 @@ public class LegacyWebSearchCompositeConditionBuilder {
     }
 
     private Long parseLong(String value) {
-        if (value == null || value.isBlank()) return null;
+        if (value == null || value.isBlank()) {
+            return null;
+        }
         try {
             return Long.parseLong(value);
         } catch (NumberFormatException e) {
@@ -403,7 +423,9 @@ public class LegacyWebSearchCompositeConditionBuilder {
     }
 
     private Integer parseInt(String value) {
-        if (value == null || value.isBlank()) return null;
+        if (value == null || value.isBlank()) {
+            return null;
+        }
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
@@ -412,7 +434,9 @@ public class LegacyWebSearchCompositeConditionBuilder {
     }
 
     private LocalDateTime parseDateTime(String value) {
-        if (value == null || value.isBlank()) return null;
+        if (value == null || value.isBlank()) {
+            return null;
+        }
         try {
             return LocalDateTime.parse(value);
         } catch (Exception e) {

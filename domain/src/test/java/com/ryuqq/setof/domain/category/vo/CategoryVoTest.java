@@ -204,7 +204,8 @@ class CategoryVoTest {
                             TargetGroup.MALE,
                             TargetGroup.FEMALE,
                             TargetGroup.KIDS,
-                            TargetGroup.LIFE);
+                            TargetGroup.LIFE,
+                            TargetGroup.ALL);
         }
     }
 }

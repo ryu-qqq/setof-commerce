@@ -256,7 +256,9 @@ public class ProductGroupBundleFactory {
 
     private static List<RegisterProductGroupImagesCommand.ImageCommand> toImageCommands(
             List<RegisterProductGroupCommand.ImageCommand> images) {
-        if (images == null) return List.of();
+        if (images == null) {
+            return List.of();
+        }
         return images.stream()
                 .map(
                         img ->
@@ -267,7 +269,9 @@ public class ProductGroupBundleFactory {
 
     private static List<RegisterProductNoticeCommand.NoticeEntryCommand> toNoticeEntryCommands(
             RegisterProductGroupCommand.NoticeCommand notice) {
-        if (notice == null || notice.entries() == null) return List.of();
+        if (notice == null || notice.entries() == null) {
+            return List.of();
+        }
         return notice.entries().stream()
                 .map(
                         e ->
@@ -278,7 +282,9 @@ public class ProductGroupBundleFactory {
 
     private static List<RegisterProductsCommand.ProductData> toProductDataList(
             List<RegisterProductGroupCommand.ProductCommand> products) {
-        if (products == null) return List.of();
+        if (products == null) {
+            return List.of();
+        }
         return products.stream()
                 .map(
                         p ->

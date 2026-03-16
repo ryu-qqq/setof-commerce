@@ -100,7 +100,9 @@ public class ProductGroupQueryFactory {
     }
 
     private Long parseLong(String value) {
-        if (value == null || value.isBlank()) return null;
+        if (value == null || value.isBlank()) {
+            return null;
+        }
         try {
             return Long.parseLong(value.trim());
         } catch (NumberFormatException e) {

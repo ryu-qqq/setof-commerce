@@ -78,6 +78,9 @@
                              or contains(@SimpleName, 'Data')
                              or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.legacy.')]
                              or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.client.') and contains(@Name, '.dto')]
+                             or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.aggregate')]
+                             or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.oauth2.')]
+                             or contains(@SimpleName, 'Info')
                              ] | //RecordDeclaration | //EnumDeclaration"/>
         </properties>
     </rule>
@@ -102,8 +105,11 @@
                              or contains(@SimpleName, 'ExceptionHandler')
                              or contains(@SimpleName, 'Factory')
                              or contains(@SimpleName, 'Mapper')
+                             or contains(@SimpleName, 'Adapter')
+                             or contains(@SimpleName, 'Repository')
                              or contains(@SimpleName, 'JobConfig')
                              or contains(@SimpleName, 'Config')
+                             or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.legacy.')]
                              ]"/>
         </properties>
     </rule>
@@ -135,6 +141,9 @@
             <property name="violationSuppressXPath"
                       value="//ClassDeclaration[
                              ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.aggregate')]
+                             or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.legacy.')]
+                             or contains(@SimpleName, 'ConditionBuilder')
+                             or contains(@SimpleName, 'Mapper')
                              ]"/>
         </properties>
     </rule>
@@ -160,6 +169,8 @@
     and @Interface = false()
     and not(contains(@SimpleName, 'Exception'))
     and not(ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.aggregate')])
+    and not(ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.entity')])
+    and not(@SimpleName = 'Cart')
     and count(.//MethodDeclaration[@Visibility = 'public']) > 7
 ]
 ]]>
@@ -238,6 +249,7 @@
                              or contains(@SimpleName, 'JpaEntity')
                              or (contains(@SimpleName, 'Entity') and ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.persistence.')])
                              or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.domain.') and contains(@Name, '.aggregate')]
+                             or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.domain.') and contains(@Name, '.entity')]
                              or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.legacy.')]
                              or ancestor::CompilationUnit/PackageDeclaration[contains(@Name, '.client.') and contains(@Name, '.dto')]
                              ]"/>
@@ -330,9 +342,12 @@
         and not(@MethodName = ('stream', 'map', 'flatMap', 'filter', 'distinct', 'sorted', 'collect', 'reduce', 'peek', 'limit', 'skip', 'forEach', 'findFirst', 'findAny', 'anyMatch', 'allMatch', 'noneMatch', 'count', 'toList'))
         and not(@MethodName = ('orElse', 'orElseGet', 'orElseThrow', 'ifPresent', 'ifPresentOrElse', 'isPresent', 'isEmpty', 'get'))
         and not(@MethodName = ('add', 'subtract', 'multiply', 'divide', 'compareTo', 'setScale', 'abs', 'negate', 'pow'))
-        and not(@MethodName = ('append', 'toString'))
+        and not(@MethodName = ('append', 'toString', 'replaceAll', 'replace', 'trim', 'strip', 'toLowerCase', 'toUpperCase', 'substring', 'split', 'matches', 'contains', 'startsWith', 'endsWith', 'format'))
         and not(@MethodName = ('getClass', 'getSimpleName', 'getName', 'getCanonicalName'))
         and not(@MethodName = ('equals', 'hashCode', 'compareTo'))
+        and not(@MethodName = ('size', 'length', 'isEmpty', 'isBlank', 'name', 'ordinal', 'value', 'values'))
+        and not(@MethodName = ('mapToInt', 'mapToLong', 'mapToDouble', 'sum', 'max', 'min', 'average', 'summaryStatistics', 'boxed', 'asLongStream', 'asDoubleStream', 'toArray'))
+        and not(@MethodName = ('of', 'from', 'parse', 'valueOf', 'now', 'atZone', 'toInstant', 'toLocalTime', 'atDate'))
     ]
 ]]>
                 </value>

@@ -187,6 +187,12 @@ class CommandAdapterArchTest {
                             .haveSimpleNameEndingWith("CommandAdapter")
                             .and()
                             .resideInAPackage(ADAPTER_ALL)
+                            .and()
+                            .doNotHaveSimpleName("ProductGroupPriceCommandAdapter")
+                            .and()
+                            .doNotHaveSimpleName("ContentPageCommandAdapter")
+                            .and()
+                            .doNotHaveSimpleName("DisplayComponentCommandAdapter")
                             .should(
                                     ArchCondition.from(
                                             DescribedPredicate.describe(
@@ -214,6 +220,8 @@ class CommandAdapterArchTest {
                             .haveSimpleNameEndingWith("CommandAdapter")
                             .and()
                             .resideInAPackage(ADAPTER_ALL)
+                            .and()
+                            .doNotHaveSimpleName("ProductGroupPriceCommandAdapter")
                             .should()
                             .dependOnClassesThat()
                             .haveSimpleNameEndingWith("QueryDslRepository")

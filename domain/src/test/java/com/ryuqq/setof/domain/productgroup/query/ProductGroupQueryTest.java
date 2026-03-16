@@ -67,7 +67,11 @@ class ProductGroupQueryTest {
                             ProductGroupSortKey.UPDATED_AT,
                             ProductGroupSortKey.NAME,
                             ProductGroupSortKey.CURRENT_PRICE,
-                            ProductGroupSortKey.SALE_PRICE);
+                            ProductGroupSortKey.SALE_PRICE,
+                            ProductGroupSortKey.SCORE,
+                            ProductGroupSortKey.REVIEW_COUNT,
+                            ProductGroupSortKey.AVERAGE_RATING,
+                            ProductGroupSortKey.DISCOUNT_RATE);
         }
     }
 

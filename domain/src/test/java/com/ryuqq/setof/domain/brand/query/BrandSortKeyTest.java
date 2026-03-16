@@ -67,6 +67,7 @@ class BrandSortKeyTest {
             // then
             assertThat(BrandSortKey.values())
                     .containsExactly(
+                            BrandSortKey.ID,
                             BrandSortKey.CREATED_AT,
                             BrandSortKey.DISPLAY_ORDER,
                             BrandSortKey.BRAND_NAME);

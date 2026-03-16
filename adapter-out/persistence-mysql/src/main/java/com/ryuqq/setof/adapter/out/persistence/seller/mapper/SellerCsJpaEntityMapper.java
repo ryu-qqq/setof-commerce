@@ -78,12 +78,16 @@ public class SellerCsJpaEntityMapper {
     }
 
     private Instant toInstant(LocalTime time) {
-        if (time == null) return null;
+        if (time == null) {
+            return null;
+        }
         return time.atDate(LocalDate.EPOCH).atZone(ZONE_ID).toInstant();
     }
 
     private LocalTime toLocalTime(Instant instant) {
-        if (instant == null) return null;
+        if (instant == null) {
+            return null;
+        }
         return instant.atZone(ZONE_ID).toLocalTime();
     }
 }

@@ -130,7 +130,9 @@ public final class LegacyCategoryEntityFixtures {
 
         private LegacyCategoryEntity createEntityInstance() {
             try {
-                return LegacyCategoryEntity.class.getDeclaredConstructor().newInstance();
+                var constructor = LegacyCategoryEntity.class.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                return constructor.newInstance();
             } catch (Exception e) {
                 throw new IllegalStateException("엔티티 인스턴스 생성 실패", e);
             }

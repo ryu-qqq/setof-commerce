@@ -173,14 +173,15 @@ class LegacyBrandConditionBuilderTest {
         }
 
         @Test
-        @DisplayName("searchField가 null일 때 brandName으로 검색")
-        void shouldSearchByBrandNameWhenSearchFieldIsNull() {
+        @DisplayName("searchField가 null일 때 displayKoreanName과 displayEnglishName으로 검색")
+        void shouldSearchByDisplayNamesWhenSearchFieldIsNull() {
             // when
             BooleanExpression condition = builder.searchFieldContains(null, "아디다스");
 
             // then
             assertThat(condition).isNotNull();
-            assertThat(condition.toString()).containsIgnoringCase("brandName");
+            assertThat(condition.toString()).containsIgnoringCase("displayKoreanName");
+            assertThat(condition.toString()).containsIgnoringCase("displayEnglishName");
             assertThat(condition.toString()).containsIgnoringCase("아디다스");
         }
 

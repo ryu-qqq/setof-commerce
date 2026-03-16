@@ -188,8 +188,12 @@ public class LegacyWebProductGroupMapper {
                         (a, b) -> {
                             boolean aMain = "MAIN".equals(a.imageType());
                             boolean bMain = "MAIN".equals(b.imageType());
-                            if (aMain && !bMain) return -1;
-                            if (!aMain && bMain) return 1;
+                            if (aMain && !bMain) {
+                                return -1;
+                            }
+                            if (!aMain && bMain) {
+                                return 1;
+                            }
                             return 0;
                         })
                 .forEach(

@@ -94,7 +94,7 @@ class CommonCodeExceptionTest {
 
             // then
             assertThat(exception.code()).isEqualTo("CMC-002");
-            assertThat(exception.httpStatus()).isEqualTo(400);
+            assertThat(exception.httpStatus()).isEqualTo(409);
             assertThat(exception.getMessage()).isEqualTo("동일한 타입과 코드가 이미 존재합니다");
         }
 
@@ -107,7 +107,7 @@ class CommonCodeExceptionTest {
 
             // then
             assertThat(exception.code()).isEqualTo("CMC-002");
-            assertThat(exception.httpStatus()).isEqualTo(400);
+            assertThat(exception.httpStatus()).isEqualTo(409);
             assertThat(exception.getMessage()).isEqualTo("타입 'PAYMENT_TYPE', 코드 'CARD'는 이미 존재합니다");
         }
 

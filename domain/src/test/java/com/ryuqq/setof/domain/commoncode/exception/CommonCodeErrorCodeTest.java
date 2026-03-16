@@ -59,9 +59,9 @@ class CommonCodeErrorCodeTest {
         }
 
         @Test
-        @DisplayName("HTTP 상태 코드는 400이다")
+        @DisplayName("HTTP 상태 코드는 409이다")
         void hasCorrectHttpStatus() {
-            assertThat(CommonCodeErrorCode.COMMON_CODE_DUPLICATE.getHttpStatus()).isEqualTo(400);
+            assertThat(CommonCodeErrorCode.COMMON_CODE_DUPLICATE.getHttpStatus()).isEqualTo(409);
         }
 
         @Test

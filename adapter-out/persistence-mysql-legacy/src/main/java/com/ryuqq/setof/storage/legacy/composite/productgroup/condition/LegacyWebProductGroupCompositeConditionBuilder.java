@@ -384,7 +384,9 @@ public class LegacyWebProductGroupCompositeConditionBuilder {
     }
 
     private Double parseDouble(String value) {
-        if (value == null || value.isBlank()) return null;
+        if (value == null || value.isBlank()) {
+            return null;
+        }
         try {
             return Double.parseDouble(value);
         } catch (NumberFormatException e) {
@@ -393,7 +395,9 @@ public class LegacyWebProductGroupCompositeConditionBuilder {
     }
 
     private Long parseLong(String value) {
-        if (value == null || value.isBlank()) return null;
+        if (value == null || value.isBlank()) {
+            return null;
+        }
         try {
             return Long.parseLong(value);
         } catch (NumberFormatException e) {
@@ -402,7 +406,9 @@ public class LegacyWebProductGroupCompositeConditionBuilder {
     }
 
     private Integer parseInt(String value) {
-        if (value == null || value.isBlank()) return null;
+        if (value == null || value.isBlank()) {
+            return null;
+        }
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
@@ -411,7 +417,9 @@ public class LegacyWebProductGroupCompositeConditionBuilder {
     }
 
     private LocalDateTime parseDateTime(String value) {
-        if (value == null || value.isBlank()) return null;
+        if (value == null || value.isBlank()) {
+            return null;
+        }
         try {
             return LocalDateTime.parse(value);
         } catch (Exception e) {

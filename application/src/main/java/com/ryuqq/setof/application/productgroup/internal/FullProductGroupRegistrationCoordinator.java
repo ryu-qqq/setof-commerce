@@ -160,7 +160,9 @@ public class FullProductGroupRegistrationCoordinator {
     private static List<RegisterProductGroupDescriptionCommand.DescriptionImageCommand>
             toDescriptionImageCommands(
                     List<RegisterProductGroupCommand.DescriptionImageCommand> images) {
-        if (images == null || images.isEmpty()) return List.of();
+        if (images == null || images.isEmpty()) {
+            return List.of();
+        }
         return images.stream()
                 .map(
                         di ->

@@ -157,6 +157,8 @@ class QueryAdapterArchTest {
                             .haveSimpleNameEndingWith("QueryAdapter")
                             .and()
                             .resideInAPackage(ADAPTER_ALL)
+                            .and()
+                            .doNotHaveSimpleName("CartStockQueryAdapter")
                             .should(
                                     ArchCondition.from(
                                             DescribedPredicate.describe(

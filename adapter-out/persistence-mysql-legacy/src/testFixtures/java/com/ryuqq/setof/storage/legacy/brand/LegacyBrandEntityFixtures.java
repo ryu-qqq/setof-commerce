@@ -133,8 +133,9 @@ public class LegacyBrandEntityFixtures {
          */
         public LegacyBrandEntity build() {
             try {
-                LegacyBrandEntity entity =
-                        LegacyBrandEntity.class.getDeclaredConstructor().newInstance();
+                var constructor = LegacyBrandEntity.class.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                LegacyBrandEntity entity = constructor.newInstance();
 
                 setField(entity, "id", id);
                 setField(entity, "brandName", brandName);

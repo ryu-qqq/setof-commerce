@@ -151,7 +151,11 @@ class SellerErrorCodeTest {
                             SellerErrorCode.ADDRESS_NOT_FOUND,
                             SellerErrorCode.ADDRESS_TYPE_MISMATCH,
                             SellerErrorCode.DEFAULT_ADDRESS_REQUIRED,
-                            SellerErrorCode.DEFAULT_ADDRESS_ALREADY_EXISTS);
+                            SellerErrorCode.DEFAULT_ADDRESS_ALREADY_EXISTS,
+                            SellerErrorCode.ADDRESS_ALREADY_EXISTS,
+                            SellerErrorCode.CS_NOT_FOUND,
+                            SellerErrorCode.CONTRACT_NOT_FOUND,
+                            SellerErrorCode.SETTLEMENT_NOT_FOUND);
         }
     }
 }

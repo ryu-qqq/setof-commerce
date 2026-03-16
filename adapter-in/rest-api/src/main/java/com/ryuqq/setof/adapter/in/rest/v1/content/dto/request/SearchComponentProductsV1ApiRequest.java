@@ -47,10 +47,20 @@ public record SearchComponentProductsV1ApiRequest(
                 Integer size) {
 
     public SearchComponentProductsV1ApiRequest {
-        if (page == null) page = 0;
-        if (size == null) size = 20;
-        if (categoryIds == null) categoryIds = List.of();
-        if (brandIds == null) brandIds = List.of();
-        if (exclusiveProductIds == null) exclusiveProductIds = List.of();
+        if (page == null) {
+            page = 0;
+        }
+        if (size == null) {
+            size = 20;
+        }
+        if (categoryIds == null) {
+            categoryIds = List.of();
+        }
+        if (brandIds == null) {
+            brandIds = List.of();
+        }
+        if (exclusiveProductIds == null) {
+            exclusiveProductIds = List.of();
+        }
     }
 }

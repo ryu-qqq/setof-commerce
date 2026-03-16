@@ -52,9 +52,15 @@ public record MileageHistoryItemResult(
     }
 
     private String resolveTitle() {
-        if ("USE".equalsIgnoreCase(reason)) return "주문 결제 시 사용";
-        if ("EXPIRED".equalsIgnoreCase(reason)) return "적립금 유효기간 만료";
-        if ("REFUND".equalsIgnoreCase(reason)) return "적립금 사용주문 취소";
+        if ("USE".equalsIgnoreCase(reason)) {
+            return "주문 결제 시 사용";
+        }
+        if ("EXPIRED".equalsIgnoreCase(reason)) {
+            return "적립금 유효기간 만료";
+        }
+        if ("REFUND".equalsIgnoreCase(reason)) {
+            return "적립금 사용주문 취소";
+        }
         return title;
     }
 }

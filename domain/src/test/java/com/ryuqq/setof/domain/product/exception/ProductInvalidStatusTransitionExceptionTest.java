@@ -126,7 +126,7 @@ class ProductInvalidStatusTransitionExceptionTest {
                             ProductStatus.SOLD_OUT, ProductStatus.INACTIVE);
 
             // then
-            assertThat(exception.getMessage()).contains("SOLSOLD_OUTDOUT");
+            assertThat(exception.getMessage()).contains("SOLD_OUT");
             assertThat(exception.getMessage()).contains("INACTIVE");
         }
     }

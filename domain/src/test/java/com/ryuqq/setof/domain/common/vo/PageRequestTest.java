@@ -84,13 +84,13 @@ class PageRequestTest {
         }
 
         @Test
-        @DisplayName("MAX_SIZE 초과 size는 MAX_SIZE로 정규화된다")
-        void exceedingMaxSizeNormalizesToMax() {
+        @DisplayName("MAX_SIZE 초과 size는 그대로 허용된다 (UNPAGED_SIZE까지)")
+        void exceedingMaxSizeIsAllowed() {
             // when
             PageRequest pageRequest = PageRequest.of(0, 200);
 
             // then
-            assertThat(pageRequest.size()).isEqualTo(PageRequest.MAX_SIZE);
+            assertThat(pageRequest.size()).isEqualTo(200);
         }
     }
 

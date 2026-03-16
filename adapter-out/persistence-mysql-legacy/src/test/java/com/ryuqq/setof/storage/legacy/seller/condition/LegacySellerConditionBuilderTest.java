@@ -156,7 +156,7 @@ class LegacySellerConditionBuilderTest {
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.toString()).contains("lower");
+            assertThat(result.toString()).containsIgnoringCase("containsIc");
         }
 
         @Test
