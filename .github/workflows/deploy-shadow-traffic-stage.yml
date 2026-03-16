@@ -7,6 +7,10 @@
 
 name: Shadow Traffic Build (Stage)
 
+concurrency:
+  group: shadow-traffic-stage
+  cancel-in-progress: true
+
 on:
   workflow_dispatch:
   push:

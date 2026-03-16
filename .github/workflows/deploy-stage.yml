@@ -19,6 +19,10 @@
 
 name: Stage Build and Deploy
 
+concurrency:
+  group: deploy-stage
+  cancel-in-progress: true
+
 on:
   workflow_dispatch:
     inputs:

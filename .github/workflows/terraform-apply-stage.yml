@@ -16,6 +16,10 @@
 
 name: Terraform Apply (Stage)
 
+concurrency:
+  group: terraform-stage
+  cancel-in-progress: true
+
 on:
   workflow_dispatch:  # 수동 트리거 허용
   push:
