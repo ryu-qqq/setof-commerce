@@ -1,6 +1,5 @@
 package com.ryuqq.setof.application.productgroup.internal;
 
-import com.ryuqq.setof.application.discount.manager.ProductGroupPriceCommandManager;
 import com.ryuqq.setof.application.product.dto.command.ProductDiffUpdateEntry;
 import com.ryuqq.setof.application.product.factory.ProductCommandFactory;
 import com.ryuqq.setof.application.product.internal.ProductCommandCoordinator;
@@ -10,6 +9,7 @@ import com.ryuqq.setof.application.productdescription.internal.DescriptionComman
 import com.ryuqq.setof.application.productgroup.dto.command.RegisterProductGroupCommand;
 import com.ryuqq.setof.application.productgroup.dto.command.UpdateProductGroupFullCommand;
 import com.ryuqq.setof.application.productgroup.manager.ProductGroupCommandManager;
+import com.ryuqq.setof.application.productgroup.manager.ProductGroupPriceCommandManager;
 import com.ryuqq.setof.application.productgroupimage.dto.command.RegisterProductGroupImagesCommand;
 import com.ryuqq.setof.application.productgroupimage.dto.command.UpdateProductGroupImagesCommand;
 import com.ryuqq.setof.application.productgroupimage.internal.ImageCommandCoordinator;
@@ -100,7 +100,7 @@ public class ProductGroupPersistFacade {
             ProductGroup productGroup, RegisterProductGroupCommand command, Instant now) {
 
         Long productGroupId = productGroupCommandManager.persist(productGroup);
-        priceCommandManager.initPrice(productGroupId);
+        priceCommandManager.persist(productGroupId);
 
         registerImages(productGroupId, command);
         List<SellerOptionValueId> optionValueIds =

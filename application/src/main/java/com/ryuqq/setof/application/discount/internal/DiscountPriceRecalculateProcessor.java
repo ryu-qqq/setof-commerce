@@ -2,9 +2,9 @@ package com.ryuqq.setof.application.discount.internal;
 
 import com.ryuqq.setof.application.discount.factory.ProductGroupPriceUpdateFactory;
 import com.ryuqq.setof.application.discount.manager.DiscountPolicyReadManager;
-import com.ryuqq.setof.application.discount.manager.ProductGroupPriceCommandManager;
 import com.ryuqq.setof.application.discount.manager.ProductGroupPriceReadManager;
 import com.ryuqq.setof.application.discount.port.out.query.LegacyProductGroupPriceQueryPort.ProductGroupPriceRow;
+import com.ryuqq.setof.application.productgroup.manager.ProductGroupPriceCommandManager;
 import com.ryuqq.setof.domain.discount.aggregate.DiscountPolicy;
 import com.ryuqq.setof.domain.discount.dto.ProductGroupPriceUpdateData;
 import com.ryuqq.setof.domain.discount.vo.DiscountTargetType;

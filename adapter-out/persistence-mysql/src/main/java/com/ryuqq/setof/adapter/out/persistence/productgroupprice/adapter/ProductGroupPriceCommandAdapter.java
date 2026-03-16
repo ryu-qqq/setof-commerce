@@ -3,7 +3,7 @@ package com.ryuqq.setof.adapter.out.persistence.productgroupprice.adapter;
 import com.ryuqq.setof.adapter.out.persistence.productgroupprice.entity.ProductGroupPriceJpaEntity;
 import com.ryuqq.setof.adapter.out.persistence.productgroupprice.repository.ProductGroupPriceJpaRepository;
 import com.ryuqq.setof.adapter.out.persistence.productgroupprice.repository.ProductGroupPriceQueryDslRepository;
-import com.ryuqq.setof.application.discount.port.out.command.ProductGroupPriceCommandPort;
+import com.ryuqq.setof.application.productgroup.port.out.command.ProductGroupPriceCommandPort;
 import com.ryuqq.setof.domain.discount.dto.ProductGroupPriceUpdateData;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -42,12 +42,12 @@ public class ProductGroupPriceCommandAdapter implements ProductGroupPriceCommand
     }
 
     /**
-     * 상품그룹 최초 가격 레코드를 기본값(0)으로 초기화합니다.
+     * 신규 상품그룹의 가격 레코드를 기본값(0)으로 생성합니다.
      *
      * @param productGroupId 상품그룹 ID
      */
     @Override
-    public void initPrice(long productGroupId) {
+    public void persist(long productGroupId) {
         ProductGroupPriceJpaEntity entity =
                 ProductGroupPriceJpaEntity.create(productGroupId, 0, 0, 0, 0);
         jpaRepository.save(entity);

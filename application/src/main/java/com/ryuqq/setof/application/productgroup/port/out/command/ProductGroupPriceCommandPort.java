@@ -1,4 +1,4 @@
-package com.ryuqq.setof.application.discount.port.out.command;
+package com.ryuqq.setof.application.productgroup.port.out.command;
 
 import com.ryuqq.setof.domain.discount.dto.ProductGroupPriceUpdateData;
 import java.util.List;
@@ -21,9 +21,9 @@ public interface ProductGroupPriceCommandPort {
     void persistAll(List<ProductGroupPriceUpdateData> updates);
 
     /**
-     * 상품그룹 최초 가격 레코드 초기화 (기본값 0).
+     * 신규 상품그룹의 가격 레코드를 기본값(0)으로 생성.
      *
      * @param productGroupId 상품그룹 ID
      */
-    void initPrice(long productGroupId);
+    void persist(long productGroupId);
 }
