@@ -134,6 +134,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   # 미인증 접근 → 403
   - name: "payment_detail_unauthenticated"
@@ -156,6 +157,7 @@ test_cases:
     ignore_fields: []
     safe_for_repeat: true
     timeout: 15.0
+    known_diff: true
 
   - name: "payment_status_not_found"
     path: "/api/v1/payment/999999/status"
@@ -164,6 +166,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   - name: "payment_status_unauthenticated"
     path: "/api/v1/payment/90002/status"

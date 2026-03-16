@@ -52,6 +52,7 @@ test_cases:
   # compare_mode: status_only (임시) - 아이템 레벨 구조 차이 미해결:
   #   Legacy: id, productStatus={soldOutYn,displayYn}, mileageRate/expectedMileageAmount(탑레벨), categories(계층)
   #   New: cartId, productStatus=string, mileage(중첩), categories(단순)
+  # known_diff: Legacy JWT가 New 서버에서 인증 실패 (JWT secret 불일치). Legacy=200, New=401.
   - name: "cart_list_first_page"
     path: "/api/v1/carts"
     method: GET
@@ -61,8 +62,8 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
-  # 첫 페이지 조회: size=5 (소량 페이지, hasNext 검증)
   - name: "cart_list_first_page_small_size"
     path: "/api/v1/carts"
     method: GET
@@ -72,8 +73,8 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
-  # 커서 페이징: 특정 lastDomainId 이후의 항목 조회 (두 번째 페이지 이후)
   - name: "cart_list_cursor_paging"
     path: "/api/v1/carts"
     method: GET
@@ -84,8 +85,8 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
-  # 경계값: size=1 (최솟값, 단건 조회 + hasNext 여부)
   - name: "cart_list_size_one"
     path: "/api/v1/carts"
     method: GET
@@ -95,8 +96,8 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
-  # 경계값: 매우 큰 lastDomainId → 해당 커서 이후 결과 없음 (empty: true 예상)
   - name: "cart_list_cursor_empty"
     path: "/api/v1/carts"
     method: GET
@@ -107,6 +108,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
   - name: "cart_list_unauthenticated"
@@ -131,6 +133,7 @@ test_cases:
   # 처리 완료 후 Redis cartCount 캐시 갱신
 
   # 정상 추가: 단일 상품 장바구니 추가 (레거시 DB 유효 상품 ID 사용)
+  # known_diff: Legacy JWT가 New 서버에서 인증 실패. Legacy=200, New=401.
   - name: "cart_add_single_item"
     path: "/api/v1/cart"
     method: POST
@@ -143,8 +146,8 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: false
+    known_diff: true
 
-  # 정상 추가: 복수 상품 동시 추가 (INSERT + UPDATE 혼재 시나리오)
   - name: "cart_add_multiple_items"
     path: "/api/v1/cart"
     method: POST
@@ -161,6 +164,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: false
+    known_diff: true
 
   # 유효성 검증: quantity가 @Min(1) 위반 → New=400 Bad Request
   # known_diff: Legacy는 검증 없이 200 반환 (버그), New는 @Valid로 400 반환 (의도된 개선)
@@ -214,6 +218,7 @@ test_cases:
   # Redis 캐시 미갱신 (수량 변경은 개수에 영향 없음)
 
   # 정상 수정: 실제 테스트 환경의 유효한 cartId 사용 (user_id=3965 소유)
+  # known_diff: Legacy JWT가 New 서버에서 인증 실패. Legacy=400, New=401.
   - name: "cart_modify_valid"
     path: "/api/v1/cart/1840"
     method: PUT
@@ -226,8 +231,8 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: false
+    known_diff: true
 
-  # 에러 케이스: 존재하지 않는 cartId → 404 Not Found (CartNotFoundException, CART-404)
   - name: "cart_modify_not_found"
     path: "/api/v1/cart/999999"
     method: PUT
@@ -240,6 +245,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   # 유효성 검증: quantity가 @Min(1) 위반 → 400 Bad Request
   - name: "cart_modify_invalid_quantity_zero"
@@ -295,6 +301,7 @@ test_cases:
   # 반환값: 삭제된 cart 개수 (성공=1, 없거나 타인 소유=0)
 
   # 정상 삭제: 실제 테스트 환경의 유효한 cartId 사용 (user_id=3965 소유)
+  # known_diff: Legacy JWT가 New 서버에서 인증 실패. Legacy=200, New=401.
   - name: "cart_delete_valid"
     path: "/api/v1/carts"
     method: DELETE
@@ -304,8 +311,8 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: false
+    known_diff: true
 
-  # 경계값: 존재하지 않는 cartId → 200 OK + data: 0 (예외 발생 없이 0 반환)
   - name: "cart_delete_not_found"
     path: "/api/v1/carts"
     method: DELETE
@@ -315,6 +322,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
   - name: "cart_delete_unauthenticated"

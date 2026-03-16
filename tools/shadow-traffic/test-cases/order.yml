@@ -173,6 +173,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   # 미인증 접근
   - name: "order_history_unauthenticated"

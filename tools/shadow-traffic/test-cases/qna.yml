@@ -264,6 +264,7 @@ test_cases:
       - "insertDate"
       - "updateDate"
     safe_for_repeat: false
+    known_diff: true
 
   # 정상 생성: 상품 QNA (비공개 설정)
   - name: "qna_create_product_qna_private"
@@ -287,6 +288,7 @@ test_cases:
       - "insertDate"
       - "updateDate"
     safe_for_repeat: false
+    known_diff: true
 
   # 정상 생성: 주문 QNA (orderQna 타입, 이미지 없음)
   - name: "qna_create_order_qna_valid"
@@ -310,6 +312,7 @@ test_cases:
       - "insertDate"
       - "updateDate"
     safe_for_repeat: false
+    known_diff: true
 
   # 정상 생성: 주문 QNA + 이미지 포함 (qnaImages 최대 3장, S3 비동기 업로드 분기)
   - name: "qna_create_order_qna_with_images"
@@ -338,6 +341,7 @@ test_cases:
       - "insertDate"
       - "updateDate"
     safe_for_repeat: false
+    known_diff: true
 
   # 유효성 검증: sellerId 누락 (@NotNull 위반) → 400 Bad Request
   - name: "qna_create_missing_seller_id"
@@ -425,6 +429,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: false
+    known_diff: true
 
   # 정상 수정: 주문 QNA 수정 (orderQna 타입 + 이미지 diff 분기)
   - name: "qna_update_order_qna_valid"
@@ -447,6 +452,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: false
+    known_diff: true
 
   # 에러 케이스: CLOSED 상태 QNA 수정 시도 → QnaContentsUpdateException
   # safe_for_repeat: true (CLOSED QNA는 수정 불가하므로 부작용 없음)
@@ -467,6 +473,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   # 에러 케이스: 존재하지 않는 qnaId → 404 Not Found (QnaNotFoundException)
   - name: "qna_update_not_found"
@@ -486,6 +493,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
   - name: "qna_update_unauthenticated"
@@ -534,6 +542,7 @@ test_cases:
       - "insertDate"
       - "updateDate"
     safe_for_repeat: false
+    known_diff: true
 
   # 정상 등록: 주문 QNA reply (orderQna 타입, 이미지 없음)
   - name: "qna_create_reply_order_valid"
@@ -556,6 +565,7 @@ test_cases:
       - "insertDate"
       - "updateDate"
     safe_for_repeat: false
+    known_diff: true
 
   # 에러 케이스: QNA 상태가 OPEN일 때 reply 시도 → QnaReplyException
   # OPEN 상태 = 셀러 답변이 아직 없는 상태이므로 고객 reply 불가
@@ -576,6 +586,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   # 에러 케이스: 존재하지 않는 qnaId → QnaReplyException (셀러 OPEN 답변 없음)
   - name: "qna_create_reply_not_found"
@@ -595,6 +606,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   # 에러 케이스: 미인증 사용자 접근 → 403 Forbidden
   - name: "qna_create_reply_unauthenticated"

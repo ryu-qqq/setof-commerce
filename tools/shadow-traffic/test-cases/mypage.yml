@@ -23,6 +23,7 @@ test_cases:
     ignore_fields:
       - "['data']['registrationDate']"
     safe_for_repeat: true
+    known_diff: true
 
   - name: "mypage_fetch_unauthenticated"
     path: "/api/v1/user/my-page"

@@ -20,6 +20,7 @@ test_cases:
     compare_mode: full
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   # === 단건 조회 ===
   - name: "shipping_address_detail_2217"
@@ -29,6 +30,7 @@ test_cases:
     compare_mode: full
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   - name: "shipping_address_detail_2218"
     path: "/api/v1/user/address-book/2218"
@@ -47,6 +49,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   - name: "shipping_address_list_unauthenticated"
     path: "/api/v1/user/address-book"

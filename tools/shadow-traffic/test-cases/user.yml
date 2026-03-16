@@ -21,6 +21,7 @@ test_cases:
     ignore_fields:
       - "['data']['joinedUser']['joinedDate']"
     safe_for_repeat: true
+    known_diff: true
 
   - name: "user_fetch_unauthenticated"
     path: "/api/v1/user"

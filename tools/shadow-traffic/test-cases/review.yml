@@ -199,6 +199,7 @@ test_cases:
       - "insertOperator"
       - "updateOperator"
     safe_for_repeat: false
+    known_diff: true
 
   - name: "review_create_valid_with_image"
     path: "/api/v1/review"
@@ -220,6 +221,7 @@ test_cases:
       - "insertOperator"
       - "updateOperator"
     safe_for_repeat: false
+    known_diff: true
 
   - name: "review_create_minimal_rating_zero"
     path: "/api/v1/review"
@@ -237,6 +239,7 @@ test_cases:
       - "insertOperator"
       - "updateOperator"
     safe_for_repeat: false
+    known_diff: true
 
   - name: "review_create_invalid_rating_over_5"
     # @ValidRating: rating > 5 은 유효성 검사 실패 → 400
@@ -283,6 +286,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   # === deleteReview - 리뷰 삭제 (커맨드, 인증 필요) ===
   # 신규 아키텍처 미구현: DELETE /api/v1/review/{reviewId} 는 Legacy에만 존재

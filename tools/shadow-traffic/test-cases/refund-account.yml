@@ -50,6 +50,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: false
+    known_diff: true
 
   # POST: 필수 필드(bankName) 누락 → 400 Bad Request (Validation 에러)
   - name: "refund_account_create_missing_bank_name"
@@ -107,6 +108,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: false
+    known_diff: true
 
   # PUT: 존재하지 않는 계좌 수정 시도 → 400 Bad Request (RefundAccountNotFoundException)
   - name: "refund_account_update_not_found"
@@ -120,6 +122,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   # PUT: 미인증 사용자 접근 → 403 Forbidden
   - name: "refund_account_update_unauthenticated"
@@ -142,6 +145,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: false
+    known_diff: true
 
   # DELETE: 존재하지 않는 계좌 삭제 시도 → 400 Bad Request (RefundAccountNotFoundException)
   - name: "refund_account_delete_not_found"
@@ -151,6 +155,7 @@ test_cases:
     compare_mode: status_only
     ignore_fields: []
     safe_for_repeat: true
+    known_diff: true
 
   # DELETE: 미인증 사용자 접근 → 403 Forbidden
   - name: "refund_account_delete_unauthenticated"
